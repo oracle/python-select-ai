@@ -7,9 +7,9 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 
-project = 'Python API for Select AI'
-copyright = '2025, Oracle and/or its affiliates. All rights reserved.'
-author = 'Oracle'
+project = "Python API for Select AI"
+copyright = "2025, Oracle and/or its affiliates. All rights reserved."
+author = "Oracle"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -23,7 +23,7 @@ source_suffix = ".rst"
 root_doc = master_doc = "index"
 
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 global_vars = {}
 local_vars = {}
@@ -36,9 +36,8 @@ version = ".".join(local_vars["__version__"].split(".")[:2])
 release = local_vars["__version__"]
 
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
-html_static_path = ['_static']
+html_theme = "alabaster"
+html_static_path = ["_static"]

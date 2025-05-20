@@ -1,5 +1,3 @@
-from .version import __version__ as __version__
-
 from .action import Action
 from .admin import (
     create_credential,
@@ -39,3 +37,4 @@ from .vector_index import (
     VectorIndex,
     VectorIndexAttributes,
 )
+from .version import __version__ as __version__

@@ -29,5 +29,3 @@ pdf:
 .PHONY: clean
 clean:
 	rm -rf $(BUILDDIR)/*
-
-

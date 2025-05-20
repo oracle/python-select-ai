@@ -65,6 +65,3 @@ To use ``select_ai`` you need:
   .. code-block:: shell
 
      Connected to the Database
-
-
-
