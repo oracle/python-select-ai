@@ -1,0 +1,12 @@
+my_examples
+.idea
+.venv
+.DS_Store
+select_ai.egg-info
+dist
+.ruff_cache
+src/select_ai.egg-info
+doc/.DS_Store
+doc/build
+**/__pycache__
+test.env

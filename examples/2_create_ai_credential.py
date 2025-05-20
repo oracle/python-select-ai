@@ -1,0 +1,35 @@
+import os
+
+import oci
+import select_ai
+
+user = os.getenv("SELECT_AI_USER")
+password = os.getenv("SELECT_AI_PASSWORD")
+dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+
+
+def main():
+    select_ai.connect(user=user, password=password, dsn=dsn)
+    if select_ai.is_connected():
+        print("Connected to Database")
+    else:
+        raise Exception("Not connected to Database")
+
+    # Default config file and profile
+    default_config = oci.config.from_file()
+    oci.config.validate_config(default_config)
+    with open(default_config["key_file"]) as fp:
+        key_contents = fp.read()
+    credential = {
+        "credential_name": "my_oci_ai_profile_key",
+        "user_ocid": default_config["user"],
+        "tenancy_ocid": default_config["tenancy"],
+        "private_key": key_contents,
+        "fingerprint": default_config["fingerprint"],
+    }
+    select_ai.create_credential(credential=credential, replace=True)
+    print("Created credential: ", credential["credential_name"])
+
+
+if __name__ == "__main__":
+    main()
