@@ -10,10 +10,6 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    if await select_ai.async_is_connected():
-        print("Connected to Database")
-    else:
-        raise Exception("Not connected to Database")
 
     oci_provider_attributes = select_ai.OCIGenAIProviderAttributes(
         region="us-chicago-1",

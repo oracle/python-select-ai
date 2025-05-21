@@ -6,6 +6,15 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
+import sys
+
+sys.path.insert(0, os.path.join("..", "..", "src", "select_ai"))
+
+autodocs_default_options = {
+    "members": True,
+    "inherited-members": True,
+    "undoc-members": True,
+}
 
 project = "Python API for Select AI"
 copyright = "2025, Oracle and/or its affiliates. All rights reserved."
@@ -14,7 +23,7 @@ author = "Oracle"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = ["sphinx.ext.autodoc"]
 
 # The suffix of source filenames.
 source_suffix = ".rst"
@@ -39,5 +48,7 @@ release = local_vars["__version__"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+pygments_style = "sphinx"

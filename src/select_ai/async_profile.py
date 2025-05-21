@@ -23,11 +23,8 @@ __all__ = ["AsyncProfile"]
 
 
 class AsyncProfile(BaseProfile):
-    """AsyncProfile class represents an AI Profile. It defines
-    corresponding attributes and methods to interact with
-    the underlying AI Provider. All methods in this class are
-    asynchronous (non-blocking) APIs to manage profiles and
-    generate texts
+    """AsyncProfile defines methods to interact with the underlying AI Provider
+    asynchronously.
     """
 
     def __init__(self, *args, **kwargs):
@@ -181,7 +178,7 @@ class AsyncProfile(BaseProfile):
 
     async def generate(
         self, prompt, action=Action.SHOWSQL, params: Mapping = None
-    ):
+    ) -> Union[pandas.DataFrame, str]:
         """Asynchronously perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
@@ -208,7 +205,7 @@ class AsyncProfile(BaseProfile):
         if data is not None:
             return await data.read()
 
-    async def chat(self, prompt, params: Mapping = None):
+    async def chat(self, prompt, params: Mapping = None) -> str:
         """Asynchronously chat with the LLM
 
         :param str prompt: Natural language prompt
@@ -217,7 +214,7 @@ class AsyncProfile(BaseProfile):
         """
         return await self.generate(prompt, action=Action.CHAT, params=params)
 
-    async def narrate(self, prompt, params: Mapping = None):
+    async def narrate(self, prompt, params: Mapping = None) -> str:
         """Narrate the result of the SQL
 
         :param str prompt: Natural language prompt
@@ -235,7 +232,7 @@ class AsyncProfile(BaseProfile):
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
-        :return: str
+        :return: pandas.DataFrame
         """
         data = await self.generate(prompt, action=Action.RUNSQL, params=params)
         return pandas.DataFrame(json.loads(data))
@@ -268,16 +265,16 @@ class AsyncProfile(BaseProfile):
         attributes: VectorIndexAttributes,
         description: str = Optional[None],
         replace: Optional[int] = False,
-    ):
+    ) -> None:
         """Create a vector index in the database and populates it with data
-        from an object store bucket using an async scheduler job
+        from an object store bucket using an async scheduler job.
 
         :param str index_name: Name of the vector index
         :param select_ai.VectorIndexAttributes attributes: Attributes of the
-        vector index
+         vector index
         :param str description: Description for the vector index
-        :param replace:
-        :return:
+        :param bool replace: True to replace existing vector index
+
         """
 
         if attributes.profile_name is None:
@@ -313,20 +310,16 @@ class AsyncProfile(BaseProfile):
         index_name: str,
         include_data: Optional[int] = True,
         force: Optional[int] = False,
-    ):
+    ) -> None:
         """This procedure removes a vector store index.
 
         :param str index_name: Name of the vector index
-
         :param bool include_data: Indicates whether to delete
          both the customer's vector store and vector index
          along with the vector index object.
-
         :param bool force: Indicates whether to ignore errors
-        that occur if the vector index does not exist.
-
+         that occur if the vector index does not exist.
         :return: None
-
         :raises: oracledb.DatabaseError
 
         """
@@ -341,7 +334,7 @@ class AsyncProfile(BaseProfile):
             )
 
     @staticmethod
-    async def enable_vector_index(index_name: str):
+    async def enable_vector_index(index_name: str) -> None:
         """This procedure enables or activates a previously disabled vector
         index object. Generally, when you create a vector index, by default
         it is enabled such that the AI profile can use it to perform indexing
@@ -359,7 +352,7 @@ class AsyncProfile(BaseProfile):
             )
 
     @staticmethod
-    async def disable_vector_index(index_name: str):
+    async def disable_vector_index(index_name: str) -> None:
         """This procedure disables a vector index object in the current
         database. When disabled, an AI profile cannot use the vector index,
         and the system does not load data into the vector store as new data
@@ -379,7 +372,7 @@ class AsyncProfile(BaseProfile):
     @staticmethod
     async def update_vector_index(
         index_name: str, attribute_name: str, attribute_value: Union[str, int]
-    ):
+    ) -> None:
         """
         This procedure updates an existing vector store index with a specified
         value of the vector index attribute.
@@ -429,12 +422,11 @@ class AsyncProfile(BaseProfile):
     async def list_vector_indexes(
         self, index_name_pattern: str
     ) -> Iterator[VectorIndex]:
-        """List Vector Indexes
+        """List Vector Indexes.
 
         :param str index_name_pattern: Regular expressions can be used
-        to specify a pattern. Function REGEXP_LIKE is used to perform the
-        match
-
+         to specify a pattern. Function REGEXP_LIKE is used to perform the
+         match
         :return: Iterator[VectorIndex]
 
         """
@@ -459,7 +451,7 @@ class AsyncProfile(BaseProfile):
 
     async def generate_synthetic_data(
         self, synthetic_data_attributes: SyntheticDataAttributes
-    ):
+    ) -> None:
         """Generate synthetic data for a single table, multiple tables or a
         full schema.
 
@@ -502,16 +494,15 @@ class AsyncProfile(BaseProfile):
         self,
         prompt_specifications: List[Tuple[str, Action]],
         continue_on_error: bool = False,
-    ):
-        """Send multiple prompts to the Database in a pipeline. Multiple
-        prompts are sent in a single roundtrip to the Database
+    ) -> List[Union[str, pandas.DataFrame]]:
+        """Send Multiple prompts in a single roundtrip to the Database
 
         :param List[Tuple[str, Action]] prompt_specifications: List of
          2-element tuples. First element is the prompt and second is the
          corresponding action
 
         :param bool continue_on_error: True to continue on error else False
-        :return:
+        :return: List[Union[str, pandas.DataFrame]]
         """
         pipeline = oracledb.create_pipeline()
         for prompt, action in prompt_specifications:

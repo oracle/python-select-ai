@@ -162,11 +162,11 @@ class Profile(BaseProfile):
 
     @classmethod
     def list(cls, profile_name_pattern: str) -> Iterator["Profile"]:
-        """List AI Profiles saved in the database
+        """List AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
-        to specify a pattern. Function REGEXP_LIKE is used to perform the
-        match
+         to specify a pattern. Function REGEXP_LIKE is used to perform the
+         match
 
         :return: Iterator[Profile]
         """
@@ -190,7 +190,7 @@ class Profile(BaseProfile):
         prompt: str,
         action: Optional[Action] = Action.RUNSQL,
         params: Mapping = None,
-    ):
+    ) -> Union[pandas.DataFrame, str]:
         """Perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
@@ -283,16 +283,11 @@ class Profile(BaseProfile):
     ):
         """Create a vector index in the database and populates it with data
         from an object store bucket using an async scheduler job
-
         :param str index_name: Name of the vector index
-
         :param select_ai.VectorIndexAttributes attributes: Attributes of the
         vector index
-
         :param str description: Description for the vector index
-
         :param bool replace: Replace vector index if it exists
-
         :return: None
         """
 
@@ -331,21 +326,15 @@ class Profile(BaseProfile):
         include_data: Optional[int] = True,
         force: Optional[int] = False,
     ):
-        """This procedure removes a vector store index.
-
+        """This procedure removes a vector store index
         :param str index_name: Name of the vector index
-
         :param bool include_data: Indicates whether to delete
-         both the customer's vector store and vector index
-         along with the vector index object.
-
+        both the customer's vector store and vector index
+        along with the vector index object.
         :param bool force: Indicates whether to ignore errors
         that occur if the vector index does not exist.
-
         :return: None
-
         :raises: oracledb.DatabaseError
-
         """
         with cursor() as cr:
             cr.callproc(
@@ -449,11 +438,10 @@ class Profile(BaseProfile):
         """List Vector Indexes
 
         :param str index_name_pattern: Regular expressions can be used
-        to specify a pattern. Function REGEXP_LIKE is used to perform the
-        match
+         to specify a pattern. Function REGEXP_LIKE is used to perform the
+         match
 
         :return: Iterator[VectorIndex]
-
         """
         with cursor() as cr:
             cr.execute(
@@ -501,7 +489,6 @@ class Profile(BaseProfile):
 
         :param select_ai.ConversationAttributes conversation_attributes:
          Conversation Attributes
-
         :return: conversation_id
         """
         with cursor() as cr:

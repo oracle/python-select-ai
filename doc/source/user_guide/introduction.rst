@@ -11,7 +11,4 @@ AI service providers, generate, run, explain SQL and chat with LLMs.
 ``select_ai`` supports both synchronous and concurrent(asynchronous)
 programming styles
 
-It uses the Python thin driver for Oracle database i.e. ``python-oracledb``
-to connect to the database and execute PL/SQL subprograms.
-
 Currently supported Python versions are 3.9, 3.10, 3.11, 3.12 and 3.13.

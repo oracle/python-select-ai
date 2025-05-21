@@ -11,8 +11,8 @@ select_ai documentation
 and Python's rich ecosystem.
 
 
-User Guide
-==========
+Getting Started
+===============
 
 .. toctree::
     :numbered:
@@ -20,3 +20,51 @@ User Guide
 
     user_guide/introduction.rst
     user_guide/installation.rst
+    user_guide/connection.rst
+
+Actions
+=======
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/actions.rst
+
+Provider
+========
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/provider.rst
+
+
+Provider Attributes
+===================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/provider_attributes.rst
+
+Profile
+=======
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/profile.rst
+
+
+Async Profile
+=============
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/async_profile.rst

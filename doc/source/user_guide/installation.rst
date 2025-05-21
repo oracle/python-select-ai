@@ -42,6 +42,7 @@ To use ``select_ai`` you need:
 
       python3 -m pip install select_ai --upgrade --user --proxy=http://proxy.example.com:80
 
+
 4. Create a file ``select_ai_connection_test.py`` such as:
 
   .. code-block:: python

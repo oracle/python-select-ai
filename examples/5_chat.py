@@ -9,12 +9,6 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
-
-    if select_ai.is_connected():
-        print("Connected to Database")
-    else:
-        raise Exception("Not connected to Database")
-
     oci_provider_attributes = select_ai.OCIGenAIProviderAttributes(
         model="meta.llama-3.1-70b-instruct"
     )

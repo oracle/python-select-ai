@@ -9,10 +9,6 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
-    if select_ai.is_connected():
-        print("Connected to Database")
-    else:
-        raise Exception("Not connected to Database")
     profile = select_ai.Profile(
         profile_name="oci_ai_profile",
         fetch_and_merge_attributes=True,

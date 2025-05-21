@@ -12,10 +12,6 @@ db_users = ["SPARK_DB_USER"]
 
 def main():
     select_ai.connect(user=admin_user, password=password, dsn=dsn)
-    if select_ai.is_connected():
-        print("Connected to Database")
-    else:
-        raise Exception("Not connected to Database")
     select_ai.disable_provider(
         users=db_users, provider_endpoint="*.openai.azure.com"
     )

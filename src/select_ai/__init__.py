@@ -23,6 +23,7 @@ from .provider import (
     GoogleAIProviderAttributes,
     HuggingFaceAIProviderAttributes,
     OCIGenAIProviderAttributes,
+    OpenAIProviderAttributes,
     Provider,
     ProviderAttributes,
 )
