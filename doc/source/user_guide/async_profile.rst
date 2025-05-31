@@ -15,22 +15,15 @@ Async SQL generation
    :language: python
 
 **********
-Async Chat
+Async chat
 **********
 
 .. literalinclude:: ../../../examples/async_examples/2_chat.py
    :language: python
 
 *********************
-Async Prompt Pipeline
+Async pipeline
 *********************
 
 .. literalinclude:: ../../../examples/async_examples/3_pipeline.py
-   :language: python
-
-*********************
-Async Conversation
-*********************
-
-.. literalinclude:: ../../../examples/async_examples/4_conversation.py
    :language: python

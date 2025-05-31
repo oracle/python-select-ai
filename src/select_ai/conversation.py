@@ -1,16 +1,18 @@
 import collections
 import json
 from dataclasses import dataclass
-from typing import Optional
+from typing import NamedTuple, Optional
 
 from select_ai._base import SelectAIDataClass
 
 __all__ = ["Conversation", "ConversationAttributes"]
 
 
-Conversation = collections.namedtuple(
-    "Conversation", field_names=["conversation_id", "attributes"]
-)
+class Conversation(NamedTuple):
+    """A container class to store Conversation id and attributes"""
+
+    conversation_id: str
+    attributes: "ConversationAttributes"
 
 
 @dataclass

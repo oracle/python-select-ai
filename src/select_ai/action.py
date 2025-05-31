@@ -1,4 +1,4 @@
-from enum import StrEnum
+from select_ai._enums import StrEnum
 
 __all__ = ["Action"]
 

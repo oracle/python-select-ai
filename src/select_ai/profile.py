@@ -89,13 +89,56 @@ class Profile(BaseProfile):
             else:
                 raise ProfileNotFoundError(profile_name=profile_name)
 
+    def set_attribute(
+        self,
+        attribute_name: str,
+        attribute_value: Union[bool, str, int, float],
+    ):
+        """Updates AI profile attribute on the Python object and also
+        saves it in the database
+
+        :param str attribute_name: Name of the AI profile attribute
+        :param Union[bool, str, int, float] attribute_value: Value of the
+         profile attribute
+        :return: None
+
+        """
+        setattr(self.attributes, attribute_name, attribute_value)
+        parameters = {
+            "profile_name": self.profile_name,
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.SET_ATTRIBUTE", keyword_parameters=parameters
+            )
+
+    def set_attributes(self, attributes: ProviderAttributes):
+        """Updates AI profile attributes on the Python object and also
+        saves it in the database
+
+        :param ProviderAttributes attributes: Object specifying AI profile
+         attributes
+        :return: None
+        """
+        self.attributes = attributes
+        parameters = {
+            "profile_name": self.profile_name,
+            "attributes": self.attributes.json(),
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.SET_ATTRIBUTES", keyword_parameters=parameters
+            )
+
     def create(
         self, replace: Optional[int] = False, description: Optional[str] = None
     ) -> None:
         """Create an AI Profile in the Database
 
         :param bool replace: Set True to replace else False
-        :param description: The profile description
+        :param str description: The profile description
         :return: None
         :raises: oracledb.DatabaseError
         """
@@ -387,25 +430,39 @@ class Profile(BaseProfile):
         index_name: str,
         attribute_name: str,
         attribute_value: Union[str, int, float],
+        attributes: VectorIndexAttributes = None,
     ):
         """
         This procedure updates an existing vector store index with a specified
-        value of the vector index attribute.
+        value of the vector index attribute. You can specify a single attribute
+        or multiple attributes by passing an object of type
+        :class `VectorIndexAttributes`
 
         :param str index_name: Name of the vector index
         :param str attribute_name: Custom attribute name
         :param Union[str, int, float] attribute_value: Attribute Value
+        :param VectorIndexAttributes attributes: Specify multiple attributes
+         to update in a single API invocation
         :return: None
         :raises: oracledb.DatabaseError
         """
+        if attribute_name and attribute_value and attributes:
+            raise ValueError(
+                "Only one of attribute (name and value) or "
+                "attributes can be specified"
+            )
+
+        parameters = {"index_name": index_name}
+        if attributes:
+            parameters["attributes"] = attributes.json()
+        else:
+            parameters["attributes_name"] = attribute_name
+            parameters["attributes_value"] = attribute_value
+
         with cursor() as cr:
             cr.callproc(
                 "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
-                keyword_parameters={
-                    "index_name": index_name,
-                    "attribute_name": attribute_name,
-                    "attribute_value": attribute_value,
-                },
+                keyword_parameters=parameters,
             )
 
     @staticmethod

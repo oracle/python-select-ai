@@ -1,9 +1,9 @@
 import json
-from dataclasses import dataclass, field
-from enum import StrEnum
+from dataclasses import dataclass
 from typing import List, Mapping, Optional
 
 from select_ai._base import SelectAIDataClass
+from select_ai._enums import StrEnum
 
 
 class Provider(StrEnum):

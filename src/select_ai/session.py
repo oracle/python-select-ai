@@ -1,7 +1,7 @@
 from typing import Mapping
 
 from .async_profile import AsyncProfile
-from .profile import Action, Profile
+from .profile import Profile
 
 
 class Session:

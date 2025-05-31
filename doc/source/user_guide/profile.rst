@@ -8,7 +8,7 @@
    :members:
 
 **************************
-Enable AI Service provider
+Enable AI service provider
 **************************
 
 .. literalinclude:: ../../../examples/1_enable_ai_provider.py
@@ -45,32 +45,12 @@ Chat
    :language: python
 
 **************************
-List Profiles
+List profiles
 **************************
 
 .. literalinclude:: ../../../examples/6_list_ai_profiles.py
    :language: python
 
-**************************
-Create Vector Index
-**************************
-
-.. literalinclude:: ../../../examples/7_vector_index.py
-   :language: python
-
-**************************
-Generate Synthetic Data
-**************************
-
-.. literalinclude:: ../../../examples/8_generate_synthetic_data.py
-   :language: python
-
-**************************
-Conversation
-**************************
-
-.. literalinclude:: ../../../examples/9_conversation.py
-   :language: python
 
 ***************************
 Disable AI service provider

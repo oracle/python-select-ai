@@ -1,14 +1,19 @@
-import collections
 import json
-from dataclasses import dataclass, fields
-from enum import StrEnum
-from typing import Optional
+from dataclasses import dataclass
+from typing import NamedTuple, Optional
 
 from select_ai._base import SelectAIDataClass
+from select_ai._enums import StrEnum
 
-VectorIndex = collections.namedtuple(
-    "VectorIndex", field_names=["index_name", "description", "attributes"]
-)
+
+class VectorIndex(NamedTuple):
+    """
+    A Container for VectorIndex
+    """
+
+    index_name: str
+    description: str
+    attributes: "VectorIndexAttributes"
 
 
 class VectorDBProvider(StrEnum):

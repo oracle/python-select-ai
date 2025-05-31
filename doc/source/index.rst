@@ -68,3 +68,30 @@ Async Profile
     :maxdepth: 3
 
     user_guide/async_profile.rst
+
+Vector Index
+============
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/vector_index.rst
+
+Synthetic Data
+==============
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/synthetic_data.rst
+
+Conversation
+============
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/conversation.rst

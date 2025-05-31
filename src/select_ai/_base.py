@@ -26,7 +26,7 @@ class BaseProfile(ABC):
         :param str profile_name (optional): Name of the profile
 
         :param select_ai.provider.ProviderAttributes attributes (optional):
-        ProviderAttributes
+        Object specifying AI profile attributes
 
         :param str description (optional): Description of the profile
 

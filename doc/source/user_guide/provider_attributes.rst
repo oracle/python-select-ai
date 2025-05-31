@@ -25,9 +25,9 @@
 .. autoclass:: select_ai.AWSAIProviderAttributes
    :members:
 
-*****************************
+******************************
 ``CohereAIProviderAttributes``
-*****************************
+******************************
 .. autoclass:: select_ai.CohereAIProviderAttributes
    :members:
 
@@ -38,16 +38,16 @@
    :members:
 
 
-*****************************
+******************************
 ``OCIGenAIProviderAttributes``
-*****************************
+******************************
 .. autoclass:: select_ai.OCIGenAIProviderAttributes
    :members:
 
 
-*****************************
+******************************
 ``GoogleAIProviderAttributes``
-*****************************
+******************************
 .. autoclass:: select_ai.GoogleAIProviderAttributes
    :members:
 

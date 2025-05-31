@@ -21,6 +21,10 @@ def main():
         description="MY OCI AI Profile",
         replace=True,
     )
+    # profile.set_attributes(attributes=oci_provider_attributes)
+    profile.set_attribute(
+        attribute_name="model", attribute_value="meta.llama-3.1-70b-instruct"
+    )
     prompts = [
         "How many promotions are there in the sh database?",
         "How many products are there in the sh database ?",
