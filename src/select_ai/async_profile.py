@@ -5,12 +5,12 @@ from typing import Iterator, List, Mapping, Optional, Tuple, Union
 import oracledb
 import pandas
 
-from select_ai._base import BaseProfile
 from select_ai.action import Action
+from select_ai.base_profile import BaseProfile, ProfileAttributes
 from select_ai.conversation import ConversationAttributes
 from select_ai.db import async_cursor, async_get_connection, cursor
 from select_ai.errors import ProfileNotFoundError, VectorIndexNotFoundError
-from select_ai.provider import ProviderAttributes
+from select_ai.provider import Provider
 from select_ai.sql import (
     GET_USER_AI_PROFILE_ATTRIBUTES,
     GET_USER_VECTOR_INDEX_ATTRIBUTES,
@@ -42,34 +42,33 @@ class AsyncProfile(BaseProfile):
         :raises: oracledb.DatabaseError
         """
         if self.profile_name is not None:
-            if self.fetch_and_merge_attributes:
-                try:
-                    saved_attributes = await self.fetch_attributes(
-                        profile_name=self.profile_name
-                    )
-                except ProfileNotFoundError:
-                    self.replace = False
-                    if self.attributes is None:
-                        raise ValueError("Missing attributes")
-                else:
+            profile_exists = False
+            try:
+                saved_attributes = await self.fetch_attributes(
+                    profile_name=self.profile_name
+                )
+                profile_exists = True
+            except ProfileNotFoundError:
+                if self.attributes is None:
+                    raise ValueError("Missing Profile attributes")
+            else:
+                if self.attributes is None:
+                    self.attributes = saved_attributes
+                if self.merge:
                     self.replace = True
                     if self.attributes is not None:
-                        # Replace attributes passed during __init__()
                         self.attributes = dataclass_replace(
                             saved_attributes,
-                            **self.attributes.dict(filter_null=True),
+                            **self.attributes.dict(exclude_null=True),
                         )
-                    else:
-                        self.attributes = saved_attributes
-
-            await self.create(
-                replace=self.replace, description=self.description
-            )
-
+            if self.replace or not profile_exists:
+                await self.create(
+                    replace=self.replace, description=self.description
+                )
         return self
 
     @staticmethod
-    async def fetch_attributes(profile_name) -> ProviderAttributes:
+    async def fetch_attributes(profile_name) -> ProfileAttributes:
         """Asynchronously fetch AI profile attributes from the Database
 
         :param str profile_name: Name of the profile
@@ -77,7 +76,6 @@ class AsyncProfile(BaseProfile):
         :raises: ProfileNotFoundError
 
         """
-        json_attributes = ["object_list"]
         async with async_cursor() as cr:
             await cr.execute(
                 GET_USER_AI_PROFILE_ATTRIBUTES,
@@ -85,38 +83,15 @@ class AsyncProfile(BaseProfile):
             )
             attributes = await cr.fetchall()
             if attributes:
-                post_processed_attributes = {}
-                for k, v in attributes:
-                    if (
-                        isinstance(v, oracledb.AsyncLOB)
-                        and k in json_attributes
-                    ):
-                        data = await v.read()
-                        post_processed_attributes[k] = json.loads(data)
-                    elif isinstance(v, oracledb.AsyncLOB):
-                        data = await v.read()
-                        post_processed_attributes[k] = data
-                    else:
-                        post_processed_attributes[k] = v
-                return ProviderAttributes.create(**post_processed_attributes)
+                return await ProfileAttributes.async_create(**dict(attributes))
             else:
                 raise ProfileNotFoundError(profile_name=profile_name)
 
-    async def set_attribute(
+    async def _set_attribute(
         self,
         attribute_name: str,
         attribute_value: Union[bool, str, int, float],
     ):
-        """Updates AI profile attribute on the Python object and also
-        saves it in the database
-
-        :param str attribute_name: Name of the AI profile attribute
-        :param Union[bool, str, int, float] attribute_value: Value of the
-         profile attribute
-        :return: None
-
-        """
-        setattr(self.attributes, attribute_name, attribute_value)
         parameters = {
             "profile_name": self.profile_name,
             "attribute_name": attribute_name,
@@ -127,11 +102,32 @@ class AsyncProfile(BaseProfile):
                 "DBMS_CLOUD_AI.SET_ATTRIBUTE", keyword_parameters=parameters
             )
 
-    async def set_attributes(self, attributes: ProviderAttributes):
+    async def set_attribute(
+        self,
+        attribute_name: str,
+        attribute_value: Union[bool, str, int, float, Provider],
+    ):
+        """Updates AI profile attribute on the Python object and also
+        saves it in the database
+
+        :param str attribute_name: Name of the AI profile attribute
+        :param Union[bool, str, int, float] attribute_value: Value of the
+         profile attribute
+        :return: None
+
+        """
+        self.attributes.set_attribute(attribute_name, attribute_value)
+        if isinstance(attribute_value, Provider):
+            for k, v in attribute_value.dict().items():
+                await self._set_attribute(k, v)
+        else:
+            await self._set_attribute(attribute_name, attribute_value)
+
+    async def set_attributes(self, attributes: ProfileAttributes):
         """Updates AI profile attributes on the Python object and also
         saves it in the database
 
-        :param ProviderAttributes attributes: Object specifying AI profile
+        :param ProfileAttributes attributes: Object specifying AI profile
          attributes
         :return: None
         """
@@ -212,16 +208,16 @@ class AsyncProfile(BaseProfile):
             )
             attributes = await cr.fetchall()
             if attributes:
-                attributes = ProviderAttributes.create(**dict(attributes))
-                return cls(
-                    profile_name=profile_name, attributes=attributes.json()
+                attributes = await ProfileAttributes.async_create(
+                    **dict(attributes)
                 )
+                return cls(profile_name=profile_name, attributes=attributes)
             else:
                 raise ProfileNotFoundError(profile_name=profile_name)
 
     async def generate(
         self, prompt, action=Action.SHOWSQL, params: Mapping = None
-    ) -> Union[pandas.DataFrame, str]:
+    ) -> Union[pandas.DataFrame, str, None]:
         """Asynchronously perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
@@ -247,6 +243,7 @@ class AsyncProfile(BaseProfile):
             )
         if data is not None:
             return await data.read()
+        return None
 
     async def chat(self, prompt, params: Mapping = None) -> str:
         """Asynchronously chat with the LLM
@@ -494,8 +491,7 @@ class AsyncProfile(BaseProfile):
                 profile_name=self.profile_name,
                 index_name_pattern=index_name_pattern,
             )
-            rows = await cr.fetchall()
-            for row in rows:
+            async for row in cr.fetchall():
                 index_name = row[0]
                 description = await row[1].read()  # AsyncLOB
                 attributes = await AsyncProfile.fetch_vector_index_attributes(
@@ -582,8 +578,7 @@ class AsyncProfile(BaseProfile):
         responses = []
         for result in pipeline_results:
             if not result.error:
-                response = result.rows[0][0]
-                responses.append(await response.read())
+                responses.append(await result.return_value.read())
             else:
                 responses.append(result.error)
         return responses

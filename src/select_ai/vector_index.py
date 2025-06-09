@@ -1,12 +1,13 @@
 import json
 from dataclasses import dataclass
-from typing import NamedTuple, Optional
+from typing import Optional
 
-from select_ai._base import SelectAIDataClass
+from select_ai._abc import SelectAIDataClass
 from select_ai._enums import StrEnum
 
 
-class VectorIndex(NamedTuple):
+@dataclass
+class VectorIndex(SelectAIDataClass):
     """
     A Container for VectorIndex
     """
@@ -53,12 +54,7 @@ class VectorIndexAttributes(SelectAIDataClass):
     vector_table_name: Optional[str] = None
     pipeline_name: Optional[str] = None
 
-    def json(self):
-        attributes = {}
-        for k, v in self.__dict__.items():
-            if v:
-                attributes[k] = v
-        # ORA-20048: pipeline_name cannot be set or modified
-        # for the vector index
+    def json(self, exclude_null=True):
+        attributes = self.dict(exclude_null=exclude_null)
         attributes.pop("pipeline_name", None)
         return json.dumps(attributes)

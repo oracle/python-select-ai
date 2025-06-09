@@ -5,6 +5,7 @@ from .admin import (
     enable_provider,
 )
 from .async_profile import AsyncProfile
+from .base_profile import ProfileAttributes
 from .conversation import Conversation, ConversationAttributes
 from .db import (
     async_connect,
@@ -16,16 +17,15 @@ from .db import (
 )
 from .profile import Profile
 from .provider import (
-    AnthropicAIProviderAttributes,
-    AWSAIProviderAttributes,
-    AzureAIProviderAttributes,
-    CohereAIProviderAttributes,
-    GoogleAIProviderAttributes,
-    HuggingFaceAIProviderAttributes,
-    OCIGenAIProviderAttributes,
-    OpenAIProviderAttributes,
+    AnthropicAIProvider,
+    AWSAIProvider,
+    AzureAIProvider,
+    CohereAIProvider,
+    GoogleAIProvider,
+    HuggingFaceAIProvider,
+    OCIGenAIProvider,
+    OpenAIProvider,
     Provider,
-    ProviderAttributes,
 )
 from .session import AsyncSession, Session
 from .synthetic_data import (
