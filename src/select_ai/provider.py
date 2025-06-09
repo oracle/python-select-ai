@@ -1,106 +1,92 @@
-import json
-from dataclasses import dataclass
-from typing import List, Mapping, Optional
+from dataclasses import dataclass, fields
+from typing import Optional
 
-from select_ai._base import SelectAIDataClass
-from select_ai._enums import StrEnum
+from select_ai._abc import SelectAIDataClass
 
-
-class Provider(StrEnum):
-    OPENAI = "openai"
-    COHERE = "cohere"
-    AZURE = "azure"
-    OCI = "oci"
-    GOOGLE = "google"
-    ANTHROPIC = "anthropic"
-    HUGGINGFACE = "huggingface"
-    AWS = "aws"
+OPENAI = "openai"
+COHERE = "cohere"
+AZURE = "azure"
+OCI = "oci"
+GOOGLE = "google"
+ANTHROPIC = "anthropic"
+HUGGINGFACE = "huggingface"
+AWS = "aws"
 
 
 @dataclass
-class ProviderAttributes(SelectAIDataClass):
+class Provider(SelectAIDataClass):
     """
-    Base class for AI Provider attributes
+    Base class for AI Provider
 
-    :param Provider provider: AI service provider
+    :param (str) provider: Name of the AI service provider
 
-    :param str comments:
     """
 
-    provider: Optional[Provider] = None
-    comments: Optional[bool] = None
-    conversation: Optional[str] = None
-    credential_name: Optional[str] = None
+    provider: Optional[str] = None
     embedding_model: Optional[str] = None
-    max_tokens: Optional[int] = 1024
     model: Optional[str] = None
-    object_list: Optional[List[Mapping]] = None
     region: Optional[str] = None
-    stop_tokens: Optional[str] = None
-    temperature: Optional[float] = None
-    vector_index_name: Optional[str] = None
     provider_endpoint: Optional[str] = None
-    annotations: Optional[str] = None
-    constraints: Optional[str] = None
-    case_sensitive_values: Optional[bool] = None
-    object_list_mode: Optional[bool] = None
-    enforce_object_list: Optional[bool] = None
-    enable_sources: Optional[bool] = None
-    enable_source_offsets: Optional[bool] = None
-    seed: Optional[str] = None
-    streaming: Optional[str] = None
-
-    def dict(self, filter_null=False):
-        attributes = {}
-        for k, v in self.__dict__.items():
-            if (not v and not filter_null) or v:
-                attributes[k] = v
-        return attributes
-
-    def json(self, filter_null=True):
-        attributes = self.dict(filter_null=filter_null)
-        return json.dumps(attributes)
 
     @classmethod
-    def create(cls, *, provider: Optional[Provider] = None, **kwargs):
+    def create(cls, *, provider: Optional[str] = None, **kwargs):
         for subclass in cls.__subclasses__():
             if subclass.provider == provider:
                 return subclass(**kwargs)
         return cls(**kwargs)
 
+    @classmethod
+    def keys(cls):
+        return {
+            "provider",
+            "embedding_model",
+            "model",
+            "region",
+            "provider_endpoint",
+            "azure_deployment_name",
+            "azure_embedding_deployment_name",
+            "azure_resource_name",
+            "oci_apiformat",
+            "oci_compartment_id",
+            "oci_endpoint_id",
+            "oci_runtimetype",
+            "aws_apiformat",
+        }
+
 
 @dataclass
-class AzureAIProviderAttributes(ProviderAttributes):
+class AzureAIProvider(Provider):
     """
     Azure specific attributes
     """
 
-    provider: Provider = Provider.AZURE
+    provider: str = AZURE
     azure_deployment_name: Optional[str] = None
     azure_embedding_deployment_name: Optional[str] = None
     azure_resource_name: Optional[str] = None
 
     def __post_init__(self):
+        super().__post_init__()
         self.provider_endpoint = f"{self.azure_resource_name}.openai.azure.com"
 
 
 @dataclass
-class OpenAIProviderAttributes(ProviderAttributes):
+class OpenAIProvider(Provider):
     """
     OpenAI specific attributes
     """
 
-    provider: Provider = Provider.OPENAI
+    provider: str = OPENAI
     provider_endpoint: Optional[str] = "api.openai.com"
 
 
 @dataclass
-class OCIGenAIProviderAttributes(ProviderAttributes):
+class OCIGenAIProvider(Provider):
     """
     OCI Gen AI specific attributes
     """
 
-    provider: Provider = Provider.OCI
+    provider: str = OCI
     oci_apiformat: Optional[str] = None
     oci_compartment_id: Optional[str] = None
     oci_endpoint_id: Optional[str] = None
@@ -108,51 +94,51 @@ class OCIGenAIProviderAttributes(ProviderAttributes):
 
 
 @dataclass
-class CohereAIProviderAttributes(ProviderAttributes):
+class CohereAIProvider(Provider):
     """
     Cohere AI specific attributes
     """
 
-    provider: Provider = Provider.COHERE
+    provider: str = COHERE
     provider_endpoint = "api.cohere.ai"
 
 
 @dataclass
-class GoogleAIProviderAttributes(ProviderAttributes):
+class GoogleAIProvider(Provider):
     """
     Google AI specific attributes
     """
 
-    provider: Provider = Provider.GOOGLE
+    provider: str = GOOGLE
     provider_endpoint = "generativelanguage.googleapis.com"
 
 
 @dataclass
-class HuggingFaceAIProviderAttributes(ProviderAttributes):
+class HuggingFaceAIProvider(Provider):
     """
     HuggingFace specific attributes
     """
 
-    provider: Provider = Provider.HUGGINGFACE
+    provider: str = HUGGINGFACE
     provider_endpoint = "api-inference.huggingface.co"
 
 
 @dataclass
-class AWSAIProviderAttributes(ProviderAttributes):
+class AWSAIProvider(Provider):
     """
     AWS specific attributes
     """
 
-    provider: Provider = Provider.AWS
+    provider: str = AWS
     provider_endpoint = "api-inference.huggingface.co"
     aws_apiformat: Optional[str] = None
 
 
 @dataclass
-class AnthropicAIProviderAttributes(ProviderAttributes):
+class AnthropicAIProvider(Provider):
     """
     Anthropic specific attributes
     """
 
-    provider: Provider = Provider.ANTHROPIC
+    provider: str = ANTHROPIC
     provider_endpoint = "api.anthropic.com"

@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass
 from typing import List, Mapping, Optional
 
-from select_ai._base import SelectAIDataClass
+from select_ai._abc import SelectAIDataClass
 
 
 @dataclass
@@ -12,16 +12,6 @@ class SyntheticDataParams(SelectAIDataClass):
     table_statistics: Optional[bool] = False
     priority: Optional[str] = "HIGH"
     comments: Optional[bool] = False
-
-    def dict(self):
-        attributes = {}
-        for k, v in self.__dict__.items():
-            if v:
-                attributes[k] = v
-        return attributes
-
-    def json(self):
-        return json.dumps(self.dict())
 
 
 @dataclass
@@ -34,21 +24,17 @@ class SyntheticDataAttributes(SelectAIDataClass):
     params: Optional[SyntheticDataParams] = None
     object_list: Optional[List[Mapping]] = None
 
-    def dict(self):
+    def dict(self, exclude_null=True):
         attributes = {}
         for k, v in self.__dict__.items():
-            if v:
+            if v is not None or not exclude_null:
                 if isinstance(v, SyntheticDataParams):
-                    attributes[k] = v.json()
+                    attributes[k] = v.json(exclude_null=exclude_null)
                 elif isinstance(v, List):
                     attributes[k] = json.dumps(v)
                 else:
                     attributes[k] = v
-
         return attributes
-
-    def json(self):
-        return json.dumps(self.dict())
 
     def prepare(self):
         if self.object_name and self.object_list:

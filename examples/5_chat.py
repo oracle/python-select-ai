@@ -9,15 +9,7 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
-    oci_provider_attributes = select_ai.OCIGenAIProviderAttributes(
-        model="meta.llama-3.1-70b-instruct"
-    )
-    profile = select_ai.Profile(
-        profile_name="oci_ai_profile",
-        attributes=oci_provider_attributes,
-        description="MY OCI AI Profile",
-        fetch_and_merge_attributes=True,
-    )
+    profile = select_ai.Profile(profile_name="oci_ai_profile")
     print(profile)
     print(profile.chat(prompt="What is OCI ?"))
 

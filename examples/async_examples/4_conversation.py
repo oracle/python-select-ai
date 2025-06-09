@@ -11,8 +11,7 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
     async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile",
-        fetch_and_merge_attributes=True,
+        profile_name="async_oci_ai_profile"
     )
     conversation_attributes = select_ai.ConversationAttributes(
         title="History of Science",

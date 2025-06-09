@@ -1,14 +1,14 @@
-import collections
 import json
 from dataclasses import dataclass
-from typing import NamedTuple, Optional
+from typing import Optional
 
-from select_ai._base import SelectAIDataClass
+from select_ai._abc import SelectAIDataClass
 
 __all__ = ["Conversation", "ConversationAttributes"]
 
 
-class Conversation(NamedTuple):
+@dataclass
+class Conversation(SelectAIDataClass):
     """A container class to store Conversation id and attributes"""
 
     conversation_id: str
@@ -23,10 +23,3 @@ class ConversationAttributes(SelectAIDataClass):
     description: Optional[str] = None
     retention_days: Optional[int] = 7
     # conversation_length: Optional[int] = 10
-
-    def json(self):
-        attributes = {}
-        for k, v in self.__dict__.items():
-            if v:
-                attributes[k] = v
-        return json.dumps(attributes)

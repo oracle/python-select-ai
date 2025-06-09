@@ -7,17 +7,10 @@ password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 
+# This example show how to generate multi-table synthetic data
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
-    oci_provider_attributes = select_ai.OCIGenAIProviderAttributes(
-        model="meta.llama-3.1-70b-instruct"
-    )
-    profile = select_ai.Profile(
-        profile_name="oci_ai_profile",
-        attributes=oci_provider_attributes,
-        description="MY OCI AI Profile",
-        fetch_and_merge_attributes=True,
-    )
+    profile = select_ai.Profile(profile_name="oci_ai_profile", merge=True)
     synthetic_data_params = select_ai.SyntheticDataParams(
         sample_rows=100, table_statistics=True, priority="HIGH"
     )

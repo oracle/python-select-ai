@@ -9,9 +9,7 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
-    profile = select_ai.Profile(
-        profile_name="oci_ai_profile", fetch_and_merge_attributes=True
-    )
+    profile = select_ai.Profile(profile_name="oci_ai_profile", merge=True)
     print("fetched profile: ", profile)
     vector_index_attributes = select_ai.VectorIndexAttributes(
         location="https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph",
