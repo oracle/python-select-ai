@@ -1,5 +1,10 @@
 .. _async_profile:
 
+An AsyncProfile object can be created with ``select_ai.AsyncProfile()``
+``AsyncProfile`` support use of concurrent programming with `asyncio <https://docs.python.org/3/library/asyncio.html>`__.
+Unless explicitly noted as synchronous, the ``AsyncProfile`` methods should be
+used with ``await``.
+
 ********************
 ``AsyncProfile`` API
 ********************
@@ -26,4 +31,11 @@ Async pipeline
 *********************
 
 .. literalinclude:: ../../../examples/async_examples/3_pipeline.py
+   :language: python
+
+****************************
+List profiles asynchronously
+****************************
+
+.. literalinclude:: ../../../examples/async_examples/5_list_profiles.py
    :language: python

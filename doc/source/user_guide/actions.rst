@@ -4,4 +4,11 @@
 Supported AI Actions
 ********************
 
-TODO
+Following list of actions can be performed using ``select_ai``
+
+- ``select_ai.Action.RUNSQL``
+- ``select_ai.Action.SHOWSQL``
+- ``select_ai.Action.EXPLAINSQL``
+- ``select_ai.Action.NARRATE``
+- ``select_ai.Action.CHAT``
+- ``select_ai.Action.SHOWPROMPT``

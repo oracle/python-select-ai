@@ -1,8 +1,20 @@
 .. _profile:
 
-********************
-``Profile`` API
-********************
+An AI profile is a specification that includes the AI provider to use and other
+details regarding metadata and database objects required for generating
+responses to natural language prompts.
+
+An AI profile object can be created using ``select_ai.Profile()``
+
+*******************************
+Base ``Profile`` methods
+*******************************
+.. autoclass:: select_ai.BaseProfile
+   :members:
+
+*******************************
+Synchronous ``Profile`` methods
+*******************************
 
 .. autoclass:: select_ai.Profile
    :members:
