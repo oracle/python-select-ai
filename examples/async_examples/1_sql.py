@@ -32,6 +32,7 @@ async def main():
     sql_tasks = [
         async_profile.show_sql(prompt="How many customers?"),
         async_profile.run_sql(prompt="How many promotions"),
+        async_profile.explain_sql(prompt="How many promotions"),
     ]
     # Collect results from multiple asynchronous tasks
     for sql_task in asyncio.as_completed(sql_tasks):

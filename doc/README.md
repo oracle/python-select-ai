@@ -1,7 +1,7 @@
 Sphinx is used to generate documentation
 
 ```text
-python -m pip install sphinx
+python -m pip install -r requirements.txt
 ```
 
 For more information on Sphinx, please visit this page:

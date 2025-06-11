@@ -305,6 +305,17 @@ class AsyncProfile(BaseProfile):
             prompt, action=Action.NARRATE, params=params
         )
 
+    async def explain_sql(self, prompt: str, params: Mapping = None):
+        """Explain the generated SQL
+
+        :param str prompt: Natural language prompt
+        :param params: Parameters to include in the LLM request
+        :return: str
+        """
+        return await self.generate(
+            prompt, action=Action.EXPLAINSQL, params=params
+        )
+
     async def run_sql(
         self, prompt, params: Mapping = None
     ) -> pandas.DataFrame:
