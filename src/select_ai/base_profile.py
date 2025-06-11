@@ -11,26 +11,54 @@ from select_ai.provider import Provider
 
 @dataclass
 class ProfileAttributes(SelectAIDataClass):
-    """ """
+    """
+    Attributes of an AI profile help to manage and configure the behavior of
+    the AI profile
 
+    :param bool comments: Includes column comments in the metadata used for
+     translating natural language prompts using AI.
+    :param str conversation: Indicates if conversation history is enabled for
+     a profile. Valid values are true or false.
+    :param str credential_name: The name of the credential to access the AI
+     provider APIs.
+    :param int max_tokens: Denotes the number of tokens to predict per
+     generation. Default is 1024.
+    :param List[Mapping] object_list: Array of JSON objects specifying
+     the owner and object names that are eligible for natural language
+     translation to SQL.
+    :param str object_list_mode: Specifies whether to send metadata for the
+     most relevant tables or all tables to the LLM. Supported values are -
+     'automated' and 'all'
+    :param select_ai.Provider provider: AI Provider
+    :param str stop_tokens: The generated text will be terminated at the
+     beginning of the earliest stop sequence. Sequence will be incorporated
+     into the text. The attribute value must be a valid array of string values
+     in JSON format
+    :param float temperature: Temperature is a non-negative float number used
+     to tune the degree of randomness. Lower temperatures mean less random
+     generations.
+    :param str vector_index_name: Name of the vector index
+
+    """
+
+    annotations: Optional[str] = None
+    case_sensitive_values: Optional[bool] = None
     comments: Optional[bool] = None
+    constraints: Optional[str] = None
     conversation: Optional[str] = None
     credential_name: Optional[str] = None
-    max_tokens: Optional[int] = 1024
-    object_list: Optional[List[Mapping]] = None
-    stop_tokens: Optional[str] = None
-    temperature: Optional[float] = None
-    vector_index_name: Optional[str] = None
-    annotations: Optional[str] = None
-    constraints: Optional[str] = None
-    case_sensitive_values: Optional[bool] = None
-    object_list_mode: Optional[bool] = None
-    enforce_object_list: Optional[bool] = None
     enable_sources: Optional[bool] = None
     enable_source_offsets: Optional[bool] = None
-    seed: Optional[str] = None
-    streaming: Optional[str] = None
+    enforce_object_list: Optional[bool] = None
+    max_tokens: Optional[int] = 1024
+    object_list: Optional[List[Mapping]] = None
+    object_list_mode: Optional[str] = None
     provider: Optional[Provider] = None
+    seed: Optional[str] = None
+    stop_tokens: Optional[str] = None
+    streaming: Optional[str] = None
+    temperature: Optional[float] = None
+    vector_index_name: Optional[str] = None
 
     def json(self, exclude_null=True):
         attributes = {}
@@ -87,6 +115,21 @@ class BaseProfile(ABC):
     for Select AI's interactions with AI service providers (LLMs).
     Use either select_ai.Profile or select_ai.AsyncProfile to
     instantiate an AI profile object.
+
+    :param str profile_name : Name of the profile
+
+    :param select_ai.ProfileAttributes attributes:
+     Object specifying AI profile attributes
+
+    :param str description: Description of the profile
+
+    :param bool merge: Fetches the profile
+     from database, merges the attributes and saves it back
+     in the database. Default value is False
+
+    :param bool replace: Replaces the profile and attributes
+     in the database. Default value is False
+
     """
 
     def __init__(
@@ -97,22 +140,7 @@ class BaseProfile(ABC):
         merge: Optional[bool] = False,
         replace: Optional[bool] = False,
     ):
-        """Initialize a base profile
-
-        :param str profile_name (optional): Name of the profile
-
-        :param select_ai.provider.ProviderAttributes attributes (optional):
-        Object specifying AI profile attributes
-
-        :param str description (optional): Description of the profile
-
-        :param bool merge: Fetches the profile
-        from database, merges the attributes and saves it back
-        in the database. Default value is False
-
-        :param bool replace: Replaces the profile and attributes
-        in the database. Default value is False
-        """
+        """Initialize a base profile"""
         self.profile_name = profile_name
         self.attributes = attributes
         self.description = description
@@ -121,6 +149,6 @@ class BaseProfile(ABC):
 
     def __repr__(self):
         return (
-            f"Profile(profile_name={self.profile_name}, "
-            f"attributes={self.attributes})"
+            f"{self.__class__.__name__}(profile_name={self.profile_name}, "
+            f"attributes={self.attributes}, description={self.description})"
         )

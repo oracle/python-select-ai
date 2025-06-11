@@ -1,6 +1,15 @@
 import json
 from dataclasses import replace as dataclass_replace
-from typing import Iterator, List, Mapping, Optional, Tuple, Union
+from typing import (
+    Any,
+    AsyncGenerator,
+    Iterator,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import oracledb
 import pandas
@@ -14,6 +23,7 @@ from select_ai.provider import Provider
 from select_ai.sql import (
     GET_USER_AI_PROFILE_ATTRIBUTES,
     GET_USER_VECTOR_INDEX_ATTRIBUTES,
+    LIST_USER_AI_PROFILES,
     LIST_USER_VECTOR_INDEXES_BY_PROFILE,
 )
 from select_ai.synthetic_data import SyntheticDataAttributes
@@ -215,6 +225,36 @@ class AsyncProfile(BaseProfile):
             else:
                 raise ProfileNotFoundError(profile_name=profile_name)
 
+    @classmethod
+    async def list(
+        cls, profile_name_pattern: str
+    ) -> AsyncGenerator["AsyncProfile", None]:
+        """Asynchronously list AI Profiles saved in the database.
+
+        :param str profile_name_pattern: Regular expressions can be used
+         to specify a pattern. Function REGEXP_LIKE is used to perform the
+         match
+
+        :return: Iterator[Profile]
+        """
+        async with async_cursor() as cr:
+            await cr.execute(
+                LIST_USER_AI_PROFILES,
+                profile_name_pattern=profile_name_pattern,
+            )
+            rows = await cr.fetchall()
+            for row in rows:
+                profile_name = row[0]
+                description = row[1]
+                attributes = await cls.fetch_attributes(
+                    profile_name=profile_name
+                )
+                yield cls(
+                    profile_name=profile_name,
+                    description=description,
+                    attributes=attributes,
+                )
+
     async def generate(
         self, prompt, action=Action.SHOWSQL, params: Mapping = None
     ) -> Union[pandas.DataFrame, str, None]:
@@ -325,7 +365,7 @@ class AsyncProfile(BaseProfile):
         }
         if description:
             parameters["description"] = description
-        async with async_cursor as cr:
+        async with async_cursor() as cr:
             try:
                 await cr.callproc(
                     "DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
@@ -385,7 +425,7 @@ class AsyncProfile(BaseProfile):
         :raises: oracledb.DatabaseError
 
         """
-        async with cursor() as cr:
+        async with async_cursor() as cr:
             await cr.callproc(
                 "DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
                 keyword_parameters={"index_name": index_name},
@@ -403,7 +443,7 @@ class AsyncProfile(BaseProfile):
         :return: None
         :raises: oracledb.DatabaseError
         """
-        async with cursor() as cr:
+        async with async_cursor() as cr:
             await cr.callproc(
                 "DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
                 keyword_parameters={"index_name": index_name},
@@ -476,7 +516,7 @@ class AsyncProfile(BaseProfile):
 
     async def list_vector_indexes(
         self, index_name_pattern: str
-    ) -> Iterator[VectorIndex]:
+    ) -> AsyncGenerator[VectorIndex, None]:
         """List Vector Indexes.
 
         :param str index_name_pattern: Regular expressions can be used
@@ -491,7 +531,8 @@ class AsyncProfile(BaseProfile):
                 profile_name=self.profile_name,
                 index_name_pattern=index_name_pattern,
             )
-            async for row in cr.fetchall():
+            rows = await cr.fetchall()
+            for row in rows:
                 index_name = row[0]
                 description = await row[1].read()  # AsyncLOB
                 attributes = await AsyncProfile.fetch_vector_index_attributes(

@@ -5,7 +5,7 @@ from .admin import (
     enable_provider,
 )
 from .async_profile import AsyncProfile
-from .base_profile import ProfileAttributes
+from .base_profile import BaseProfile, ProfileAttributes
 from .conversation import Conversation, ConversationAttributes
 from .db import (
     async_connect,

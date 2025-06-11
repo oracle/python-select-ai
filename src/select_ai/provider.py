@@ -18,15 +18,24 @@ class Provider(SelectAIDataClass):
     """
     Base class for AI Provider
 
-    :param (str) provider: Name of the AI service provider
+    To create an object of Provider class, use any one of the concrete AI
+    provider implementations
+
+    :param str embedding_model: The embedding model. Depending on the AI
+     provider, the supported embedding models vary
+    :param str model: The name of the AI model being used to generate
+     responses
+    :param str provider: The name of the provider being used
+    :param str provider_endpoint: Endpoint URL of the AI provider being used
+    :param str region: The cloud region of the Gen AI cluster
 
     """
 
-    provider: Optional[str] = None
     embedding_model: Optional[str] = None
     model: Optional[str] = None
-    region: Optional[str] = None
+    provider: Optional[str] = None
     provider_endpoint: Optional[str] = None
+    region: Optional[str] = None
 
     @classmethod
     def create(cls, *, provider: Optional[str] = None, **kwargs):
@@ -58,6 +67,12 @@ class Provider(SelectAIDataClass):
 class AzureAIProvider(Provider):
     """
     Azure specific attributes
+
+    :param str azure_deployment_name: Name of the Azure OpenAI Service
+     deployed model.
+    :param str azure_embedding_deployment_name: Name of the Azure OpenAI
+     deployed embedding model.
+    :param str azure_resource_name: Name of the Azure OpenAI Service resource
     """
 
     provider: str = AZURE
@@ -84,6 +99,15 @@ class OpenAIProvider(Provider):
 class OCIGenAIProvider(Provider):
     """
     OCI Gen AI specific attributes
+
+    :param str oci_apiformat: Specifies the format in which the API expects
+     data to be sent and received. Supported values are 'COHERE' and 'GENERIC'
+    :param str oci_compartment_id: Specifies the OCID of the compartment you
+     are permitted to access when calling the OCI Generative AI service
+    :param str oci_endpoint_id: This attributes indicates the endpoint OCID
+     of the Oracle dedicated AI hosting cluster
+    :param str oci_runtimetype: This attribute indicates the runtime type of
+     the provided model. The supported values are 'COHERE' and 'LLAMA'
     """
 
     provider: str = OCI

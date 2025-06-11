@@ -22,6 +22,15 @@ Getting Started
     user_guide/installation.rst
     user_guide/connection.rst
 
+Select AI classes
+=================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/class_object_model.rst
+
 Actions
 =======
 
@@ -41,17 +50,17 @@ Provider
     user_guide/provider.rst
 
 
-Provider Attributes
-===================
+Profile Attributes
+==================
 
 .. toctree::
     :numbered:
     :maxdepth: 3
 
-    user_guide/provider_attributes.rst
+    user_guide/profile_attributes.rst
 
 Profile
-=======
+==================
 
 .. toctree::
     :numbered:
