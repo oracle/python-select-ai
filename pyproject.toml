@@ -12,7 +12,7 @@ keywords = [
 	"select ai",
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -27,7 +27,7 @@ classifiers = [
 ]
 dependencies = [
     "oracledb",
-    "pandas"
+    "pandas==2.2.3"
 ]
 
 [tool.setuptools.packages.find]
