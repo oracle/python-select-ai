@@ -12,8 +12,8 @@ from select_ai.provider import Provider
 @dataclass
 class ProfileAttributes(SelectAIDataClass):
     """
-    Attributes of an AI profile help to manage and configure the behavior of
-    the AI profile
+    Use this class to define attributes to manage and configure the behavior of
+    an AI profile
 
     :param bool comments: Includes column comments in the metadata used for
      translating natural language prompts using AI.
