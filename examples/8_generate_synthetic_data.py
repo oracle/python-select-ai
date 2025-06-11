@@ -10,7 +10,7 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 # This example show how to generate multi-table synthetic data
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
-    profile = select_ai.Profile(profile_name="oci_ai_profile", merge=True)
+    profile = select_ai.Profile(profile_name="oci_ai_profile")
     synthetic_data_params = select_ai.SyntheticDataParams(
         sample_rows=100, table_statistics=True, priority="HIGH"
     )
