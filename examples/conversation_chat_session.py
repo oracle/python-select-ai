@@ -17,9 +17,14 @@ def main():
         title="History of Science",
         description="LLM's understanding of history of science",
     )
-    conversation_id = profile.create_conversation(conversation_attributes)
-    session_params = {"conversation_id": conversation_id}
-    with select_ai.Session(profile=profile, params=session_params) as session:
+    conversation = select_ai.Conversation(attributes=conversation_attributes)
+    with profile.chat_session(
+        conversation=conversation, delete=True
+    ) as session:
+        print(
+            "Conversation ID for this session is:",
+            conversation.conversation_id,
+        )
         response = session.chat(
             prompt="What is importance of history of science ?"
         )

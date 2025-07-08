@@ -6,6 +6,9 @@ user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
+# This example shows to get results of SQL
+# specified using natural language prompt
+
 
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
@@ -20,6 +23,7 @@ def main():
     ]
     for prompt in prompts:
         print("Prompt is: ", prompt)
+        # profile.run_sql returns a pandas dataframe
         df = profile.run_sql(prompt=prompt)
         print(df.columns)
         print(df)

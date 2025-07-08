@@ -8,5 +8,6 @@ dist
 src/select_ai.egg-info
 doc/.DS_Store
 doc/build
+doc/drawio
 **/__pycache__
 test.env

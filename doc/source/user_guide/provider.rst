@@ -16,51 +16,51 @@ for the supported providers
    :members:
 
 *********************************
-``AnthropicAIProviderAttributes``
+``AnthropicAIProvider``
 *********************************
 .. autoclass:: select_ai.AnthropicAIProvider
    :members:
 
 *****************************
-``AzureAIProviderAttributes``
+``AzureAIProvider``
 *****************************
 .. autoclass:: select_ai.AzureAIProvider
    :members:
 
 *****************************
-``AWSAIProviderAttributes``
+``AWSAIProvider``
 *****************************
 .. autoclass:: select_ai.AWSAIProvider
    :members:
 
 ******************************
-``CohereAIProviderAttributes``
+``CohereAIProvider``
 ******************************
 .. autoclass:: select_ai.CohereAIProvider
    :members:
 
 *****************************
-``OpenAIProviderAttributes``
+``OpenAIProvider``
 *****************************
 .. autoclass:: select_ai.OpenAIProvider
    :members:
 
 
 ******************************
-``OCIGenAIProviderAttributes``
+``OCIGenAIProvider``
 ******************************
 .. autoclass:: select_ai.OCIGenAIProvider
    :members:
 
 
 ******************************
-``GoogleAIProviderAttributes``
+``GoogleAIProvider``
 ******************************
 .. autoclass:: select_ai.GoogleAIProvider
    :members:
 
 ***********************************
-``HuggingFaceAIProviderAttributes``
+``HuggingFaceAIProvider``
 ***********************************
 .. autoclass:: select_ai.HuggingFaceAIProvider
    :members:

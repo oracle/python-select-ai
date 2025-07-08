@@ -25,7 +25,7 @@ class Provider(SelectAIDataClass):
      provider, the supported embedding models vary
     :param str model: The name of the AI model being used to generate
      responses
-    :param str provider: The name of the provider being used
+    :param str provider_name: The name of the provider being used
     :param str provider_endpoint: Endpoint URL of the AI provider being used
     :param str region: The cloud region of the Gen AI cluster
 
@@ -33,21 +33,28 @@ class Provider(SelectAIDataClass):
 
     embedding_model: Optional[str] = None
     model: Optional[str] = None
-    provider: Optional[str] = None
+    provider_name: Optional[str] = None
     provider_endpoint: Optional[str] = None
     region: Optional[str] = None
 
     @classmethod
-    def create(cls, *, provider: Optional[str] = None, **kwargs):
+    def create(cls, *, provider_name: Optional[str] = None, **kwargs):
         for subclass in cls.__subclasses__():
-            if subclass.provider == provider:
+            if subclass.provider_name == provider_name:
                 return subclass(**kwargs)
         return cls(**kwargs)
+
+    @classmethod
+    def key_alias(cls, k):
+        return {"provider": "provider_name", "provider_name": "provider"}.get(
+            k, k
+        )
 
     @classmethod
     def keys(cls):
         return {
             "provider",
+            "provider_name",
             "embedding_model",
             "model",
             "region",
@@ -75,7 +82,7 @@ class AzureAIProvider(Provider):
     :param str azure_resource_name: Name of the Azure OpenAI Service resource
     """
 
-    provider: str = AZURE
+    provider_name: str = AZURE
     azure_deployment_name: Optional[str] = None
     azure_embedding_deployment_name: Optional[str] = None
     azure_resource_name: Optional[str] = None
@@ -91,7 +98,7 @@ class OpenAIProvider(Provider):
     OpenAI specific attributes
     """
 
-    provider: str = OPENAI
+    provider_name: str = OPENAI
     provider_endpoint: Optional[str] = "api.openai.com"
 
 
@@ -110,7 +117,7 @@ class OCIGenAIProvider(Provider):
      the provided model. The supported values are 'COHERE' and 'LLAMA'
     """
 
-    provider: str = OCI
+    provider_name: str = OCI
     oci_apiformat: Optional[str] = None
     oci_compartment_id: Optional[str] = None
     oci_endpoint_id: Optional[str] = None
@@ -123,7 +130,7 @@ class CohereAIProvider(Provider):
     Cohere AI specific attributes
     """
 
-    provider: str = COHERE
+    provider_name: str = COHERE
     provider_endpoint = "api.cohere.ai"
 
 
@@ -133,7 +140,7 @@ class GoogleAIProvider(Provider):
     Google AI specific attributes
     """
 
-    provider: str = GOOGLE
+    provider_name: str = GOOGLE
     provider_endpoint = "generativelanguage.googleapis.com"
 
 
@@ -143,7 +150,7 @@ class HuggingFaceAIProvider(Provider):
     HuggingFace specific attributes
     """
 
-    provider: str = HUGGINGFACE
+    provider_name: str = HUGGINGFACE
     provider_endpoint = "api-inference.huggingface.co"
 
 
@@ -153,7 +160,7 @@ class AWSAIProvider(Provider):
     AWS specific attributes
     """
 
-    provider: str = AWS
+    provider_name: str = AWS
     provider_endpoint = "api-inference.huggingface.co"
     aws_apiformat: Optional[str] = None
 
@@ -164,5 +171,5 @@ class AnthropicAIProvider(Provider):
     Anthropic specific attributes
     """
 
-    provider: str = ANTHROPIC
+    provider_name: str = ANTHROPIC
     provider_endpoint = "api.anthropic.com"

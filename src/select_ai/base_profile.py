@@ -6,7 +6,8 @@ from typing import List, Mapping, Optional
 import oracledb
 
 from select_ai._abc import SelectAIDataClass
-from select_ai.provider import Provider
+
+from .provider import Provider
 
 
 @dataclass
@@ -67,7 +68,7 @@ class ProfileAttributes(SelectAIDataClass):
                 for provider_k, provider_v in v.dict(
                     exclude_null=exclude_null
                 ).items():
-                    attributes[provider_k] = provider_v
+                    attributes[Provider.key_alias(provider_k)] = provider_v
             else:
                 attributes[k] = v
         return json.dumps(attributes)
@@ -80,7 +81,7 @@ class ProfileAttributes(SelectAIDataClass):
             if isinstance(v, oracledb.LOB):
                 v = v.read()
             if k in Provider.keys():
-                provider_attributes[k] = v
+                provider_attributes[Provider.key_alias(k)] = v
             else:
                 profile_attributes[k] = v
         provider = Provider.create(**provider_attributes)
@@ -95,7 +96,7 @@ class ProfileAttributes(SelectAIDataClass):
             if isinstance(v, oracledb.AsyncLOB):
                 v = await v.read()
                 if k in Provider.keys():
-                    provider_attributes[k] = v
+                    provider_attributes[Provider.key_alias(k)] = v
                 else:
                     profile_attributes[k] = v
         provider = Provider.create(**provider_attributes)

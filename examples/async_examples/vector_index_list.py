@@ -10,15 +10,10 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile"
-    )
-    # matches the start of string
-    async for fetched_profile in async_profile.list(
-        profile_name_pattern="^oci"
-    ):
-        p = await fetched_profile
-        print(p)
+    vector_index = select_ai.AsyncVectorIndex()
+    async for index in vector_index.list(index_name_pattern="^test"):
+        print("Vector index", index.index_name)
+        print("Vector index profile", index.profile)
 
 
 if __name__ == "__main__":

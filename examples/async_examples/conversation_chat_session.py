@@ -17,12 +17,12 @@ async def main():
         title="History of Science",
         description="LLM's understanding of history of science",
     )
-    conversation_id = await async_profile.create_conversation(
-        conversation_attributes
+    async_conversation = select_ai.AsyncConversation(
+        attributes=conversation_attributes
     )
-    session_params = {"conversation_id": conversation_id}
-    async with select_ai.AsyncSession(
-        async_profile=async_profile, params=session_params
+
+    async with async_profile.chat_session(
+        conversation=async_conversation, delete=True
     ) as async_session:
         response = await async_session.chat(
             prompt="What is importance of history of science ?"

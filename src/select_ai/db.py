@@ -29,7 +29,12 @@ def connect(user: str, password: str, dsn: str, *args, **kwargs):
     object
     """
     conn = oracledb.connect(
-        user=user, password=password, dsn=dsn, *args, **kwargs
+        user=user,
+        password=password,
+        dsn=dsn,
+        connection_id_prefix="python-select-ai",
+        *args,
+        **kwargs,
     )
     _set_connection(conn=conn)
 

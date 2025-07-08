@@ -63,28 +63,36 @@ WHERE profile_name = :profile_name
 """
 
 
-GET_USER_VECTOR_INDEX_ATTRIBUTES = """
-SELECT attribute_name, attribute_value
-FROM USER_CLOUD_VECTOR_INDEX_ATTRIBUTES
-WHERE INDEX_NAME = :index_name
-"""
-
 LIST_USER_AI_PROFILES = """
 SELECT profile_name, description
 FROM USER_CLOUD_AI_PROFILES
 WHERE REGEXP_LIKE(profile_name, :profile_name_pattern, 'i')
 """
 
-LIST_USER_VECTOR_INDEXES_BY_PROFILE = """
+LIST_USER_VECTOR_INDEXES = """
 SELECT v.index_name, v.description
-FROM USER_CLOUD_VECTOR_INDEXES v,
-USER_CLOUD_VECTOR_INDEX_ATTRIBUTES a
-WHERE lower(a.attribute_name) = 'profile_name'
-AND DBMS_LOB.compare(a.attribute_value, TO_CLOB(:profile_name)) = 0
-AND REGEXP_LIKE(v.index_name, :index_name_pattern, 'i')
-AND v.index_name = a.index_name
+FROM USER_CLOUD_VECTOR_INDEXES v
+WHERE REGEXP_LIKE(v.index_name, :index_name_pattern, 'i')
 """
 
-LIST_CONVERSATIONS = """
+GET_USER_VECTOR_INDEX_ATTRIBUTES = """
+SELECT attribute_name, attribute_value
+FROM USER_CLOUD_VECTOR_INDEX_ATTRIBUTES
+WHERE INDEX_NAME = :index_name
+"""
 
+LIST_USER_CONVERSATIONS = """
+SELECT conversation_id,
+       conversation_title,
+       description,
+       retention_days
+from USER_CLOUD_AI_CONVERSATIONS
+"""
+
+GET_USER_CONVERSATION_ATTRIBUTES = """
+SELECT conversation_title,
+       description,
+       retention_days
+from USER_CLOUD_AI_CONVERSATIONS
+WHERE conversation_id = :conversation_id
 """

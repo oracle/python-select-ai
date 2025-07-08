@@ -1,4 +1,5 @@
 import os
+from pprint import pformat
 
 import select_ai
 
@@ -26,13 +27,13 @@ def main():
         description="MY OCI AI Profile",
         replace=True,
     )
-    prompts = [
-        "How many promotions are there in the sh database?",
-        "How many products are there in the sh database ?",
-    ]
-    for prompt in prompts:
-        print("Prompt is: ", prompt)
-        print(profile.explain_sql(prompt=prompt))
+    print("Created profile ", profile.profile_name)
+    profile_attributes = profile.get_attributes()
+    print("Profile attributes are: ", profile_attributes)
+    print(
+        "Profile attributes as Python dict: ",
+        pformat(profile_attributes.dict(exclude_null=False)),
+    )
 
 
 if __name__ == "__main__":

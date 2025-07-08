@@ -22,14 +22,32 @@ Getting Started
     user_guide/installation.rst
     user_guide/connection.rst
 
-Select AI classes
-=================
+AI Profile Object Model
+==============================
 
 .. toctree::
     :numbered:
     :maxdepth: 3
 
-    user_guide/class_object_model.rst
+    user_guide/profile_provider_class.rst
+
+VectorIndex Object Model
+==================================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/vector_index_class.rst
+
+Conversation Object Model
+===================================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/conversation_class.rst
 
 Actions
 =======

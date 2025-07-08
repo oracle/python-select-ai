@@ -4,6 +4,16 @@ class SelectAIError(Exception):
     pass
 
 
+class ConversationNotFoundError(SelectAIError):
+    """Conversation not found in the database"""
+
+    def __init__(self, conversation_id: str):
+        self.conversation_id = conversation_id
+
+    def __str__(self):
+        return f"Conversation with id {self.conversation_id} not found"
+
+
 class ProfileNotFoundError(SelectAIError):
     """Profile not found in the database"""
 

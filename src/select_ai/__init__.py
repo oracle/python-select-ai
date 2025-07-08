@@ -6,7 +6,11 @@ from .admin import (
 )
 from .async_profile import AsyncProfile
 from .base_profile import BaseProfile, ProfileAttributes
-from .conversation import Conversation, ConversationAttributes
+from .conversation import (
+    AsyncConversation,
+    Conversation,
+    ConversationAttributes,
+)
 from .db import (
     async_connect,
     async_cursor,
@@ -27,13 +31,16 @@ from .provider import (
     OpenAIProvider,
     Provider,
 )
-from .session import AsyncSession, Session
 from .synthetic_data import (
     SyntheticDataAttributes,
     SyntheticDataParams,
 )
 from .vector_index import (
-    VectorDBProvider,
+    AsyncVectorIndex,
+    ChromaVectorIndexAttributes,
+    OracleVectorIndexAttributes,
+    PineconeVectorIndexAttributes,
+    QdrantVectorIndexAttributes,
     VectorDistanceMetric,
     VectorIndex,
     VectorIndexAttributes,

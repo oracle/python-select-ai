@@ -13,6 +13,7 @@ async def main():
     async_profile = await select_ai.AsyncProfile(
         profile_name="async_oci_ai_profile"
     )
+
     # Asynchronously send multiple prompts
     chat_tasks = [
         async_profile.chat(prompt="What is OCI ?"),
