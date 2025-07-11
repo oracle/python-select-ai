@@ -1,3 +1,10 @@
+# -----------------------------------------------------------------------------
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# http://oss.oracle.com/licenses/upl.
+# -----------------------------------------------------------------------------
+
 GRANT_PRIVILEGES_TO_USER = """
 DECLARE
     TYPE array_t IS VARRAY(3) OF VARCHAR2(60);
