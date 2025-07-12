@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 77.0.0", "wheel"]
+requires = ["setuptools >= 77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,6 +11,8 @@ keywords = [
 	"oracle",
 	"select ai",
 ]
+license = " UPL-1.0"
+license-files = ["LICENSE.txt"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
