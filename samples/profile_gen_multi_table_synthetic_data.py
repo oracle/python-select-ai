@@ -14,7 +14,6 @@ password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 
-# This example show how to generate multi-table synthetic data
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
     profile = select_ai.Profile(profile_name="oci_ai_profile")

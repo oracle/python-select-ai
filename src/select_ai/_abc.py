@@ -9,9 +9,22 @@ import json
 import typing
 from abc import ABC
 from dataclasses import dataclass, fields
-from typing import List, Mapping
+from typing import Any, List, Mapping
 
 __all__ = ["SelectAIDataClass"]
+
+
+def _bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int):
+        return bool(value)
+    if value.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif value.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise ValueError(f"Invalid boolean value: {value}")
 
 
 @dataclass
@@ -49,7 +62,7 @@ class SelectAIDataClass(ABC):
                 elif field.type is typing.Optional[str]:
                     setattr(self, field.name, str(value))
                 elif field.type is typing.Optional[bool]:
-                    setattr(self, field.name, bool(value))
+                    setattr(self, field.name, _bool(value))
                 elif field.type is typing.Optional[float]:
                     setattr(self, field.name, float(value))
                 elif field.type is typing.Optional[Mapping] and isinstance(

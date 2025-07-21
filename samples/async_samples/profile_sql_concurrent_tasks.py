@@ -15,7 +15,6 @@ password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 
-# This example shows how to asynchronously generate SQLs nad run SQLs
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
     async_profile = await select_ai.AsyncProfile(

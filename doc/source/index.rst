@@ -22,32 +22,6 @@ Getting Started
     user_guide/installation.rst
     user_guide/connection.rst
 
-AI Profile Object Model
-==============================
-
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    user_guide/profile_provider_class.rst
-
-VectorIndex Object Model
-==================================
-
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    user_guide/vector_index_class.rst
-
-Conversation Object Model
-===================================
-
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    user_guide/conversation_class.rst
 
 Actions
 =======
@@ -66,6 +40,15 @@ Provider
     :maxdepth: 3
 
     user_guide/provider.rst
+
+Credential
+==========
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/credential.rst
 
 
 Profile Attributes
@@ -87,14 +70,15 @@ Profile
     user_guide/profile.rst
 
 
-Async Profile
-=============
+Conversation
+============
 
 .. toctree::
     :numbered:
     :maxdepth: 3
 
-    user_guide/async_profile.rst
+    user_guide/conversation.rst
+
 
 Vector Index
 ============
@@ -113,12 +97,3 @@ Synthetic Data
     :maxdepth: 3
 
     user_guide/synthetic_data.rst
-
-Conversation
-============
-
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    user_guide/conversation.rst

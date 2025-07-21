@@ -19,7 +19,9 @@ def main():
     # Configure an AI provider with an embedding model
     # of your choice
     provider = select_ai.OCIGenAIProvider(
-        region="us-chicago-1", oci_apiformat="GENERIC"
+        region="us-chicago-1",
+        oci_apiformat="GENERIC",
+        embedding_model="cohere.embed-english-v3.0",
     )
 
     # Create an AI profile to use the Vector index with

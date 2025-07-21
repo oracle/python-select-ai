@@ -18,6 +18,7 @@ To connect to an Oracle Database synchronously, use
 .. code-block:: python
 
    import select_ai
+
    user = "<your_db_user>"
    password = "<your_db_password>"
    dsn = "<your_db_dsn>"
@@ -34,6 +35,7 @@ with ``await`` keyword:
 .. code-block:: python
 
    import select_ai
+
    user = "<your_db_user>"
    password = "<your_db_password>"
    dsn = "<your_db_dsn>"

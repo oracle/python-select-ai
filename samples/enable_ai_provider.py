@@ -5,26 +5,23 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-import asyncio
 import os
 
 import select_ai
 
-user = os.getenv("SELECT_AI_USER")
+admin_user = os.getenv("SELECT_AI_ADMIN_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+db_users = ["SPARK_DB_USER"]
 
 
-async def main():
-    await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile()
-    # matches the start of string
-    async for fetched_profile in async_profile.list(
-        profile_name_pattern="^oci"
-    ):
-        p = await fetched_profile
-        print(p)
+def main():
+    select_ai.connect(user=admin_user, password=password, dsn=dsn)
+    select_ai.enable_provider(
+        users=db_users, provider_endpoint="*.openai.azure.com"
+    )
+    print("Enabled AI provider for users: ", db_users)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

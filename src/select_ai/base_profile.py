@@ -23,13 +23,17 @@ class ProfileAttributes(SelectAIDataClass):
     Use this class to define attributes to manage and configure the behavior of
     an AI profile
 
-    :param bool comments: Includes column comments in the metadata used for
-     translating natural language prompts using AI.
-    :param str conversation: Indicates if conversation history is enabled for
-     a profile. Valid values are true or false.
+    :param bool comments: True to include column comments in the metadata used
+     for generating SQL queries from natural language prompts.
+    :param bool constraints: True to include referential integrity constraints
+     such as primary and foreign keys in the metadata sent to the LLM.
+    :param bool conversation: Indicates if conversation history is enabled for
+     a profile.
     :param str credential_name: The name of the credential to access the AI
      provider APIs.
-    :param int max_tokens: Denotes the number of tokens to predict per
+    :param bool enforce_object_list: Specifies whether to restrict the LLM
+     to generate SQL that uses only tables covered by the object list.
+    :param int max_tokens: Denotes the number of tokens to return per
      generation. Default is 1024.
     :param List[Mapping] object_list: Array of JSON objects specifying
      the owner and object names that are eligible for natural language
@@ -53,7 +57,7 @@ class ProfileAttributes(SelectAIDataClass):
     case_sensitive_values: Optional[bool] = None
     comments: Optional[bool] = None
     constraints: Optional[str] = None
-    conversation: Optional[str] = None
+    conversation: Optional[bool] = None
     credential_name: Optional[str] = None
     enable_sources: Optional[bool] = None
     enable_source_offsets: Optional[bool] = None
