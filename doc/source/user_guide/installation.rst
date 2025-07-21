@@ -49,6 +49,7 @@ To use ``select_ai`` you need:
 
      import select_ai
      import getpass
+
      username = ""
      dsn = ""
      password = getpass.getpass(f"Enter password for {username}@{dsn}")

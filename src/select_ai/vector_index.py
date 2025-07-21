@@ -26,10 +26,7 @@ from select_ai.sql import (
 
 
 class VectorDBProvider(StrEnum):
-    CHROMA = "chroma"
     ORACLE = "oracle"
-    PINECONE = "pinecone"
-    QDRANT = "qdrant"
 
 
 class VectorDistanceMetric(StrEnum):
@@ -110,27 +107,6 @@ class OracleVectorIndexAttributes(VectorIndexAttributes):
     """Oracle specific vector index attributes"""
 
     vector_db_provider: Optional[VectorDBProvider] = VectorDBProvider.ORACLE
-
-
-@dataclass
-class ChromaVectorIndexAttributes(VectorIndexAttributes):
-    """Chroma specific vector index attributes"""
-
-    vector_db_provider: Optional[VectorDBProvider] = VectorDBProvider.CHROMA
-
-
-@dataclass
-class PineconeVectorIndexAttributes(VectorIndexAttributes):
-    """PineCone specific vector index attributes"""
-
-    vector_db_provider: Optional[VectorDBProvider] = VectorDBProvider.PINECONE
-
-
-@dataclass
-class QdrantVectorIndexAttributes(VectorIndexAttributes):
-    """Qdrant specific vector index attributes"""
-
-    vector_db_provider: Optional[VectorDBProvider] = VectorDBProvider.QDRANT
 
 
 class _BaseVectorIndex(ABC):

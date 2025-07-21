@@ -1,18 +1,13 @@
 .. _conversation:
 
-********************
-``Conversation``
-********************
+Conversations in Select AI represent an interactive exchange between the user and the system, enabling users to query or interact with the database through a series of natural language prompts.
 
-.. autoclass:: select_ai.Conversation
-   :members:
-
-*********************
-``AsyncConversation``
-*********************
-
-.. autoclass:: select_ai.AsyncConversation
-   :members:
+*****************************
+``Conversation Object model``
+*****************************
+.. _conversationfig:
+.. figure:: /image/conversation.png
+   :alt: Select AI Conversation
 
 **************************
 ``ConversationAttributes``
@@ -21,14 +16,18 @@
 .. autoclass:: select_ai.ConversationAttributes
    :members:
 
-************
-Conversation
-************
+
+********************
+``Conversation`` API
+********************
+
+.. autoclass:: select_ai.Conversation
+   :members:
 
 Create conversion
 ++++++++++++++++++
 
-.. literalinclude:: ../../../examples/conversation_create.py
+.. literalinclude:: ../../../samples/conversation_create.py
    :language: python
 
 output::
@@ -38,7 +37,7 @@ output::
 Chat session
 +++++++++++++
 
-.. literalinclude:: ../../../examples/conversation_chat_session.py
+.. literalinclude:: ../../../samples/conversation_chat_session.py
    :language: python
 
 output::
@@ -59,7 +58,7 @@ output::
 List conversations
 ++++++++++++++++++
 
-.. literalinclude:: ../../../examples/conversations_list.py
+.. literalinclude:: ../../../samples/conversations_list.py
    :language: python
 
 output::
@@ -74,7 +73,7 @@ output::
 Delete conversation
 +++++++++++++++++++
 
-.. literalinclude:: ../../../examples/conversation_delete.py
+.. literalinclude:: ../../../samples/conversation_delete.py
    :language: python
 
 output::
@@ -82,15 +81,19 @@ output::
     Deleted conversation with conversation id:  37DDC22E-11C8-3D49-E063-D81A000A85FE
 
 
-*********************
-Async conversation
-*********************
+
+*************************
+``AsyncConversation`` API
+*************************
+
+.. autoclass:: select_ai.AsyncConversation
+   :members:
 
 
-Chat Session
-+++++++++++++
+Async chat session
+++++++++++++++++++
 
-.. literalinclude:: ../../../examples/async_examples/conversation_chat_session.py
+.. literalinclude:: ../../../samples/async_samples/conversation_chat_session.py
    :language: python
 
 output::
@@ -108,10 +111,10 @@ output::
     ...
     ...
 
-List conversations
-++++++++++++++++++
+Async list conversations
+++++++++++++++++++++++++
 
-.. literalinclude:: ../../../examples/async_examples/conversations_list.py
+.. literalinclude:: ../../../samples/async_samples/conversations_list.py
    :language: python
 
 output::

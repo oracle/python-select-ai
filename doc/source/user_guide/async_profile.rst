@@ -16,7 +16,7 @@ used with ``await``.
 Async Profile creation
 ***********************
 
-.. literalinclude:: ../../../examples/async_examples/profile_create.py
+.. literalinclude:: ../../../samples/async_samples/profile_create.py
    :language: python
 
 output::
@@ -54,7 +54,7 @@ output::
 Async explain SQL
 ***********************
 
-.. literalinclude:: ../../../examples/async_examples/profile_explain_sql.py
+.. literalinclude:: ../../../samples/async_samples/profile_explain_sql.py
    :language: python
 
 output::
@@ -82,7 +82,7 @@ output::
 Async run SQL
 ***********************
 
-.. literalinclude:: ../../../examples/async_examples/profile_run_sql.py
+.. literalinclude:: ../../../samples/async_samples/profile_run_sql.py
    :language: python
 
 output::
@@ -94,7 +94,7 @@ output::
 Async show SQL
 ***********************
 
-.. literalinclude:: ../../../examples/async_examples/profile_show_sql.py
+.. literalinclude:: ../../../samples/async_samples/profile_show_sql.py
    :language: python
 
 output::
@@ -106,7 +106,7 @@ output::
 Async concurrent SQL
 ***********************
 
-.. literalinclude:: ../../../examples/async_examples/profile_sql_concurrent_tasks.py
+.. literalinclude:: ../../../samples/async_samples/profile_sql_concurrent_tasks.py
    :language: python
 
 output::
@@ -139,7 +139,7 @@ output::
 Async chat
 **********
 
-.. literalinclude:: ../../../examples/async_examples/profile_chat.py
+.. literalinclude:: ../../../samples/async_samples/profile_chat.py
    :language: python
 
 output::
@@ -162,7 +162,7 @@ output::
 Async pipeline
 *********************
 
-.. literalinclude:: ../../../examples/async_examples/profile_pipeline.py
+.. literalinclude:: ../../../samples/async_samples/profile_pipeline.py
    :language: python
 
 output::
@@ -192,11 +192,9 @@ output::
 List profiles asynchronously
 ****************************
 
-.. literalinclude:: ../../../examples/async_examples/profiles_list.py
+.. literalinclude:: ../../../samples/async_samples/profiles_list.py
    :language: python
 
 output::
 
-    AsyncProfile(profile_name=OCI_VECTOR_AI_PROFILE, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=<oracledb.AsyncLOB object at 0x1056de150>)
-    AsyncProfile(profile_name=OCI_GEN_AI_PROFILE, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='COHERE', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name=None), description=<oracledb.AsyncLOB object at 0x104b1f170>)
-    AsyncProfile(profile_name=OCI_AI_PROFILE, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=[{'owner': 'SH'}], object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name=None), description=<oracledb.AsyncLOB object at 0x102625940>)
+    OCI_AI_PROFILE

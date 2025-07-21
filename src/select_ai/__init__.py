@@ -28,12 +28,12 @@ from .db import (
 )
 from .profile import Profile
 from .provider import (
-    AnthropicAIProvider,
-    AWSAIProvider,
-    AzureAIProvider,
-    CohereAIProvider,
-    GoogleAIProvider,
-    HuggingFaceAIProvider,
+    AnthropicProvider,
+    AWSProvider,
+    AzureProvider,
+    CohereProvider,
+    GoogleProvider,
+    HuggingFaceProvider,
     OCIGenAIProvider,
     OpenAIProvider,
     Provider,
@@ -44,10 +44,7 @@ from .synthetic_data import (
 )
 from .vector_index import (
     AsyncVectorIndex,
-    ChromaVectorIndexAttributes,
     OracleVectorIndexAttributes,
-    PineconeVectorIndexAttributes,
-    QdrantVectorIndexAttributes,
     VectorDistanceMetric,
     VectorIndex,
     VectorIndexAttributes,

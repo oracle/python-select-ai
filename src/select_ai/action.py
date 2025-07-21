@@ -19,6 +19,3 @@ class Action(StrEnum):
     NARRATE = "narrate"
     CHAT = "chat"
     SHOWPROMPT = "showprompt"
-    EMBEDDING = "embedding"
-    SUMMARIZE = "summarize"
-    FEEDBACK = "feedback"

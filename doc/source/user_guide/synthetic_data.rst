@@ -23,7 +23,7 @@ Generate synthetic data
 
 The below example shows single table synthetic data generation
 
-.. literalinclude:: ../../../examples/profile_gen_single_table_synthetic_data.py
+.. literalinclude:: ../../../samples/profile_gen_single_table_synthetic_data.py
    :language: python
 
 output::
@@ -37,7 +37,7 @@ output::
 
 The below example shows multitable synthetic data generation
 
-.. literalinclude:: ../../../examples/profile_gen_multi_table_synthetic_data.py
+.. literalinclude:: ../../../samples/profile_gen_multi_table_synthetic_data.py
    :language: python
 
 

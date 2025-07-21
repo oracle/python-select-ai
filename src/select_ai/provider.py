@@ -28,9 +28,10 @@ class Provider(SelectAIDataClass):
     To create an object of Provider class, use any one of the concrete AI
     provider implementations
 
-    :param str embedding_model: The embedding model. Depending on the AI
-     provider, the supported embedding models vary
-    :param str model: The name of the AI model being used to generate
+    :param str embedding_model: The embedding model, also known as a
+     transformer. Depending on the AI provider, the supported embedding models
+     vary
+    :param str model: The name of the LLM being used to generate
      responses
     :param str provider_name: The name of the provider being used
     :param str provider_endpoint: Endpoint URL of the AI provider being used
@@ -78,7 +79,7 @@ class Provider(SelectAIDataClass):
 
 
 @dataclass
-class AzureAIProvider(Provider):
+class AzureProvider(Provider):
     """
     Azure specific attributes
 
@@ -132,7 +133,7 @@ class OCIGenAIProvider(Provider):
 
 
 @dataclass
-class CohereAIProvider(Provider):
+class CohereProvider(Provider):
     """
     Cohere AI specific attributes
     """
@@ -142,7 +143,7 @@ class CohereAIProvider(Provider):
 
 
 @dataclass
-class GoogleAIProvider(Provider):
+class GoogleProvider(Provider):
     """
     Google AI specific attributes
     """
@@ -152,7 +153,7 @@ class GoogleAIProvider(Provider):
 
 
 @dataclass
-class HuggingFaceAIProvider(Provider):
+class HuggingFaceProvider(Provider):
     """
     HuggingFace specific attributes
     """
@@ -162,18 +163,21 @@ class HuggingFaceAIProvider(Provider):
 
 
 @dataclass
-class AWSAIProvider(Provider):
+class AWSProvider(Provider):
     """
     AWS specific attributes
     """
 
     provider_name: str = AWS
-    provider_endpoint = "api-inference.huggingface.co"
     aws_apiformat: Optional[str] = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.provider_endpoint = f"bedrock-runtime.{self.region}.amazonaws.com"
 
 
 @dataclass
-class AnthropicAIProvider(Provider):
+class AnthropicProvider(Provider):
     """
     Anthropic specific attributes
     """

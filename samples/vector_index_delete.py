@@ -16,11 +16,9 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 def main():
     select_ai.connect(user=user, password=password, dsn=dsn)
-    profile = select_ai.Profile()
-
-    # matches the start of string
-    for fetched_profile in profile.list(profile_name_pattern="^oci"):
-        print(fetched_profile)
+    vector_index = select_ai.VectorIndex(index_name="test_vector_index")
+    vector_index.delete(force=True)
+    print("deleted vector index: test_vector_index")
 
 
 if __name__ == "__main__":

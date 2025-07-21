@@ -6,55 +6,32 @@ responses to natural language prompts.
 
 An AI profile object can be created using ``select_ai.Profile()``
 
+********************
+Profile Object Model
+********************
+
+.. _profilefig:
+.. figure:: /image/profile_provider.png
+   :alt: Select AI Profile and Providers
+
 *******************************
-Base ``Profile`` methods
+Base ``Profile`` API
 *******************************
 .. autoclass:: select_ai.BaseProfile
    :members:
 
 *******************************
-Synchronous ``Profile`` methods
+``Profile`` API
 *******************************
 
 .. autoclass:: select_ai.Profile
    :members:
 
 **************************
-Enable AI service provider
-**************************
-
-This method grants execute privilege on the packages
-``DBMS_CLOUD``, ``DBMS_CLOUD_AI`` and ``DBMS_CLOUD_PIPELINE``. It
-also enables the user to invoke the AI(LLM) endpoint hosted at a
-certain domain
-
-.. literalinclude:: ../../../examples/enable_ai_provider.py
-   :language: python
-
-output::
-
-    Enabled AI provider for users:  ['SPARK_DB_USER']
-
-**************************
-Create credential
-**************************
-
-This method creates a credential to authenticate to the AI provider. In this
-example, we create a credential object to authenticate to OCI Gen AI service
-provider
-
-.. literalinclude:: ../../../examples/create_ai_credential.py
-   :language: python
-
-output::
-
-    Created credential:  my_oci_ai_profile_key
-
-**************************
 Create Profile
 **************************
 
-.. literalinclude:: ../../../examples/profile_create.py
+.. literalinclude:: ../../../samples/profile_create.py
    :language: python
 
 output::
@@ -93,7 +70,7 @@ output::
 Narrate
 **************************
 
-.. literalinclude:: ../../../examples/profile_narrate.py
+.. literalinclude:: ../../../samples/profile_narrate.py
    :language: python
 
 output::
@@ -109,7 +86,7 @@ output::
 Show SQL
 **************************
 
-.. literalinclude:: ../../../examples/profile_show_sql.py
+.. literalinclude:: ../../../samples/profile_show_sql.py
    :language: python
 
 output::
@@ -124,7 +101,7 @@ output::
 Run SQL
 **************************
 
-.. literalinclude:: ../../../examples/profile_run_sql.py
+.. literalinclude:: ../../../samples/profile_run_sql.py
    :language: python
 
 output::
@@ -143,7 +120,7 @@ output::
 Chat
 **************************
 
-.. literalinclude:: ../../../examples/profile_chat.py
+.. literalinclude:: ../../../samples/profile_chat.py
    :language: python
 
 output::
@@ -157,26 +134,20 @@ output::
 List profiles
 **************************
 
-.. literalinclude:: ../../../examples/profiles_list.py
+.. literalinclude:: ../../../samples/profiles_list.py
    :language: python
 
 
 output::
 
-    Profile(profile_name=OCI_VECTOR_AI_PROFILE, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=MY OCI AI Profile)
+    OCI_AI_PROFILE
 
-    Profile(profile_name=OCI_AI_PROFILE, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=[{'owner': 'SH'}], object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model='meta.llama-3.1-70b-instruct', provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name=None), description=MY OCI AI Profile)
+*************
+Async Profile
+*************
 
-    Profile(profile_name=OCI_GEN_AI_PROFILE, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='COHERE', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name=None), description=MY OCI AI Profile)
+.. toctree::
+    :numbered:
+    :maxdepth: 3
 
-
-***************************
-Disable AI service provider
-***************************
-
-.. literalinclude:: ../../../examples/disable_ai_provider.py
-   :language: python
-
-output::
-
-    Disabled AI provider for user:  ['SPARK_DB_USER']
+    async_profile.rst
