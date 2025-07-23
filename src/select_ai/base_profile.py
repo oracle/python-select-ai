@@ -136,7 +136,7 @@ class BaseProfile(ABC):
     :param str description: Description of the profile
 
     :param bool merge: Fetches the profile
-     from database, merges the attributes and saves it back
+     from database, merges the non-null attributes and saves it back
      in the database. Default value is False
 
     :param bool replace: Replaces the profile and attributes

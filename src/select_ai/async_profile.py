@@ -27,6 +27,7 @@ from select_ai.db import async_cursor, async_get_connection
 from select_ai.errors import ProfileNotFoundError
 from select_ai.provider import Provider
 from select_ai.sql import (
+    GET_USER_AI_PROFILE,
     GET_USER_AI_PROFILE_ATTRIBUTES,
     LIST_USER_AI_PROFILES,
 )
@@ -61,6 +62,10 @@ class AsyncProfile(BaseProfile):
                     profile_name=self.profile_name
                 )
                 profile_exists = True
+                if self.description is None:
+                    self.description = self._get_profile_description(
+                        profile_name=self.profile_name
+                    )
             except ProfileNotFoundError:
                 if self.attributes is None:
                     raise
@@ -79,6 +84,27 @@ class AsyncProfile(BaseProfile):
                     replace=self.replace, description=self.description
                 )
         return self
+
+    @staticmethod
+    async def _get_profile_description(profile_name) -> str:
+        """Get description of profile from USER_CLOUD_AI_PROFILES
+
+        :param str profile_name: Name of profile
+        :return: Description of profile
+        :rtype: str
+        :raises: ProfileNotFoundError
+
+        """
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_USER_AI_PROFILE,
+                profile_name=profile_name.upper(),
+            )
+            profile = await cr.fetchone()
+            if profile:
+                return await profile[1].read()
+            else:
+                raise ProfileNotFoundError(profile_name)
 
     @staticmethod
     async def _get_attributes(profile_name) -> ProfileAttributes:

@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# async/profile_create.py
+#
+# Create an OCI Gen AI profile
+# ------------------------------------------------------------------------------
+
 import asyncio
 import os
 from pprint import pformat
@@ -43,5 +49,4 @@ async def main():
     )
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

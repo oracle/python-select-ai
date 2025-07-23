@@ -16,7 +16,7 @@ used with ``await``.
 Async Profile creation
 ***********************
 
-.. literalinclude:: ../../../samples/async_samples/profile_create.py
+.. literalinclude:: ../../../samples/async/profile_create.py
    :language: python
 
 output::
@@ -54,7 +54,7 @@ output::
 Async explain SQL
 ***********************
 
-.. literalinclude:: ../../../samples/async_samples/profile_explain_sql.py
+.. literalinclude:: ../../../samples/async/profile_explain_sql.py
    :language: python
 
 output::
@@ -82,7 +82,7 @@ output::
 Async run SQL
 ***********************
 
-.. literalinclude:: ../../../samples/async_samples/profile_run_sql.py
+.. literalinclude:: ../../../samples/async/profile_run_sql.py
    :language: python
 
 output::
@@ -94,7 +94,7 @@ output::
 Async show SQL
 ***********************
 
-.. literalinclude:: ../../../samples/async_samples/profile_show_sql.py
+.. literalinclude:: ../../../samples/async/profile_show_sql.py
    :language: python
 
 output::
@@ -106,7 +106,7 @@ output::
 Async concurrent SQL
 ***********************
 
-.. literalinclude:: ../../../samples/async_samples/profile_sql_concurrent_tasks.py
+.. literalinclude:: ../../../samples/async/profile_sql_concurrent_tasks.py
    :language: python
 
 output::
@@ -139,7 +139,7 @@ output::
 Async chat
 **********
 
-.. literalinclude:: ../../../samples/async_samples/profile_chat.py
+.. literalinclude:: ../../../samples/async/profile_chat.py
    :language: python
 
 output::
@@ -162,7 +162,7 @@ output::
 Async pipeline
 *********************
 
-.. literalinclude:: ../../../samples/async_samples/profile_pipeline.py
+.. literalinclude:: ../../../samples/async/profile_pipeline.py
    :language: python
 
 output::
@@ -192,7 +192,7 @@ output::
 List profiles asynchronously
 ****************************
 
-.. literalinclude:: ../../../samples/async_samples/profiles_list.py
+.. literalinclude:: ../../../samples/async/profiles_list.py
    :language: python
 
 output::

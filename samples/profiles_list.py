@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# profile_list.py
+#
+# List all the profile names matching a certain pattern
+# ------------------------------------------------------------------------------
+
 import os
 
 import select_ai
@@ -13,15 +19,9 @@ user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
+select_ai.connect(user=user, password=password, dsn=dsn)
+profile = select_ai.Profile()
 
-def main():
-    select_ai.connect(user=user, password=password, dsn=dsn)
-    profile = select_ai.Profile()
-
-    # matches the start of string
-    for fetched_profile in profile.list(profile_name_pattern="^oci"):
-        print(fetched_profile.profile_name)
-
-
-if __name__ == "__main__":
-    main()
+# matches the start of string
+for fetched_profile in profile.list(profile_name_pattern="^oci"):
+    print(fetched_profile.profile_name)

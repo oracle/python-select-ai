@@ -5,7 +5,7 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-from typing import List, Mapping
+from typing import List, Mapping, Union
 
 import oracledb
 
@@ -70,13 +70,17 @@ def create_credential(credential: Mapping, replace: bool = False):
                 raise
 
 
-def enable_provider(users: List[str], provider_endpoint: str = None):
+def enable_provider(
+    users: Union[str, List[str]], provider_endpoint: str = None
+):
     """
     Enables AI profile for the user. This method grants execute privilege
     on the packages DBMS_CLOUD, DBMS_CLOUD_AI and DBMS_CLOUD_PIPELINE. It
     also enables the user to invoke the AI(LLM) endpoint hosted at a
     certain domain
     """
+    if isinstance(users, str):
+        users = [users]
 
     with cursor() as cr:
         for user in users:
@@ -89,13 +93,17 @@ def enable_provider(users: List[str], provider_endpoint: str = None):
                 )
 
 
-def disable_provider(users: List[str], provider_endpoint: str = None):
+def disable_provider(
+    users: Union[str, List[str]], provider_endpoint: str = None
+):
     """
     Disables AI provider for the user. This method revokes execute privilege
     on the packages DBMS_CLOUD, DBMS_CLOUD_AI and DBMS_CLOUD_PIPELINE. It
     also disables the user to invoke the AI(LLM) endpoint hosted at a
     certain domain
     """
+    if isinstance(users, str):
+        users = [users]
 
     with cursor() as cr:
         for user in users:

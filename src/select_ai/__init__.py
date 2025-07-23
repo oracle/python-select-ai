@@ -21,9 +21,11 @@ from .conversation import (
 from .db import (
     async_connect,
     async_cursor,
+    async_disconnect,
     async_is_connected,
     connect,
     cursor,
+    disconnect,
     is_connected,
 )
 from .profile import Profile

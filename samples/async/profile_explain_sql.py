@@ -5,6 +5,10 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# async/profile_explain_sql.py
+# ------------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -15,16 +19,14 @@ password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 
+# This example shows how to asynchronously ask the LLM to explain SQL
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile()
-    # matches the start of string
-    async for fetched_profile in async_profile.list(
-        profile_name_pattern="^oci"
-    ):
-        p = await fetched_profile
-        print(p.profile_name)
+    async_profile = await select_ai.AsyncProfile(
+        profile_name="async_oci_ai_profile",
+    )
+    response = await async_profile.explain_sql("How many promotions")
+    print(response)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

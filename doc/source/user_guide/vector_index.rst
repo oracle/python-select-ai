@@ -118,7 +118,7 @@ A ``AsyncVectorIndex`` object can be created with ``select_ai.AsyncVectorIndex()
 Async create vector index
 +++++++++++++++++++++++++
 
-.. literalinclude:: ../../../samples/async_samples/vector_index_create.py
+.. literalinclude:: ../../../samples/async/vector_index_create.py
    :language: python
 
 output::
@@ -129,7 +129,7 @@ output::
 Async list vector index
 ++++++++++++++++++++++++
 
-.. literalinclude:: ../../../samples/async_samples/vector_index_list.py
+.. literalinclude:: ../../../samples/async/vector_index_list.py
    :language: python
 
 output::
@@ -141,7 +141,7 @@ output::
 Async RAG using vector index
 ++++++++++++++++++++++++++++
 
-.. literalinclude:: ../../../samples/async_samples/vector_index_rag.py
+.. literalinclude:: ../../../samples/async/vector_index_rag.py
    :language: python
 
 output::

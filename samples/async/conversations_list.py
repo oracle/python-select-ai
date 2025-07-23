@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# async/conversations_list.py
+#
+# List all conversations saved in the database
+# ------------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -15,15 +21,11 @@ password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 
-# This example shows how to asynchronously ask the LLM to explain SQL
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile",
-    )
-    response = await async_profile.explain_sql("How many promotions")
-    print(response)
+    async for conversation in select_ai.AsyncConversation().list():
+        print(conversation.conversation_id)
+        print(conversation.attributes)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

@@ -4,6 +4,11 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# async/conversation_chat_session.py
+#
+# Demonstrates context aware conversation using AI Profile
+# ------------------------------------------------------------------------------
 
 import asyncio
 import os
@@ -41,5 +46,4 @@ async def main():
         print(response)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

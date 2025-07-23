@@ -93,7 +93,7 @@ output::
 Async chat session
 ++++++++++++++++++
 
-.. literalinclude:: ../../../samples/async_samples/conversation_chat_session.py
+.. literalinclude:: ../../../samples/async/conversation_chat_session.py
    :language: python
 
 output::
@@ -114,7 +114,7 @@ output::
 Async list conversations
 ++++++++++++++++++++++++
 
-.. literalinclude:: ../../../samples/async_samples/conversations_list.py
+.. literalinclude:: ../../../samples/async/conversations_list.py
    :language: python
 
 output::

@@ -5,6 +5,13 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# enable_ai_provider.py
+#
+# Grants privileges to the database user and add ACL to invoke the AI Provider
+# endpoint
+# ------------------------------------------------------------------------------
+
 import os
 
 import select_ai

@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# async/profile_chat.py
+#
+# Chat using an AI Profile
+# ------------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -18,19 +24,18 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
     async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile",
+        profile_name="async_oci_ai_profile"
     )
-    sql_tasks = [
-        async_profile.show_sql(prompt="How many customers?"),
-        async_profile.run_sql(prompt="How many promotions"),
-        async_profile.explain_sql(prompt="How many promotions"),
-    ]
 
-    # Collect results from multiple asynchronous tasks
-    for sql_task in asyncio.as_completed(sql_tasks):
-        result = await sql_task
+    # Asynchronously send multiple chat prompts
+    chat_tasks = [
+        async_profile.chat(prompt="What is OCI ?"),
+        async_profile.chat(prompt="What is OML4PY?"),
+        async_profile.chat(prompt="What is Autonomous Database ?"),
+    ]
+    for chat_task in asyncio.as_completed(chat_tasks):
+        result = await chat_task
         print(result)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

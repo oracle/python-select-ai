@@ -12,6 +12,17 @@ class SelectAIError(Exception):
     pass
 
 
+class DatabaseNotConnectedError(SelectAIError):
+    """Raised when a database is not connected"""
+
+    def __str__(self):
+        return (
+            "Not connected to the Database. "
+            "Use select_ai.connect() or select_ai.async_connect() "
+            "to establish connection"
+        )
+
+
 class ConversationNotFoundError(SelectAIError):
     """Conversation not found in the database"""
 

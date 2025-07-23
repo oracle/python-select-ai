@@ -164,7 +164,7 @@ class VectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    def create(self, replace=False):
+    def create(self, replace: Optional[bool] = False):
         """Create a vector index in the database and populates the index
          with data from an object store bucket using an async scheduler job
 
@@ -203,7 +203,9 @@ class VectorIndex(_BaseVectorIndex):
         self.profile.set_attribute("vector_index_name", self.index_name)
 
     def delete(
-        self, include_data: Optional[int] = True, force: Optional[int] = False
+        self,
+        include_data: Optional[bool] = True,
+        force: Optional[bool] = False,
     ):
         """This procedure removes a vector store index
 
@@ -369,7 +371,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    async def create(self, replace: Optional[int] = False) -> None:
+    async def create(self, replace: Optional[bool] = False) -> None:
         """Create a vector index in the database and populates it with data
         from an object store bucket using an async scheduler job
 
@@ -406,7 +408,9 @@ class AsyncVectorIndex(_BaseVectorIndex):
         await self.profile.set_attribute("vector_index_name", self.index_name)
 
     async def delete(
-        self, include_data: Optional[int] = True, force: Optional[int] = False
+        self,
+        include_data: Optional[bool] = True,
+        force: Optional[bool] = False,
     ) -> None:
         """This procedure removes a vector store index.
 

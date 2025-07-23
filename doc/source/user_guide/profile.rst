@@ -137,7 +137,6 @@ List profiles
 .. literalinclude:: ../../../samples/profiles_list.py
    :language: python
 
-
 output::
 
     OCI_AI_PROFILE
@@ -146,8 +145,4 @@ output::
 Async Profile
 *************
 
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    async_profile.rst
+async_profile.rst
