@@ -22,6 +22,6 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 select_ai.connect(user=user, password=password, dsn=dsn)
 profile = select_ai.Profile()
 
-# matches the start of string
-for fetched_profile in profile.list(profile_name_pattern="^oci"):
+# matches all the profiles
+for fetched_profile in profile.list(profile_name_pattern=".*"):
     print(fetched_profile.profile_name)

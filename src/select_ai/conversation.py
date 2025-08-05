@@ -5,6 +5,8 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+import datetime
+import json
 from dataclasses import dataclass
 from typing import AsyncGenerator, Iterator, Optional
 
@@ -27,17 +29,28 @@ class ConversationAttributes(SelectAIDataClass):
 
     :param str title: Conversation Title
     :param str description: Description of the conversation topic
-    :param int retention_days: The number of days the conversation will be
-     stored in the database from its creation date. If value is 0, we will
-     not remove the conversation unless it is manually deleted by
-     drop_conversation
+    :param datetime.timedelta retention_days: The number of days the conversation
+     will be stored in the database from its creation date. If value is 0, the
+     conversation will not be removed unless it is manually deleted by
+     delete
+    :param int conversation_length: Number of prompts to store for this
+     conversation
 
     """
 
     title: Optional[str] = "New Conversation"
     description: Optional[str] = None
-    retention_days: Optional[int] = 7
-    # conversation_length: Optional[int] = 10
+    retention_days: Optional[datetime.timedelta] = datetime.timedelta(days=7)
+    conversation_length: Optional[int] = 10
+
+    def json(self, exclude_null=True):
+        attributes = {}
+        for k, v in self.dict(exclude_null=exclude_null).items():
+            if isinstance(v, datetime.timedelta):
+                attributes[k] = v.days
+            else:
+                attributes[k] = v
+        return json.dumps(attributes)
 
 
 class _BaseConversation:

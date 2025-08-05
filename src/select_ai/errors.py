@@ -43,6 +43,19 @@ class ProfileNotFoundError(SelectAIError):
         return f"Profile {self.profile_name} not found"
 
 
+class ProfileExistsError(SelectAIError):
+    """Profile already exists in the database"""
+
+    def __init__(self, profile_name: str):
+        self.profile_name = profile_name
+
+    def __str__(self):
+        return (
+            f"Profile {self.profile_name} already exists. "
+            f"Use either replace=True or merge=True"
+        )
+
+
 class VectorIndexNotFoundError(SelectAIError):
     """VectorIndex not found in the database"""
 

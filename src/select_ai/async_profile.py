@@ -24,7 +24,7 @@ from select_ai.action import Action
 from select_ai.base_profile import BaseProfile, ProfileAttributes
 from select_ai.conversation import AsyncConversation
 from select_ai.db import async_cursor, async_get_connection
-from select_ai.errors import ProfileNotFoundError
+from select_ai.errors import ProfileExistsError, ProfileNotFoundError
 from select_ai.provider import Provider
 from select_ai.sql import (
     GET_USER_AI_PROFILE,
@@ -62,8 +62,16 @@ class AsyncProfile(BaseProfile):
                     profile_name=self.profile_name
                 )
                 profile_exists = True
+                if not self.replace and not self.merge:
+                    if (
+                        self.attributes is not None
+                        or self.description is not None
+                    ):
+                        if self.raise_error_if_exists:
+                            raise ProfileExistsError(self.profile_name)
+
                 if self.description is None:
-                    self.description = self._get_profile_description(
+                    self.description = await self._get_profile_description(
                         profile_name=self.profile_name
                     )
             except ProfileNotFoundError:
@@ -290,6 +298,7 @@ class AsyncProfile(BaseProfile):
                     profile_name=profile_name,
                     description=description,
                     attributes=attributes,
+                    raise_error_if_exists=False,
                 )
 
     async def generate(

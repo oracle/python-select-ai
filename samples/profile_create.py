@@ -37,8 +37,7 @@ profile = select_ai.Profile(
 )
 print("Created profile ", profile.profile_name)
 profile_attributes = profile.get_attributes()
-print("Profile attributes are: ", profile_attributes)
 print(
-    "Profile attributes as Python dict: ",
+    "Profile attributes are: ",
     pformat(profile_attributes.dict(exclude_null=False)),
 )

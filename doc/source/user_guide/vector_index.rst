@@ -13,6 +13,8 @@ content from the vector store using semantic similarity search.
 .. figure:: /image/vector_index.png
    :alt: Select AI Vector Index
 
+.. latex:clearpage::
+
 *************************
 ``VectorIndexAttributes``
 *************************
@@ -32,6 +34,7 @@ A ``VectorIndexAttributes`` object can be created with
 .. autoclass:: select_ai.OracleVectorIndexAttributes
    :members:
 
+.. latex:clearpage::
 
 ********************
 ``VectorIndex`` API
@@ -46,6 +49,8 @@ A ``VectorIndex`` object can be created with ``select_ai.VectorIndex()``
 
 Check the examples below to understand how to create vector indexes
 
+.. latex:clearpage::
+
 Create vector index
 +++++++++++++++++++
 
@@ -57,8 +62,9 @@ objects (to create embedding for) reside in OCI's object store
 
 output::
 
-    created vector index: test_vector_index
+    Created vector index: test_vector_index
 
+.. latex:clearpage::
 
 List vector index
 +++++++++++++++++
@@ -71,6 +77,7 @@ output::
     Vector index TEST_VECTOR_INDEX
     Vector index profile Profile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=None)
 
+.. latex:clearpage::
 
 RAG using vector index
 ++++++++++++++++++++++
@@ -94,6 +101,7 @@ output::
       - fully-loaded-mlenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/fully-loaded-mlenv-manifest.json)
       - graphenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/graphenv-manifest.json)
 
+.. latex:clearpage::
 
 Delete vector index
 +++++++++++++++++++
@@ -103,8 +111,9 @@ Delete vector index
 
 output::
 
-    deleted vector index: test_vector_index
+    Deleted vector index: test_vector_index
 
+.. latex:clearpage::
 
 ************************
 ``AsyncVectorIndex`` API
@@ -114,6 +123,8 @@ A ``AsyncVectorIndex`` object can be created with ``select_ai.AsyncVectorIndex()
 
 .. autoclass:: select_ai.AsyncVectorIndex
    :members:
+
+.. latex:clearpage::
 
 Async create vector index
 +++++++++++++++++++++++++
@@ -126,6 +137,8 @@ output::
     created vector index: test_vector_index
 
 
+.. latex:clearpage::
+
 Async list vector index
 ++++++++++++++++++++++++
 
@@ -137,6 +150,8 @@ output::
     Vector index TEST_VECTOR_INDEX
     Vector index profile AsyncProfile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=None)
 
+
+.. latex:clearpage::
 
 Async RAG using vector index
 ++++++++++++++++++++++++++++

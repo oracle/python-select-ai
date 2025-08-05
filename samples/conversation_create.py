@@ -25,8 +25,6 @@ conversation_attributes = select_ai.ConversationAttributes(
     description="LLM's understanding of history of science",
 )
 conversation = select_ai.Conversation(attributes=conversation_attributes)
-conversation.create()
+conversation_id = conversation.create()
 
-print(
-    "Created conversation with conversation id: ", conversation.conversation_id
-)
+print("Created conversation with conversation id: ", conversation_id)

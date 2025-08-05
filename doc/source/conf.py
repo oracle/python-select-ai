@@ -8,6 +8,10 @@
 import os
 import sys
 
+import sphinx_prompt
+
+sys.modules["sphinx-prompt"] = sphinx_prompt
+
 sys.path.insert(0, os.path.join("..", "..", "src", "select_ai"))
 
 autodocs_default_options = {
@@ -23,7 +27,7 @@ author = "Oracle"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.autodoc", "sphinx_toolbox.latex"]
 
 # The suffix of source filenames.
 source_suffix = ".rst"

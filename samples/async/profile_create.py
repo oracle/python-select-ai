@@ -39,12 +39,10 @@ async def main():
         description="MY OCI AI Profile",
         replace=True,
     )
-
+    print("Created async profile ", async_profile.profile_name)
     profile_attributes = await async_profile.get_attributes()
-
-    print("Profile attributes are: ", profile_attributes)
     print(
-        "Profile attributes as Python dict: ",
+        "Profile attributes: ",
         pformat(profile_attributes.dict(exclude_null=False)),
     )
 

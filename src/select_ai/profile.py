@@ -17,7 +17,7 @@ from select_ai import Conversation
 from select_ai.action import Action
 from select_ai.base_profile import BaseProfile, ProfileAttributes
 from select_ai.db import cursor
-from select_ai.errors import ProfileNotFoundError
+from select_ai.errors import ProfileExistsError, ProfileNotFoundError
 from select_ai.provider import Provider
 from select_ai.sql import (
     GET_USER_AI_PROFILE,
@@ -51,6 +51,14 @@ class Profile(BaseProfile):
                     profile_name=self.profile_name
                 )
                 profile_exists = True
+                if not self.replace and not self.merge:
+                    if (
+                        self.attributes is not None
+                        or self.description is not None
+                    ):
+                        if self.raise_error_if_exists:
+                            raise ProfileExistsError(self.profile_name)
+
                 if self.description is None:
                     self.description = self._get_profile_description(
                         profile_name=self.profile_name
@@ -258,6 +266,7 @@ class Profile(BaseProfile):
                     profile_name=profile_name,
                     description=description,
                     attributes=attributes,
+                    raise_error_if_exists=False,
                 )
 
     def generate(

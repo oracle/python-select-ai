@@ -72,6 +72,13 @@ class ProfileAttributes(SelectAIDataClass):
     temperature: Optional[float] = None
     vector_index_name: Optional[str] = None
 
+    def __post_init__(self):
+        if not isinstance(self.provider, Provider):
+            raise ValueError(
+                f"The arg `provider` must be an object of "
+                f"type select_ai.Provider"
+            )
+
     def json(self, exclude_null=True):
         attributes = {}
         for k, v in self.dict(exclude_null=exclude_null).items():
@@ -142,6 +149,10 @@ class BaseProfile(ABC):
     :param bool replace: Replaces the profile and attributes
      in the database. Default value is False
 
+    :param bool  raise_error_if_exists: Raise ProfileExistsError
+     if profile exists in the database and replace = False and
+     merge = False. Default value is True
+
     """
 
     def __init__(
@@ -151,6 +162,7 @@ class BaseProfile(ABC):
         description: Optional[str] = None,
         merge: Optional[bool] = False,
         replace: Optional[bool] = False,
+        raise_error_if_exists: Optional[bool] = True,
     ):
         """Initialize a base profile"""
         self.profile_name = profile_name
@@ -158,6 +170,7 @@ class BaseProfile(ABC):
         self.description = description
         self.merge = merge
         self.replace = replace
+        self.raise_error_if_exists = raise_error_if_exists
 
     def __repr__(self):
         return (
