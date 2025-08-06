@@ -23,5 +23,5 @@ select_ai.connect(user=user, password=password, dsn=dsn)
 profile = select_ai.Profile()
 
 # matches all the profiles
-for fetched_profile in profile.list(profile_name_pattern=".*"):
+for fetched_profile in profile.list():
     print(fetched_profile.profile_name)

@@ -272,13 +272,13 @@ class AsyncProfile(BaseProfile):
 
     @classmethod
     async def list(
-        cls, profile_name_pattern: str
+        cls, profile_name_pattern: str = ".*"
     ) -> AsyncGenerator["AsyncProfile", None]:
         """Asynchronously list AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
-         match
+         match. Default value is ".*" i.e. match all AI profiles.
 
         :return: Iterator[Profile]
         """

@@ -244,12 +244,12 @@ class Profile(BaseProfile):
                 raise ProfileNotFoundError(profile_name=profile_name)
 
     @classmethod
-    def list(cls, profile_name_pattern: str) -> Iterator["Profile"]:
+    def list(cls, profile_name_pattern: str = ".*") -> Iterator["Profile"]:
         """List AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
-         match
+         match. Default value is ".*" i.e. match all AI profiles.
 
         :return: Iterator[Profile]
         """

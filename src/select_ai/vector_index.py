@@ -309,12 +309,12 @@ class VectorIndex(_BaseVectorIndex):
         return self._get_attributes(self.index_name)
 
     @classmethod
-    def list(cls, index_name_pattern: str) -> Iterator["VectorIndex"]:
+    def list(cls, index_name_pattern: str = ".*") -> Iterator["VectorIndex"]:
         """List Vector Indexes
 
         :param str index_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
-         match
+         match. Default value is ".*" i.e. match all vector indexes.
 
         :return: Iterator[VectorIndex]
         """
@@ -515,13 +515,14 @@ class AsyncVectorIndex(_BaseVectorIndex):
 
     @classmethod
     async def list(
-        cls, index_name_pattern: str
+        cls, index_name_pattern: str = ".*"
     ) -> AsyncGenerator[VectorIndex, None]:
         """List Vector Indexes.
 
         :param str index_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
-         match
+         match. Default value is ".*" i.e. match all vector indexes.
+
         :return: AsyncGenerator[VectorIndex]
 
         """
