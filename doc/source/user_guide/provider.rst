@@ -90,9 +90,9 @@ Enable AI service provider
 .. note::
 
    All sample scripts in this documentation read Oracle database connection
-   details from environment. Create a dotenv file ``.env``, export the
+   details from the environment. Create a dotenv file ``.env``, export the
    the following environment variables and source it before running the
-   scripts:
+   scripts.
 
    .. code-block:: sh
 

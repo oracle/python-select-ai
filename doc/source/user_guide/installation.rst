@@ -50,9 +50,9 @@ To use ``select_ai`` you need:
      import select_ai
      import getpass
 
-     username = ""
-     dsn = ""
-     password = getpass.getpass(f"Enter password for {username}@{dsn}")
+     user = "<your_db_user>"
+     password = "<your_db_password>"
+     dsn = "<your_db_dsn>"
      select_ai.connect(user=user, password=password, dsn=dsn)
      print("Connected to the Database")
 
@@ -67,3 +67,5 @@ To use ``select_ai`` you need:
   .. code-block:: shell
 
      Connected to the Database
+
+.. latex:clearpage::

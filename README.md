@@ -1,6 +1,6 @@
 # select-ai
 
-Python API for Select AI
+Select AI for Python
 
 ## Install
 

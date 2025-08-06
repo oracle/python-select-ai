@@ -20,7 +20,7 @@ autodocs_default_options = {
     "undoc-members": True,
 }
 
-project = "Python API for Select AI"
+project = "Select AI for Python"
 copyright = "2025, Oracle and/or its affiliates. All rights reserved."
 author = "Oracle"
 
