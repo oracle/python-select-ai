@@ -48,7 +48,6 @@ To use ``select_ai`` you need:
   .. code-block:: python
 
      import select_ai
-     import getpass
 
      user = "<your_db_user>"
      password = "<your_db_password>"
