@@ -12,6 +12,17 @@ class SelectAIError(Exception):
     pass
 
 
+class DatabaseNotConnectedError(SelectAIError):
+    """Raised when a database is not connected"""
+
+    def __str__(self):
+        return (
+            "Not connected to the Database. "
+            "Use select_ai.connect() or select_ai.async_connect() "
+            "to establish connection"
+        )
+
+
 class ConversationNotFoundError(SelectAIError):
     """Conversation not found in the database"""
 
@@ -30,6 +41,19 @@ class ProfileNotFoundError(SelectAIError):
 
     def __str__(self):
         return f"Profile {self.profile_name} not found"
+
+
+class ProfileExistsError(SelectAIError):
+    """Profile already exists in the database"""
+
+    def __init__(self, profile_name: str):
+        self.profile_name = profile_name
+
+    def __str__(self):
+        return (
+            f"Profile {self.profile_name} already exists. "
+            f"Use either replace=True or merge=True"
+        )
 
 
 class VectorIndexNotFoundError(SelectAIError):

@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/profile_pipeline.py
+#
+# Demonstrates sending multiple prompts using a single Database round-trip
+# -----------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -45,5 +51,4 @@ async def main():
         )
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

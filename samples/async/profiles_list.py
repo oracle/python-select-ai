@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/profile_list.py
+#
+# List all the profile names matching a certain pattern
+# -----------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -17,20 +23,13 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile",
-    )
-    sql_tasks = [
-        async_profile.show_sql(prompt="How many customers?"),
-        async_profile.run_sql(prompt="How many promotions"),
-        async_profile.explain_sql(prompt="How many promotions"),
-    ]
-
-    # Collect results from multiple asynchronous tasks
-    for sql_task in asyncio.as_completed(sql_tasks):
-        result = await sql_task
-        print(result)
+    async_profile = await select_ai.AsyncProfile()
+    # matches the start of string
+    async for fetched_profile in async_profile.list(
+        profile_name_pattern="^oci"
+    ):
+        p = await fetched_profile
+        print(p.profile_name)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

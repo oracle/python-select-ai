@@ -12,6 +12,8 @@ from typing import Dict, Hashable
 
 import oracledb
 
+from select_ai.errors import DatabaseNotConnectedError
+
 __conn__: Dict[Hashable, oracledb.Connection] = {}
 __async_conn__: Dict[Hashable, oracledb.AsyncConnection] = {}
 
@@ -24,6 +26,8 @@ __all__ = [
     "async_get_connection",
     "cursor",
     "async_cursor",
+    "disconnect",
+    "async_disconnect",
 ]
 
 
@@ -109,10 +113,7 @@ def _set_connection(
 def get_connection() -> oracledb.Connection:
     """Returns the connection object if connection is healthy"""
     if not is_connected():
-        raise Exception(
-            "Not connected to the Database. "
-            "Use select_ai.db.connect() to establish connection"
-        )
+        raise DatabaseNotConnectedError()
     global __conn__
     key = (os.getpid(), get_ident())
     return __conn__[key]
@@ -121,11 +122,7 @@ def get_connection() -> oracledb.Connection:
 async def async_get_connection() -> oracledb.AsyncConnection:
     """Returns the AsyncConnection object if connection is healthy"""
     if not await async_is_connected():
-        raise Exception(
-            "Not connected to the Database. "
-            "Use select_ai.db.async_connect() to establish "
-            "connection"
-        )
+        raise DatabaseNotConnectedError()
     global __async_conn__
     key = (os.getpid(), get_ident())
     return __async_conn__[key]
@@ -169,3 +166,21 @@ async def async_cursor():
         yield cr
     finally:
         cr.close()
+
+
+def disconnect():
+    try:
+        conn = get_connection()
+    except DatabaseNotConnectedError:
+        pass
+    else:
+        conn.close()
+
+
+async def async_disconnect():
+    try:
+        conn = await async_get_connection()
+    except DatabaseNotConnectedError:
+        pass
+    else:
+        await conn.close()

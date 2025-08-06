@@ -64,7 +64,7 @@ WHERE profile_name = :profile_name
 """
 
 GET_USER_AI_PROFILE = """
-SELECT count(*)
+SELECT profile_name, description
 FROM  USER_CLOUD_AI_PROFILES
 WHERE profile_name = :profile_name
 """

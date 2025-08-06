@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/conversations_list.py
+#
+# List all conversations saved in the database
+# -----------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -17,20 +23,9 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile"
-    )
-
-    # Asynchronously send multiple prompts
-    chat_tasks = [
-        async_profile.chat(prompt="What is OCI ?"),
-        async_profile.chat(prompt="What is OML4PY?"),
-        async_profile.chat(prompt="What is Autonomous Database ?"),
-    ]
-    for chat_task in asyncio.as_completed(chat_tasks):
-        result = await chat_task
-        print(result)
+    async for conversation in select_ai.AsyncConversation().list():
+        print(conversation.conversation_id)
+        print(conversation.attributes)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

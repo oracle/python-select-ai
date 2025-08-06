@@ -17,9 +17,10 @@ from select_ai import Conversation
 from select_ai.action import Action
 from select_ai.base_profile import BaseProfile, ProfileAttributes
 from select_ai.db import cursor
-from select_ai.errors import ProfileNotFoundError
+from select_ai.errors import ProfileExistsError, ProfileNotFoundError
 from select_ai.provider import Provider
 from select_ai.sql import (
+    GET_USER_AI_PROFILE,
     GET_USER_AI_PROFILE_ATTRIBUTES,
     LIST_USER_AI_PROFILES,
 )
@@ -50,6 +51,18 @@ class Profile(BaseProfile):
                     profile_name=self.profile_name
                 )
                 profile_exists = True
+                if not self.replace and not self.merge:
+                    if (
+                        self.attributes is not None
+                        or self.description is not None
+                    ):
+                        if self.raise_error_if_exists:
+                            raise ProfileExistsError(self.profile_name)
+
+                if self.description is None:
+                    self.description = self._get_profile_description(
+                        profile_name=self.profile_name
+                    )
             except ProfileNotFoundError:
                 if self.attributes is None:
                     raise
@@ -65,6 +78,22 @@ class Profile(BaseProfile):
                         )
             if self.replace or not profile_exists:
                 self.create(replace=self.replace)
+
+    @staticmethod
+    def _get_profile_description(profile_name) -> str:
+        """Get description of profile from USER_CLOUD_AI_PROFILES
+
+        :param str profile_name:
+        :return: str
+        :raises: ProfileNotFoundError
+        """
+        with cursor() as cr:
+            cr.execute(GET_USER_AI_PROFILE, profile_name=profile_name.upper())
+            profile = cr.fetchone()
+            if profile:
+                return profile[1].read()
+            else:
+                raise ProfileNotFoundError(profile_name)
 
     @staticmethod
     def _get_attributes(profile_name) -> ProfileAttributes:
@@ -215,12 +244,12 @@ class Profile(BaseProfile):
                 raise ProfileNotFoundError(profile_name=profile_name)
 
     @classmethod
-    def list(cls, profile_name_pattern: str) -> Iterator["Profile"]:
+    def list(cls, profile_name_pattern: str = ".*") -> Iterator["Profile"]:
         """List AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
-         match
+         match. Default value is ".*" i.e. match all AI profiles.
 
         :return: Iterator[Profile]
         """
@@ -237,6 +266,7 @@ class Profile(BaseProfile):
                     profile_name=profile_name,
                     description=description,
                     attributes=attributes,
+                    raise_error_if_exists=False,
                 )
 
     def generate(
@@ -354,7 +384,7 @@ class Profile(BaseProfile):
 
     def generate_synthetic_data(
         self, synthetic_data_attributes: SyntheticDataAttributes
-    ):
+    ) -> None:
         """Generate synthetic data for a single table, multiple tables or a
         full schema.
 

@@ -5,6 +5,13 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/vector_index_list.py
+#
+# List all the vector indexes and associated profile where the index name
+# matches a certain pattern
+# -----------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -15,15 +22,12 @@ password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 
-# This example shows how to asynchronously ask the LLM to explain SQL
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile",
-    )
-    response = await async_profile.explain_sql("How many promotions")
-    print(response)
+    vector_index = select_ai.AsyncVectorIndex()
+    async for index in vector_index.list(index_name_pattern="^test"):
+        print("Vector index", index.index_name)
+        print("Vector index profile", index.profile)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

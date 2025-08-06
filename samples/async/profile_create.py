@@ -5,6 +5,12 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/profile_create.py
+#
+# Create an OCI Gen AI profile
+# -----------------------------------------------------------------------------
+
 import asyncio
 import os
 from pprint import pformat
@@ -33,15 +39,12 @@ async def main():
         description="MY OCI AI Profile",
         replace=True,
     )
-
+    print("Created async profile ", async_profile.profile_name)
     profile_attributes = await async_profile.get_attributes()
-
-    print("Profile attributes are: ", profile_attributes)
     print(
-        "Profile attributes as Python dict: ",
+        "Profile attributes: ",
         pformat(profile_attributes.dict(exclude_null=False)),
     )
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

@@ -8,6 +8,10 @@
 import os
 import sys
 
+import sphinx_prompt
+
+sys.modules["sphinx-prompt"] = sphinx_prompt
+
 sys.path.insert(0, os.path.join("..", "..", "src", "select_ai"))
 
 autodocs_default_options = {
@@ -16,14 +20,14 @@ autodocs_default_options = {
     "undoc-members": True,
 }
 
-project = "Python API for Select AI"
+project = "Select AI for Python"
 copyright = "2025, Oracle and/or its affiliates. All rights reserved."
 author = "Oracle"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.autodoc", "sphinx_toolbox.latex"]
 
 # The suffix of source filenames.
 source_suffix = ".rst"

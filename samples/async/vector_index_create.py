@@ -5,6 +5,13 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/vector_index_create.py
+#
+# Create a vector index for Retrieval Augmented Generation (RAG)
+# -----------------------------------------------------------------------------
+
+
 import asyncio
 import os
 
@@ -46,8 +53,7 @@ async def main():
         profile=async_profile,
     )
     await async_vector_index.create(replace=True)
-    print("created vector index: test_vector_index")
+    print("Created vector index: test_vector_index")
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

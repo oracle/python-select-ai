@@ -164,7 +164,7 @@ class VectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    def create(self, replace=False):
+    def create(self, replace: Optional[bool] = False):
         """Create a vector index in the database and populates the index
          with data from an object store bucket using an async scheduler job
 
@@ -203,7 +203,9 @@ class VectorIndex(_BaseVectorIndex):
         self.profile.set_attribute("vector_index_name", self.index_name)
 
     def delete(
-        self, include_data: Optional[int] = True, force: Optional[int] = False
+        self,
+        include_data: Optional[bool] = True,
+        force: Optional[bool] = False,
     ):
         """This procedure removes a vector store index
 
@@ -307,12 +309,12 @@ class VectorIndex(_BaseVectorIndex):
         return self._get_attributes(self.index_name)
 
     @classmethod
-    def list(cls, index_name_pattern: str) -> Iterator["VectorIndex"]:
+    def list(cls, index_name_pattern: str = ".*") -> Iterator["VectorIndex"]:
         """List Vector Indexes
 
         :param str index_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
-         match
+         match. Default value is ".*" i.e. match all vector indexes.
 
         :return: Iterator[VectorIndex]
         """
@@ -369,7 +371,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    async def create(self, replace: Optional[int] = False) -> None:
+    async def create(self, replace: Optional[bool] = False) -> None:
         """Create a vector index in the database and populates it with data
         from an object store bucket using an async scheduler job
 
@@ -406,7 +408,9 @@ class AsyncVectorIndex(_BaseVectorIndex):
         await self.profile.set_attribute("vector_index_name", self.index_name)
 
     async def delete(
-        self, include_data: Optional[int] = True, force: Optional[int] = False
+        self,
+        include_data: Optional[bool] = True,
+        force: Optional[bool] = False,
     ) -> None:
         """This procedure removes a vector store index.
 
@@ -511,13 +515,14 @@ class AsyncVectorIndex(_BaseVectorIndex):
 
     @classmethod
     async def list(
-        cls, index_name_pattern: str
+        cls, index_name_pattern: str = ".*"
     ) -> AsyncGenerator[VectorIndex, None]:
         """List Vector Indexes.
 
         :param str index_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
-         match
+         match. Default value is ".*" i.e. match all vector indexes.
+
         :return: AsyncGenerator[VectorIndex]
 
         """

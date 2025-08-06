@@ -73,3 +73,5 @@ class SelectAIDataClass(ABC):
                     List[typing.Mapping]
                 ] and isinstance(value, (str, bytes, bytearray)):
                     setattr(self, field.name, json.loads(value))
+                else:
+                    setattr(self, field.name, value)

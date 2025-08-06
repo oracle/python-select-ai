@@ -5,6 +5,10 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/vector_index_delete.py
+# -----------------------------------------------------------------------------
+
 import asyncio
 import os
 
@@ -17,10 +21,9 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async for conversation in select_ai.AsyncConversation().list():
-        print(conversation.conversation_id)
-        print(conversation.attributes)
+    vector_index = select_ai.AsyncVectorIndex(index_name="test_vector_index")
+    await vector_index.delete()
+    print("Vector index deleted")
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

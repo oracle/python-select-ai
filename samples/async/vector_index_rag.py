@@ -5,6 +5,13 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# async/vector_index_rag.py
+#
+# Demonstrates Retrieval Augmented Generation (RAG) using ai_profile.narrate()
+# -----------------------------------------------------------------------------
+
+
 import asyncio
 import os
 
@@ -17,10 +24,13 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    vector_index = select_ai.AsyncVectorIndex(index_name="test_vector_index")
-    await vector_index.delete()
-    print("Vector index deleted")
+    async_profile = await select_ai.AsyncProfile(
+        profile_name="async_oci_vector_ai_profile"
+    )
+    r = await async_profile.narrate(
+        "list the conda environments in my object store"
+    )
+    print(r)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

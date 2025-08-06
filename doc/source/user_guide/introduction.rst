@@ -1,7 +1,7 @@
 .. _introduction:
 
 *****************************************************
-Introduction to the Python API for Select AI
+Introduction to Select AI for Python
 *****************************************************
 
 ``select_ai`` is a Python module that helps you invoke `DBMS_CLOUD_AI <https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/dbms-cloud-ai-package.html>`__
@@ -14,3 +14,5 @@ programming styles.
 
 The Select AI Python API supports Python versions 3.9, 3.10, 3.11, 3.12 and
 3.13.
+
+.. latex:clearpage::

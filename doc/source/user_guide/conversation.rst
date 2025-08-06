@@ -1,6 +1,8 @@
 .. _conversation:
 
-Conversations in Select AI represent an interactive exchange between the user and the system, enabling users to query or interact with the database through a series of natural language prompts.
+Conversations in Select AI represent an interactive exchange between the user
+and the system, enabling users to query or interact with the database through
+a series of natural language prompts.
 
 *****************************
 ``Conversation Object model``
@@ -9,6 +11,8 @@ Conversations in Select AI represent an interactive exchange between the user an
 .. figure:: /image/conversation.png
    :alt: Select AI Conversation
 
+.. latex:clearpage::
+
 **************************
 ``ConversationAttributes``
 **************************
@@ -16,6 +20,7 @@ Conversations in Select AI represent an interactive exchange between the user an
 .. autoclass:: select_ai.ConversationAttributes
    :members:
 
+.. latex:clearpage::
 
 ********************
 ``Conversation`` API
@@ -23,6 +28,8 @@ Conversations in Select AI represent an interactive exchange between the user an
 
 .. autoclass:: select_ai.Conversation
    :members:
+
+.. latex:clearpage::
 
 Create conversion
 ++++++++++++++++++
@@ -32,7 +39,9 @@ Create conversion
 
 output::
 
-    Created conversation with conversation id:  380A1601-182D-F329-E063-D81A000A2C93
+    Created conversation with conversation id:  3AB2ED3E-7E52-8000-E063-BE1A000A15B6
+
+.. latex:clearpage::
 
 Chat session
 +++++++++++++
@@ -55,6 +64,8 @@ output::
     ...
     ...
 
+.. latex:clearpage::
+
 List conversations
 ++++++++++++++++++
 
@@ -69,6 +80,7 @@ output::
     37DF777F-F3DA-F084-E063-D81A000A53BE
     ConversationAttributes(title='History of Science', description="LLM's understanding of history of science", retention_days=7)
 
+.. latex:clearpage::
 
 Delete conversation
 +++++++++++++++++++
@@ -81,6 +93,7 @@ output::
     Deleted conversation with conversation id:  37DDC22E-11C8-3D49-E063-D81A000A85FE
 
 
+.. latex:clearpage::
 
 *************************
 ``AsyncConversation`` API
@@ -89,11 +102,12 @@ output::
 .. autoclass:: select_ai.AsyncConversation
    :members:
 
+.. latex:clearpage::
 
 Async chat session
 ++++++++++++++++++
 
-.. literalinclude:: ../../../samples/async_samples/conversation_chat_session.py
+.. literalinclude:: ../../../samples/async/conversation_chat_session.py
    :language: python
 
 output::
@@ -111,10 +125,12 @@ output::
     ...
     ...
 
+.. latex:clearpage::
+
 Async list conversations
 ++++++++++++++++++++++++
 
-.. literalinclude:: ../../../samples/async_samples/conversations_list.py
+.. literalinclude:: ../../../samples/async/conversations_list.py
    :language: python
 
 output::
