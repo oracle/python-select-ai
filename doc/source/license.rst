@@ -1,3 +1,12 @@
+:orphan:
+
+.. _license:
+
+
+.. include:: <isonum.txt>
+
+.. centered:: **LICENSE AGREEMENT FOR python-select-ai**
+
 Copyright (c) 2025, Oracle and/or its affiliates.
 
 The Universal Permissive License (UPL), Version 1.0
@@ -11,6 +20,7 @@ Software as contributed to or provided by such licensor, or (ii) the Larger
 Works (as defined below), to deal in both
 
 (a) the Software, and
+
 (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
 one is included with the Software (each a "Larger Work" to which the Software
 is contributed by such licensors),
@@ -33,3 +43,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+END OF TERMS AND CONDITIONS

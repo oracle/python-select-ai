@@ -1,5 +1,3 @@
-*Detailed instructions on how to contribute to the project, if applicable. Must include section about Oracle Contributor Agreement with link and instructions*
-
 # Contributing to this repository
 
 We welcome your contributions! There are multiple ways to contribute.
@@ -47,6 +45,28 @@ can be accepted.
    what your changes are meant to do and provide simple steps on how to validate.
    your changes. Ensure that you reference the issue you created as well.
 1. We will assign the pull request to 2-3 people for review before it is merged.
+
+
+
+### Install development dependencies
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+
+python3 -m pip install --upgrade pip setuptools build pre-commit
+
+python3 -m pip install -e . # installs project in editable mode
+
+pre-commit install # install git hooks
+pre-commit run --all-files
+```
+
+### Build
+
+```bash
+python -m build
+```
 
 ## Code of conduct
 

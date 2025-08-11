@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools >= 77.0.3", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "select_ai"
+dynamic = ["version"]
+description = "Python API for Select AI"
+requires-python = ">=3.9"
+authors = [
+    {name="Abhishek Singh", email="abhishek.o.singh@oracle.com"}
+]
+maintainers =[
+    {name="Abhishek Singh", email="abhishek.o.singh@oracle.com"}
+]
+keywords = [
+	"oracle",
+	"select-ai",
+    "adbs",
+    "autonomous database serverless"
+]
+license = " UPL-1.0"
+license-files = ["LICENSE.txt"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Database"
+]
+dependencies = [
+    "oracledb",
+    "pandas==2.2.3"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "select_ai.version.__version__" }
+
+[tool.black]
+line-length = 79
+target-version = ["py39", "py310", "py311", "py312", "py313"]
+required-version = 24
+
+[tool.ruff]
+line-length = 79
+target-version = "py39"
+per-file-ignores = { "__init__.py" = ["F401"] }
