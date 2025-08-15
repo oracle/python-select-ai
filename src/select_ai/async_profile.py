@@ -55,7 +55,7 @@ class AsyncProfile(BaseProfile):
         :return: None
         :raises: oracledb.DatabaseError
         """
-        if self.profile_name is not None:
+        if self.profile_name:
             profile_exists = False
             try:
                 saved_attributes = await self._get_attributes(
@@ -75,7 +75,7 @@ class AsyncProfile(BaseProfile):
                         profile_name=self.profile_name
                     )
             except ProfileNotFoundError:
-                if self.attributes is None:
+                if self.attributes is None and self.description is None:
                     raise
             else:
                 if self.attributes is None:
@@ -91,10 +91,13 @@ class AsyncProfile(BaseProfile):
                 await self.create(
                     replace=self.replace, description=self.description
                 )
+        else:  # profile name is None:
+            if self.attributes is not None or self.description is not None:
+                raise ValueError("'profile_name' cannot be empty or None")
         return self
 
     @staticmethod
-    async def _get_profile_description(profile_name) -> str:
+    async def _get_profile_description(profile_name) -> Union[str, None]:
         """Get description of profile from USER_CLOUD_AI_PROFILES
 
         :param str profile_name: Name of profile
@@ -110,7 +113,10 @@ class AsyncProfile(BaseProfile):
             )
             profile = await cr.fetchone()
             if profile:
-                return await profile[1].read()
+                if profile[1] is not None:
+                    return await profile[1].read()
+                else:
+                    return None
             else:
                 raise ProfileNotFoundError(profile_name)
 
@@ -186,6 +192,12 @@ class AsyncProfile(BaseProfile):
          attributes
         :return: None
         """
+        if not isinstance(attributes, ProfileAttributes):
+            raise TypeError(
+                "'attributes' must be an object of type "
+                "select_ai.ProfileAttributes"
+            )
+
         self.attributes = attributes
         parameters = {
             "profile_name": self.profile_name,

@@ -129,7 +129,10 @@ class Conversation(_BaseConversation):
             attributes = cr.fetchone()
             if attributes:
                 conversation_title = attributes[0]
-                description = attributes[1].read()  # Oracle.LOB
+                if attributes[1]:
+                    description = attributes[1].read()  # Oracle.LOB
+                else:
+                    description = None
                 retention_days = attributes[2]
                 return ConversationAttributes(
                     title=conversation_title,
@@ -154,7 +157,10 @@ class Conversation(_BaseConversation):
             for row in cr.fetchall():
                 conversation_id = row[0]
                 conversation_title = row[1]
-                description = row[2].read()  # Oracle.LOB
+                if row[2]:
+                    description = row[2].read()  # Oracle.LOB
+                else:
+                    description = None
                 retention_days = row[3]
                 attributes = ConversationAttributes(
                     title=conversation_title,
@@ -224,7 +230,10 @@ class AsyncConversation(_BaseConversation):
             attributes = await cr.fetchone()
             if attributes:
                 conversation_title = attributes[0]
-                description = await attributes[1].read()  # Oracle.AsyncLOB
+                if attributes[1]:
+                    description = await attributes[1].read()  # Oracle.AsyncLOB
+                else:
+                    description = None
                 retention_days = attributes[2]
                 return ConversationAttributes(
                     title=conversation_title,
@@ -250,7 +259,10 @@ class AsyncConversation(_BaseConversation):
             for row in rows:
                 conversation_id = row[0]
                 conversation_title = row[1]
-                description = await row[2].read()  # Oracle.AsyncLOB
+                if row[2]:
+                    description = await row[2].read()  # Oracle.AsyncLOB
+                else:
+                    description = None
                 retention_days = row[3]
                 attributes = ConversationAttributes(
                     title=conversation_title,

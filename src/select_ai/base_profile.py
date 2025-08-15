@@ -73,10 +73,9 @@ class ProfileAttributes(SelectAIDataClass):
     vector_index_name: Optional[str] = None
 
     def __post_init__(self):
-        if not isinstance(self.provider, Provider):
+        if self.provider and not isinstance(self.provider, Provider):
             raise ValueError(
-                f"The arg `provider` must be an object of "
-                f"type select_ai.Provider"
+                f"'provider' must be an object of " f"type select_ai.Provider"
             )
 
     def json(self, exclude_null=True):
@@ -166,6 +165,11 @@ class BaseProfile(ABC):
     ):
         """Initialize a base profile"""
         self.profile_name = profile_name
+        if attributes and not isinstance(attributes, ProfileAttributes):
+            raise TypeError(
+                "'attributes' must be an object of type "
+                "select_ai.ProfileAttributes"
+            )
         self.attributes = attributes
         self.description = description
         self.merge = merge

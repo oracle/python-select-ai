@@ -325,7 +325,10 @@ class VectorIndex(_BaseVectorIndex):
             )
             for row in cr.fetchall():
                 index_name = row[0]
-                description = row[1].read()  # Oracle.LOB
+                if row[1]:
+                    description = row[1].read()  # Oracle.LOB
+                else:
+                    description = None
                 attributes = cls._get_attributes(index_name=index_name)
                 yield cls(
                     index_name=index_name,
@@ -534,7 +537,10 @@ class AsyncVectorIndex(_BaseVectorIndex):
             rows = await cr.fetchall()
             for row in rows:
                 index_name = row[0]
-                description = await row[1].read()  # AsyncLOB
+                if row[1]:
+                    description = await row[1].read()  # AsyncLOB
+                else:
+                    description = None
                 attributes = await cls._get_attributes(index_name=index_name)
                 yield VectorIndex(
                     index_name=index_name,
