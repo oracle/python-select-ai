@@ -6,9 +6,9 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# async/create_ai_credential.py
+# async/delete_ai_credential
 #
-# Async API to create credential
+# Async API to delete credential
 # -----------------------------------------------------------------------------
 
 import asyncio

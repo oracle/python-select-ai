@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # delete_ai_credential.py
 #
-# Create a Database credential storing OCI Gen AI's credentials
+# Delete AI credential
 # -----------------------------------------------------------------------------
 import os
 

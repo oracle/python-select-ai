@@ -213,7 +213,7 @@ class Profile(BaseProfile):
             except oracledb.DatabaseError as e:
                 (error,) = e.args
                 # If already exists and replace is True then drop and recreate
-                if "already exists" in error.message.lower() and replace:
+                if error.code == 20046 and replace:
                     self.delete(force=True)
                     cr.callproc(
                         "DBMS_CLOUD_AI.CREATE_PROFILE",

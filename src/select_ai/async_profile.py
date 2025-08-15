@@ -218,13 +218,14 @@ class AsyncProfile(BaseProfile):
         :return: None
         :raises: oracledb.DatabaseError
         """
+        if self.attributes is None:
+            raise AttributeError("Profile attributes cannot be None")
         parameters = {
             "profile_name": self.profile_name,
             "attributes": self.attributes.json(),
         }
         if description:
             parameters["description"] = description
-
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
@@ -234,7 +235,7 @@ class AsyncProfile(BaseProfile):
             except oracledb.DatabaseError as e:
                 (error,) = e.args
                 # If already exists and replace is True then drop and recreate
-                if "already exists" in error.message.lower() and replace:
+                if error.code == 20046 and replace:
                     await self.delete(force=True)
                     await cr.callproc(
                         "DBMS_CLOUD_AI.CREATE_PROFILE",
