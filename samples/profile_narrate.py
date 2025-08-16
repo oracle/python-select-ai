@@ -23,7 +23,5 @@ select_ai.connect(user=user, password=password, dsn=dsn)
 profile = select_ai.Profile(
     profile_name="oci_ai_profile",
 )
-narration = profile.narrate(
-    prompt="How many promotions are there in the database?"
-)
+narration = profile.narrate(prompt="How many promotions?")
 print(narration)
