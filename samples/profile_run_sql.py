@@ -21,8 +21,6 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 select_ai.connect(user=user, password=password, dsn=dsn)
 profile = select_ai.Profile(profile_name="oci_ai_profile")
-df = profile.run_sql(
-    prompt="How many promotions are there in the sh database?"
-)
+df = profile.run_sql(prompt="How many promotions ?")
 print(df.columns)
 print(df)

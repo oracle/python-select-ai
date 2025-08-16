@@ -28,7 +28,7 @@ async def main():
         profile_name="async_oci_ai_profile",
     )
     # run_sql returns a pandas df
-    df = await async_profile.run_sql("How many promotions")
+    df = await async_profile.run_sql("How many promotions?")
     print(df)
 
 

@@ -24,6 +24,6 @@ profile = select_ai.Profile(
     profile_name="oci_ai_profile",
 )
 narration = profile.narrate(
-    prompt="How many promotions are there in the sh database?"
+    prompt="How many promotions are there in the database?"
 )
 print(narration)

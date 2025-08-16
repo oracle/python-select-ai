@@ -315,7 +315,7 @@ class AsyncProfile(BaseProfile):
                 )
 
     async def generate(
-        self, prompt, action=Action.SHOWSQL, params: Mapping = None
+        self, prompt: str, action=Action.SHOWSQL, params: Mapping = None
     ) -> Union[pandas.DataFrame, str, None]:
         """Asynchronously perform AI translation using this profile
 
@@ -325,6 +325,9 @@ class AsyncProfile(BaseProfile):
          conversation_id for context-aware chats
         :return: Union[pandas.DataFrame, str]
         """
+        if not prompt:
+            raise ValueError("prompt cannot be empty or None")
+
         parameters = {
             "prompt": prompt,
             "action": action,
@@ -444,6 +447,15 @@ class AsyncProfile(BaseProfile):
         :raises: oracledb.DatabaseError
 
         """
+        if synthetic_data_attributes is None:
+            raise ValueError("'synthetic_data_attributes' cannot be None")
+
+        if not isinstance(synthetic_data_attributes, SyntheticDataAttributes):
+            raise TypeError(
+                "'synthetic_data_attributes' must be an object "
+                "of type select_ai.SyntheticDataAttributes"
+            )
+
         keyword_parameters = synthetic_data_attributes.prepare()
         keyword_parameters["profile_name"] = self.profile_name
         async with async_cursor() as cr:

@@ -20,6 +20,7 @@ Async Profile creation
 
 .. literalinclude:: ../../../samples/async/profile_create.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -60,6 +61,7 @@ Async explain SQL
 
 .. literalinclude:: ../../../samples/async/profile_explain_sql.py
    :language: python
+   :lines: 12-
 
 output::
 
@@ -89,6 +91,7 @@ Async run SQL
 
 .. literalinclude:: ../../../samples/async/profile_run_sql.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -103,6 +106,7 @@ Async show SQL
 
 .. literalinclude:: ../../../samples/async/profile_show_sql.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -117,6 +121,7 @@ Async concurrent SQL
 
 .. literalinclude:: ../../../samples/async/profile_sql_concurrent_tasks.py
    :language: python
+   :lines: 15-
 
 output::
 
@@ -152,6 +157,7 @@ Async chat
 
 .. literalinclude:: ../../../samples/async/profile_chat.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -177,6 +183,7 @@ Async pipeline
 
 .. literalinclude:: ../../../samples/async/profile_pipeline.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -209,6 +216,7 @@ List profiles asynchronously
 
 .. literalinclude:: ../../../samples/async/profiles_list.py
    :language: python
+   :lines: 14-
 
 output::
 

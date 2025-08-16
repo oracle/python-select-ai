@@ -297,6 +297,8 @@ class Profile(BaseProfile):
          conversation_id for context-aware chats
         :return: Union[pandas.DataFrame, str]
         """
+        if not prompt:
+            raise ValueError("prompt cannot be empty or None")
         parameters = {
             "prompt": prompt,
             "action": action,
@@ -407,6 +409,17 @@ class Profile(BaseProfile):
         :raises: oracledb.DatabaseError
 
         """
+        if synthetic_data_attributes is None:
+            raise ValueError(
+                "Param 'synthetic_data_attributes' cannot be None"
+            )
+
+        if not isinstance(synthetic_data_attributes, SyntheticDataAttributes):
+            raise TypeError(
+                "'synthetic_data_attributes' must be an object "
+                "of type select_ai.SyntheticDataAttributes"
+            )
+
         keyword_parameters = synthetic_data_attributes.prepare()
         keyword_parameters["profile_name"] = self.profile_name
         with cursor() as cr:

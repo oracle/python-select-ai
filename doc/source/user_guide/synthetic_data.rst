@@ -27,8 +27,12 @@ Single table synthetic data
 
 The below example shows single table synthetic data generation
 
+Sync API
+++++++++
+
 .. literalinclude:: ../../../samples/profile_gen_single_table_synthetic_data.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -40,14 +44,66 @@ output::
 
 .. latex:clearpage::
 
+Async API
++++++++++
+
+.. literalinclude:: ../../../samples/async/profile_gen_single_table_synthetic_data.py
+   :language: python
+   :lines: 12-
+
+output::
+
+    SQL> select count(*) from movie;
+
+      COUNT(*)
+    ----------
+           100
+
+.. latex:clearpage::
+
+
 ****************************
 Multi table synthetic data
 ****************************
 
 The below example shows multitable synthetic data generation
 
+Sync API
+++++++++
+
 .. literalinclude:: ../../../samples/profile_gen_multi_table_synthetic_data.py
    :language: python
+   :lines: 14-
+
+
+output::
+
+    SQL> select count(*) from actor;
+
+      COUNT(*)
+    ----------
+        40
+
+    SQL> select count(*) from director;
+
+      COUNT(*)
+    ----------
+        13
+
+    SQL> select count(*) from movie;
+
+      COUNT(*)
+    ----------
+           300
+
+
+Async API
++++++++++
+
+
+.. literalinclude:: ../../../samples/async/profile_gen_multi_table_synthetic_data.py
+   :language: python
+   :lines: 12-
 
 
 output::

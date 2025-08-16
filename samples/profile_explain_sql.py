@@ -23,6 +23,6 @@ profile = select_ai.Profile(
 )
 print(profile.description)
 explanation = profile.explain_sql(
-    prompt="How many promotions are there in the sh database?"
+    prompt="How many promotions are there in the database?"
 )
 print(explanation)

@@ -36,6 +36,7 @@ Create conversion
 
 .. literalinclude:: ../../../samples/conversation_create.py
    :language: python
+   :lines: 15-
 
 output::
 
@@ -48,6 +49,7 @@ Chat session
 
 .. literalinclude:: ../../../samples/conversation_chat_session.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -71,6 +73,7 @@ List conversations
 
 .. literalinclude:: ../../../samples/conversations_list.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -87,6 +90,7 @@ Delete conversation
 
 .. literalinclude:: ../../../samples/conversation_delete.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -109,6 +113,7 @@ Async chat session
 
 .. literalinclude:: ../../../samples/async/conversation_chat_session.py
    :language: python
+   :lines: 13-
 
 output::
 
@@ -132,6 +137,7 @@ Async list conversations
 
 .. literalinclude:: ../../../samples/async/conversations_list.py
    :language: python
+   :lines: 14-
 
 output::
 
