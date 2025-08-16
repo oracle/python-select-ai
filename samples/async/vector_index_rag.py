@@ -11,7 +11,6 @@
 # Demonstrates Retrieval Augmented Generation (RAG) using ai_profile.narrate()
 # -----------------------------------------------------------------------------
 
-
 import asyncio
 import os
 

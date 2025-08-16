@@ -10,6 +10,7 @@
 #
 # Demonstrates context aware conversation using AI Profile
 # -----------------------------------------------------------------------------
+
 import os
 
 import select_ai

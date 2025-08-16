@@ -59,6 +59,7 @@ objects (to create embedding for) reside in OCI's object store
 
 .. literalinclude:: ../../../samples/vector_index_create.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -71,6 +72,7 @@ List vector index
 
 .. literalinclude:: ../../../samples/vector_index_list.py
    :language: python
+   :lines: 15-
 
 output::
 
@@ -84,6 +86,7 @@ RAG using vector index
 
 .. literalinclude:: ../../../samples/vector_index_rag.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -108,6 +111,7 @@ Delete vector index
 
 .. literalinclude:: ../../../samples/vector_index_delete.py
    :language: python
+   :lines: 12-
 
 output::
 
@@ -131,6 +135,7 @@ Async create vector index
 
 .. literalinclude:: ../../../samples/async/vector_index_create.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -144,6 +149,7 @@ Async list vector index
 
 .. literalinclude:: ../../../samples/async/vector_index_list.py
    :language: python
+   :lines: 15-
 
 output::
 
@@ -158,6 +164,7 @@ Async RAG using vector index
 
 .. literalinclude:: ../../../samples/async/vector_index_rag.py
    :language: python
+   :lines: 15-
 
 output::
 

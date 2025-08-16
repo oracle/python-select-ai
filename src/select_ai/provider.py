@@ -5,10 +5,18 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-from dataclasses import dataclass, fields
-from typing import Optional
+from dataclasses import dataclass
+from typing import List, Optional, Union
 
 from select_ai._abc import SelectAIDataClass
+
+from .db import async_cursor, cursor
+from .sql import (
+    DISABLE_AI_PROFILE_DOMAIN_FOR_USER,
+    ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
+    GRANT_PRIVILEGES_TO_USER,
+    REVOKE_PRIVILEGES_FROM_USER,
+)
 
 OPENAI = "openai"
 COHERE = "cohere"
@@ -184,3 +192,97 @@ class AnthropicProvider(Provider):
 
     provider_name: str = ANTHROPIC
     provider_endpoint = "api.anthropic.com"
+
+
+async def async_enable_provider(
+    users: Union[str, List[str]], provider_endpoint: str = None
+):
+    """
+    Async API to enable AI profile for database users.
+
+    This method grants execute privilege on the packages DBMS_CLOUD,
+    DBMS_CLOUD_AI and DBMS_CLOUD_PIPELINE. It  also enables the database
+    user to invoke the AI Provider (LLM) endpoint
+
+    """
+    if isinstance(users, str):
+        users = [users]
+
+    async with async_cursor() as cr:
+        for user in users:
+            await cr.execute(GRANT_PRIVILEGES_TO_USER.format(user))
+            if provider_endpoint:
+                await cr.execute(
+                    ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
+                    user=user,
+                    host=provider_endpoint,
+                )
+
+
+async def async_disable_provider(
+    users: Union[str, List[str]], provider_endpoint: str = None
+):
+    """
+    Async API to disable  AI profile for database users
+
+    Disables AI provider for the user. This method revokes execute privilege
+    on the packages DBMS_CLOUD, DBMS_CLOUD_AI and DBMS_CLOUD_PIPELINE. It
+    also disables the user to invoke the AI Provider (LLM) endpoint
+    """
+    if isinstance(users, str):
+        users = [users]
+
+    async with async_cursor() as cr:
+        for user in users:
+            await cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user))
+            if provider_endpoint:
+                await cr.execute(
+                    DISABLE_AI_PROFILE_DOMAIN_FOR_USER,
+                    user=user,
+                    host=provider_endpoint,
+                )
+
+
+def enable_provider(
+    users: Union[str, List[str]], provider_endpoint: str = None
+):
+    """
+    Enables AI profile for the user. This method grants execute privilege
+    on the packages DBMS_CLOUD, DBMS_CLOUD_AI and DBMS_CLOUD_PIPELINE. It
+    also enables the user to invoke the AI Provider (LLM) endpoint
+    """
+    if isinstance(users, str):
+        users = [users]
+
+    with cursor() as cr:
+        for user in users:
+            cr.execute(GRANT_PRIVILEGES_TO_USER.format(user))
+            if provider_endpoint:
+                cr.execute(
+                    ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
+                    user=user,
+                    host=provider_endpoint,
+                )
+
+
+def disable_provider(
+    users: Union[str, List[str]], provider_endpoint: str = None
+):
+    """
+    Disables AI provider for the user. This method revokes execute privilege
+    on the packages DBMS_CLOUD, DBMS_CLOUD_AI and DBMS_CLOUD_PIPELINE. It
+    also disables the user to invoke the AI(LLM) endpoint
+
+    """
+    if isinstance(users, str):
+        users = [users]
+
+    with cursor() as cr:
+        for user in users:
+            cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user))
+            if provider_endpoint:
+                cr.execute(
+                    DISABLE_AI_PROFILE_DOMAIN_FOR_USER,
+                    user=user,
+                    host=provider_endpoint,
+                )

@@ -22,7 +22,5 @@ profile = select_ai.Profile(
     profile_name="oci_ai_profile",
 )
 print(profile.description)
-explanation = profile.explain_sql(
-    prompt="How many promotions are there in the sh database?"
-)
+explanation = profile.explain_sql(prompt="How many promotions?")
 print(explanation)

@@ -6,17 +6,18 @@
 # -----------------------------------------------------------------------------
 
 from .action import Action
-from .admin import (
-    create_credential,
-    disable_provider,
-    enable_provider,
-)
 from .async_profile import AsyncProfile
 from .base_profile import BaseProfile, ProfileAttributes
 from .conversation import (
     AsyncConversation,
     Conversation,
     ConversationAttributes,
+)
+from .credential import (
+    async_create_credential,
+    async_delete_credential,
+    create_credential,
+    delete_credential,
 )
 from .db import (
     async_connect,
@@ -39,6 +40,10 @@ from .provider import (
     OCIGenAIProvider,
     OpenAIProvider,
     Provider,
+    async_disable_provider,
+    async_enable_provider,
+    disable_provider,
+    enable_provider,
 )
 from .synthetic_data import (
     SyntheticDataAttributes,

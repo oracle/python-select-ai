@@ -11,7 +11,6 @@
 # Create a vector index for Retrieval Augmented Generation (RAG)
 # -----------------------------------------------------------------------------
 
-
 import asyncio
 import os
 

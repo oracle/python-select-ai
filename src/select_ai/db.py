@@ -73,7 +73,7 @@ def is_connected() -> bool:
         return False
     try:
         return conn.ping() is None
-    except oracledb.DatabaseError:
+    except (oracledb.DatabaseError, oracledb.InterfaceError):
         return False
 
 
@@ -87,7 +87,7 @@ async def async_is_connected() -> bool:
         return False
     try:
         return await conn.ping() is None
-    except oracledb.DatabaseError:
+    except (oracledb.DatabaseError, oracledb.InterfaceError):
         return False
 
 

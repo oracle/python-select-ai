@@ -55,7 +55,7 @@ class AsyncProfile(BaseProfile):
         :return: None
         :raises: oracledb.DatabaseError
         """
-        if self.profile_name is not None:
+        if self.profile_name:
             profile_exists = False
             try:
                 saved_attributes = await self._get_attributes(
@@ -75,7 +75,7 @@ class AsyncProfile(BaseProfile):
                         profile_name=self.profile_name
                     )
             except ProfileNotFoundError:
-                if self.attributes is None:
+                if self.attributes is None and self.description is None:
                     raise
             else:
                 if self.attributes is None:
@@ -91,10 +91,13 @@ class AsyncProfile(BaseProfile):
                 await self.create(
                     replace=self.replace, description=self.description
                 )
+        else:  # profile name is None:
+            if self.attributes is not None or self.description is not None:
+                raise ValueError("'profile_name' cannot be empty or None")
         return self
 
     @staticmethod
-    async def _get_profile_description(profile_name) -> str:
+    async def _get_profile_description(profile_name) -> Union[str, None]:
         """Get description of profile from USER_CLOUD_AI_PROFILES
 
         :param str profile_name: Name of profile
@@ -110,7 +113,10 @@ class AsyncProfile(BaseProfile):
             )
             profile = await cr.fetchone()
             if profile:
-                return await profile[1].read()
+                if profile[1] is not None:
+                    return await profile[1].read()
+                else:
+                    return None
             else:
                 raise ProfileNotFoundError(profile_name)
 
@@ -186,6 +192,12 @@ class AsyncProfile(BaseProfile):
          attributes
         :return: None
         """
+        if not isinstance(attributes, ProfileAttributes):
+            raise TypeError(
+                "'attributes' must be an object of type "
+                "select_ai.ProfileAttributes"
+            )
+
         self.attributes = attributes
         parameters = {
             "profile_name": self.profile_name,
@@ -206,13 +218,14 @@ class AsyncProfile(BaseProfile):
         :return: None
         :raises: oracledb.DatabaseError
         """
+        if self.attributes is None:
+            raise AttributeError("Profile attributes cannot be None")
         parameters = {
             "profile_name": self.profile_name,
             "attributes": self.attributes.json(),
         }
         if description:
             parameters["description"] = description
-
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
@@ -222,7 +235,7 @@ class AsyncProfile(BaseProfile):
             except oracledb.DatabaseError as e:
                 (error,) = e.args
                 # If already exists and replace is True then drop and recreate
-                if "already exists" in error.message.lower() and replace:
+                if error.code == 20046 and replace:
                     await self.delete(force=True)
                     await cr.callproc(
                         "DBMS_CLOUD_AI.CREATE_PROFILE",
@@ -302,7 +315,7 @@ class AsyncProfile(BaseProfile):
                 )
 
     async def generate(
-        self, prompt, action=Action.SHOWSQL, params: Mapping = None
+        self, prompt: str, action=Action.SHOWSQL, params: Mapping = None
     ) -> Union[pandas.DataFrame, str, None]:
         """Asynchronously perform AI translation using this profile
 
@@ -312,6 +325,9 @@ class AsyncProfile(BaseProfile):
          conversation_id for context-aware chats
         :return: Union[pandas.DataFrame, str]
         """
+        if not prompt:
+            raise ValueError("prompt cannot be empty or None")
+
         parameters = {
             "prompt": prompt,
             "action": action,
@@ -431,6 +447,15 @@ class AsyncProfile(BaseProfile):
         :raises: oracledb.DatabaseError
 
         """
+        if synthetic_data_attributes is None:
+            raise ValueError("'synthetic_data_attributes' cannot be None")
+
+        if not isinstance(synthetic_data_attributes, SyntheticDataAttributes):
+            raise TypeError(
+                "'synthetic_data_attributes' must be an object "
+                "of type select_ai.SyntheticDataAttributes"
+            )
+
         keyword_parameters = synthetic_data_attributes.prepare()
         keyword_parameters["profile_name"] = self.profile_name
         async with async_cursor() as cr:

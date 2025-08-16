@@ -103,13 +103,28 @@ Enable AI service provider
        export SELECT_AI_DB_CONNECT_STRING=<db_connect_string>
        export TNS_ADMIN=<path/to/dir_containing_tnsnames.ora>
 
+Sync API
+++++++++
+
 This method grants execute privilege on the packages
 ``DBMS_CLOUD``, ``DBMS_CLOUD_AI`` and ``DBMS_CLOUD_PIPELINE``. It
-also enables the user to invoke the AI(LLM) endpoint hosted at a
-certain domain
+also enables the database user to invoke the AI(LLM) endpoint
 
 .. literalinclude:: ../../../samples/enable_ai_provider.py
    :language: python
+   :lines: 15-
+
+output::
+
+    Enabled AI provider for user: <select_ai_db_user>
+
+.. latex:clearpage::
+
+Async API
++++++++++
+.. literalinclude:: ../../../samples/async/enable_ai_provider.py
+   :language: python
+   :lines: 14-
 
 output::
 
@@ -121,8 +136,25 @@ output::
 Disable AI service provider
 ***************************
 
+Sync API
+++++++++
+
 .. literalinclude:: ../../../samples/disable_ai_provider.py
    :language: python
+   :lines: 14-
+
+output::
+
+    Disabled AI provider for user:  <select_ai_db_user>
+
+.. latex:clearpage::
+
+Async API
++++++++++
+
+.. literalinclude:: ../../../samples/async/disable_ai_provider.py
+   :language: python
+   :lines: 14-
 
 output::
 

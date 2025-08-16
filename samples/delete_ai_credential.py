@@ -6,10 +6,10 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# async/profile_explain_sql.py
+# delete_ai_credential.py
+#
+# Delete AI credential
 # -----------------------------------------------------------------------------
-
-import asyncio
 import os
 
 import select_ai
@@ -18,14 +18,8 @@ user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
-
-async def main():
-    await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile",
-    )
-    response = await async_profile.explain_sql("How many promotions ?")
-    print(response)
-
-
-asyncio.run(main())
+select_ai.connect(user=user, password=password, dsn=dsn)
+select_ai.delete_credential(
+    credential_name="my_oci_ai_profile_key", force=True
+)
+print("Deleted credential: my_oci_ai_profile_key")
