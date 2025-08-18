@@ -5,7 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "select_ai"
 dynamic = ["version"]
-description = "Python API for Select AI"
+description = "Select AI for Python"
+readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.9"
 authors = [
     {name="Abhishek Singh", email="abhishek.o.singh@oracle.com"}
@@ -22,7 +23,7 @@ keywords = [
 license = " UPL-1.0"
 license-files = ["LICENSE.txt"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -39,6 +40,11 @@ dependencies = [
     "oracledb",
     "pandas==2.2.3"
 ]
+
+[project.urls]
+Homepage = "https://github.com/oracle/python-select-ai"
+Repository = "https://github.com/oracle/python-select-ai"
+Issues = "https://github.com/oracle/python-select-ai/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -39,8 +39,25 @@ Create credential
 In this example, we create a credential object to authenticate to OCI Gen AI
 service provider:
 
+Sync API
+++++++++
+
 .. literalinclude:: ../../../samples/create_ai_credential.py
    :language: python
+   :lines: 14-
+
+output::
+
+    Created credential:  my_oci_ai_profile_key
+
+.. latex:clearpage::
+
+Async API
++++++++++
+
+.. literalinclude:: ../../../samples/async/create_ai_credential.py
+   :language: python
+   :lines: 14-
 
 output::
 

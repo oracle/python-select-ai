@@ -60,6 +60,12 @@ class SyntheticDataAttributes(SelectAIDataClass):
     record_count: Optional[int] = None
     user_prompt: Optional[str] = None
 
+    def __post_init__(self):
+        if self.params and not isinstance(self.params, SyntheticDataParams):
+            raise TypeError(
+                "'params' must be an object of" " type SyntheticDataParams'"
+            )
+
     def dict(self, exclude_null=True):
         attributes = {}
         for k, v in self.__dict__.items():

@@ -26,7 +26,7 @@ async def main():
     async_profile = await select_ai.AsyncProfile(
         profile_name="async_oci_ai_profile",
     )
-    response = await async_profile.show_sql("How many promotions")
+    response = await async_profile.show_sql("How many promotions?")
     print(response)
 
 

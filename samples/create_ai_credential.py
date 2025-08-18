@@ -10,6 +10,7 @@
 #
 # Create a Database credential storing OCI Gen AI's credentials
 # -----------------------------------------------------------------------------
+
 import os
 
 import oci

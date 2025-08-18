@@ -39,6 +39,7 @@ Create Profile
 
 .. literalinclude:: ../../../samples/profile_create.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -79,6 +80,7 @@ Narrate
 
 .. literalinclude:: ../../../samples/profile_narrate.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -93,6 +95,7 @@ Show SQL
 
 .. literalinclude:: ../../../samples/profile_show_sql.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -108,6 +111,7 @@ Run SQL
 
 .. literalinclude:: ../../../samples/profile_run_sql.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -123,7 +127,8 @@ Chat
 **************************
 
 .. literalinclude:: ../../../samples/profile_chat.py
-       :language: python
+   :language: python
+   :lines: 14-
 
 output::
 
@@ -139,7 +144,9 @@ List profiles
 **************************
 
 .. literalinclude:: ../../../samples/profiles_list.py
-       :language: python
+   :language: python
+   :lines: 14-
+
 
 output::
 
