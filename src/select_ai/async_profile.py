@@ -344,8 +344,15 @@ class AsyncProfile(BaseProfile):
                 keyword_parameters=parameters,
             )
         if data is not None:
-            return await data.read()
-        return None
+            result = await data.read()
+        else:
+            result = None
+        if action == Action.RUNSQL and result:
+            return pandas.DataFrame(json.loads(result))
+        elif action == Action.RUNSQL:
+            return pandas.DataFrame()
+        else:
+            return result
 
     async def chat(self, prompt, params: Mapping = None) -> str:
         """Asynchronously chat with the LLM
@@ -411,8 +418,7 @@ class AsyncProfile(BaseProfile):
         :param params: Parameters to include in the LLM request
         :return: pandas.DataFrame
         """
-        data = await self.generate(prompt, action=Action.RUNSQL, params=params)
-        return pandas.DataFrame(json.loads(data))
+        return await self.generate(prompt, action=Action.RUNSQL, params=params)
 
     async def show_sql(self, prompt, params: Mapping = None):
         """Show the generated SQL
