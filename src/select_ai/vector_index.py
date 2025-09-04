@@ -119,6 +119,16 @@ class _BaseVectorIndex(ABC):
         attributes: Optional[VectorIndexAttributes] = None,
     ):
         """Initialize a Vector Index"""
+        if attributes and not isinstance(attributes, VectorIndexAttributes):
+            raise TypeError(
+                "'attributes' must be an object of type "
+                "select_ai.VectorIndexAttributes"
+            )
+        if profile and not isinstance(profile, BaseProfile):
+            raise TypeError(
+                "'profile' must be an object of type "
+                "select_ai.Profile or select_ai.AsyncProfile"
+            )
         self.profile = profile
         self.index_name = index_name
         self.attributes = attributes

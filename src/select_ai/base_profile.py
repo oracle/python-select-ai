@@ -73,6 +73,7 @@ class ProfileAttributes(SelectAIDataClass):
     vector_index_name: Optional[str] = None
 
     def __post_init__(self):
+        super().__post_init__()
         if self.provider and not isinstance(self.provider, Provider):
             raise ValueError(
                 f"'provider' must be an object of " f"type select_ai.Provider"

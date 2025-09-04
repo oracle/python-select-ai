@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Union
 
 from select_ai._abc import SelectAIDataClass
+from select_ai._validations import enforce_types
 
 from .db import async_cursor, cursor
 from .sql import (
@@ -194,6 +195,7 @@ class AnthropicProvider(Provider):
     provider_endpoint = "api.anthropic.com"
 
 
+@enforce_types
 async def async_enable_provider(
     users: Union[str, List[str]], provider_endpoint: str = None
 ):
@@ -210,7 +212,7 @@ async def async_enable_provider(
 
     async with async_cursor() as cr:
         for user in users:
-            await cr.execute(GRANT_PRIVILEGES_TO_USER.format(user))
+            await cr.execute(GRANT_PRIVILEGES_TO_USER.format(user.strip()))
             if provider_endpoint:
                 await cr.execute(
                     ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
@@ -219,6 +221,7 @@ async def async_enable_provider(
                 )
 
 
+@enforce_types
 async def async_disable_provider(
     users: Union[str, List[str]], provider_endpoint: str = None
 ):
@@ -234,7 +237,7 @@ async def async_disable_provider(
 
     async with async_cursor() as cr:
         for user in users:
-            await cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user))
+            await cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user.strip()))
             if provider_endpoint:
                 await cr.execute(
                     DISABLE_AI_PROFILE_DOMAIN_FOR_USER,
@@ -243,6 +246,7 @@ async def async_disable_provider(
                 )
 
 
+@enforce_types
 def enable_provider(
     users: Union[str, List[str]], provider_endpoint: str = None
 ):
@@ -256,7 +260,7 @@ def enable_provider(
 
     with cursor() as cr:
         for user in users:
-            cr.execute(GRANT_PRIVILEGES_TO_USER.format(user))
+            cr.execute(GRANT_PRIVILEGES_TO_USER.format(user.strip()))
             if provider_endpoint:
                 cr.execute(
                     ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
@@ -265,6 +269,7 @@ def enable_provider(
                 )
 
 
+@enforce_types
 def disable_provider(
     users: Union[str, List[str]], provider_endpoint: str = None
 ):
@@ -279,7 +284,7 @@ def disable_provider(
 
     with cursor() as cr:
         for user in users:
-            cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user))
+            cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user.strip()))
             if provider_endpoint:
                 cr.execute(
                     DISABLE_AI_PROFILE_DOMAIN_FOR_USER,
