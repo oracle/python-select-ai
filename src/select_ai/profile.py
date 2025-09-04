@@ -8,7 +8,7 @@
 import json
 from contextlib import contextmanager
 from dataclasses import replace as dataclass_replace
-from typing import Iterator, Mapping, Optional, Union
+from typing import Generator, Iterator, Mapping, Optional, Union
 
 import oracledb
 import pandas
@@ -258,7 +258,9 @@ class Profile(BaseProfile):
                 raise ProfileNotFoundError(profile_name=profile_name)
 
     @classmethod
-    def list(cls, profile_name_pattern: str = ".*") -> Iterator["Profile"]:
+    def list(
+        cls, profile_name_pattern: str = ".*"
+    ) -> Generator["Profile", None, None]:
         """List AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
@@ -314,8 +316,15 @@ class Profile(BaseProfile):
                 keyword_parameters=parameters,
             )
         if data is not None:
-            return data.read()
-        return None
+            result = data.read()
+        else:
+            result = None
+        if action == Action.RUNSQL and result:
+            return pandas.DataFrame(json.loads(result))
+        elif action == Action.RUNSQL:
+            return pandas.DataFrame()
+        else:
+            return result
 
     def chat(self, prompt: str, params: Mapping = None) -> str:
         """Chat with the LLM
@@ -375,10 +384,7 @@ class Profile(BaseProfile):
         :param params: Parameters to include in the LLM request
         :return: pandas.DataFrame
         """
-        data = json.loads(
-            self.generate(prompt, action=Action.RUNSQL, params=params)
-        )
-        return pandas.DataFrame(data)
+        return self.generate(prompt, action=Action.RUNSQL, params=params)
 
     def show_sql(self, prompt: str, params: Mapping = None) -> str:
         """Show the generated SQL
