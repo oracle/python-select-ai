@@ -47,6 +47,7 @@ dependencies = [
 Homepage = "https://github.com/oracle/python-select-ai"
 Repository = "https://github.com/oracle/python-select-ai"
 Issues = "https://github.com/oracle/python-select-ai/issues"
+Documentation = "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/pysai/"
 
 [tool.setuptools.packages.find]
 where = ["src"]
