@@ -6,9 +6,9 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# vector_index_get_attributes.py
+# vector_index_update_attributes.py
 #
-# Gets attributes for a vector index
+# Update attributes for a vector index
 # -----------------------------------------------------------------------------
 
 import os

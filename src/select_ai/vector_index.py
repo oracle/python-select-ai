@@ -301,8 +301,8 @@ class VectorIndex(_BaseVectorIndex):
 
     def set_attribute(
         self,
-        attribute_name: str = None,
-        attribute_value: Union[str, int, float] = None,
+        attribute_name: str,
+        attribute_value: Union[str, int, float],
     ):
         """
         This procedure updates an existing vector store index with a specified
@@ -599,8 +599,8 @@ class AsyncVectorIndex(_BaseVectorIndex):
 
         :param str attribute_name: Custom attribute name
         :param Union[str, int, float] attribute_value: Attribute Value
-        :param VectorIndexAttributes attributes: Specify multiple attributes
-         to update in a single API invocation
+        :param select_ai.VectorIndexAttributes attributes: Use this to
+         update multiple attribute values
         :return: None
         :raises: oracledb.DatabaseError
         """
