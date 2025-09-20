@@ -15,7 +15,11 @@ import pandas
 
 from select_ai import Conversation
 from select_ai.action import Action
-from select_ai.base_profile import BaseProfile, ProfileAttributes
+from select_ai.base_profile import (
+    BaseProfile,
+    ProfileAttributes,
+    no_data_for_prompt,
+)
 from select_ai.db import cursor
 from select_ai.errors import ProfileExistsError, ProfileNotFoundError
 from select_ai.provider import Provider
@@ -319,10 +323,10 @@ class Profile(BaseProfile):
             result = data.read()
         else:
             result = None
-        if action == Action.RUNSQL and result:
+        if action == Action.RUNSQL:
+            if no_data_for_prompt(result):  # empty dataframe
+                return pandas.DataFrame()
             return pandas.DataFrame(json.loads(result))
-        elif action == Action.RUNSQL:
-            return pandas.DataFrame()
         else:
             return result
 

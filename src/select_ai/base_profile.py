@@ -59,6 +59,7 @@ class ProfileAttributes(SelectAIDataClass):
     constraints: Optional[str] = None
     conversation: Optional[bool] = None
     credential_name: Optional[str] = None
+    enable_custom_source_uri: Optional[bool] = None
     enable_sources: Optional[bool] = None
     enable_source_offsets: Optional[bool] = None
     enforce_object_list: Optional[bool] = None
@@ -182,3 +183,11 @@ class BaseProfile(ABC):
             f"{self.__class__.__name__}(profile_name={self.profile_name}, "
             f"attributes={self.attributes}, description={self.description})"
         )
+
+
+def no_data_for_prompt(result) -> bool:
+    if result is None:
+        return True
+    if result == "No data found for the prompt.":
+        return True
+    return False
