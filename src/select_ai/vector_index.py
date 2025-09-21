@@ -17,7 +17,7 @@ from select_ai._abc import SelectAIDataClass
 from select_ai._enums import StrEnum
 from select_ai.async_profile import AsyncProfile
 from select_ai.db import async_cursor, cursor
-from select_ai.errors import VectorIndexNotFoundError
+from select_ai.errors import ProfileNotFoundError, VectorIndexNotFoundError
 from select_ai.profile import Profile
 from select_ai.sql import (
     GET_USER_VECTOR_INDEX_ATTRIBUTES,
@@ -89,9 +89,21 @@ class VectorIndexAttributes(SelectAIDataClass):
     vector_table_name: Optional[str] = None
     pipeline_name: Optional[str] = None
 
-    def json(self, exclude_null=True):
+    def json(self, exclude_null=True, for_update=False):
         attributes = self.dict(exclude_null=exclude_null)
         attributes.pop("pipeline_name", None)
+        # Currently, the following are unmodifiable
+        unmodifiable = [
+            "location",
+            "chunk_size",
+            "chunk_overlap",
+            "vector_dimension",
+            "vector_table_name",
+            "vector_distance_metric",
+        ]
+        if for_update:
+            for key in unmodifiable:
+                attributes.pop(key, None)
         return json.dumps(attributes)
 
     @classmethod
@@ -113,7 +125,7 @@ class _BaseVectorIndex(ABC):
 
     def __init__(
         self,
-        profile: BaseProfile = None,
+        profile: Optional[BaseProfile] = None,
         index_name: Optional[str] = None,
         description: Optional[str] = None,
         attributes: Optional[VectorIndexAttributes] = None,
@@ -159,7 +171,9 @@ class VectorIndex(_BaseVectorIndex):
         :raises: VectorIndexNotFoundError
         """
         with cursor() as cr:
-            cr.execute(GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name)
+            cr.execute(
+                GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name.upper()
+            )
             attributes = cr.fetchall()
             if attributes:
                 post_processed_attributes = {}
@@ -248,10 +262,18 @@ class VectorIndex(_BaseVectorIndex):
 
         """
         with cursor() as cr:
-            cr.callproc(
-                "DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
-                keyword_parameters={"index_name": self.index_name},
-            )
+            try:
+                cr.callproc(
+                    "DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
+                    keyword_parameters={"index_name": self.index_name},
+                )
+            except oracledb.Error as e:
+                (error,) = e.args
+                # ORA-20000: Vector Index is already in the desired status
+                if error.code == 20000:
+                    pass
+                else:
+                    raise
 
     def disable(self):
         """This procedure disables a vector index object in the current
@@ -264,15 +286,48 @@ class VectorIndex(_BaseVectorIndex):
         :raises: oracledb.DatabaseError
         """
         with cursor() as cr:
+            try:
+                cr.callproc(
+                    "DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
+                    keyword_parameters={"index_name": self.index_name},
+                )
+            except oracledb.Error as e:
+                (error,) = e.args
+                # ORA-20000: Vector Index is already in the desired status
+                if error.code == 20000:
+                    pass
+                else:
+                    raise
+
+    def set_attribute(
+        self,
+        attribute_name: str,
+        attribute_value: Union[str, int, float],
+    ):
+        """
+        This procedure updates an existing vector store index with a specified
+        value of the vector index attribute.
+
+        :param str attribute_name: Custom attribute name
+        :param Union[str, int, float] attribute_value: Attribute Value
+
+        """
+        setattr(self.attributes, attribute_name, attribute_value)
+        parameters = {
+            "index_name": self.index_name,
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
-                keyword_parameters={"index_name": self.index_name},
+                "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
+                keyword_parameters=parameters,
             )
 
     def set_attributes(
         self,
-        attribute_name: str,
-        attribute_value: Union[str, int, float],
+        attribute_name: Optional[str] = None,
+        attribute_value: Optional[Union[str, int, float]] = None,
         attributes: VectorIndexAttributes = None,
     ):
         """
@@ -283,8 +338,8 @@ class VectorIndex(_BaseVectorIndex):
 
         :param str attribute_name: Custom attribute name
         :param Union[str, int, float] attribute_value: Attribute Value
-        :param VectorIndexAttributes attributes: Specify multiple attributes
-         to update in a single API invocation
+        :param select_ai.VectorIndexAttributes attributes: Use this to
+         update multiple attribute values
         :return: None
         :raises: oracledb.DatabaseError
         """
@@ -297,12 +352,12 @@ class VectorIndex(_BaseVectorIndex):
 
         parameters = {"index_name": self.index_name}
         if attributes:
-            parameters["attributes"] = attributes.json()
+            parameters["attributes"] = attributes.json(for_update=True)
             self.attributes = attributes
         else:
             setattr(self.attributes, attribute_name, attribute_value)
-            parameters["attributes_name"] = attribute_name
-            parameters["attributes_value"] = attribute_value
+            parameters["attribute_name"] = attribute_name
+            parameters["attribute_value"] = attribute_value
 
         with cursor() as cr:
             cr.callproc(
@@ -317,6 +372,16 @@ class VectorIndex(_BaseVectorIndex):
         :raises: VectorIndexNotFoundError
         """
         return self._get_attributes(self.index_name)
+
+    def get_profile(self) -> Profile:
+        """Get Profile object linked to this vector index
+
+        :return: select_ai.Profile
+        :raises: ProfileNotFoundError
+        """
+        attributes = self._get_attributes(index_name=self.index_name)
+        profile = Profile(profile_name=attributes.profile_name)
+        return profile
 
     @classmethod
     def list(cls, index_name_pattern: str = ".*") -> Iterator["VectorIndex"]:
@@ -340,11 +405,15 @@ class VectorIndex(_BaseVectorIndex):
                 else:
                     description = None
                 attributes = cls._get_attributes(index_name=index_name)
+                try:
+                    profile = Profile(profile_name=attributes.profile_name)
+                except ProfileNotFoundError:
+                    profile = None
                 yield cls(
                     index_name=index_name,
                     description=description,
                     attributes=attributes,
-                    profile=Profile(profile_name=attributes.profile_name),
+                    profile=profile,
                 )
 
 
@@ -368,7 +437,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         """
         async with async_cursor() as cr:
             await cr.execute(
-                GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name
+                GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name.upper()
             )
             attributes = await cr.fetchall()
             if attributes:
@@ -457,10 +526,18 @@ class AsyncVectorIndex(_BaseVectorIndex):
 
         """
         async with async_cursor() as cr:
-            await cr.callproc(
-                "DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
-                keyword_parameters={"index_name": self.index_name},
-            )
+            try:
+                await cr.callproc(
+                    "DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
+                    keyword_parameters={"index_name": self.index_name},
+                )
+            except oracledb.DatabaseError as e:
+                (error,) = e.args
+                # ORA-20000: Vector Index is already in the desired status
+                if error.code == 20000:
+                    pass
+                else:
+                    raise
 
     async def disable(self) -> None:
         """This procedure disables a vector index object in the current
@@ -473,15 +550,45 @@ class AsyncVectorIndex(_BaseVectorIndex):
         :raises: oracledb.DatabaseError
         """
         async with async_cursor() as cr:
+            try:
+                await cr.callproc(
+                    "DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
+                    keyword_parameters={"index_name": self.index_name},
+                )
+            except oracledb.Error as e:
+                (error,) = e.args
+                if error.code == 20000:
+                    pass
+                else:
+                    raise
+
+    async def set_attribute(
+        self, attribute_name: str, attribute_value: Union[str, int, float]
+    ) -> None:
+        """
+        This procedure updates an existing vector store index with a specified
+        value of the vector index attribute.
+
+        :param str attribute_name: Custom attribute name
+        :param Union[str, int, float] attribute_value: Attribute Value
+
+        """
+        parameters = {
+            "index_name": self.index_name,
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        setattr(self.attributes, attribute_name, attribute_value)
+        async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
-                keyword_parameters={"index_name": self.index_name},
+                "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
+                keyword_parameters=parameters,
             )
 
     async def set_attributes(
         self,
-        attribute_name: str,
-        attribute_value: Union[str, int],
+        attribute_name: Optional[str] = None,
+        attribute_value: Optional[Union[str, int, float]] = None,
         attributes: VectorIndexAttributes = None,
     ) -> None:
         """
@@ -492,8 +599,8 @@ class AsyncVectorIndex(_BaseVectorIndex):
 
         :param str attribute_name: Custom attribute name
         :param Union[str, int, float] attribute_value: Attribute Value
-        :param VectorIndexAttributes attributes: Specify multiple attributes
-         to update in a single API invocation
+        :param select_ai.VectorIndexAttributes attributes: Use this to
+         update multiple attribute values
         :return: None
         :raises: oracledb.DatabaseError
         """
@@ -506,11 +613,11 @@ class AsyncVectorIndex(_BaseVectorIndex):
         parameters = {"index_name": self.index_name}
         if attributes:
             self.attributes = attributes
-            parameters["attributes"] = attributes.json()
+            parameters["attributes"] = attributes.json(for_update=True)
         else:
             setattr(self.attributes, attribute_name, attribute_value)
-            parameters["attributes_name"] = attribute_name
-            parameters["attributes_value"] = attribute_value
+            parameters["attribute_name"] = attribute_name
+            parameters["attribute_value"] = attribute_value
 
         async with async_cursor() as cr:
             await cr.callproc(
@@ -525,6 +632,16 @@ class AsyncVectorIndex(_BaseVectorIndex):
         :raises: VectorIndexNotFoundError
         """
         return await self._get_attributes(index_name=self.index_name)
+
+    async def get_profile(self) -> AsyncProfile:
+        """Get AsyncProfile object linked to this vector index
+
+        :return: select_ai.AsyncProfile
+        :raises: ProfileNotFoundError
+        """
+        attributes = await self._get_attributes(index_name=self.index_name)
+        profile = await AsyncProfile(profile_name=attributes.profile_name)
+        return profile
 
     @classmethod
     async def list(
@@ -552,11 +669,15 @@ class AsyncVectorIndex(_BaseVectorIndex):
                 else:
                     description = None
                 attributes = await cls._get_attributes(index_name=index_name)
+                try:
+                    profile = await AsyncProfile(
+                        profile_name=attributes.profile_name,
+                    )
+                except ProfileNotFoundError:
+                    profile = None
                 yield VectorIndex(
                     index_name=index_name,
                     description=description,
                     attributes=attributes,
-                    profile=await AsyncProfile(
-                        profile_name=attributes.profile_name
-                    ),
+                    profile=profile,
                 )

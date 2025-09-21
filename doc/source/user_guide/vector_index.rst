@@ -81,6 +81,42 @@ output::
 
 .. latex:clearpage::
 
+
+Get vector index attributes
++++++++++++++++++++++++++++
+
+You can fetch the vector index attributes and associated AI profile using
+``vector_index.get_attributes()`` and ``vector_index.get_profile()`` methods
+respectively.
+
+.. literalinclude:: ../../../samples/vector_index_get_attributes.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
+
+    Profile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_custom_source_uri=None, enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model='cohere.embed-english-v3.0', model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=MY OCI AI Profile)
+
+.. latex:clearpage::
+
+Update vector index attributes
+++++++++++++++++++++++++++++++
+
+To update attributes, use either ``vector_index.set_attribute()`` or
+``vector_index.set_attributes()``
+
+.. literalinclude:: ../../../samples/vector_index_update_attributes.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
+
+.. latex:clearpage::
+
 RAG using vector index
 ++++++++++++++++++++++
 
@@ -158,6 +194,41 @@ output::
 
 
 .. latex:clearpage::
+
+
+Async get vector index attributes
++++++++++++++++++++++++++++++++++
+
+You can fetch the vector index attributes and associated AI profile using
+``async_vector_index.get_attributes()`` and ``async_vector_index.get_profile()``
+methods respectively.
+
+.. literalinclude:: ../../../samples/async/vector_index_get_attributes.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
+
+    AsyncProfile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_custom_source_uri=None, enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model='cohere.embed-english-v3.0', model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=MY OCI AI Profile)
+
+.. latex:clearpage::
+
+Async update vector index attributes
+++++++++++++++++++++++++++++++++++++
+
+To update attributes, use either ``async_vector_index.set_attribute()`` or
+``async_vector_index.set_attributes()``
+
+.. literalinclude:: ../../../samples/async/vector_index_update_attributes.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
+
 
 Async RAG using vector index
 ++++++++++++++++++++++++++++
