@@ -229,6 +229,7 @@ output::
 
     OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
 
+.. latex:clearpage::
 
 Async RAG using vector index
 ++++++++++++++++++++++++++++

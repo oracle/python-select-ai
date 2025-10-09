@@ -97,3 +97,13 @@ Synthetic Data
     :maxdepth: 3
 
     user_guide/synthetic_data.rst
+
+
+Select AI Agents
+================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/agent.rst

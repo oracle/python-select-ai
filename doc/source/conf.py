@@ -56,3 +56,7 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 pygments_style = "sphinx"
+
+latex_elements = {
+    "maxlistdepth": "10",  # Increase the maximum list nesting depth
+}
