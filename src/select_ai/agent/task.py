@@ -8,7 +8,15 @@
 import json
 from abc import ABC
 from dataclasses import dataclass
-from typing import AsyncGenerator, Iterator, List, Mapping, Optional, Union
+from typing import (
+    Any,
+    AsyncGenerator,
+    Iterator,
+    List,
+    Mapping,
+    Optional,
+    Union,
+)
 
 import oracledb
 
@@ -168,9 +176,15 @@ class Task(BaseTask):
             )
 
     def disable(self):
+        """
+        Disable AI Task
+        """
         pass
 
     def enable(self):
+        """
+        Enable AI Task
+        """
         pass
 
     @classmethod
@@ -217,9 +231,15 @@ class Task(BaseTask):
         pass
 
     def set_attributes(self, attributes: TaskAttributes):
+        """
+        Set AI Task attributes
+        """
         pass
 
-    def set_attribute(self):
+    def set_attribute(self, attribute_name: str, attribute_value: Any):
+        """
+        Set a single AI Task attribute specified using name and value
+        """
         pass
 
 

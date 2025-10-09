@@ -168,9 +168,15 @@ class Team(BaseTeam):
             )
 
     def disable(self):
+        """
+        Disable the AI agent team
+        """
         pass
 
     def enable(self):
+        """
+        Enable the AI agent team
+        """
         pass
 
     @classmethod
@@ -232,11 +238,12 @@ class Team(BaseTeam):
          WAITING_FOR_HUMAN state, the input serves as the human response.
 
         :param Mapping[str, str] params: Optional parameters for the task.
-         This supports:
-         1) conversation_id: Identifies the conversation session associated
-             with the agent team
-         2) variables: key-value pairs that provide additional input to
-             the agent team.
+         Currently, the following parameters are supported:
+
+         - conversation_id: Identifies the conversation session associated
+         with the agent team
+
+         - variables: key-value pairs that provide additional input to the agent team.
 
         """
         parameters = {
@@ -260,7 +267,14 @@ class Team(BaseTeam):
             return result
 
     def set_attributes(self, attributes: TeamAttributes) -> None:
+        """
+        Set the attributes of the AI Agent team
+        """
         pass
 
     def set_attribute(self, attribute_name: str, attribute_value: Any) -> None:
+        """
+        Set the attribute of the AI Agent team specified by
+        `attribute_name` and `attribute_value`.
+        """
         pass

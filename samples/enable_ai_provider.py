@@ -23,6 +23,6 @@ select_ai_user = os.getenv("SELECT_AI_USER")
 
 select_ai.connect(user=admin_user, password=password, dsn=dsn)
 select_ai.enable_provider(
-    users=select_ai_user, provider_endpoint="*.openai.azure.com"
+    users=select_ai_user, provider_endpoint="api.OPENAI.com"
 )
 print("Enabled AI provider for user: ", select_ai_user)

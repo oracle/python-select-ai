@@ -315,6 +315,7 @@ class Tool(_BaseTool):
         cls,
         tool_name: str,
         tool_params: ToolParams,
+        tool_type: ToolType,
         description: Optional[str] = None,
         replace: Optional[bool] = False,
     ) -> Tool:
@@ -324,6 +325,7 @@ class Tool(_BaseTool):
         :param str tool_name: The name of the tool
         :param select_ai.agent.ToolParams tool_params:
          Parameters required by built-in tool
+        :param select_ai.agent.ToolType tool_type: The built-in tool type
         :param str description: Description of the tool
         :param bool replace: Whether to replace the existing tool.
          Default value is False
@@ -336,7 +338,7 @@ class Tool(_BaseTool):
                 "type select_ai.agent.ToolParams"
             )
         attributes = ToolAttributes(
-            tool_params=tool_params, tool_type=ToolType.SQL
+            tool_params=tool_params, tool_type=tool_type
         )
         tool = cls(
             tool_name=tool_name, attributes=attributes, description=description
@@ -378,6 +380,7 @@ class Tool(_BaseTool):
         )
         return cls.create_built_in_tool(
             tool_name=tool_name,
+            tool_type=ToolType.EMAIL,
             tool_params=email_notification_tool_params,
             description=description,
             replace=replace,
@@ -397,6 +400,7 @@ class Tool(_BaseTool):
         )
         return cls.create_built_in_tool(
             tool_name=tool_name,
+            tool_type=ToolType.HTTP,
             tool_params=http_tool_params,
             description=description,
             replace=replace,
@@ -450,6 +454,7 @@ class Tool(_BaseTool):
         tool_params = RAGToolParams(profile_name=profile_name)
         return cls.create_built_in_tool(
             tool_name=tool_name,
+            tool_type=ToolType.RAG,
             tool_params=tool_params,
             description=description,
             replace=replace,
@@ -476,6 +481,7 @@ class Tool(_BaseTool):
         tool_params = SQLToolParams(profile_name=profile_name)
         return cls.create_built_in_tool(
             tool_name=tool_name,
+            tool_type=ToolType.SQL,
             tool_params=tool_params,
             description=description,
             replace=replace,
@@ -507,6 +513,7 @@ class Tool(_BaseTool):
         )
         return cls.create_built_in_tool(
             tool_name=tool_name,
+            tool_type=ToolType.SLACK,
             tool_params=slack_notification_tool_params,
             description=description,
             replace=replace,
@@ -536,6 +543,7 @@ class Tool(_BaseTool):
         )
         return cls.create_built_in_tool(
             tool_name=tool_name,
+            tool_type=ToolType.WEBSEARCH,
             tool_params=web_search_tool_params,
             description=description,
             replace=replace,

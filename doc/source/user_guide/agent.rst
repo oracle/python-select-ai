@@ -46,22 +46,30 @@ Python layer and persist the tool in the Database using
          - ``smtp_host``
     * - ``HTTP``
       - ``select_ai.agent.Tool.create_http_tool``
-      - ``tool_name``, ``credential_name``, ``endpoint``
+      - - ``tool_name``
+        - ``credential_name``
+        - ``endpoint``
     * - ``SQL``
       - ``select_ai.agent.Tool.create_sql_tool``
-      - ``tool_name``, ``profile_name``
+      - - ``tool_name``
+        - ``profile_name``
     * - ``SLACK``
       - ``select_ai.agent.Tool.create_slack_notification_tool``
-      - ``tool_name``, ``credential_name``, ``slack_channel``
+      - - ``tool_name``
+        - ``credential_name``
+        - ``slack_channel``
     * - ``WEBSEARCH``
       - ``select_ai.agent.Tool.create_websearch_tool``
-      - ``tool_name``, ``credential_name``
+      - - ``tool_name``
+        - ``credential_name``
     * - ``PL/SQL custom tool``
       - ``select_ai.agent.Tool.create_pl_sql_tool``
-      - ``tool_name``, ``function``
+      - - ``tool_name``
+        - ``function``
     * - ``RAG``
       - ``select_ai.agent.Tool.create_rag_tool``
-      - ``tool_name``, ``profile_name``
+      - - ``tool_name``
+        - ``profile_name``
 
 .. latex:clearpage::
 
