@@ -11,7 +11,6 @@ from dataclasses import dataclass
 from typing import AsyncGenerator, Iterator, List, Mapping, Optional, Union
 
 import oracledb
-from oci.generative_ai_agent.models import Tool
 
 from select_ai import BaseProfile
 from select_ai._abc import SelectAIDataClass
@@ -318,7 +317,7 @@ class Tool(_BaseTool):
         tool_type: ToolType,
         description: Optional[str] = None,
         replace: Optional[bool] = False,
-    ) -> Tool:
+    ) -> "Tool":
         """
         Register a built-in tool
 
@@ -356,7 +355,7 @@ class Tool(_BaseTool):
         smtp_host: str,
         description: Optional[str],
         replace: bool = False,
-    ) -> Tool:
+    ) -> "Tool":
         """
         Register an email notification tool
 
@@ -394,7 +393,7 @@ class Tool(_BaseTool):
         endpoint: str,
         description: Optional[str] = None,
         replace: bool = False,
-    ) -> Tool:
+    ) -> "Tool":
         http_tool_params = HTTPToolParams(
             credential_name=credential_name, endpoint=endpoint
         )
@@ -413,7 +412,7 @@ class Tool(_BaseTool):
         function: str,
         description: Optional[str] = None,
         replace: bool = False,
-    ) -> Tool:
+    ) -> "Tool":
         """
         Create a custom tool to invoke PL/SQL procedure or function
 
@@ -440,7 +439,7 @@ class Tool(_BaseTool):
         profile_name: str,
         description: Optional[str] = None,
         replace: bool = False,
-    ) -> Tool:
+    ) -> "Tool":
         """
         Register a RAG tool, which will use a VectorIndex linked AI Profile
 
@@ -467,7 +466,7 @@ class Tool(_BaseTool):
         profile_name: str,
         description: Optional[str] = None,
         replace: bool = False,
-    ) -> Tool:
+    ) -> "Tool":
         """
         Register a SQL tool to perform natural language to SQL translation
 
@@ -495,7 +494,7 @@ class Tool(_BaseTool):
         slack_channel: str,
         description: Optional[str] = None,
         replace: bool = False,
-    ) -> Tool:
+    ) -> "Tool":
         """
         Register a Slack notification tool
 
@@ -526,7 +525,7 @@ class Tool(_BaseTool):
         credential_name: str,
         description: Optional[str],
         replace: bool = False,
-    ) -> Tool:
+    ) -> "Tool":
         """
         Register a built-in websearch tool to search information
         on the web
@@ -577,7 +576,7 @@ class Tool(_BaseTool):
         pass
 
     @classmethod
-    def fetch(cls, tool_name: str) -> Tool:
+    def fetch(cls, tool_name: str) -> "Tool":
         """
         Fetch AI Tool attributes from the Database and build a proxy object in
         the Python layer

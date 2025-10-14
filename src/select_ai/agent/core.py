@@ -19,7 +19,6 @@ from typing import (
 )
 
 import oracledb
-from docutils.nodes import description
 
 from select_ai import BaseProfile
 from select_ai._abc import SelectAIDataClass

@@ -11,6 +11,7 @@ agents and run teams from Python using the existing select_ai connection objects
 
 - Group agents into teams and invoke them with a single API call
 
+.. latex:clearpage::
 
 ********
 ``Tool``
@@ -95,6 +96,8 @@ language translation to SQL using an OCI AI profile
 .. literalinclude:: ../../../samples/agent/tool_create.py
    :language: python
    :lines: 14-
+
+.. latex:clearpage::
 
 output::
 
@@ -255,3 +258,37 @@ Run Team
 output::
 
     To list the movies, you can use the SQL query: SELECT m.* FROM "SPARK_DB_USER"."MOVIE" m.
+
+.. latex:clearpage::
+
+*****************
+AI agent examples
+*****************
+
+Web Search Agent using OpenAI's GPT model
++++++++++++++++++++++++++++++++++++++++++
+
+.. literalinclude:: ../../../samples/agent/websearch_agent.py
+   :language: python
+
+output::
+
+    Created credential:  OPENAI_CRED
+    Created profile:  OPENAI_PROFILE
+    Created tool:  WEB_SEARCH_TOOL
+    The key features of Oracle Database Machine Learning, as highlighted on the Oracle website, include:
+
+    - In-database machine learning: Build, train, and deploy machine learning models directly inside the Oracle Database, eliminating the need to move data.
+    - Support for multiple languages: Use SQL, Python, and R for machine learning tasks, allowing flexibility for data scientists and developers.
+    - Automated machine learning (AutoML): Automates feature selection, model selection, and hyperparameter tuning to speed up model development.
+    - Scalability and performance: Utilizes Oracle Database’s scalability, security, and high performance for machine learning workloads.
+    - Integration with Oracle Cloud: Seamlessly integrates with Oracle Cloud Infrastructure for scalable and secure deployment.
+    - Security and governance: Inherits Oracle Database’s robust security, data privacy, and governance features.
+    - Prebuilt algorithms: Offers a wide range of in-database algorithms for classification, regression, clustering, anomaly detection, and more.
+    - No data movement: Keeps data secure and compliant by performing analytics and machine learning where the data resides.
+
+    These features enable organizations to operationalize machine learning at scale, improve productivity, and maintain data security and compliance.
+
+    The main topic at the URL https://www.oracle.com/artificial-intelligence/database-machine-learning is Oracle's database machine learning capabilities, specifically how Oracle integrates artificial intelligence and machine learning features directly into its database products. The page highlights how users can leverage these built-in AI and ML tools to analyze data, build predictive models, and enhance business applications without moving data outside the Oracle Database environment.
+
+    The main topic of the website https://openai.com is artificial intelligence research and development. OpenAI focuses on creating and promoting advanced AI technologies, including products like ChatGPT, and provides information about their research, products, and mission to ensure that artificial general intelligence benefits all of humanity.

@@ -23,11 +23,6 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 select_ai.connect(user=user, password=password, dsn=dsn)
 
-provider = select_ai.OCIGenAIProvider(
-    region="us-chicago-1",
-    oci_apiformat="GENERIC",
-    model="meta.llama-4-maverick-17b-128e-instruct-fp8",
-)
 profile_attributes = select_ai.ProfileAttributes(
     credential_name="my_oci_ai_profile_key",
     object_list=[
@@ -35,7 +30,11 @@ profile_attributes = select_ai.ProfileAttributes(
         {"owner": user, "name": "ACTOR"},
         {"owner": user, "name": "DIRECTOR"},
     ],
-    provider=provider,
+    provider=select_ai.OCIGenAIProvider(
+        region="us-chicago-1",
+        oci_apiformat="GENERIC",
+        model="meta.llama-4-maverick-17b-128e-instruct-fp8",
+    ),
 )
 profile = select_ai.Profile(
     profile_name="LLAMA_4_MAVERICK",
@@ -49,7 +48,7 @@ profile = select_ai.Profile(
 sql_tool = select_ai.agent.Tool.create_sql_tool(
     tool_name="MOVIE_SQL_TOOL",
     description="My Select AI MOVIE SQL agent tool",
-    profile_name="oci_ai_profile",
+    profile_name="LLAMA_4_MAVERICK",
     replace=True,
 )
 print(sql_tool.tool_name)

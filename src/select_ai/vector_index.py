@@ -24,6 +24,16 @@ from select_ai.sql import (
     LIST_USER_VECTOR_INDEXES,
 )
 
+UNMODIFIABLE_VECTOR_INDEX_ATTRIBUTES = (
+    "location",
+    "chunk_size",
+    "chunk_overlap",
+    "pipeline_name",
+    "vector_dimension",
+    "vector_table_name",
+    "vector_distance_metric",
+)
+
 
 class VectorDBProvider(StrEnum):
     ORACLE = "oracle"
@@ -170,6 +180,8 @@ class VectorIndex(_BaseVectorIndex):
         :return: select_ai.VectorIndexAttributes
         :raises: VectorIndexNotFoundError
         """
+        if index_name is None:
+            raise AttributeError("'index_name' is required")
         with cursor() as cr:
             cr.execute(
                 GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name.upper()
