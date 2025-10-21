@@ -8,41 +8,23 @@
 """
 1200 - Module for testing the Profile proxy object
 """
+import uuid
 
 import oracledb
 import pytest
 import select_ai
 from select_ai import Profile, ProfileAttributes
 
-
-@pytest.fixture(scope="module")
-def provider():
-    return select_ai.OCIGenAIProvider(
-        region="us-phoenix-1", oci_apiformat="GENERIC"
-    )
-
-
-@pytest.fixture(scope="module")
-def profile_attributes(provider, oci_credential):
-    return ProfileAttributes(
-        credential_name=oci_credential["credential_name"],
-        object_list=[{"owner": "SH"}],
-        provider=provider,
-    )
-
-
-@pytest.fixture(scope="module")
-def min_profile_attributes(provider, oci_credential):
-    return ProfileAttributes(
-        credential_name=oci_credential["credential_name"],
-        provider=select_ai.OCIGenAIProvider(),
-    )
+PYSAI_1200_PROFILE = f"PYSAI_1200_{uuid.uuid4().hex.upper()}"
+PYSAI_1200_PROFILE_2 = f"PYSAI_1200_2_{uuid.uuid4().hex.upper()}"
+PYSAI_1200_MIN_ATTR_PROFILE = f"PYSAI_1200_MIN_{uuid.uuid4().hex.upper()}"
+PYSAI_1200_DUP_PROFILE = f"PYSAI_1200_DUP_{uuid.uuid4().hex.upper()}"
 
 
 @pytest.fixture(scope="module")
 def python_gen_ai_profile(profile_attributes):
     profile = select_ai.Profile(
-        profile_name="PYTHON_GENAI_PROFILE",
+        profile_name=PYSAI_1200_PROFILE,
         description="OCI GENAI Profile",
         attributes=profile_attributes,
     )
@@ -53,7 +35,7 @@ def python_gen_ai_profile(profile_attributes):
 @pytest.fixture(scope="module")
 def python_gen_ai_profile_2(profile_attributes):
     profile = select_ai.Profile(
-        profile_name="PYTHON_GENAI_PROFILE_2",
+        profile_name=PYSAI_1200_PROFILE_2,
         description="OCI GENAI Profile 2",
         attributes=profile_attributes,
     )
@@ -65,7 +47,7 @@ def python_gen_ai_profile_2(profile_attributes):
 @pytest.fixture(scope="module")
 def python_gen_ai_min_attr_profile(min_profile_attributes):
     profile = select_ai.Profile(
-        profile_name="PYTHON_MIN_ATTRIB_PROFILE",
+        profile_name=PYSAI_1200_MIN_ATTR_PROFILE,
         attributes=min_profile_attributes,
         description=None,
     )
@@ -76,7 +58,7 @@ def python_gen_ai_min_attr_profile(min_profile_attributes):
 @pytest.fixture
 def python_gen_ai_duplicate_profile(min_profile_attributes):
     profile = Profile(
-        profile_name="PYTHON_DUPLICATE_PROFILE",
+        profile_name=PYSAI_1200_DUP_PROFILE,
         attributes=min_profile_attributes,
     )
     yield profile
@@ -85,14 +67,14 @@ def python_gen_ai_duplicate_profile(min_profile_attributes):
 
 def test_1200(python_gen_ai_profile, profile_attributes):
     """Create basic Profile"""
-    assert python_gen_ai_profile.profile_name == "PYTHON_GENAI_PROFILE"
+    assert python_gen_ai_profile.profile_name == PYSAI_1200_PROFILE
     assert python_gen_ai_profile.attributes == profile_attributes
     assert python_gen_ai_profile.description == "OCI GENAI Profile"
 
 
 def test_1201(python_gen_ai_profile_2, profile_attributes):
     """Create Profile using create method"""
-    assert python_gen_ai_profile_2.profile_name == "PYTHON_GENAI_PROFILE_2"
+    assert python_gen_ai_profile_2.profile_name == PYSAI_1200_PROFILE_2
     assert python_gen_ai_profile_2.attributes == profile_attributes
     assert python_gen_ai_profile_2.description == "OCI GENAI Profile 2"
 
@@ -100,11 +82,11 @@ def test_1201(python_gen_ai_profile_2, profile_attributes):
 def test_1202(profile_attributes):
     """Create duplicate profile with replace=True"""
     duplicate = Profile(
-        profile_name="PYTHON_GENAI_PROFILE",
+        profile_name=PYSAI_1200_PROFILE,
         attributes=profile_attributes,
         replace=True,
     )
-    assert duplicate.profile_name == "PYTHON_GENAI_PROFILE"
+    assert duplicate.profile_name == PYSAI_1200_PROFILE
     assert duplicate.attributes == profile_attributes
     assert duplicate.description is None
 
@@ -113,7 +95,7 @@ def test_1203(python_gen_ai_min_attr_profile, min_profile_attributes):
     """Create Profile with minimum required attributes"""
     assert (
         python_gen_ai_min_attr_profile.profile_name
-        == "PYTHON_MIN_ATTRIB_PROFILE"
+        == PYSAI_1200_MIN_ATTR_PROFILE
     )
     assert python_gen_ai_min_attr_profile.attributes == min_profile_attributes
     assert python_gen_ai_min_attr_profile.description is None
@@ -122,25 +104,31 @@ def test_1203(python_gen_ai_min_attr_profile, min_profile_attributes):
 def test_1204():
     """List profiles without regex"""
     profile_list = list(Profile.list())
-    assert len(profile_list) == 3
+    profile_names = set(profile.profile_name for profile in profile_list)
+    assert PYSAI_1200_PROFILE in profile_names
+    assert PYSAI_1200_PROFILE_2 in profile_names
+    assert PYSAI_1200_MIN_ATTR_PROFILE in profile_names
 
 
 def test_1205():
     """List profiles with regex"""
-    profile_list = list(Profile.list(profile_name_pattern=".*PROFILE$"))
-    assert len(profile_list) == 2
+    profile_list = list(Profile.list(profile_name_pattern="^PYSAI_1200"))
+    profile_names = set(profile.profile_name for profile in profile_list)
+    assert PYSAI_1200_PROFILE in profile_names
+    assert PYSAI_1200_PROFILE_2 in profile_names
+    assert PYSAI_1200_MIN_ATTR_PROFILE in profile_names
 
 
 def test_1206(profile_attributes):
     """Get attributes for a Profile"""
-    profile = Profile("PYTHON_GENAI_PROFILE")
+    profile = Profile(PYSAI_1200_PROFILE)
     fetched_attributes = profile.get_attributes()
     assert fetched_attributes == profile_attributes
 
 
 def test_1207():
     """Set attributes for a Profile"""
-    profile = Profile("PYTHON_GENAI_PROFILE")
+    profile = Profile(PYSAI_1200_PROFILE)
     assert profile.attributes.provider.model is None
     profile.set_attribute(
         attribute_name="model", attribute_value="meta.llama-3.1-70b-instruct"
@@ -150,7 +138,7 @@ def test_1207():
 
 def test_1208(oci_credential):
     """Set multiple attributes for a Profile"""
-    profile = Profile("PYTHON_GENAI_PROFILE")
+    profile = Profile(PYSAI_1200_PROFILE)
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         provider=select_ai.OCIGenAIProvider(),

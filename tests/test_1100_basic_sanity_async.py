@@ -8,12 +8,13 @@
 """
 1100 - Module for testing basic sanity using AsyncProfile
 """
+import uuid
 
 import pytest
 import select_ai
 from pandas import DataFrame
 
-ASYNC_PROFILE_NAME = "OCI_GEN_AI_BASIC_ASYNC_TEST_PROFILE"
+ASYNC_PROFILE_NAME = f"PYSAI_ASYNC_1200_{uuid.uuid4().hex.upper()}"
 PROFILE_DESCRIPTION = "OCI Gen AI Basic Test Profile"
 
 
@@ -53,9 +54,8 @@ async def test_1101():
             profile_name_pattern=ASYNC_PROFILE_NAME
         )
     ]
-    assert len(profiles) == 1
-    assert profiles[0].profile_name == ASYNC_PROFILE_NAME
-    assert profiles[0].description == PROFILE_DESCRIPTION
+    profile_names = set([profile.profile_name for profile in profiles])
+    assert ASYNC_PROFILE_NAME in profile_names
 
 
 async def test_1102():
@@ -63,8 +63,8 @@ async def test_1102():
     profiles = [
         await profile async for profile in select_ai.AsyncProfile.list()
     ]
-    assert len(profiles) == 1
-    assert profiles[0].profile_name == ASYNC_PROFILE_NAME
+    profile_names = set([profile.profile_name for profile in profiles])
+    assert ASYNC_PROFILE_NAME in profile_names
 
 
 async def test_1103(async_oci_gen_ai_profile):

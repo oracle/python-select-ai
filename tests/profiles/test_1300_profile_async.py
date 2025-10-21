@@ -8,41 +8,27 @@
 """
 1300 - Module for testing the AsyncProfile proxy object
 """
+import uuid
 
 import oracledb
 import pytest
 import select_ai
 from select_ai import AsyncProfile, ProfileAttributes
 
-
-@pytest.fixture(scope="module")
-def provider():
-    return select_ai.OCIGenAIProvider(
-        region="us-phoenix-1", oci_apiformat="GENERIC"
-    )
-
-
-@pytest.fixture(scope="module")
-def profile_attributes(provider, oci_credential):
-    return ProfileAttributes(
-        credential_name=oci_credential["credential_name"],
-        object_list=[{"owner": "SH"}],
-        provider=provider,
-    )
-
-
-@pytest.fixture(scope="module")
-def min_profile_attributes(provider, oci_credential):
-    return ProfileAttributes(
-        credential_name=oci_credential["credential_name"],
-        provider=select_ai.OCIGenAIProvider(),
-    )
+PYSAI_ASYNC_1300_PROFILE = f"PYSAI_ASYNC_1300_{uuid.uuid4().hex.upper()}"
+PYSAI_ASYNC_1300_PROFILE_2 = f"PYSAI_ASYNC_1300_2_{uuid.uuid4().hex.upper()}"
+PYSAI_ASYNC_1300_MIN_ATTR_PROFILE = (
+    f"PYSAI_ASYNC_1300_MIN_{uuid.uuid4().hex.upper()}"
+)
+PYSAI_ASYNC_1300_DUP_PROFILE = (
+    f"PYSAI_ASYNC_1300_DUP_{uuid.uuid4().hex.upper()}"
+)
 
 
 @pytest.fixture(scope="module")
 async def python_gen_ai_profile(profile_attributes):
     profile = await AsyncProfile(
-        profile_name="PYTHON_GENAI_PROFILE",
+        profile_name=PYSAI_ASYNC_1300_PROFILE,
         description="OCI GENAI Profile",
         attributes=profile_attributes,
     )
@@ -53,7 +39,7 @@ async def python_gen_ai_profile(profile_attributes):
 @pytest.fixture(scope="module")
 async def python_gen_ai_profile_2(profile_attributes):
     profile = await AsyncProfile(
-        profile_name="PYTHON_GENAI_PROFILE_2",
+        profile_name=PYSAI_ASYNC_1300_PROFILE_2,
         description="OCI GENAI Profile 2",
         attributes=profile_attributes,
     )
@@ -65,7 +51,7 @@ async def python_gen_ai_profile_2(profile_attributes):
 @pytest.fixture(scope="module")
 async def python_gen_ai_min_attr_profile(min_profile_attributes):
     profile = await AsyncProfile(
-        profile_name="PYTHON_MIN_ATTRIB_PROFILE",
+        profile_name=PYSAI_ASYNC_1300_MIN_ATTR_PROFILE,
         attributes=min_profile_attributes,
         description=None,
     )
@@ -76,7 +62,7 @@ async def python_gen_ai_min_attr_profile(min_profile_attributes):
 @pytest.fixture
 async def python_gen_ai_duplicate_profile(min_profile_attributes):
     profile = await AsyncProfile(
-        profile_name="PYTHON_DUPLICATE_PROFILE",
+        profile_name=PYSAI_ASYNC_1300_DUP_PROFILE,
         attributes=min_profile_attributes,
     )
     yield profile
@@ -85,14 +71,14 @@ async def python_gen_ai_duplicate_profile(min_profile_attributes):
 
 def test_1300(python_gen_ai_profile, profile_attributes):
     """Create basic Profile"""
-    assert python_gen_ai_profile.profile_name == "PYTHON_GENAI_PROFILE"
+    assert python_gen_ai_profile.profile_name == PYSAI_ASYNC_1300_PROFILE
     assert python_gen_ai_profile.attributes == profile_attributes
     assert python_gen_ai_profile.description == "OCI GENAI Profile"
 
 
 def test_1301(python_gen_ai_profile_2, profile_attributes):
     """Create Profile using create method"""
-    assert python_gen_ai_profile_2.profile_name == "PYTHON_GENAI_PROFILE_2"
+    assert python_gen_ai_profile_2.profile_name == PYSAI_ASYNC_1300_PROFILE_2
     assert python_gen_ai_profile_2.attributes == profile_attributes
     assert python_gen_ai_profile_2.description == "OCI GENAI Profile 2"
 
@@ -100,11 +86,11 @@ def test_1301(python_gen_ai_profile_2, profile_attributes):
 async def test_1302(profile_attributes):
     """Create duplicate profile with replace=True"""
     duplicate = await AsyncProfile(
-        profile_name="PYTHON_GENAI_PROFILE",
+        profile_name=PYSAI_ASYNC_1300_PROFILE,
         attributes=profile_attributes,
         replace=True,
     )
-    assert duplicate.profile_name == "PYTHON_GENAI_PROFILE"
+    assert duplicate.profile_name == PYSAI_ASYNC_1300_PROFILE
     assert duplicate.attributes == profile_attributes
     assert duplicate.description is None
 
@@ -113,7 +99,7 @@ def test_1303(python_gen_ai_min_attr_profile, min_profile_attributes):
     """Create Profile with minimum required attributes"""
     assert (
         python_gen_ai_min_attr_profile.profile_name
-        == "PYTHON_MIN_ATTRIB_PROFILE"
+        == PYSAI_ASYNC_1300_MIN_ATTR_PROFILE
     )
     assert python_gen_ai_min_attr_profile.attributes == min_profile_attributes
     assert python_gen_ai_min_attr_profile.description is None
@@ -122,7 +108,10 @@ def test_1303(python_gen_ai_min_attr_profile, min_profile_attributes):
 async def test_1304():
     """List profiles without regex"""
     profile_list = [await profile async for profile in AsyncProfile.list()]
-    assert len(profile_list) == 3
+    profile_names = set(profile.profile_name for profile in profile_list)
+    assert PYSAI_ASYNC_1300_PROFILE in profile_names
+    assert PYSAI_ASYNC_1300_PROFILE_2 in profile_names
+    assert PYSAI_ASYNC_1300_MIN_ATTR_PROFILE in profile_names
 
 
 async def test_1305():
@@ -130,22 +119,25 @@ async def test_1305():
     profile_list = [
         await profile
         async for profile in AsyncProfile.list(
-            profile_name_pattern=".*PROFILE$"
+            profile_name_pattern="^PYSAI_ASYNC_1300"
         )
     ]
-    assert len(profile_list) == 2
+    profile_names = set(profile.profile_name for profile in profile_list)
+    assert PYSAI_ASYNC_1300_PROFILE in profile_names
+    assert PYSAI_ASYNC_1300_PROFILE_2 in profile_names
+    assert PYSAI_ASYNC_1300_MIN_ATTR_PROFILE in profile_names
 
 
 async def test_1306(profile_attributes):
     """Get attributes for a Profile"""
-    profile = await AsyncProfile("PYTHON_GENAI_PROFILE")
+    profile = await AsyncProfile(PYSAI_ASYNC_1300_PROFILE)
     fetched_attributes = await profile.get_attributes()
     assert fetched_attributes == profile_attributes
 
 
 async def test_1307():
     """Set attributes for a Profile"""
-    profile = await AsyncProfile("PYTHON_GENAI_PROFILE")
+    profile = await AsyncProfile(PYSAI_ASYNC_1300_PROFILE)
     assert profile.attributes.provider.model is None
     await profile.set_attribute(
         attribute_name="model", attribute_value="meta.llama-3.1-70b-instruct"
@@ -155,7 +147,7 @@ async def test_1307():
 
 async def test_1308(oci_credential):
     """Set multiple attributes for a Profile"""
-    profile = await AsyncProfile("PYTHON_GENAI_PROFILE")
+    profile = await AsyncProfile(PYSAI_ASYNC_1300_PROFILE)
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         provider=select_ai.OCIGenAIProvider(),

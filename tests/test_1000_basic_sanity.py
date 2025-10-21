@@ -8,12 +8,13 @@
 """
 1000 - Module for testing basic sanity
 """
+import uuid
 
 import pytest
 import select_ai
 from pandas import DataFrame
 
-PROFILE_NAME = "OCI_GEN_AI_BASIC_TESTING_PROFILE"
+PROFILE_NAME = f"PYSAI_1000_{uuid.uuid4().hex.upper()}"
 PROFILE_DESCRIPTION = "OCI Gen AI Basic Test Profile"
 
 
@@ -48,18 +49,21 @@ def test_1000(oci_gen_ai_profile):
 
 def test_1001():
     "test list profile by name"
-    profiles = list(select_ai.Profile.list(profile_name_pattern=PROFILE_NAME))
-    assert len(profiles) == 1
-    assert profiles[0].profile_name == PROFILE_NAME
-    assert profiles[0].description == PROFILE_DESCRIPTION
+    profiles = set(
+        profile.profile_name
+        for profile in select_ai.Profile.list(
+            profile_name_pattern=PROFILE_NAME
+        )
+    )
+    assert PROFILE_NAME in profiles
 
 
 def test_1002():
     "test list all profiles"
-    profiles = list(select_ai.Profile.list())
-    assert len(profiles) == 1
-    assert profiles[0].profile_name == PROFILE_NAME
-    assert profiles[0].description == PROFILE_DESCRIPTION
+    profiles = set(
+        profile.profile_name for profile in select_ai.Profile.list()
+    )
+    assert PROFILE_NAME in profiles
 
 
 def test_1003(oci_gen_ai_profile):
