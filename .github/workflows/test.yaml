@@ -2,7 +2,7 @@ name: select_ai_py_tests
 on: push
 
 jobs:
-  select_ai_py_tests:
+  pysai_unittests:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
