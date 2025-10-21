@@ -8,7 +8,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: ['3.13']
+        python-version: ['3.9', '3.13']
 
     steps:
       - name: Check out python-select-ai repository code
@@ -27,6 +27,7 @@ jobs:
 
       - name: Run select_ai tests
         run: |
+          pytest tests/create_schema.py
           pytest -vv
         env:
           PYSAI_TEST_USER: ${{ secrets.PYSAI_TEST_USER }}
