@@ -121,16 +121,14 @@ def test_1303(python_gen_ai_min_attr_profile, min_profile_attributes):
 
 async def test_1304():
     """List profiles without regex"""
-    profile_list = [
-        profile.profile_name async for profile in AsyncProfile.list()
-    ]
+    profile_list = [await profile async for profile in AsyncProfile.list()]
     assert len(profile_list) == 3
 
 
 async def test_1305():
     """List profiles with regex"""
     profile_list = [
-        profile
+        await profile
         async for profile in AsyncProfile.list(
             profile_name_pattern=".*PROFILE$"
         )
@@ -157,7 +155,7 @@ async def test_1307():
 
 async def test_1308(oci_credential):
     """Set multiple attributes for a Profile"""
-    profile = AsyncProfile("PYTHON_GENAI_PROFILE")
+    profile = await AsyncProfile("PYTHON_GENAI_PROFILE")
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         provider=select_ai.OCIGenAIProvider(),
@@ -248,7 +246,7 @@ async def test_1314():
     # expected - ORA-12726: unmatched bracket in regular expression
     with pytest.raises(oracledb.DatabaseError):
         profiles = [
-            profile
+            await profile
             async for profile in AsyncProfile.list(
                 profile_name_pattern="[*invalid"
             )
