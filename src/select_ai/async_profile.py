@@ -74,7 +74,7 @@ class AsyncProfile(BaseProfile):
                         if self.raise_error_if_exists:
                             raise ProfileExistsError(self.profile_name)
 
-                if self.description is None:
+                if self.description is None and not self.replace:
                     self.description = await self._get_profile_description(
                         profile_name=self.profile_name
                     )
@@ -307,7 +307,7 @@ class AsyncProfile(BaseProfile):
             rows = await cr.fetchall()
             for row in rows:
                 profile_name = row[0]
-                description = row[1]
+                description = await row[1].read() if row[1] else None
                 attributes = await cls._get_attributes(
                     profile_name=profile_name
                 )

@@ -81,40 +81,21 @@ class VectorIndexAttributes(SelectAIDataClass):
      to store vector embeddings and chunked data
     """
 
-    chunk_size: Optional[int] = 1024
-    chunk_overlap: Optional[int] = 128
+    chunk_size: Optional[int] = None
+    chunk_overlap: Optional[int] = None
     location: Optional[str] = None
-    match_limit: Optional[int] = 5
+    match_limit: Optional[int] = None
     object_storage_credential_name: Optional[str] = None
     profile_name: Optional[str] = None
-    refresh_rate: Optional[int] = 1440
-    similarity_threshold: Optional[float] = 0
-    vector_distance_metric: Optional[VectorDistanceMetric] = (
-        VectorDistanceMetric.COSINE
-    )
+    refresh_rate: Optional[int] = None
+    similarity_threshold: Optional[float] = None
+    vector_distance_metric: Optional[VectorDistanceMetric] = None
     vector_db_endpoint: Optional[str] = None
     vector_db_credential_name: Optional[str] = None
     vector_db_provider: Optional[VectorDBProvider] = None
     vector_dimension: Optional[int] = None
     vector_table_name: Optional[str] = None
     pipeline_name: Optional[str] = None
-
-    def json(self, exclude_null=True, for_update=False):
-        attributes = self.dict(exclude_null=exclude_null)
-        attributes.pop("pipeline_name", None)
-        # Currently, the following are unmodifiable
-        unmodifiable = [
-            "location",
-            "chunk_size",
-            "chunk_overlap",
-            "vector_dimension",
-            "vector_table_name",
-            "vector_distance_metric",
-        ]
-        if for_update:
-            for key in unmodifiable:
-                attributes.pop(key, None)
-        return json.dumps(attributes)
 
     @classmethod
     def create(cls, *, vector_db_provider: Optional[str] = None, **kwargs):
@@ -364,7 +345,7 @@ class VectorIndex(_BaseVectorIndex):
 
         parameters = {"index_name": self.index_name}
         if attributes:
-            parameters["attributes"] = attributes.json(for_update=True)
+            parameters["attributes"] = attributes.json()
             self.attributes = attributes
         else:
             setattr(self.attributes, attribute_name, attribute_value)
