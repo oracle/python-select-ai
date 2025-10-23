@@ -2,8 +2,42 @@ name: select_ai_py_tests
 on: push
 
 jobs:
+  pysai_test_data_setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out python-select-ai repository code
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.12
+
+      - name: Install select_ai with core dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest anyio
+          pip install -e .
+
+      - name: Create Schema
+        run: |
+          pytest tests/create_schema.py
+        env:
+          PYSAI_TEST_USER: ${{ secrets.PYSAI_TEST_USER }}
+          PYSAI_TEST_USER_PASSWORD: ${{ secrets.PYSAI_TEST_USER_PASSWORD }}
+          PYSAI_TEST_ADMIN_USER: ${{ secrets.PYSAI_TEST_ADMIN_USER }}
+          PYSAI_TEST_ADMIN_PASSWORD: ${{ secrets.PYSAI_TEST_ADMIN_PASSWORD }}
+          PYSAI_TEST_CONNECT_STRING: ${{ secrets.PYSAI_TEST_CONNECT_STRING }}
+          PYSAI_TEST_OCI_USER_OCID: ${{ secrets.PYSAI_TEST_OCI_USER_OCID }}
+          PYSAI_TEST_OCI_TENANCY_OCID: ${{ secrets.PYSAI_TEST_OCI_TENANCY_OCID }}
+          PYSAI_TEST_OCI_PRIVATE_KEY: ${{ secrets.PYSAI_TEST_OCI_PRIVATE_KEY }}
+          PYSAI_TEST_OCI_FINGERPRINT: ${{ secrets.PYSAI_TEST_OCI_FINGERPRINT }}
+          PYSAI_TEST_OCI_COMPARTMENT_ID: ${{ secrets.PYSAI_TEST_OCI_COMPARTMENT_ID }}
+
+
   pysai_unittests:
     runs-on: ${{ matrix.os }}
+    needs: pysai_test_data_setup
     strategy:
       fail-fast: true
       matrix:
@@ -27,7 +61,6 @@ jobs:
 
       - name: Run select_ai tests
         run: |
-          pytest tests/create_schema.py
           pytest -vv
         env:
           PYSAI_TEST_USER: ${{ secrets.PYSAI_TEST_USER }}
