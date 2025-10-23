@@ -25,14 +25,14 @@
 #           OpenAI
 #   PYSAI_TEST_OPENAI_API_KEY
 
-
 import os
+import uuid
 
 import pytest
 import select_ai
 
 PYSAI_TEST_USER = "PYSAI_TEST_USER"
-PYSAI_OCI_CREDENTIAL_NAME = "PYSAI_OCI_CREDENTIAL"
+PYSAI_OCI_CREDENTIAL_NAME = f"PYSAI_OCI_CREDENTIAL_{uuid.uuid4().hex.upper()}"
 
 
 def get_env_value(name, default_value=None, required=False):
@@ -110,7 +110,9 @@ def connect(setup_test_user, test_env):
 
 @pytest.fixture(autouse=True, scope="session")
 async def async_connect(setup_test_user, test_env, anyio_backend):
-    await select_ai.async_connect(**test_env.connect_params())
+    await select_ai.async_connect(
+        **test_env.connect_params(), disable_oob=True
+    )
     yield
     await select_ai.async_disconnect()
 
@@ -147,7 +149,8 @@ def oci_credential(connect, test_env):
         "fingerprint": get_env_value("OCI_FINGERPRINT", required=True),
     }
     select_ai.create_credential(credential, replace=True)
-    return credential
+    yield credential
+    select_ai.delete_credential(PYSAI_OCI_CREDENTIAL_NAME)
 
 
 @pytest.fixture(scope="module")

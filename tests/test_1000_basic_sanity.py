@@ -30,7 +30,6 @@ def oci_gen_ai_profile(oci_credential, oci_compartment_id, test_env):
                 oci_compartment_id=oci_compartment_id, oci_apiformat="GENERIC"
             ),
         ),
-        replace=True,
     )
     yield profile
     profile.delete(force=True)

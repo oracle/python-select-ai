@@ -6,9 +6,10 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# disable_ai_provider.py
+# select_ai_grant_privilege.py
 #
-# Removes ACL to invoke the AI Provider's HTTP endpoint
+# Grant execute privileges on DBMS_CLOUD, DMBS_CLOUD_AI, DBMS_CLOUD_AI_AGENT
+# and DBMS_CLOUD_PIPELINE PL/SQL packages
 # -----------------------------------------------------------------------------
 
 import os
@@ -20,8 +21,7 @@ password = os.getenv("SELECT_AI_ADMIN_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 select_ai_user = os.getenv("SELECT_AI_USER")
 
+
 select_ai.connect(user=admin_user, password=password, dsn=dsn)
-select_ai.revoke_http_access(
-    users=select_ai_user, provider_endpoint="*.openai.azure.com"
-)
-print("Disabled AI provider for user: ", select_ai_user)
+select_ai.grant_privileges(users=select_ai_user)
+print("Granted privileges to: ", select_ai_user)

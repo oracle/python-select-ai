@@ -87,32 +87,15 @@ for the supported providers
 Enable AI service provider
 **************************
 
-.. note::
-
-   All sample scripts in this documentation read Oracle database connection
-   details from the environment. Create a dotenv file ``.env``, export the
-   the following environment variables and source it before running the
-   scripts.
-
-   .. code-block:: sh
-
-       export SELECT_AI_ADMIN_USER=<db_admin>
-       export SELECT_AI_ADMIN_PASSWORD=<db_admin_password>
-       export SELECT_AI_USER=<select_ai_db_user>
-       export SELECT_AI_PASSWORD=<select_ai_db_password>
-       export SELECT_AI_DB_CONNECT_STRING=<db_connect_string>
-       export TNS_ADMIN=<path/to/dir_containing_tnsnames.ora>
-
 Sync API
 ++++++++
 
-This method grants execute privilege on the packages
-``DBMS_CLOUD``, ``DBMS_CLOUD_AI`` and ``DBMS_CLOUD_PIPELINE``. It
-also enables the database user to invoke the AI(LLM) endpoint
+This method adds ACL allowing database users to invoke AI provider's
+HTTP endpoint
 
 .. literalinclude:: ../../../samples/enable_ai_provider.py
    :language: python
-   :lines: 15-
+   :lines: 14-
 
 output::
 
@@ -135,6 +118,9 @@ output::
 ***************************
 Disable AI service provider
 ***************************
+
+This method removes ACL blocking database users to invoke AI provider's
+HTTP endpoint
 
 Sync API
 ++++++++

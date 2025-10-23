@@ -13,3 +13,7 @@ doc/drawio
 test.env
 test_19c.env
 pytest.env
+.venv3.10/
+.venv3.11/
+.venv3.9/
+sample_connect.py

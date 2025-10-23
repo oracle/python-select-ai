@@ -20,7 +20,7 @@ PROFILE_DESCRIPTION = "OCI Gen AI Basic Test Profile"
 
 @pytest.fixture(scope="module")
 async def async_oci_gen_ai_profile(
-    oci_credential, oci_compartment_id, test_env
+    async_connect, oci_credential, oci_compartment_id, test_env
 ):
     profile = await select_ai.AsyncProfile(
         profile_name=ASYNC_PROFILE_NAME,
@@ -32,7 +32,6 @@ async def async_oci_gen_ai_profile(
                 oci_compartment_id=oci_compartment_id, oci_apiformat="GENERIC"
             ),
         ),
-        replace=True,
     )
     yield profile
     await profile.delete(force=True)

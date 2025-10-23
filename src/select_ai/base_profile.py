@@ -114,10 +114,10 @@ class ProfileAttributes(SelectAIDataClass):
         for k, v in kwargs.items():
             if isinstance(v, oracledb.AsyncLOB):
                 v = await v.read()
-                if k in Provider.keys():
-                    provider_attributes[Provider.key_alias(k)] = v
-                else:
-                    profile_attributes[k] = v
+            if k in Provider.keys():
+                provider_attributes[Provider.key_alias(k)] = v
+            else:
+                profile_attributes[k] = v
         provider = Provider.create(**provider_attributes)
         profile_attributes["provider"] = provider
         return ProfileAttributes(**profile_attributes)
