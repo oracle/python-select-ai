@@ -22,7 +22,7 @@ jobs:
       - name: Replace dot in python version with empty space
         run: |
           python_version=${{matrix.python-version}}
-          new_version="${python_version//./ }"
+          new_version="${python_version//./}"
           echo "PYTHON_VERSION_WITHOUT_DOT=${new_version}" >> $GITHUB_ENV
 
       - name: Install select_ai with core dependencies
