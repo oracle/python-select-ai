@@ -110,9 +110,7 @@ def connect(setup_test_user, test_env):
 
 @pytest.fixture(autouse=True, scope="session")
 async def async_connect(setup_test_user, test_env, anyio_backend):
-    await select_ai.async_connect(
-        **test_env.connect_params(), disable_oob=True
-    )
+    await select_ai.async_connect(**test_env.connect_params())
     yield
     await select_ai.async_disconnect()
 
