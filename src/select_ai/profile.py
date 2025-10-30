@@ -12,7 +12,6 @@ from typing import Generator, Iterator, Mapping, Optional, Tuple, Union
 
 import oracledb
 import pandas
-from docutils.nodes import description
 
 from select_ai import Conversation
 from select_ai.action import Action
