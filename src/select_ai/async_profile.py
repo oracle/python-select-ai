@@ -210,7 +210,7 @@ class AsyncProfile(BaseProfile):
             )
         parameters = {
             "profile_name": self.profile_name,
-            "attributes": self.attributes.json(),
+            "attributes": attributes.json(),
         }
         async with async_cursor() as cr:
             await cr.callproc(
