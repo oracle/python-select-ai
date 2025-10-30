@@ -118,6 +118,7 @@ class Conversation(_BaseConversation):
                     "attributes": attributes.json(),
                 },
             )
+        self.attributes = self.get_attributes()
 
     def get_attributes(self) -> ConversationAttributes:
         """Get attributes of the conversation from the database"""
@@ -219,6 +220,7 @@ class AsyncConversation(_BaseConversation):
                     "attributes": attributes.json(),
                 },
             )
+        self.attributes = await self.get_attributes()
 
     async def get_attributes(self) -> ConversationAttributes:
         """Get attributes of the conversation from the database"""

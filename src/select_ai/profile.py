@@ -8,10 +8,11 @@
 import json
 from contextlib import contextmanager
 from dataclasses import replace as dataclass_replace
-from typing import Generator, Iterator, Mapping, Optional, Union
+from typing import Generator, Iterator, Mapping, Optional, Tuple, Union
 
 import oracledb
 import pandas
+from docutils.nodes import description
 
 from select_ai import Conversation
 from select_ai.action import Action
@@ -19,15 +20,19 @@ from select_ai.base_profile import (
     BaseProfile,
     ProfileAttributes,
     no_data_for_prompt,
+    validate_params_for_feedback,
+    validate_params_for_summary,
 )
 from select_ai.db import cursor
 from select_ai.errors import ProfileExistsError, ProfileNotFoundError
+from select_ai.feedback import FeedbackOperation, FeedbackType
 from select_ai.provider import Provider
 from select_ai.sql import (
     GET_USER_AI_PROFILE,
     GET_USER_AI_PROFILE_ATTRIBUTES,
     LIST_USER_AI_PROFILES,
 )
+from select_ai.summary import SummaryParams
 from select_ai.synthetic_data import SyntheticDataAttributes
 
 
@@ -182,7 +187,6 @@ class Profile(BaseProfile):
                 "'attributes' must be an object of type"
                 " select_ai.ProfileAttributes"
             )
-        self.attributes = attributes
         parameters = {
             "profile_name": self.profile_name,
             "attributes": self.attributes.json(),
@@ -191,6 +195,7 @@ class Profile(BaseProfile):
             cr.callproc(
                 "DBMS_CLOUD_AI.SET_ATTRIBUTES", keyword_parameters=parameters
             )
+        self.attributes = self.get_attributes()
 
     def create(self, replace: Optional[int] = False) -> None:
         """Create an AI Profile in the Database
@@ -243,23 +248,106 @@ class Profile(BaseProfile):
             )
 
     @classmethod
-    def _from_db(cls, profile_name: str) -> "Profile":
-        """Create a Profile object from attributes saved in the database
+    def fetch(cls, profile_name: str) -> "Profile":
+        """Create a proxy Profile object from fetched attributes saved in the
+        database
 
-        :param str profile_name:
+        :param str profile_name: The name of the AI profile
         :return: select_ai.Profile
         :raises: ProfileNotFoundError
         """
+        attributes = cls._get_attributes(profile_name=profile_name)
+        description = cls._get_profile_description(profile_name=profile_name)
+        return cls(
+            profile_name=profile_name,
+            attributes=attributes,
+            description=description,
+        )
+
+    def _save_feedback(
+        self,
+        feedback_type: FeedbackType = None,
+        prompt_spec: Tuple[str, Action] = None,
+        sql_id: Optional[str] = None,
+        response: Optional[str] = None,
+        feedback_content: Optional[str] = None,
+        operation: Optional[FeedbackOperation] = FeedbackOperation.ADD,
+    ):
+        """
+        Internal method to provide feedback
+        """
+        params = validate_params_for_feedback(
+            feedback_type=feedback_type,
+            feedback_content=feedback_content,
+            prompt_spec=prompt_spec,
+            sql_id=sql_id,
+            response=response,
+            operation=operation,
+        )
+        params["profile_name"] = self.profile_name
         with cursor() as cr:
-            cr.execute(
-                GET_USER_AI_PROFILE_ATTRIBUTES, profile_name=profile_name
-            )
-            attributes = cr.fetchall()
-            if attributes:
-                attributes = ProfileAttributes.create(**dict(attributes))
-                return cls(profile_name=profile_name, attributes=attributes)
-            else:
-                raise ProfileNotFoundError(profile_name=profile_name)
+            cr.callproc("DBMS_CLOUD_AI.FEEDBACK", keyword_parameters=params)
+
+    def add_positive_feedback(
+        self,
+        prompt_spec: Optional[Tuple[str, Action]] = None,
+        sql_id: Optional[str] = None,
+    ):
+        """
+        Give positive feedback to the LLM
+
+        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
+         second is the corresponding action
+        :param str sql_id: SQL identifier from V$MAPPED_SQL view
+        """
+        self._save_feedback(
+            feedback_type=FeedbackType.POSITIVE,
+            prompt_spec=prompt_spec,
+            sql_id=sql_id,
+        )
+
+    def add_negative_feedback(
+        self,
+        prompt_spec: Optional[Tuple[str, Action]] = None,
+        sql_id: Optional[str] = None,
+        response: Optional[str] = None,
+        feedback_content: Optional[str] = None,
+    ):
+        """
+        Give positive feedback to the LLM
+
+        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
+         second is the corresponding action
+        :param str sql_id: SQL identifier from V$MAPPED_SQL view
+        :param str response: Expected SQL from LLM
+        :param str feedback_content: Actual feedback in natural language
+        """
+        self._save_feedback(
+            feedback_type=FeedbackType.NEGATIVE,
+            prompt_spec=prompt_spec,
+            sql_id=sql_id,
+            response=response,
+            feedback_content=feedback_content,
+        )
+
+    def delete_feedback(
+        self,
+        prompt_spec: Tuple[str, Action] = None,
+        sql_id: Optional[str] = None,
+    ):
+        """
+        Delete feedback from the database
+
+        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
+         second is the corresponding action
+        :param str sql_id: SQL identifier from V$MAPPED_SQL view
+
+        """
+        self._save_feedback(
+            operation=FeedbackOperation.DELETE,
+            prompt_spec=prompt_spec,
+            sql_id=sql_id,
+        )
 
     @classmethod
     def list(
@@ -407,6 +495,42 @@ class Profile(BaseProfile):
         :return: str
         """
         return self.generate(prompt, action=Action.SHOWPROMPT, params=params)
+
+    def summarize(
+        self,
+        prompt: str = None,
+        content: str = None,
+        location_uri: str = None,
+        credential_name: str = None,
+        params: SummaryParams = None,
+    ) -> str:
+        """Generate summary
+
+        :param str prompt: Natural language prompt to guide the summary
+         generation
+        :param str content: Specifies the text you want to summarize
+        :param str location_uri: Provides the URI where the text is stored or
+         the path to a local file stored
+        :param str credential_name: Identifies the credential object used to
+         authenticate with the object store
+        :param select_ai.summary.SummaryParams params: Parameters to include
+         in the LLM request
+        """
+        parameters = validate_params_for_summary(
+            prompt=prompt,
+            location_uri=location_uri,
+            content=content,
+            credential_name=credential_name,
+            params=params,
+        )
+        parameters["profile_name"] = self.profile_name
+        with cursor() as cr:
+            data = cr.callfunc(
+                "DBMS_CLOUD_AI.SUMMARIZE",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters=parameters,
+            )
+        return data.read() if data else None
 
     def generate_synthetic_data(
         self, synthetic_data_attributes: SyntheticDataAttributes

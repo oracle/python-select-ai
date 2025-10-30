@@ -91,7 +91,9 @@ class Agent(BaseAgent):
     @staticmethod
     def _get_attributes(agent_name: str) -> AgentAttributes:
         with cursor() as cr:
-            cr.execute(GET_USER_AI_AGENT, agent_name=agent_name.upper())
+            cr.execute(
+                GET_USER_AI_AGENT_ATTRIBUTES, agent_name=agent_name.upper()
+            )
             attributes = cr.fetchall()
             if attributes:
                 post_processed_attributes = {}
@@ -103,6 +105,19 @@ class Agent(BaseAgent):
                 return AgentAttributes(**post_processed_attributes)
             else:
                 raise AgentNotFoundError(agent_name=agent_name)
+
+    @staticmethod
+    def _get_description(agent_name: str) -> Union[str, None]:
+        with cursor() as cr:
+            cr.execute(GET_USER_AI_AGENT, agent_name=agent_name.upper())
+            agent = cr.fetchone()
+            if agent:
+                if agent[1] is not None:
+                    return agent[1].read()
+                else:
+                    return None
+            else:
+                raise AgentNotFoundError(agent_name)
 
     def create(
         self, enabled: Optional[bool] = True, replace: Optional[bool] = False
@@ -168,15 +183,26 @@ class Agent(BaseAgent):
     def disable(self):
         """
         Disable AI Agent
-
         """
-        pass
+        with cursor as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DISABLE_AGENT",
+                keyword_parameters={
+                    "agent_name": self.agent_name,
+                },
+            )
 
     def enable(self):
         """
         Enable AI Agent
         """
-        pass
+        with cursor as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.ENABLE_AGENT",
+                keyword_parameters={
+                    "agent_name": self.agent_name,
+                },
+            )
 
     @classmethod
     def fetch(cls, agent_name: str) -> "Agent":
@@ -192,7 +218,13 @@ class Agent(BaseAgent):
          If the AI Agent is not found
 
         """
-        pass
+        attributes = cls._get_attributes(agent_name=agent_name)
+        description = cls._get_description(agent_name=agent_name)
+        return cls(
+            agent_name=agent_name,
+            attributes=attributes,
+            description=description,
+        )
 
     @classmethod
     def list(
@@ -228,8 +260,35 @@ class Agent(BaseAgent):
     def set_attributes(self, attributes: AgentAttributes) -> None:
         """
         Set AI Agent attributes
+
+        :param select_ai.agent.AgentAttributes attributes: Multiple attributes
+         can be specified by passing an AgentAttributes object
         """
-        pass
+        parameters = {
+            "object_name": self.agent_name,
+            "object_type": "agent",
+            "attributes": attributes.json(),
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                keyword_parameters=parameters,
+            )
+        self.attributes = self._get_attributes(agent_name=self.agent_name)
 
     def set_attribute(self, attribute_name: str, attribute_value: Any) -> None:
-        pass
+        """
+        Set a single AI Agent attribute specified using name and value
+        """
+        parameters = {
+            "object_name": self.agent_name,
+            "object_type": "agent",
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                keyword_parameters=parameters,
+            )
+        self.attributes = self._get_attributes(agent_name=self.agent_name)

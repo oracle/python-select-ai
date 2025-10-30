@@ -1,3 +1,16 @@
+# -----------------------------------------------------------------------------
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# http://oss.oracle.com/licenses/upl.
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# movie_analyst.py
+#
+# Demonstrates web search AI agent
+# -----------------------------------------------------------------------------
+
 import os
 
 import select_ai
@@ -19,7 +32,8 @@ SELECT_AI_TOOL_NAME = "WEB_SEARCH_TOOL"
 SELECT_AI_TEAM_NAME = "WEB_SEARCH_TEAM"
 
 USER_QUERIES = {
-    "d917b055-e8a1-463a-a489-d4328a7b2210": "What are the key features for the product highlighted at this URL https://www.oracle.com/artificial-intelligence/database-machine-learning",
+    "d917b055-e8a1-463a-a489-d4328a7b2210": "What are the key features for the product highlighted at "
+    "this URL https://www.oracle.com/artificial-intelligence/database-machine-learning",
     "c2e3ff20-f56d-40e7-987c-cc72740c75a5": "What is the main topic at this URL https://www.oracle.com/artificial-intelligence/database-machine-learning",
     "25e23a25-07b9-4ed7-be11-f7e5e445d286": "What is the main topic at this URL https://openai.com",
 }
@@ -68,7 +82,8 @@ agent = Agent(
     attributes=AgentAttributes(
         profile_name=OPEN_AI_PROFILE_NAME,
         enable_human_tool=False,
-        role="You are a specialized web search agent that can access web page contents and respond to questions based on its content.",
+        role="You are a specialized web search agent that can access web page "
+        "contents and respond to questions based on its content.",
     ),
 )
 agent.create(replace=True)

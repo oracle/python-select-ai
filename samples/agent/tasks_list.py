@@ -1,3 +1,16 @@
+# -----------------------------------------------------------------------------
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# http://oss.oracle.com/licenses/upl.
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# tasks_list.py
+#
+# List all tasks saved in the database
+# -----------------------------------------------------------------------------
+
 import os
 
 import select_ai

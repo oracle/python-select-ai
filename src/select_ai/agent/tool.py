@@ -8,7 +8,15 @@
 import json
 from abc import ABC
 from dataclasses import dataclass
-from typing import AsyncGenerator, Iterator, List, Mapping, Optional, Union
+from typing import (
+    Any,
+    AsyncGenerator,
+    Iterator,
+    List,
+    Mapping,
+    Optional,
+    Union,
+)
 
 import oracledb
 
@@ -16,6 +24,7 @@ from select_ai import BaseProfile
 from select_ai._abc import SelectAIDataClass
 from select_ai._enums import StrEnum
 from select_ai.agent.sql import (
+    GET_USER_AI_AGENT_TOOL,
     GET_USER_AI_AGENT_TOOL_ATTRIBUTES,
     LIST_USER_AI_AGENT_TOOLS,
 )
@@ -271,6 +280,19 @@ class Tool(_BaseTool):
                     else:
                         post_processed_attributes[k] = v
                 return ToolAttributes.create(**post_processed_attributes)
+            else:
+                raise AgentToolNotFoundError(tool_name=tool_name)
+
+    @staticmethod
+    def _get_description(tool_name: str) -> Union[str, None]:
+        with cursor() as cr:
+            cr.execute(GET_USER_AI_AGENT_TOOL, tool_name=tool_name.upper())
+            tool = cr.fetchone()
+            if tool:
+                if tool[1] is not None:
+                    return tool[1].read()
+                else:
+                    return None
             else:
                 raise AgentToolNotFoundError(tool_name=tool_name)
 
@@ -548,12 +570,6 @@ class Tool(_BaseTool):
             replace=replace,
         )
 
-    def disable(self):
-        """
-        Disable AI Tool
-        """
-        pass
-
     def delete(self, force: bool = False):
         """
         Delete AI Tool from the database
@@ -569,11 +585,29 @@ class Tool(_BaseTool):
                 },
             )
 
+    def disable(self):
+        """
+        Disable AI Tool
+        """
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DISABLE_TOOL",
+                keyword_parameters={
+                    "tool_name": self.tool_name,
+                },
+            )
+
     def enable(self):
         """
         Enable AI Tool
         """
-        pass
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.ENABLE_TOOL",
+                keyword_parameters={
+                    "tool_name": self.tool_name,
+                },
+            )
 
     @classmethod
     def fetch(cls, tool_name: str) -> "Tool":
@@ -589,7 +623,11 @@ class Tool(_BaseTool):
          If the AI Tool is not found
 
         """
-        pass
+        attributes = cls._get_attributes(tool_name)
+        description = cls._get_description(tool_name)
+        return cls(
+            tool_name=tool_name, attributes=attributes, description=description
+        )
 
     @classmethod
     def list(cls, tool_name_pattern: str = ".*") -> Iterator["Tool"]:
@@ -618,3 +656,35 @@ class Tool(_BaseTool):
                     description=description,
                     attributes=attributes,
                 )
+
+    def set_attributes(self, attributes: ToolAttributes) -> None:
+        """
+        Set the attributes of the AI Agent tool
+        """
+        parameters = {
+            "object_name": self.tool_name,
+            "object_type": "tool",
+            "attributes": attributes.json(),
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                keyword_parameters=parameters,
+            )
+
+    def set_attribute(self, attribute_name: str, attribute_value: Any) -> None:
+        """
+        Set the attribute of the AI Agent tool specified by
+        `attribute_name` and `attribute_value`.
+        """
+        parameters = {
+            "object_name": self.tool_name,
+            "object_type": "tool",
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                keyword_parameters=parameters,
+            )

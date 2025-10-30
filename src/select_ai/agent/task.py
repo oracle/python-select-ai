@@ -113,6 +113,19 @@ class Task(BaseTask):
             else:
                 raise AgentTaskNotFoundError(task_name=task_name)
 
+    @staticmethod
+    def _get_description(task_name: str) -> Union[str, None]:
+        with cursor() as cr:
+            cr.execute(GET_USER_AI_AGENT_TASK, task_name=task_name.upper())
+            task = cr.fetchone()
+            if task:
+                if task[1] is not None:
+                    return task[1].read()
+                else:
+                    return None
+            else:
+                raise AgentTaskNotFoundError(task_name)
+
     def create(
         self, enabled: Optional[bool] = True, replace: Optional[bool] = False
     ):
@@ -179,13 +192,25 @@ class Task(BaseTask):
         """
         Disable AI Task
         """
-        pass
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DISABLE_TASK",
+                keyword_parameters={
+                    "task_name": self.task_name,
+                },
+            )
 
     def enable(self):
         """
         Enable AI Task
         """
-        pass
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.ENABLE_TASK",
+                keyword_parameters={
+                    "task_name": self.task_name,
+                },
+            )
 
     @classmethod
     def list(cls, task_name_pattern: Optional[str] = ".*") -> Iterator["Task"]:
@@ -228,20 +253,52 @@ class Task(BaseTask):
         :raises select_ai.errors.AgentTaskNotFoundError:
          If the AI Task is not found
         """
-        pass
+        attributes = cls._get_attributes(task_name=task_name)
+        description = cls._get_description(task_name=task_name)
+        return cls(
+            task_name=task_name,
+            description=description,
+            attributes=attributes,
+        )
 
     def set_attributes(self, attributes: TaskAttributes):
         """
         Set AI Task attributes
+
+        :param select_ai.agent.TaskAttributes attributes: Multiple attributes
+         can be specified by passing a TaskAttributes object
         """
-        pass
+        parameters = {
+            "object_name": self.task_name,
+            "object_type": "task",
+            "attributes": attributes.json(),
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                keyword_parameters=parameters,
+            )
 
     def set_attribute(self, attribute_name: str, attribute_value: Any):
         """
         Set a single AI Task attribute specified using name and value
+
+        :param str attribute_name: The name of the AI Task attribute
+        :param str attribute_value: The value of the AI Task attribute
+
         """
-        pass
+        parameters = {
+            "object_name": self.task_name,
+            "object_type": "task",
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                keyword_parameters=parameters,
+            )
 
 
 class AsyncTask(BaseTask):
-    pass
+    raise NotImplementedError

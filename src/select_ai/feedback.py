@@ -4,20 +4,16 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
-
 from select_ai._enums import StrEnum
 
-__all__ = ["Action"]
+
+class FeedbackType(StrEnum):
+
+    POSITIVE = "positive"
+    NEGATIVE = "negative"
 
 
-class Action(StrEnum):
-    """Supported Select AI actions"""
+class FeedbackOperation(StrEnum):
 
-    RUNSQL = "runsql"
-    SHOWSQL = "showsql"
-    EXPLAINSQL = "explainsql"
-    NARRATE = "narrate"
-    CHAT = "chat"
-    SHOWPROMPT = "showprompt"
-    FEEDBACK = "feedback"
-    SUMMARIZE = "summarize"
+    ADD = "add"
+    DELETE = "delete"

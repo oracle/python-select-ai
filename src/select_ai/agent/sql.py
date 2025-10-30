@@ -42,7 +42,7 @@ FROM USER_AI_AGENT_TASKS t
 WHERE REGEXP_LIKE(t.task_name, :task_name_pattern, 'i')
 """
 
-GET_USER_AI_TOOL = """
+GET_USER_AI_AGENT_TOOL = """
 SELECT t.tool_name, t.description
 FROM USER_AI_AGENT_TOOLS t
 WHERE t.tool_name = :tool_name

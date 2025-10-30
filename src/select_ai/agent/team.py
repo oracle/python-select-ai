@@ -107,6 +107,19 @@ class Team(BaseTeam):
             else:
                 raise AgentTeamNotFoundError(team_name=team_name)
 
+    @staticmethod
+    def _get_description(team_name: str) -> Union[str, None]:
+        with cursor() as cr:
+            cr.execute(GET_USER_AI_AGENT_TEAM, task_name=team_name.upper())
+            team = cr.fetchone()
+            if team:
+                if team[1] is not None:
+                    return team[1].read()
+                else:
+                    return None
+            else:
+                raise AgentTeamNotFoundError(team_name=team_name)
+
     def create(
         self, enabled: Optional[bool] = True, replace: Optional[bool] = False
     ):
@@ -171,16 +184,28 @@ class Team(BaseTeam):
         """
         Disable the AI agent team
         """
-        pass
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DISABLE_TEAM",
+                keyword_parameters={
+                    "team_name": self.team_name,
+                },
+            )
 
     def enable(self):
         """
         Enable the AI agent team
         """
-        pass
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.ENABLE_TEAM",
+                keyword_parameters={
+                    "team_name": self.team_name,
+                },
+            )
 
     @classmethod
-    def fetch(cls) -> "Team":
+    def fetch(cls, team_name: str) -> "Team":
         """
         Fetch AI Team attributes from the Database and build a proxy object in
         the Python layer
@@ -192,7 +217,13 @@ class Team(BaseTeam):
         :raises select_ai.errors.AgentTeamNotFoundError:
          If the AI Team is not found
         """
-        pass
+        attributes = cls._get_attributes(team_name)
+        description = cls._get_description(team_name)
+        return cls(
+            team_name=team_name,
+            attributes=attributes,
+            description=description,
+        )
 
     @classmethod
     def list(cls, team_name_pattern: Optional[str] = ".*") -> Iterator["Team"]:
@@ -270,11 +301,30 @@ class Team(BaseTeam):
         """
         Set the attributes of the AI Agent team
         """
-        pass
+        parameters = {
+            "object_name": self.team_name,
+            "object_type": "team",
+            "attributes": attributes.json(),
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                keyword_parameters=parameters,
+            )
 
     def set_attribute(self, attribute_name: str, attribute_value: Any) -> None:
         """
         Set the attribute of the AI Agent team specified by
         `attribute_name` and `attribute_value`.
         """
-        pass
+        parameters = {
+            "object_name": self.team_name,
+            "object_type": "team",
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                keyword_parameters=parameters,
+            )

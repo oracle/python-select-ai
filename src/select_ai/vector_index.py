@@ -319,44 +319,28 @@ class VectorIndex(_BaseVectorIndex):
 
     def set_attributes(
         self,
-        attribute_name: Optional[str] = None,
-        attribute_value: Optional[Union[str, int, float]] = None,
         attributes: VectorIndexAttributes = None,
     ):
         """
         This procedure updates an existing vector store index with a specified
-        value of the vector index attribute. You can specify a single attribute
-        or multiple attributes by passing an object of type
-        :class `VectorIndexAttributes`
+        value of the vector index attributes. Specify multiple attributes by
+        passing an object of type :class `VectorIndexAttributes`
 
-        :param str attribute_name: Custom attribute name
-        :param Union[str, int, float] attribute_value: Attribute Value
         :param select_ai.VectorIndexAttributes attributes: Use this to
          update multiple attribute values
         :return: None
         :raises: oracledb.DatabaseError
         """
-        if attribute_name and attribute_value and attributes:
-            raise ValueError(
-                "Either specify a single attribute using "
-                "attribute_name and attribute_value or "
-                "pass an object of type VectorIndexAttributes"
-            )
-
-        parameters = {"index_name": self.index_name}
-        if attributes:
-            parameters["attributes"] = attributes.json()
-            self.attributes = attributes
-        else:
-            setattr(self.attributes, attribute_name, attribute_value)
-            parameters["attribute_name"] = attribute_name
-            parameters["attribute_value"] = attribute_value
-
+        parameters = {
+            "index_name": self.index_name,
+            "attributes": attributes.json(),
+        }
         with cursor() as cr:
             cr.callproc(
                 "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
                 keyword_parameters=parameters,
             )
+        self.attributes = self.get_attributes()
 
     def get_attributes(self) -> VectorIndexAttributes:
         """Get attributes of this vector index
@@ -578,45 +562,27 @@ class AsyncVectorIndex(_BaseVectorIndex):
                 keyword_parameters=parameters,
             )
 
-    async def set_attributes(
-        self,
-        attribute_name: Optional[str] = None,
-        attribute_value: Optional[Union[str, int, float]] = None,
-        attributes: VectorIndexAttributes = None,
-    ) -> None:
+    async def set_attributes(self, attributes: VectorIndexAttributes) -> None:
         """
         This procedure updates an existing vector store index with a specified
-        value of the vector index attribute. You can specify a single attribute
-        or multiple attributes by passing an object of type
-        :class `VectorIndexAttributes`
+        value of the vector index attribute. multiple attributes by passing
+        an object of type :class `VectorIndexAttributes`
 
-        :param str attribute_name: Custom attribute name
-        :param Union[str, int, float] attribute_value: Attribute Value
         :param select_ai.VectorIndexAttributes attributes: Use this to
          update multiple attribute values
         :return: None
         :raises: oracledb.DatabaseError
         """
-        if attribute_name and attribute_value and attributes:
-            raise ValueError(
-                "Either specify a single attribute using "
-                "attribute_name and attribute_value or "
-                "pass an object of type VectorIndexAttributes"
-            )
-        parameters = {"index_name": self.index_name}
-        if attributes:
-            self.attributes = attributes
-            parameters["attributes"] = attributes.json(for_update=True)
-        else:
-            setattr(self.attributes, attribute_name, attribute_value)
-            parameters["attribute_name"] = attribute_name
-            parameters["attribute_value"] = attribute_value
-
+        parameters = {
+            "index_name": self.index_name,
+            "attributes": attributes.json(),
+        }
         async with async_cursor() as cr:
             await cr.callproc(
                 "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
                 keyword_parameters=parameters,
             )
+        self.attributes = await self.get_attributes()
 
     async def get_attributes(self) -> VectorIndexAttributes:
         """Get attributes of a vector index

@@ -8,13 +8,18 @@
 import json
 from abc import ABC
 from dataclasses import dataclass
-from typing import List, Mapping, Optional
+from typing import List, Mapping, Optional, Tuple
 
 import oracledb
 
 from select_ai._abc import SelectAIDataClass
-
-from .provider import Provider
+from select_ai.action import Action
+from select_ai.feedback import (
+    FeedbackOperation,
+    FeedbackType,
+)
+from select_ai.provider import Provider
+from select_ai.summary import SummaryParams
 
 
 @dataclass
@@ -191,3 +196,68 @@ def no_data_for_prompt(result) -> bool:
     if result == "No data found for the prompt.":
         return True
     return False
+
+
+def validate_params_for_feedback(
+    feedback_type: FeedbackType,
+    feedback_content: str,
+    prompt_spec: Tuple[str, Action] = None,
+    sql_id: Optional[str] = None,
+    response: Optional[str] = None,
+    operation: Optional[FeedbackOperation] = FeedbackOperation.ADD,
+):
+    if sql_id and prompt_spec:
+        raise AttributeError("Either sql_id or prompt_spec must be specified")
+    if not sql_id and not prompt_spec:
+        raise AttributeError("Either sql_id or prompt_spec must be specified")
+    parameters = {
+        "feedback_type": feedback_type,
+        "feedback_content": feedback_content,
+        "operation": operation,
+    }
+    if prompt_spec:
+        prompt, action = prompt_spec
+        if action not in (Action.RUNSQL, Action.SHOWSQL, Action.EXPLAINSQL):
+            raise AttributeError(
+                "'action' must be one of 'RUNSQL', 'SHOWSQL' or 'EXPLAINSQL'"
+            )
+        if (
+            action == FeedbackOperation.ADD
+            and feedback_type == FeedbackType.NEGATIVE
+            and response is None
+        ):
+            raise AttributeError(
+                "'response' must be specified if feedback_type is NEGATIVE"
+            )
+        sql_text = "select ai {} {}".format(action, prompt)
+        parameters["sql_text"] = sql_text
+    elif sql_id:
+        parameters["sql_id"] = sql_id
+    return parameters
+
+
+def validate_params_for_summary(
+    prompt: str = None,
+    content: str = None,
+    location_uri: str = None,
+    credential_name: str = None,
+    params: SummaryParams = None,
+):
+    if content and location_uri:
+        raise AttributeError(
+            "Either content or location_uri must be specified"
+        )
+    if not content and not location_uri:
+        raise AttributeError(
+            "Either content or location_uri must be specified"
+        )
+    parameters = {}
+    if content:
+        parameters["content"] = content
+    if credential_name:
+        parameters["credential_name"] = credential_name
+    if prompt:
+        parameters["prompt"] = prompt
+    if params:
+        parameters["parameters"] = params.json()
+    return parameters
