@@ -7,11 +7,14 @@
 
 GRANT_PRIVILEGES_TO_USER = """
 DECLARE
-    TYPE array_t IS VARRAY(3) OF VARCHAR2(60);
+    TYPE array_t IS VARRAY(4) OF VARCHAR2(60);
     v_packages array_t;
 BEGIN
     v_packages := array_t(
-        'DBMS_CLOUD', 'DBMS_CLOUD_AI', 'DBMS_CLOUD_PIPELINE'
+        'DBMS_CLOUD',
+        'DBMS_CLOUD_AI',
+        'DBMS_CLOUD_AI_AGENT',
+        'DBMS_CLOUD_PIPELINE'
     );
     FOR i in 1..v_packages.count LOOP
         EXECUTE IMMEDIATE
@@ -22,11 +25,14 @@ END;
 
 REVOKE_PRIVILEGES_FROM_USER = """
 DECLARE
-    TYPE array_t IS VARRAY(3) OF VARCHAR2(60);
+    TYPE array_t IS VARRAY(4) OF VARCHAR2(60);
     v_packages array_t;
 BEGIN
     v_packages := array_t(
-        'DBMS_CLOUD', 'DBMS_CLOUD_AI', 'DBMS_CLOUD_PIPELINE'
+        'DBMS_CLOUD',
+        'DBMS_CLOUD_AI',
+        'DBMS_CLOUD_AI_AGENT',
+        'DBMS_CLOUD_PIPELINE'
     );
     FOR i in 1..v_packages.count LOOP
         EXECUTE IMMEDIATE

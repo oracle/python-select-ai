@@ -52,7 +52,11 @@ release = local_vars["__version__"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "python_docs_theme"
 html_static_path = ["_static"]
 
 pygments_style = "sphinx"
+
+latex_elements = {
+    "maxlistdepth": "10",  # Increase the maximum list nesting depth
+}

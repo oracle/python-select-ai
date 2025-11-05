@@ -29,6 +29,17 @@ from .db import (
     disconnect,
     is_connected,
 )
+from .errors import *
+from .privilege import (
+    async_grant_http_access,
+    async_grant_privileges,
+    async_revoke_http_access,
+    async_revoke_privileges,
+    grant_http_access,
+    grant_privileges,
+    revoke_http_access,
+    revoke_privileges,
+)
 from .profile import Profile
 from .provider import (
     AnthropicProvider,
@@ -40,10 +51,6 @@ from .provider import (
     OCIGenAIProvider,
     OpenAIProvider,
     Provider,
-    async_disable_provider,
-    async_enable_provider,
-    disable_provider,
-    enable_provider,
 )
 from .synthetic_data import (
     SyntheticDataAttributes,

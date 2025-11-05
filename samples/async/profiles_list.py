@@ -28,8 +28,7 @@ async def main():
     async for fetched_profile in async_profile.list(
         profile_name_pattern="^oci"
     ):
-        p = await fetched_profile
-        print(p.profile_name)
+        print(fetched_profile.profile_name)
 
 
 asyncio.run(main())

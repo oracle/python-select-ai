@@ -8,9 +8,9 @@
 # -----------------------------------------------------------------------------
 # disable_ai_provider.py
 #
-# Revokes privileges from the database user and removes ACL to invoke the AI
-# Provider endpoint
+# Removes ACL to invoke the AI Provider's HTTP endpoint
 # -----------------------------------------------------------------------------
+
 import os
 
 import select_ai
@@ -21,7 +21,7 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 select_ai_user = os.getenv("SELECT_AI_USER")
 
 select_ai.connect(user=admin_user, password=password, dsn=dsn)
-select_ai.disable_provider(
+select_ai.revoke_http_access(
     users=select_ai_user, provider_endpoint="*.openai.azure.com"
 )
 print("Disabled AI provider for user: ", select_ai_user)

@@ -12,3 +12,10 @@ doc/drawio
 **/__pycache__
 test.env
 test_19c.env
+pytest.env
+.venv3.10/
+.venv3.11/
+.venv3.9/
+sample_connect.py
+async_pipeline_test.py
+parquet.py

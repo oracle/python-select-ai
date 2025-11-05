@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>select_ai documentation &#8212; Select AI for Python 1.2.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="_static/pydoctheme.css?v=8cd84f99" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="_static/documentation_options.js?v=9235ea19"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. Introduction to Select AI for Python" href="user_guide/introduction.html" /><link rel="stylesheet" href="_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="_static/py.svg">
+            <script type="text/javascript" src="_static/copybutton.js"></script>
+            <script type="text/javascript" src="_static/menu.js"></script>
+            <script type="text/javascript" src="_static/search-focus.js"></script>
+            <script type="text/javascript" src="_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">select_ai documentation</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#actions">Actions</a></li>
+<li><a class="reference internal" href="#provider">Provider</a></li>
+<li><a class="reference internal" href="#credential">Credential</a></li>
+<li><a class="reference internal" href="#profile-attributes">Profile Attributes</a></li>
+<li><a class="reference internal" href="#profile">Profile</a></li>
+<li><a class="reference internal" href="#conversation">Conversation</a></li>
+<li><a class="reference internal" href="#vector-index">Vector Index</a></li>
+<li><a class="reference internal" href="#synthetic-data">Synthetic Data</a></li>
+<li><a class="reference internal" href="#select-ai-agents">Select AI Agents</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="user_guide/introduction.html"
+                          title="next chapter"><span class="section-number">1. </span>Introduction to Select AI for Python</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="user_guide/introduction.html" title="1. Introduction to Select AI for Python"
+             accesskey="N">next</a> |</li>
+          <li><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="#">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href="">select_ai documentation</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="select-ai-documentation">
+<h1>select_ai documentation<a class="headerlink" href="#select-ai-documentation" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">select_ai</span></code> is a Python module which enables integrating <a class="reference external" href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/dbms-cloud-ai-package.html">DBMS_CLOUD_AI</a>
+<code class="docutils literal notranslate"><span class="pre">PL/SQL</span></code> package into Python workflows. It bridges the gap between <code class="docutils literal notranslate"><span class="pre">PL/SQL</span></code> package’s AI capabilities
+and Python’s rich ecosystem.</p>
+</section>
+<section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/introduction.html">1. Introduction to Select AI for Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/installation.html">2. Installing <code class="docutils literal notranslate"><span class="pre">select_ai</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#installation-requirements">2.1. Installation requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#select-ai-installation">2.2. <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/connection.html">3. Connecting to Oracle Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#synchronous-connection">3.1. Synchronous connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#asynchronous-connection">3.2. Asynchronous connection</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="actions">
+<h1>Actions<a class="headerlink" href="#actions" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/actions.html">1. Supported Actions</a></li>
+</ul>
+</div>
+</section>
+<section id="provider">
+<h1>Provider<a class="headerlink" href="#provider" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html">1. <code class="docutils literal notranslate"><span class="pre">Provider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.Provider"><code class="docutils literal notranslate"><span class="pre">Provider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#anthropicprovider">2. <code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.AnthropicProvider"><code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#azureprovider">3. <code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.AzureProvider"><code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#awsprovider">4. <code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.AWSProvider"><code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#cohereprovider">5. <code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.CohereProvider"><code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#openaiprovider">6. <code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.OpenAIProvider"><code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#ocigenaiprovider">7. <code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.OCIGenAIProvider"><code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#googleprovider">8. <code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.GoogleProvider"><code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#huggingfaceprovider">9. <code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#select_ai.HuggingFaceProvider"><code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#enable-ai-service-provider">10. Enable AI service provider</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#sync-api">10.1. Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#async-api">10.2. Async API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#disable-ai-service-provider">11. Disable AI service provider</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#id2">11.1. Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#id3">11.2. Async API</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="credential">
+<h1>Credential<a class="headerlink" href="#credential" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/credential.html">1. Create credential</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#sync-api">1.1. Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#async-api">1.2. Async API</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="profile-attributes">
+<h1>Profile Attributes<a class="headerlink" href="#profile-attributes" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile_attributes.html">1. <code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile_attributes.html#select_ai.ProfileAttributes"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="profile">
+<h1>Profile<a class="headerlink" href="#profile" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html">Profile Object Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#base-profile-api">Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#select_ai.BaseProfile"><code class="docutils literal notranslate"><span class="pre">BaseProfile</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#profile-api"><code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile"><code class="docutils literal notranslate"><span class="pre">Profile</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_negative_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_positive_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.chat"><code class="docutils literal notranslate"><span class="pre">Profile.chat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.chat_session"><code class="docutils literal notranslate"><span class="pre">Profile.chat_session()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.create"><code class="docutils literal notranslate"><span class="pre">Profile.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.delete"><code class="docutils literal notranslate"><span class="pre">Profile.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.delete_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.delete_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.explain_sql"><code class="docutils literal notranslate"><span class="pre">Profile.explain_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.fetch"><code class="docutils literal notranslate"><span class="pre">Profile.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.generate"><code class="docutils literal notranslate"><span class="pre">Profile.generate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.generate_synthetic_data"><code class="docutils literal notranslate"><span class="pre">Profile.generate_synthetic_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.get_attributes"><code class="docutils literal notranslate"><span class="pre">Profile.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.list"><code class="docutils literal notranslate"><span class="pre">Profile.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.narrate"><code class="docutils literal notranslate"><span class="pre">Profile.narrate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.run_sql"><code class="docutils literal notranslate"><span class="pre">Profile.run_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.set_attribute"><code class="docutils literal notranslate"><span class="pre">Profile.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.set_attributes"><code class="docutils literal notranslate"><span class="pre">Profile.set_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.show_prompt"><code class="docutils literal notranslate"><span class="pre">Profile.show_prompt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.show_sql"><code class="docutils literal notranslate"><span class="pre">Profile.show_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.summarize"><code class="docutils literal notranslate"><span class="pre">Profile.summarize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#create-profile">Create Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#narrate">Narrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#show-sql">Show SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#run-sql">Run SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#chat">Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#summarize">Summarize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#list-profiles">List profiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#async-profile">Async Profile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_profile.html#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-profile-creation">2. Async Profile creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-explain-sql">3. Async explain SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-run-sql">4. Async run SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-show-sql">5. Async show SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-concurrent-sql">6. Async concurrent SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-chat">7. Async chat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#summarize">8. Summarize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-pipeline">9. Async pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#list-profiles-asynchronously">10. List profiles asynchronously</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="conversation">
+<h1>Conversation<a class="headerlink" href="#conversation" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html">1. <code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html#conversationattributes">2. <code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html#conversation-api">3. <code class="docutils literal notranslate"><span class="pre">Conversation</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation"><code class="docutils literal notranslate"><span class="pre">Conversation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.create"><code class="docutils literal notranslate"><span class="pre">Conversation.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.delete"><code class="docutils literal notranslate"><span class="pre">Conversation.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.fetch"><code class="docutils literal notranslate"><span class="pre">Conversation.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.list"><code class="docutils literal notranslate"><span class="pre">Conversation.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#create-conversion">3.1. Create conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#chat-session">3.2. Chat session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#list-conversations">3.3. List conversations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#delete-conversation">3.4. Delete conversation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html#asyncconversation-api">4. <code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation"><code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.create"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.delete"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.list"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#async-chat-session">4.1. Async chat session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#async-list-conversations">4.2. Async list conversations</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="vector-index">
+<h1>Vector Index<a class="headerlink" href="#vector-index" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/vector_index.html">1. <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/vector_index.html#vectorindexattributes">2. <code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#oraclevectorindexattributes">2.1. <code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.OracleVectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/vector_index.html#vectorindex-api">3. <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex"><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.create"><code class="docutils literal notranslate"><span class="pre">VectorIndex.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">VectorIndex.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.list"><code class="docutils literal notranslate"><span class="pre">VectorIndex.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#create-vector-index">3.1. Create vector index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#list-vector-index">3.2. List vector index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#get-vector-index-attributes">3.3. Get vector index attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#update-vector-index-attributes">3.4. Update vector index attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#rag-using-vector-index">3.5. RAG using vector index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#delete-vector-index">3.6. Delete vector index</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/vector_index.html#asyncvectorindex-api">4. <code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.create"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.list"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-create-vector-index">4.1. Async create vector index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-list-vector-index">4.2. Async list vector index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-get-vector-index-attributes">4.3. Async get vector index attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-update-vector-index-attributes">4.4. Async update vector index attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-rag-using-vector-index">4.5. Async RAG using vector index</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="synthetic-data">
+<h1>Synthetic Data<a class="headerlink" href="#synthetic-data" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/synthetic_data.html">1. <code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#select_ai.SyntheticDataAttributes"><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/synthetic_data.html#syntheticdataparams">2. <code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#select_ai.SyntheticDataParams"><code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/synthetic_data.html#single-table-synthetic-data">3. Single table synthetic data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#sync-api">3.1. Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#async-api">3.2. Async API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/synthetic_data.html#multi-table-synthetic-data">4. Multi table synthetic data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#id1">4.1. Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#id2">4.2. Async API</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="select-ai-agents">
+<h1>Select AI Agents<a class="headerlink" href="#select-ai-agents" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html">1. <code class="docutils literal notranslate"><span class="pre">Tool</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#supported-tools">1.1. Supported Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.ToolAttributes"><code class="docutils literal notranslate"><span class="pre">ToolAttributes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.ToolParams"><code class="docutils literal notranslate"><span class="pre">ToolParams</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Tool"><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#create-tool">1.2. Create Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#list-tools">1.3. List Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#task">2. <code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes"><code class="docutils literal notranslate"><span class="pre">TaskAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task"><code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.create"><code class="docutils literal notranslate"><span class="pre">Task.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.delete"><code class="docutils literal notranslate"><span class="pre">Task.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.disable"><code class="docutils literal notranslate"><span class="pre">Task.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.enable"><code class="docutils literal notranslate"><span class="pre">Task.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.fetch"><code class="docutils literal notranslate"><span class="pre">Task.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.list"><code class="docutils literal notranslate"><span class="pre">Task.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.set_attribute"><code class="docutils literal notranslate"><span class="pre">Task.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.set_attributes"><code class="docutils literal notranslate"><span class="pre">Task.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#create-task">2.1. Create Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#list-tasks">2.2. List Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#id1">3. <code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes"><code class="docutils literal notranslate"><span class="pre">AgentAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.create"><code class="docutils literal notranslate"><span class="pre">Agent.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.delete"><code class="docutils literal notranslate"><span class="pre">Agent.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.disable"><code class="docutils literal notranslate"><span class="pre">Agent.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.enable"><code class="docutils literal notranslate"><span class="pre">Agent.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.fetch"><code class="docutils literal notranslate"><span class="pre">Agent.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.list"><code class="docutils literal notranslate"><span class="pre">Agent.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.set_attribute"><code class="docutils literal notranslate"><span class="pre">Agent.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.set_attributes"><code class="docutils literal notranslate"><span class="pre">Agent.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#create-agent">3.1. Create Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#team">4. Team</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes"><code class="docutils literal notranslate"><span class="pre">TeamAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team"><code class="docutils literal notranslate"><span class="pre">Team</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.create"><code class="docutils literal notranslate"><span class="pre">Team.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.delete"><code class="docutils literal notranslate"><span class="pre">Team.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.disable"><code class="docutils literal notranslate"><span class="pre">Team.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.enable"><code class="docutils literal notranslate"><span class="pre">Team.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.fetch"><code class="docutils literal notranslate"><span class="pre">Team.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.list"><code class="docutils literal notranslate"><span class="pre">Team.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.run"><code class="docutils literal notranslate"><span class="pre">Team.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.set_attribute"><code class="docutils literal notranslate"><span class="pre">Team.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.set_attributes"><code class="docutils literal notranslate"><span class="pre">Team.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#run-team">4.1. Run Team</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#ai-agent-examples">5. AI agent examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">select_ai documentation</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#actions">Actions</a></li>
+<li><a class="reference internal" href="#provider">Provider</a></li>
+<li><a class="reference internal" href="#credential">Credential</a></li>
+<li><a class="reference internal" href="#profile-attributes">Profile Attributes</a></li>
+<li><a class="reference internal" href="#profile">Profile</a></li>
+<li><a class="reference internal" href="#conversation">Conversation</a></li>
+<li><a class="reference internal" href="#vector-index">Vector Index</a></li>
+<li><a class="reference internal" href="#synthetic-data">Synthetic Data</a></li>
+<li><a class="reference internal" href="#select-ai-agents">Select AI Agents</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="user_guide/introduction.html"
+                          title="next chapter"><span class="section-number">1. </span>Introduction to Select AI for Python</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="user_guide/introduction.html" title="1. Introduction to Select AI for Python"
+             >next</a> |</li>
+          <li><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="#">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href="">select_ai documentation</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>

@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # async/enable_ai_provider.py
 #
-# Async API to enable AI provider for database users
+# Add ACL to invoke AI provider's HTTP endpoint
 # -----------------------------------------------------------------------------
 
 import asyncio
@@ -24,7 +24,7 @@ select_ai_user = os.getenv("SELECT_AI_USER")
 
 async def main():
     await select_ai.async_connect(user=admin_user, password=password, dsn=dsn)
-    await select_ai.async_enable_provider(
+    await select_ai.async_grant_http_access(
         users=select_ai_user, provider_endpoint="*.openai.azure.com"
     )
     print("Enabled AI provider for user: ", select_ai_user)

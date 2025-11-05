@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. Conversation Object model &#8212; Select AI for Python 1.2.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=9235ea19"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. VectorIndex Object Model" href="vector_index.html" />
+    <link rel="prev" title="11.1. AsyncProfile API" href="async_profile.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
+<li><a class="reference internal" href="#conversationattributes">2. <code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.ConversationAttributes"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conversation-api">3. <code class="docutils literal notranslate"><span class="pre">Conversation</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.Conversation"><code class="docutils literal notranslate"><span class="pre">Conversation</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.Conversation.create"><code class="docutils literal notranslate"><span class="pre">Conversation.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.delete"><code class="docutils literal notranslate"><span class="pre">Conversation.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.fetch"><code class="docutils literal notranslate"><span class="pre">Conversation.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.list"><code class="docutils literal notranslate"><span class="pre">Conversation.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-conversion">3.1. Create conversion</a></li>
+<li><a class="reference internal" href="#chat-session">3.2. Chat session</a></li>
+<li><a class="reference internal" href="#list-conversations">3.3. List conversations</a></li>
+<li><a class="reference internal" href="#delete-conversation">3.4. Delete conversation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#asyncconversation-api">4. <code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncConversation"><code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.create"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.delete"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.list"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#async-chat-session">4.1. Async chat session</a></li>
+<li><a class="reference internal" href="#async-list-conversations">4.2. Async list conversations</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="async_profile.html"
+                          title="previous chapter"><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="vector_index.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/conversation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="vector_index.html" title="1. VectorIndex Object Model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="async_profile.html" title="11.1. AsyncProfile API"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <p id="conversation">Conversations in Select AI represent an interactive exchange between the user
+and the system, enabling users to query or interact with the database through
+a series of natural language prompts.</p>
+<section id="conversation-object-model">
+<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code><a class="headerlink" href="#conversation-object-model" title="Link to this heading">¶</a></h1>
+<figure class="align-default" id="conversationfig">
+<img alt="Select AI Conversation" src="../_images/conversation.png" />
+</figure>
+</section>
+<section id="conversationattributes">
+<h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code><a class="headerlink" href="#conversationattributes" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.ConversationAttributes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">ConversationAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'New</span> <span class="pre">Conversation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retention_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(days=7)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conversation_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ConversationAttributes" title="Link to this definition">¶</a></dt>
+<dd><p>Conversation Attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<em>str</em>) – Conversation Title</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Description of the conversation topic</p></li>
+<li><p><strong>retention_days</strong> (<em>datetime.timedelta</em>) – The number of days the conversation
+will be stored in the database from its creation date. If value is 0, the
+conversation will not be removed unless it is manually deleted by
+delete</p></li>
+<li><p><strong>conversation_length</strong> (<em>int</em>) – Number of prompts to store for this
+conversation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="conversation-api">
+<h1><span class="section-number">3. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span></code> API<a class="headerlink" href="#conversation-api" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.Conversation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">Conversation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conversation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.conversation.ConversationAttributes"><span class="pre">ConversationAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Conversation" title="Link to this definition">¶</a></dt>
+<dd><p>Conversation class can be used to create, update and delete
+conversations in the database</p>
+<p>Typical usage is to combine this conversation object with an AI
+Profile.chat_session() to have context-aware conversations with
+the LLM provider</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conversation_id</strong> (<em>str</em>) – Conversation ID</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.ConversationAttributes"><em>ConversationAttributes</em></a>) – Conversation attributes</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Conversation.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Conversation.create" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new conversation and returns the conversation_id
+to be used in context-aware conversations with LLMs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>conversation_id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Conversation.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Conversation.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Drops the conversation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Conversation.fetch">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conversation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.Conversation" title="select_ai.conversation.Conversation"><span class="pre">Conversation</span></a></span></span><a class="headerlink" href="#select_ai.Conversation.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch conversation attributes from the database
+and build a proxy object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>conversation_id</strong> (<em>str</em>) – Conversation ID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Conversation.get_attributes">
+<span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.conversation.ConversationAttributes"><span class="pre">ConversationAttributes</span></a></span></span><a class="headerlink" href="#select_ai.Conversation.get_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Get attributes of the conversation from the database</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Conversation.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.Conversation" title="select_ai.conversation.Conversation"><span class="pre">Conversation</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.Conversation.list" title="Link to this definition">¶</a></dt>
+<dd><p>List all conversations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Iterator[VectorIndex]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Conversation.set_attributes">
+<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.conversation.ConversationAttributes"><span class="pre">ConversationAttributes</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Conversation.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Updates the attributes of the conversation in the database</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="create-conversion">
+<h2><span class="section-number">3.1. </span>Create conversion<a class="headerlink" href="#create-conversion" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">conversation_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ConversationAttributes</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;History of Science&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LLM&#39;s understanding of history of science&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">conversation</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Conversation</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">conversation_attributes</span><span class="p">)</span>
+<span class="n">conversation_id</span> <span class="o">=</span> <span class="n">conversation</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created conversation with conversation id: &quot;</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Created</span> <span class="n">conversation</span> <span class="k">with</span> <span class="n">conversation</span> <span class="nb">id</span><span class="p">:</span>  <span class="mi">3</span><span class="n">AB2ED3E</span><span class="o">-</span><span class="mf">7E52</span><span class="o">-</span><span class="mi">8000</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="n">BE1A000A15B6</span>
+</pre></div>
+</div>
+</section>
+<section id="chat-session">
+<h2><span class="section-number">3.2. </span>Chat session<a class="headerlink" href="#chat-session" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">conversation_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ConversationAttributes</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;History of Science&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LLM&#39;s understanding of history of science&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">conversation</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Conversation</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">conversation_attributes</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat_session</span><span class="p">(</span><span class="n">conversation</span><span class="o">=</span><span class="n">conversation</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Conversation ID for this session is:&quot;</span><span class="p">,</span>
+        <span class="n">conversation</span><span class="o">.</span><span class="n">conversation_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;What is importance of history of science ?&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Elaborate more on &#39;Learning from past mistakes&#39;&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Conversation</span> <span class="n">ID</span> <span class="k">for</span> <span class="n">this</span> <span class="n">session</span> <span class="ow">is</span><span class="p">:</span> <span class="mi">380</span><span class="n">A1910</span><span class="o">-</span><span class="mi">5</span><span class="n">BF2</span><span class="o">-</span><span class="n">F7A1</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="n">D81A000A3FDA</span>
+
+<span class="n">The</span> <span class="n">importance</span> <span class="n">of</span> <span class="n">the</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="n">lies</span> <span class="ow">in</span> <span class="n">its</span> <span class="n">ability</span> <span class="n">to</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">comprehensive</span> <span class="n">understanding</span> <span class="n">of</span> <span class="n">the</span> <span class="n">development</span> <span class="n">of</span> <span class="n">scientific</span> <span class="n">knowledge</span> <span class="ow">and</span> <span class="n">its</span> <span class="n">impact</span> <span class="n">on</span> <span class="n">society</span><span class="o">.</span> <span class="n">Here</span> <span class="n">are</span> <span class="n">some</span> <span class="n">key</span> <span class="n">reasons</span> <span class="n">why</span> <span class="n">the</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="ow">is</span> <span class="n">important</span><span class="p">:</span>
+
+<span class="mf">1.</span> <span class="o">**</span><span class="n">Contextualizing</span> <span class="n">Scientific</span> <span class="n">Discoveries</span><span class="o">**</span><span class="p">:</span> <span class="n">The</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="n">helps</span> <span class="n">us</span> <span class="n">understand</span> <span class="n">the</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">which</span> <span class="n">scientific</span> <span class="n">discoveries</span> <span class="n">were</span> <span class="n">made</span><span class="p">,</span> <span class="n">including</span> <span class="n">the</span> <span class="n">social</span><span class="p">,</span> <span class="n">cultural</span><span class="p">,</span> <span class="ow">and</span> <span class="n">intellectual</span> <span class="n">climate</span> <span class="n">of</span> <span class="n">the</span> <span class="n">time</span><span class="o">.</span> <span class="n">This</span> <span class="n">context</span> <span class="ow">is</span> <span class="n">essential</span> <span class="k">for</span> <span class="n">appreciating</span> <span class="n">the</span> <span class="n">significance</span> <span class="ow">and</span> <span class="n">relevance</span> <span class="n">of</span> <span class="n">scientific</span> <span class="n">findings</span><span class="o">.</span>
+
+<span class="o">..</span>
+<span class="o">..</span>
+
+<span class="n">The</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="ow">is</span> <span class="n">replete</span> <span class="k">with</span> <span class="n">examples</span> <span class="n">of</span> <span class="n">mistakes</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="ow">and</span> <span class="n">misconceptions</span> <span class="n">that</span> <span class="n">have</span> <span class="n">occurred</span> <span class="n">over</span> <span class="n">time</span><span class="o">.</span> <span class="n">By</span> <span class="n">studying</span> <span class="n">these</span> <span class="n">mistakes</span><span class="p">,</span> <span class="n">scientists</span> <span class="ow">and</span> <span class="n">researchers</span> <span class="n">can</span> <span class="n">gain</span> <span class="n">valuable</span> <span class="n">insights</span> <span class="n">into</span> <span class="n">the</span> <span class="n">pitfalls</span> <span class="ow">and</span> <span class="n">challenges</span> <span class="n">that</span> <span class="n">have</span> <span class="n">shaped</span> <span class="n">the</span> <span class="n">development</span> <span class="n">of</span> <span class="n">scientific</span> <span class="n">knowledge</span><span class="o">.</span> <span class="n">Learning</span> <span class="kn">from</span><span class="w"> </span><span class="nn">past</span> <span class="n">mistakes</span> <span class="ow">is</span> <span class="n">essential</span> <span class="k">for</span> <span class="n">several</span> <span class="n">reasons</span><span class="p">:</span>
+<span class="o">...</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="list-conversations">
+<h2><span class="section-number">3.3. </span>List conversations<a class="headerlink" href="#list-conversations" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">conversation</span> <span class="ow">in</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Conversation</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">conversation</span><span class="o">.</span><span class="n">conversation_id</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">conversation</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5275</span><span class="n">A80</span><span class="o">-</span><span class="n">A290</span><span class="o">-</span><span class="n">DA17</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="mi">151</span><span class="n">B000AD3B4</span>
+<span class="n">ConversationAttributes</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;History of Science&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LLM&#39;s understanding of history of science&quot;</span><span class="p">,</span> <span class="n">retention_days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="mi">37</span><span class="n">DF777F</span><span class="o">-</span><span class="n">F3DA</span><span class="o">-</span><span class="n">F084</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="n">D81A000A53BE</span>
+<span class="n">ConversationAttributes</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;History of Science&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LLM&#39;s understanding of history of science&quot;</span><span class="p">,</span> <span class="n">retention_days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="delete-conversation">
+<h2><span class="section-number">3.4. </span>Delete conversation<a class="headerlink" href="#delete-conversation" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">conversation</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Conversation</span><span class="p">(</span>
+    <span class="n">conversation_id</span><span class="o">=</span><span class="s2">&quot;37DDC22E-11C8-3D49-E063-D81A000A85FE&quot;</span>
+<span class="p">)</span>
+<span class="n">conversation</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Deleted conversation with conversation id: &quot;</span><span class="p">,</span>
+    <span class="n">conversation</span><span class="o">.</span><span class="n">conversation_id</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Deleted</span> <span class="n">conversation</span> <span class="k">with</span> <span class="n">conversation</span> <span class="nb">id</span><span class="p">:</span>  <span class="mi">37</span><span class="n">DDC22E</span><span class="o">-</span><span class="mi">11</span><span class="n">C8</span><span class="o">-</span><span class="mi">3</span><span class="n">D49</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="n">D81A000A85FE</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="asyncconversation-api">
+<h1><span class="section-number">4. </span><code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code> API<a class="headerlink" href="#asyncconversation-api" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.AsyncConversation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AsyncConversation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conversation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.conversation.ConversationAttributes"><span class="pre">ConversationAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncConversation" title="Link to this definition">¶</a></dt>
+<dd><p>AsyncConversation class can be used to create, update and delete
+conversations in the database in an async manner</p>
+<p>Typical usage is to combine this conversation object with an
+AsyncProfile.chat_session() to have context-aware conversations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conversation_id</strong> (<em>str</em>) – Conversation ID</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.ConversationAttributes"><em>ConversationAttributes</em></a>) – Conversation attributes</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncConversation.create">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.AsyncConversation.create" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new conversation and returns the conversation_id
+to be used in context-aware conversations with LLMs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>conversation_id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncConversation.delete">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncConversation.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete the conversation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncConversation.fetch">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conversation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.AsyncConversation" title="select_ai.conversation.AsyncConversation"><span class="pre">AsyncConversation</span></a></span></span><a class="headerlink" href="#select_ai.AsyncConversation.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch conversation attributes from the database</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncConversation.get_attributes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.conversation.ConversationAttributes"><span class="pre">ConversationAttributes</span></a></span></span><a class="headerlink" href="#select_ai.AsyncConversation.get_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Get attributes of the conversation from the database</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncConversation.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.AsyncConversation" title="select_ai.conversation.AsyncConversation"><span class="pre">AsyncConversation</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.AsyncConversation.list" title="Link to this definition">¶</a></dt>
+<dd><p>List all conversations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Iterator[VectorIndex]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncConversation.set_attributes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.ConversationAttributes" title="select_ai.conversation.ConversationAttributes"><span class="pre">ConversationAttributes</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncConversation.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Updates the attributes of the conversation</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="async-chat-session">
+<h2><span class="section-number">4.1. </span>Async chat session<a class="headerlink" href="#async-chat-session" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span>
+    <span class="p">)</span>
+    <span class="n">conversation_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ConversationAttributes</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;History of Science&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LLM&#39;s understanding of history of science&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">async_conversation</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncConversation</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="n">conversation_attributes</span>
+    <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">chat_session</span><span class="p">(</span>
+        <span class="n">conversation</span><span class="o">=</span><span class="n">async_conversation</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">async_session</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_session</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;What is importance of history of science ?&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_session</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Elaborate more on &#39;Learning from past mistakes&#39;&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Conversation</span> <span class="n">ID</span> <span class="k">for</span> <span class="n">this</span> <span class="n">session</span> <span class="ow">is</span><span class="p">:</span> <span class="mi">380</span><span class="n">A1910</span><span class="o">-</span><span class="mi">5</span><span class="n">BF2</span><span class="o">-</span><span class="n">F7A1</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="n">D81A000A3FDA</span>
+
+<span class="n">The</span> <span class="n">importance</span> <span class="n">of</span> <span class="n">the</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="n">lies</span> <span class="ow">in</span> <span class="n">its</span> <span class="n">ability</span> <span class="n">to</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">comprehensive</span> <span class="n">understanding</span> <span class="n">of</span> <span class="n">the</span> <span class="n">development</span> <span class="n">of</span> <span class="n">scientific</span> <span class="n">knowledge</span> <span class="ow">and</span> <span class="n">its</span> <span class="n">impact</span> <span class="n">on</span> <span class="n">society</span><span class="o">.</span> <span class="n">Here</span> <span class="n">are</span> <span class="n">some</span> <span class="n">key</span> <span class="n">reasons</span> <span class="n">why</span> <span class="n">the</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="ow">is</span> <span class="n">important</span><span class="p">:</span>
+
+<span class="mf">1.</span> <span class="o">**</span><span class="n">Contextualizing</span> <span class="n">Scientific</span> <span class="n">Discoveries</span><span class="o">**</span><span class="p">:</span> <span class="n">The</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="n">helps</span> <span class="n">us</span> <span class="n">understand</span> <span class="n">the</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">which</span> <span class="n">scientific</span> <span class="n">discoveries</span> <span class="n">were</span> <span class="n">made</span><span class="p">,</span> <span class="n">including</span> <span class="n">the</span> <span class="n">social</span><span class="p">,</span> <span class="n">cultural</span><span class="p">,</span> <span class="ow">and</span> <span class="n">intellectual</span> <span class="n">climate</span> <span class="n">of</span> <span class="n">the</span> <span class="n">time</span><span class="o">.</span> <span class="n">This</span> <span class="n">context</span> <span class="ow">is</span> <span class="n">essential</span> <span class="k">for</span> <span class="n">appreciating</span> <span class="n">the</span> <span class="n">significance</span> <span class="ow">and</span> <span class="n">relevance</span> <span class="n">of</span> <span class="n">scientific</span> <span class="n">findings</span><span class="o">.</span>
+
+<span class="o">..</span>
+<span class="o">..</span>
+
+<span class="n">The</span> <span class="n">history</span> <span class="n">of</span> <span class="n">science</span> <span class="ow">is</span> <span class="n">replete</span> <span class="k">with</span> <span class="n">examples</span> <span class="n">of</span> <span class="n">mistakes</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="ow">and</span> <span class="n">misconceptions</span> <span class="n">that</span> <span class="n">have</span> <span class="n">occurred</span> <span class="n">over</span> <span class="n">time</span><span class="o">.</span> <span class="n">By</span> <span class="n">studying</span> <span class="n">these</span> <span class="n">mistakes</span><span class="p">,</span> <span class="n">scientists</span> <span class="ow">and</span> <span class="n">researchers</span> <span class="n">can</span> <span class="n">gain</span> <span class="n">valuable</span> <span class="n">insights</span> <span class="n">into</span> <span class="n">the</span> <span class="n">pitfalls</span> <span class="ow">and</span> <span class="n">challenges</span> <span class="n">that</span> <span class="n">have</span> <span class="n">shaped</span> <span class="n">the</span> <span class="n">development</span> <span class="n">of</span> <span class="n">scientific</span> <span class="n">knowledge</span><span class="o">.</span> <span class="n">Learning</span> <span class="kn">from</span><span class="w"> </span><span class="nn">past</span> <span class="n">mistakes</span> <span class="ow">is</span> <span class="n">essential</span> <span class="k">for</span> <span class="n">several</span> <span class="n">reasons</span><span class="p">:</span>
+<span class="o">...</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="async-list-conversations">
+<h2><span class="section-number">4.2. </span>Async list conversations<a class="headerlink" href="#async-list-conversations" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">conversation</span> <span class="ow">in</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncConversation</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">conversation</span><span class="o">.</span><span class="n">conversation_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">conversation</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5275</span><span class="n">A80</span><span class="o">-</span><span class="n">A290</span><span class="o">-</span><span class="n">DA17</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="mi">151</span><span class="n">B000AD3B4</span>
+<span class="n">ConversationAttributes</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;History of Science&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LLM&#39;s understanding of history of science&quot;</span><span class="p">,</span> <span class="n">retention_days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="mi">37</span><span class="n">DF777F</span><span class="o">-</span><span class="n">F3DA</span><span class="o">-</span><span class="n">F084</span><span class="o">-</span><span class="n">E063</span><span class="o">-</span><span class="n">D81A000A53BE</span>
+<span class="n">ConversationAttributes</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;History of Science&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LLM&#39;s understanding of history of science&quot;</span><span class="p">,</span> <span class="n">retention_days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
+<li><a class="reference internal" href="#conversationattributes">2. <code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.ConversationAttributes"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conversation-api">3. <code class="docutils literal notranslate"><span class="pre">Conversation</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.Conversation"><code class="docutils literal notranslate"><span class="pre">Conversation</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.Conversation.create"><code class="docutils literal notranslate"><span class="pre">Conversation.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.delete"><code class="docutils literal notranslate"><span class="pre">Conversation.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.fetch"><code class="docutils literal notranslate"><span class="pre">Conversation.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.list"><code class="docutils literal notranslate"><span class="pre">Conversation.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Conversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-conversion">3.1. Create conversion</a></li>
+<li><a class="reference internal" href="#chat-session">3.2. Chat session</a></li>
+<li><a class="reference internal" href="#list-conversations">3.3. List conversations</a></li>
+<li><a class="reference internal" href="#delete-conversation">3.4. Delete conversation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#asyncconversation-api">4. <code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncConversation"><code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.create"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.delete"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.list"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncConversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#async-chat-session">4.1. Async chat session</a></li>
+<li><a class="reference internal" href="#async-list-conversations">4.2. Async list conversations</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="async_profile.html"
+                          title="previous chapter"><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="vector_index.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/conversation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="vector_index.html" title="1. VectorIndex Object Model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="async_profile.html" title="11.1. AsyncProfile API"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>

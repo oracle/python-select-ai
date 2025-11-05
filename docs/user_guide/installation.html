@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. Installing select_ai &#8212; Select AI for Python 1.2.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=9235ea19"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Connecting to Oracle Database" href="connection.html" />
+    <link rel="prev" title="1. Introduction to Select AI for Python" href="introduction.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">2. Installing <code class="docutils literal notranslate"><span class="pre">select_ai</span></code></a><ul>
+<li><a class="reference internal" href="#installation-requirements">2.1. Installation requirements</a></li>
+<li><a class="reference internal" href="#select-ai-installation">2.2. <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> installation</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="introduction.html"
+                          title="previous chapter"><span class="section-number">1. </span>Introduction to Select AI for Python</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="connection.html"
+                          title="next chapter"><span class="section-number">3. </span>Connecting to Oracle Database</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/installation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="connection.html" title="3. Connecting to Oracle Database"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="1. Introduction to Select AI for Python"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Installing <code class="docutils literal notranslate"><span class="pre">select_ai</span></code></a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="installing-select-ai">
+<span id="installation"></span><h1><span class="section-number">2. </span>Installing <code class="docutils literal notranslate"><span class="pre">select_ai</span></code><a class="headerlink" href="#installing-select-ai" title="Link to this heading">¶</a></h1>
+<section id="installation-requirements">
+<span id="id1"></span><h2><span class="section-number">2.1. </span>Installation requirements<a class="headerlink" href="#installation-requirements" title="Link to this heading">¶</a></h2>
+<p>To use <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> you need:</p>
+<ul class="simple">
+<li><p>Python 3.9, 3.10, 3.11, 3.12 or 3.13</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python-oracledb</span></code> - This package is automatically installed as a dependency requirement</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> - This package is automatically installed as a dependency requirement</p></li>
+</ul>
+</section>
+<section id="select-ai-installation">
+<span id="quickstart"></span><h2><span class="section-number">2.2. </span><code class="docutils literal notranslate"><span class="pre">select_ai</span></code> installation<a class="headerlink" href="#select-ai-installation" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">select_ai</span></code> can be installed from Python’s package repository
+<a class="reference external" href="https://pypi.org/">PyPI</a> using
+<a class="reference external" href="https://pip.pypa.io/en/latest/installation/">pip</a>.</p>
+<ol class="arabic simple">
+<li><p>Install <a class="reference external" href="https://www.python.org/downloads">Python 3</a> if it is not already
+available. Use any version from Python 3.9 through 3.13.</p></li>
+<li><p>Install <code class="docutils literal notranslate"><span class="pre">select_ai</span></code>:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>select_ai<span class="w"> </span>--upgrade<span class="w"> </span>--user
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>If you are behind a proxy, use the <code class="docutils literal notranslate"><span class="pre">--proxy</span></code> option. For example:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>select_ai<span class="w"> </span>--upgrade<span class="w"> </span>--user<span class="w"> </span>--proxy<span class="o">=</span>http://proxy.example.com:80
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>Create a file <code class="docutils literal notranslate"><span class="pre">select_ai_connection_test.py</span></code> such as:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_user&gt;&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_password&gt;&quot;</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_dsn&gt;&quot;</span>
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected to the Database&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">select_ai_connection_test.py</span></code></p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>select_ai_connection_test.py
+</pre></div>
+</div>
+<p>Enter the database password when prompted and message will be shown:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Connected<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>Database
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">2. Installing <code class="docutils literal notranslate"><span class="pre">select_ai</span></code></a><ul>
+<li><a class="reference internal" href="#installation-requirements">2.1. Installation requirements</a></li>
+<li><a class="reference internal" href="#select-ai-installation">2.2. <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> installation</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="introduction.html"
+                          title="previous chapter"><span class="section-number">1. </span>Introduction to Select AI for Python</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="connection.html"
+                          title="next chapter"><span class="section-number">3. </span>Connecting to Oracle Database</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/installation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="connection.html" title="3. Connecting to Oracle Database"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="1. Introduction to Select AI for Python"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Installing <code class="docutils literal notranslate"><span class="pre">select_ai</span></code></a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>

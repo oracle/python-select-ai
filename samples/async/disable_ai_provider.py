@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # async/disable_ai_provider.py
 #
-# Async API to disable AI provider for database users
+# Remove ACL to invoke AI provider's HTTP endpoint
 # -----------------------------------------------------------------------------
 
 import asyncio
@@ -24,7 +24,7 @@ select_ai_user = os.getenv("SELECT_AI_USER")
 
 async def main():
     await select_ai.async_connect(user=admin_user, password=password, dsn=dsn)
-    await select_ai.async_disable_provider(
+    await select_ai.async_revoke_http_access(
         users=select_ai_user, provider_endpoint="*.openai.azure.com"
     )
     print("Disabled AI provider for user: ", select_ai_user)

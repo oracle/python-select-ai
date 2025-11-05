@@ -33,6 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Database",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
@@ -41,6 +42,12 @@ classifiers = [
 dependencies = [
     "oracledb",
     "pandas==2.2.3"
+]
+
+[project.optional-dependencies]
+test = [
+    "anyio",
+    "pytest",
 ]
 
 [project.urls]
@@ -64,3 +71,9 @@ required-version = 24
 line-length = 79
 target-version = "py39"
 per-file-ignores = { "__init__.py" = ["F401"] }
+
+[tool.pytest.ini_options]
+minversion = "8.3.0"
+testpaths = [
+    "tests"
+]

@@ -71,3 +71,43 @@ class VectorIndexNotFoundError(SelectAIError):
             )
         else:
             return f"VectorIndex {self.index_name} not found"
+
+
+class AgentNotFoundError(SelectAIError):
+    """Agent not found in the database"""
+
+    def __init__(self, agent_name: str):
+        self.agent_name = agent_name
+
+    def __str__(self):
+        return f"Agent {self.agent_name} not found"
+
+
+class AgentTaskNotFoundError(SelectAIError):
+    """Agent task not found in the database"""
+
+    def __init__(self, task_name: str):
+        self.task_name = task_name
+
+    def __str__(self):
+        return f"Agent Task {self.task_name} not found"
+
+
+class AgentToolNotFoundError(SelectAIError):
+    """Agent tool not found in the database"""
+
+    def __init__(self, tool_name: str):
+        self.tool_name = tool_name
+
+    def __str__(self):
+        return f"Agent Tool {self.tool_name} not found"
+
+
+class AgentTeamNotFoundError(SelectAIError):
+    """Agent team not found in the database"""
+
+    def __init__(self, team_name: str):
+        self.team_name = team_name
+
+    def __str__(self):
+        return f"Agent Team {self.team_name} not found"

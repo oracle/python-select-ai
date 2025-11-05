@@ -1,0 +1,49 @@
+name: select_ai_py_tests
+on: push
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+
+    steps:
+      - name: Check out python-select-ai repository code
+        uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Replace dot in python version with empty space
+        run: |
+          python_version=${{matrix.python-version}}
+          new_version="${python_version//./}"
+          echo "PYTHON_VERSION_WITHOUT_DOT=${new_version}" >> $GITHUB_ENV
+
+      - name: Install select_ai with core dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          pip install pytest anyio
+          pip install -e .
+
+      - name: Run select_ai tests
+        run: |
+          python_version=${{matrix.python-version}}
+          pytest tests/create_schema.py
+          pytest -vv
+        env:
+          PYSAI_TEST_USER: ${{ secrets.PYSAI_TEST_USER }}_${{env.PYTHON_VERSION_WITHOUT_DOT}}
+          PYSAI_TEST_USER_PASSWORD: ${{ secrets.PYSAI_TEST_USER_PASSWORD }}
+          PYSAI_TEST_ADMIN_USER: ${{ secrets.PYSAI_TEST_ADMIN_USER }}
+          PYSAI_TEST_ADMIN_PASSWORD: ${{ secrets.PYSAI_TEST_ADMIN_PASSWORD }}
+          PYSAI_TEST_CONNECT_STRING: ${{ secrets.PYSAI_TEST_CONNECT_STRING }}
+          PYSAI_TEST_OCI_USER_OCID: ${{ secrets.PYSAI_TEST_OCI_USER_OCID }}
+          PYSAI_TEST_OCI_TENANCY_OCID: ${{ secrets.PYSAI_TEST_OCI_TENANCY_OCID }}
+          PYSAI_TEST_OCI_PRIVATE_KEY: ${{ secrets.PYSAI_TEST_OCI_PRIVATE_KEY }}
+          PYSAI_TEST_OCI_FINGERPRINT: ${{ secrets.PYSAI_TEST_OCI_FINGERPRINT }}
+          PYSAI_TEST_OCI_COMPARTMENT_ID: ${{ secrets.PYSAI_TEST_OCI_COMPARTMENT_ID }}

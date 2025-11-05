@@ -59,7 +59,12 @@ async def async_connect(user: str, password: str, dsn: str, *args, **kwargs):
     object
     """
     async_conn = await oracledb.connect_async(
-        user=user, password=password, dsn=dsn, *args, **kwargs
+        user=user,
+        password=password,
+        dsn=dsn,
+        connection_id_prefix="async-python-select-ai",
+        *args,
+        **kwargs,
     )
     _set_connection(async_conn=async_conn)
 

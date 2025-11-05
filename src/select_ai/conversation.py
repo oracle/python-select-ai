@@ -108,6 +108,18 @@ class Conversation(_BaseConversation):
                 },
             )
 
+    @classmethod
+    def fetch(cls, conversation_id: str) -> "Conversation":
+        """Fetch conversation attributes from the database
+        and build a proxy object
+
+        :param str conversation_id: Conversation ID
+
+        """
+        conversation = cls(conversation_id=conversation_id)
+        conversation.attributes = conversation.get_attributes()
+        return conversation
+
     def set_attributes(self, attributes: ConversationAttributes):
         """Updates the attributes of the conversation in the database"""
         with cursor() as cr:
@@ -118,6 +130,7 @@ class Conversation(_BaseConversation):
                     "attributes": attributes.json(),
                 },
             )
+        self.attributes = self.get_attributes()
 
     def get_attributes(self) -> ConversationAttributes:
         """Get attributes of the conversation from the database"""
@@ -209,6 +222,13 @@ class AsyncConversation(_BaseConversation):
                 },
             )
 
+    @classmethod
+    async def fetch(cls, conversation_id: str) -> "AsyncConversation":
+        """Fetch conversation attributes from the database"""
+        conversation = cls(conversation_id=conversation_id)
+        conversation.attributes = await conversation.get_attributes()
+        return conversation
+
     async def set_attributes(self, attributes: ConversationAttributes):
         """Updates the attributes of the conversation"""
         with cursor() as cr:
@@ -219,6 +239,7 @@ class AsyncConversation(_BaseConversation):
                     "attributes": attributes.json(),
                 },
             )
+        self.attributes = await self.get_attributes()
 
     async def get_attributes(self) -> ConversationAttributes:
         """Get attributes of the conversation from the database"""
