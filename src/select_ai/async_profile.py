@@ -99,9 +99,7 @@ class AsyncProfile(BaseProfile):
                             **self.attributes.dict(exclude_null=True),
                         )
             if self.replace or not profile_exists:
-                await self.create(
-                    replace=self.replace, description=self.description
-                )
+                await self.create(replace=self.replace)
         else:  # profile name is None:
             if self.attributes is not None or self.description is not None:
                 raise ValueError("'profile_name' cannot be empty or None")
@@ -123,6 +121,8 @@ class AsyncProfile(BaseProfile):
                 profile_name=profile_name.upper(),
             )
             profile = await cr.fetchone()
+            if profile is None:
+                raise ProfileNotFoundError(profile_name)
             if profile:
                 if profile[1] is not None:
                     return await profile[1].read()
@@ -218,13 +218,10 @@ class AsyncProfile(BaseProfile):
             )
         self.attributes = await self.get_attributes()
 
-    async def create(
-        self, replace: Optional[int] = False, description: Optional[str] = None
-    ) -> None:
+    async def create(self, replace: Optional[int] = False) -> None:
         """Asynchronously create an AI Profile in the Database
 
         :param bool replace: Set True to replace else False
-        :param description: The profile description
         :return: None
         :raises: oracledb.DatabaseError
         """
@@ -234,8 +231,8 @@ class AsyncProfile(BaseProfile):
             "profile_name": self.profile_name,
             "attributes": self.attributes.json(),
         }
-        if description:
-            parameters["description"] = description
+        if self.description:
+            parameters["description"] = self.description
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
@@ -280,13 +277,7 @@ class AsyncProfile(BaseProfile):
         :return: select_ai.Profile
         :raises: ProfileNotFoundError
         """
-        attributes = await cls._get_attributes(profile_name=profile_name)
-        description = await cls._get_profile_description(profile_name)
-        return cls(
-            profile_name=profile_name,
-            description=description,
-            attributes=attributes,
-        )
+        return await cls(profile_name, raise_error_if_exists=False)
 
     async def _save_feedback(
         self,
@@ -340,7 +331,7 @@ class AsyncProfile(BaseProfile):
         feedback_content: Optional[str] = None,
     ):
         """
-        Give positive feedback to the LLM
+        Give negative feedback to the LLM
 
         :param Tuple[str, Action] prompt_spec:  First element is the prompt and
          second is the corresponding action
@@ -395,15 +386,8 @@ class AsyncProfile(BaseProfile):
             rows = await cr.fetchall()
             for row in rows:
                 profile_name = row[0]
-                description = await row[1].read() if row[1] else None
-                attributes = await cls._get_attributes(
-                    profile_name=profile_name
-                )
-                yield cls(
-                    profile_name=profile_name,
-                    description=description,
-                    attributes=attributes,
-                    raise_error_if_exists=False,
+                yield await cls(
+                    profile_name=profile_name, raise_error_if_exists=False
                 )
 
     async def generate(
@@ -536,8 +520,8 @@ class AsyncProfile(BaseProfile):
 
     async def summarize(
         self,
-        prompt: str = None,
         content: str = None,
+        prompt: str = None,
         location_uri: str = None,
         credential_name: str = None,
         params: SummaryParams = None,
@@ -632,7 +616,9 @@ class AsyncProfile(BaseProfile):
         responses = []
         for result in pipeline_results:
             if not result.error:
-                responses.append(await result.return_value.read())
+                lob_data = result.return_value
+                data = await lob_data.read()
+                responses.append(data)
             else:
                 responses.append(result.error)
         return responses

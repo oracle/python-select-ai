@@ -34,3 +34,12 @@ Following list of actions can be performed using ``select_ai``
     * - showsql
       - ``select_ai.Action.SHOWSQL``
       - Displays the generated SQL statement without executing it.
+    * - summarize
+      - ``select_ai.Action.SUMMARIZE``
+      - Generate summary of your large texts
+    * - feedback
+      - ``select_ai.Action.FEEDBACK``
+      - Provide feedback to improve accuracy of the generated SQL
+    * - translate
+      - ``select_ai.Action.TRANSLATE``
+      - Translate text from one language to another

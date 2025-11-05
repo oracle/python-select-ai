@@ -105,18 +105,22 @@ def test_1204():
     """List profiles without regex"""
     profile_list = list(Profile.list())
     profile_names = set(profile.profile_name for profile in profile_list)
+    descriptions = set(profile.description for profile in profile_list)
     assert PYSAI_1200_PROFILE in profile_names
     assert PYSAI_1200_PROFILE_2 in profile_names
     assert PYSAI_1200_MIN_ATTR_PROFILE in profile_names
+    assert "OCI GENAI Profile 2" in descriptions
 
 
 def test_1205():
     """List profiles with regex"""
     profile_list = list(Profile.list(profile_name_pattern="^PYSAI_1200"))
     profile_names = set(profile.profile_name for profile in profile_list)
+    descriptions = set(profile.description for profile in profile_list)
     assert PYSAI_1200_PROFILE in profile_names
     assert PYSAI_1200_PROFILE_2 in profile_names
     assert PYSAI_1200_MIN_ATTR_PROFILE in profile_names
+    assert "OCI GENAI Profile 2" in descriptions
 
 
 def test_1206(profile_attributes):
@@ -229,3 +233,11 @@ def test_1214():
     # expected - ORA-12726: unmatched bracket in regular expression
     with pytest.raises(oracledb.DatabaseError):
         list(Profile().list(profile_name_pattern="[*invalid"))
+
+
+def test_1315(profile_attributes):
+    """Test Profile.fetch"""
+    profile = Profile.fetch(profile_name=PYSAI_1200_PROFILE_2)
+    assert profile.profile_name == PYSAI_1200_PROFILE_2
+    assert profile.attributes == profile_attributes
+    assert profile.description == "OCI GENAI Profile 2"

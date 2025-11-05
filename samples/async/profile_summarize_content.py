@@ -6,9 +6,9 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# async/profile_list.py
+# async/profile_summarize_content.py
 #
-# List all the profile names matching a certain pattern
+# Generate summary for content
 # -----------------------------------------------------------------------------
 
 import asyncio
@@ -20,15 +20,24 @@ user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
+content = """
+A gas cloud in our galaxy, Sagittarius B2, contains enough alcohol to brew 400
+trillion pints of beer, and some stars are so cool that you could touch them
+without being burned. Meanwhile, on the exoplanet 55 Cancri e, a form of
+"hot ice" exists where high pressure prevents water from becoming gas even at
+high temperatures. Additionally, some ancient stars found in the Milky Way's
+halo are much older than the Sun, providing clues about the early universe and
+its composition
+"""
+
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile()
-    # matches the start of string
-    async for fetched_profile in async_profile.list(
-        profile_name_pattern="^oci"
-    ):
-        print(fetched_profile.profile_name)
+    async_profile = await select_ai.AsyncProfile(
+        profile_name="async_oci_ai_profile",
+    )
+    summary = await async_profile.summarize(content=content)
+    print(summary)
 
 
 asyncio.run(main())

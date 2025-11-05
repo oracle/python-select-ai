@@ -211,9 +211,9 @@ def validate_params_for_feedback(
     if not sql_id and not prompt_spec:
         raise AttributeError("Either sql_id or prompt_spec must be specified")
     parameters = {
-        "feedback_type": feedback_type,
+        "feedback_type": feedback_type.value,
         "feedback_content": feedback_content,
-        "operation": operation,
+        "operation": operation.value,
     }
     if prompt_spec:
         prompt, action = prompt_spec
@@ -222,7 +222,7 @@ def validate_params_for_feedback(
                 "'action' must be one of 'RUNSQL', 'SHOWSQL' or 'EXPLAINSQL'"
             )
         if (
-            action == FeedbackOperation.ADD
+            operation == FeedbackOperation.ADD
             and feedback_type == FeedbackType.NEGATIVE
             and response is None
         ):
@@ -254,6 +254,8 @@ def validate_params_for_summary(
     parameters = {}
     if content:
         parameters["content"] = content
+    if location_uri:
+        parameters["location_uri"] = location_uri
     if credential_name:
         parameters["credential_name"] = credential_name
     if prompt:

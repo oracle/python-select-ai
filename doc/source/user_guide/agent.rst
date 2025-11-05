@@ -125,7 +125,7 @@ output::
 List Tools
 ++++++++++
 
-.. literalinclude:: ../../../samples/agent/tool_list.py
+.. literalinclude:: ../../../samples/agent/tools_list.py
    :language: python
    :lines: 14-
 
@@ -168,6 +168,7 @@ previous step
 
 .. literalinclude:: ../../../samples/agent/task_create.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -188,6 +189,7 @@ List Tasks
 
 .. literalinclude:: ../../../samples/agent/tasks_list.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -219,6 +221,7 @@ Create Agent
 
 .. literalinclude:: ../../../samples/agent/agent_create.py
    :language: python
+   :lines: 14-
 
 output::
 
@@ -254,10 +257,23 @@ Run Team
 
 .. literalinclude:: ../../../samples/agent/team_create.py
    :language: python
+   :lines: 14-
 
 output::
 
-    To list the movies, you can use the SQL query: SELECT m.* FROM "SPARK_DB_USER"."MOVIE" m.
+    The database contains 100 movies with various titles, genres, and release dates. The list includes a wide range of genres such as Action, Comedy, Drama, Thriller, Romance, Adventure, Mystery, Sci-Fi, Historical, Biography, War, Sports, Music, Documentary, Animated, Fantasy, Horror, Western, Family, and more. The release dates are primarily in January and February of 2019. Here is a summary of the movies:
+
+    1. Action Movie (Action, 2019-01-01)
+    2. Comedy Film (Comedy, 2019-01-02)
+    3. Drama Series (Drama, 2019-01-03)
+    4. Thriller Night (Thriller, 2019-01-04)
+    5. Romance Story (Romance, 2019-01-05)
+    6. Adventure Time (Adventure, 2019-01-06)
+    7. Mystery Solver (Mystery, 2019-01-07)
+    8. Sci-Fi World (Sci-Fi, 2019-01-08)
+    9. Historical Epic (Historical, 2019-01-09)
+    10. Biographical (Biography, 2019-01-10)
+    ... (list continues up to 100 movies)
 
 .. latex:clearpage::
 

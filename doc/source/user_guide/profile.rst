@@ -140,6 +140,50 @@ output::
 .. latex:clearpage::
 
 **************************
+Summarize
+**************************
+
+.. literalinclude:: ../../../samples/profile_summarize_content.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    A gas cloud in the Sagittarius B2 galaxy contains a large amount of alcohol,
+    while some stars are cool enough to touch without being burned. The exoplanet
+    55 Cancri e has a unique form of "hot ice" where water remains solid despite
+    high temperatures due to high pressure. Ancient stars in the Milky Way's halo
+    are older than the Sun, providing insights into the early universe and its composition,
+    offering clues about the universe's formation and evolution.
+
+.. latex:clearpage::
+
+
+.. literalinclude:: ../../../samples/profile_summarize_uri.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    Astronomy is a natural science that studies celestial objects and phenomena,
+    using mathematics, physics, and chemistry to explain their origin and evolution.
+    The field has a long history, with early civilizations making methodical
+    observations of the night sky, and has since split into observational and
+    theoretical branches. Observational astronomy focuses on acquiring data
+    from observations, while theoretical astronomy develops computer or
+    analytical models to describe astronomical objects and phenomena. The study
+    of astronomy has led to numerous discoveries, including the existence of
+    galaxies, the expansion of the universe, and the detection of gravitational
+    waves. Astronomers use various methods, such as radio, infrared, optical,
+    ultraviolet, X-ray, and gamma-ray astronomy, to study objects and events in
+    the universe. The field has also led to the development of new technologies and
+    has inspired new areas of research, such as astrobiology and the search for
+    extraterrestrial life. Overall, astronomy is a dynamic and constantly evolving
+    field that seeks to understand the universe and its many mysteries.
+
+.. latex:clearpage::
+
+**************************
 List profiles
 **************************
 

@@ -48,7 +48,7 @@ async def test_1100(async_oci_gen_ai_profile):
 async def test_1101():
     "test list profile by name"
     profiles = [
-        await profile
+        profile
         async for profile in select_ai.AsyncProfile.list(
             profile_name_pattern=ASYNC_PROFILE_NAME
         )
@@ -59,9 +59,7 @@ async def test_1101():
 
 async def test_1102():
     "test list all profiles"
-    profiles = [
-        await profile async for profile in select_ai.AsyncProfile.list()
-    ]
+    profiles = [profile async for profile in select_ai.AsyncProfile.list()]
     profile_names = set([profile.profile_name for profile in profiles])
     assert ASYNC_PROFILE_NAME in profile_names
 

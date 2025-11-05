@@ -1,3 +1,4 @@
 sphinx
 sphinx-rtd-theme
 sphinx_toolbox
+pydata_sphinx_theme

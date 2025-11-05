@@ -6,9 +6,9 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# async/profile_list.py
+# async/profile_summarize_uri.py
 #
-# List all the profile names matching a certain pattern
+# Generate summary for content at a certain URI
 # -----------------------------------------------------------------------------
 
 import asyncio
@@ -23,12 +23,13 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile()
-    # matches the start of string
-    async for fetched_profile in async_profile.list(
-        profile_name_pattern="^oci"
-    ):
-        print(fetched_profile.profile_name)
+    async_profile = await select_ai.AsyncProfile(
+        profile_name="async_oci_ai_profile",
+    )
+    summary = await async_profile.summarize(
+        location_uri="https://en.wikipedia.org/wiki/Astronomy"
+    )
+    print(summary)
 
 
 asyncio.run(main())

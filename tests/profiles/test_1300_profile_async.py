@@ -107,25 +107,29 @@ def test_1303(python_gen_ai_min_attr_profile, min_profile_attributes):
 
 async def test_1304():
     """List profiles without regex"""
-    profile_list = [await profile async for profile in AsyncProfile.list()]
+    profile_list = [profile async for profile in AsyncProfile.list()]
     profile_names = set(profile.profile_name for profile in profile_list)
+    descriptions = set(profile.description for profile in profile_list)
     assert PYSAI_ASYNC_1300_PROFILE in profile_names
     assert PYSAI_ASYNC_1300_PROFILE_2 in profile_names
     assert PYSAI_ASYNC_1300_MIN_ATTR_PROFILE in profile_names
+    assert "OCI GENAI Profile 2" in descriptions
 
 
 async def test_1305():
     """List profiles with regex"""
     profile_list = [
-        await profile
+        profile
         async for profile in AsyncProfile.list(
             profile_name_pattern="^PYSAI_ASYNC_1300"
         )
     ]
     profile_names = set(profile.profile_name for profile in profile_list)
+    descriptions = set(profile.description for profile in profile_list)
     assert PYSAI_ASYNC_1300_PROFILE in profile_names
     assert PYSAI_ASYNC_1300_PROFILE_2 in profile_names
     assert PYSAI_ASYNC_1300_MIN_ATTR_PROFILE in profile_names
+    assert "OCI GENAI Profile 2" in descriptions
 
 
 async def test_1306(profile_attributes):
@@ -243,3 +247,13 @@ async def test_1314():
                 profile_name_pattern="[*invalid"
             )
         ]
+
+
+async def test_1315(profile_attributes):
+    """Test AsyncProfile.fetch"""
+    async_profile = await AsyncProfile.fetch(
+        profile_name=PYSAI_ASYNC_1300_PROFILE_2
+    )
+    assert async_profile.profile_name == PYSAI_ASYNC_1300_PROFILE_2
+    assert async_profile.attributes == profile_attributes
+    assert async_profile.description == "OCI GENAI Profile 2"

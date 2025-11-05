@@ -298,7 +298,3 @@ class Task(BaseTask):
                 "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
-
-
-class AsyncTask(BaseTask):
-    raise NotImplementedError

@@ -256,13 +256,7 @@ class Profile(BaseProfile):
         :return: select_ai.Profile
         :raises: ProfileNotFoundError
         """
-        attributes = cls._get_attributes(profile_name=profile_name)
-        description = cls._get_profile_description(profile_name=profile_name)
-        return cls(
-            profile_name=profile_name,
-            attributes=attributes,
-            description=description,
-        )
+        return cls(profile_name, raise_error_if_exists=False)
 
     def _save_feedback(
         self,
@@ -285,6 +279,7 @@ class Profile(BaseProfile):
             operation=operation,
         )
         params["profile_name"] = self.profile_name
+        print(params)
         with cursor() as cr:
             cr.callproc("DBMS_CLOUD_AI.FEEDBACK", keyword_parameters=params)
 
@@ -314,7 +309,7 @@ class Profile(BaseProfile):
         feedback_content: Optional[str] = None,
     ):
         """
-        Give positive feedback to the LLM
+        Give negative feedback to the LLM
 
         :param Tuple[str, Action] prompt_spec:  First element is the prompt and
          second is the corresponding action
@@ -368,13 +363,8 @@ class Profile(BaseProfile):
             )
             for row in cr.fetchall():
                 profile_name = row[0]
-                description = row[1].read() if row[1] else None
-                attributes = cls._get_attributes(profile_name=profile_name)
                 yield cls(
-                    profile_name=profile_name,
-                    description=description,
-                    attributes=attributes,
-                    raise_error_if_exists=False,
+                    profile_name=profile_name, raise_error_if_exists=False
                 )
 
     def generate(
@@ -498,8 +488,8 @@ class Profile(BaseProfile):
 
     def summarize(
         self,
-        prompt: str = None,
         content: str = None,
+        prompt: str = None,
         location_uri: str = None,
         credential_name: str = None,
         params: SummaryParams = None,
@@ -524,6 +514,7 @@ class Profile(BaseProfile):
             params=params,
         )
         parameters["profile_name"] = self.profile_name
+        print(parameters)
         with cursor() as cr:
             data = cr.callfunc(
                 "DBMS_CLOUD_AI.SUMMARIZE",
