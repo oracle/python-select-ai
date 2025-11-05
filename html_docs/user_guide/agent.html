@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. Tool &#8212; Select AI for Python 1.2.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=9235ea19"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="1. SyntheticDataAttributes" href="synthetic_data.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">Tool</span></code></a><ul>
+<li><a class="reference internal" href="#supported-tools">1.1. Supported Tools</a><ul>
+<li><a class="reference internal" href="#select_ai.agent.ToolAttributes"><code class="docutils literal notranslate"><span class="pre">ToolAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.ToolParams"><code class="docutils literal notranslate"><span class="pre">ToolParams</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool"><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_built_in_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_built_in_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_email_notification_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_email_notification_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_pl_sql_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_pl_sql_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_rag_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_rag_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_slack_notification_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_slack_notification_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_sql_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_sql_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_websearch_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_websearch_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.delete"><code class="docutils literal notranslate"><span class="pre">Tool.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.disable"><code class="docutils literal notranslate"><span class="pre">Tool.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.enable"><code class="docutils literal notranslate"><span class="pre">Tool.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.fetch"><code class="docutils literal notranslate"><span class="pre">Tool.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.list"><code class="docutils literal notranslate"><span class="pre">Tool.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.set_attribute"><code class="docutils literal notranslate"><span class="pre">Tool.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.set_attributes"><code class="docutils literal notranslate"><span class="pre">Tool.set_attributes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-tool">1.2. Create Tool</a></li>
+<li><a class="reference internal" href="#list-tools">1.3. List Tools</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#task">2. <code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.TaskAttributes"><code class="docutils literal notranslate"><span class="pre">TaskAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task"><code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Task.create"><code class="docutils literal notranslate"><span class="pre">Task.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.delete"><code class="docutils literal notranslate"><span class="pre">Task.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.disable"><code class="docutils literal notranslate"><span class="pre">Task.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.enable"><code class="docutils literal notranslate"><span class="pre">Task.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.fetch"><code class="docutils literal notranslate"><span class="pre">Task.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.list"><code class="docutils literal notranslate"><span class="pre">Task.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.set_attribute"><code class="docutils literal notranslate"><span class="pre">Task.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.set_attributes"><code class="docutils literal notranslate"><span class="pre">Task.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-task">2.1. Create Task</a></li>
+<li><a class="reference internal" href="#list-tasks">2.2. List Tasks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">3. <code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.AgentAttributes"><code class="docutils literal notranslate"><span class="pre">AgentAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Agent.create"><code class="docutils literal notranslate"><span class="pre">Agent.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.delete"><code class="docutils literal notranslate"><span class="pre">Agent.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.disable"><code class="docutils literal notranslate"><span class="pre">Agent.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.enable"><code class="docutils literal notranslate"><span class="pre">Agent.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.fetch"><code class="docutils literal notranslate"><span class="pre">Agent.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.list"><code class="docutils literal notranslate"><span class="pre">Agent.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.set_attribute"><code class="docutils literal notranslate"><span class="pre">Agent.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.set_attributes"><code class="docutils literal notranslate"><span class="pre">Agent.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-agent">3.1. Create Agent</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#team">4. Team</a><ul>
+<li><a class="reference internal" href="#select_ai.agent.TeamAttributes"><code class="docutils literal notranslate"><span class="pre">TeamAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team"><code class="docutils literal notranslate"><span class="pre">Team</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Team.create"><code class="docutils literal notranslate"><span class="pre">Team.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.delete"><code class="docutils literal notranslate"><span class="pre">Team.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.disable"><code class="docutils literal notranslate"><span class="pre">Team.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.enable"><code class="docutils literal notranslate"><span class="pre">Team.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.fetch"><code class="docutils literal notranslate"><span class="pre">Team.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.list"><code class="docutils literal notranslate"><span class="pre">Team.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.run"><code class="docutils literal notranslate"><span class="pre">Team.run()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.set_attribute"><code class="docutils literal notranslate"><span class="pre">Team.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.set_attributes"><code class="docutils literal notranslate"><span class="pre">Team.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run-team">4.1. Run Team</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ai-agent-examples">5. AI agent examples</a><ul>
+<li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="synthetic_data.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/agent.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <p id="agent"><code class="docutils literal notranslate"><span class="pre">select_ai.agent</span></code> adds a thin Python layer over Oracle Autonomous Database’s
+<code class="docutils literal notranslate"><span class="pre">DBMS_CLOUD_AI_AGENT</span></code> package so you can define tools, compose tasks, wire up
+agents and run teams from Python using the existing select_ai connection objects</p>
+<ul class="simple">
+<li><p>Keep agent state and orchestration in the database</p></li>
+<li><p>Register callable tools (PL/SQL procedure or functions, SQL, external HTTP
+endpoints, Slack or Email notifications) and attach them to tasks</p></li>
+<li><p>Group agents into teams and invoke them with a single API call</p></li>
+</ul>
+<section id="tool">
+<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code><a class="headerlink" href="#tool" title="Link to this heading">¶</a></h1>
+<p>A callable which Select AI agent can invoke to accomplish a certain task.
+Users can either register built-in tools or create a custom tool using a PL/SQL
+stored procedure.</p>
+<section id="supported-tools">
+<h2><span class="section-number">1.1. </span>Supported Tools<a class="headerlink" href="#supported-tools" title="Link to this heading">¶</a></h2>
+<p>Following class methods of <code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool</span></code> class
+can be used to create tools. Invoking them will create a proxy object in the
+Python layer and persist the tool in the Database using
+<code class="docutils literal notranslate"><span class="pre">DBMS_CLOUD_AI_AGENT.CREATE_TOOL</span></code></p>
+<table class="docutils align-left" id="id2">
+<caption><span class="caption-text">Select AI Agent Tools</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool Type</p></th>
+<th class="head"><p>Class Method</p></th>
+<th class="head"><p>Arguments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EMAIL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool.create_email_notification_tool</span></code></p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tool_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">credential_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">recipient</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sender</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smtp_host</span></code></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HTTP</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool.create_http_tool</span></code></p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tool_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">credential_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">endpoint</span></code></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SQL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool.create_sql_tool</span></code></p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tool_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">profile_name</span></code></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SLACK</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool.create_slack_notification_tool</span></code></p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tool_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">credential_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slack_channel</span></code></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WEBSEARCH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool.create_websearch_tool</span></code></p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tool_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">credential_name</span></code></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL/SQL</span> <span class="pre">custom</span> <span class="pre">tool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool.create_pl_sql_tool</span></code></p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tool_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function</span></code></p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RAG</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool.create_rag_tool</span></code></p></td>
+<td><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tool_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">profile_name</span></code></p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.ToolAttributes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">ToolAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.ToolParams" title="select_ai.agent.tool.ToolParams"><span class="pre">ToolParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ToolType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.ToolAttributes" title="Link to this definition">¶</a></dt>
+<dd><p>AI Tool attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instruction</strong> (<em>str</em>) – Statement that describes what the tool
+should accomplish and how to do it. This text is included
+in the prompt sent to the LLM.</p></li>
+<li><p><strong>function</strong> – Specifies the PL/SQL procedure or
+function to call when the tool is used</p></li>
+<li><p><strong>tool_params</strong> (<a class="reference internal" href="#select_ai.agent.ToolParams" title="select_ai.agent.ToolParams"><em>select_ai.agent.ToolParams</em></a>) – Tool parameters
+for built-in tools</p></li>
+<li><p><strong>tool_inputs</strong> (<em>List</em><em>[</em><em>Mapping</em><em>]</em>) – <p>Describes input arguments.
+Similar to column comments in a table. For example:
+“tool_inputs”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“name”: “data_guard”,
+“description”: “Only supported values are “Enabled” and “Disabled””</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.ToolParams">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">ToolParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_REQUIRED_FIELDS</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notification_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NotificationType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smtp_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.ToolParams" title="Link to this definition">¶</a></dt>
+<dd><p>Parameters to register a built-in Tool</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>credential_name</strong> (<em>str</em>) – Used by SLACK, EMAIL and WEBSEARCH tools</p></li>
+<li><p><strong>endpoint</strong> (<em>str</em>) – Send HTTP requests to this endpoint</p></li>
+<li><p><strong>select_ai.agent.NotificationType</strong> – Either SLACK or EMAIL</p></li>
+<li><p><strong>profile_name</strong> (<em>str</em>) – Name of AI profile to use</p></li>
+<li><p><strong>recipient</strong> (<em>str</em>) – Recipient used for EMAIL notification</p></li>
+<li><p><strong>sender</strong> (<em>str</em>) – Sender used for EMAIL notification</p></li>
+<li><p><strong>slack_channel</strong> (<em>str</em>) – Slack channel to use</p></li>
+<li><p><strong>smtp_host</strong> (<em>str</em>) – SMTP host to use for EMAIL notification</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.Tool">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">Tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.ToolAttributes" title="select_ai.agent.tool.ToolAttributes"><span class="pre">ToolAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Tool" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.create_built_in_tool">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_built_in_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.ToolParams" title="select_ai.agent.tool.ToolParams"><span class="pre">ToolParams</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ToolType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.create_built_in_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Register a built-in tool</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the tool</p></li>
+<li><p><strong>tool_params</strong> (<a class="reference internal" href="#select_ai.agent.ToolParams" title="select_ai.agent.ToolParams"><em>select_ai.agent.ToolParams</em></a>) – Parameters required by built-in tool</p></li>
+<li><p><strong>tool_type</strong> (<em>select_ai.agent.ToolType</em>) – The built-in tool type</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Description of the tool</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace the existing tool.
+Default value is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>select_ai.agent.Tool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.create_email_notification_tool">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_email_notification_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smtp_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.create_email_notification_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Register an email notification tool</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the tool</p></li>
+<li><p><strong>credential_name</strong> (<em>str</em>) – The name of the credential</p></li>
+<li><p><strong>recipient</strong> (<em>str</em>) – The recipient of the email</p></li>
+<li><p><strong>sender</strong> (<em>str</em>) – The sender of the email</p></li>
+<li><p><strong>smtp_host</strong> (<em>str</em>) – The SMTP host of the email server</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace the existing tool.
+Default value is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>select_ai.agent.Tool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.create_pl_sql_tool">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_pl_sql_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.create_pl_sql_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Create a custom tool to invoke PL/SQL procedure or function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the tool</p></li>
+<li><p><strong>function</strong> (<em>str</em>) – The name of the PL/SQL procedure or function</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
+is False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.create_rag_tool">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_rag_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.create_rag_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Register a RAG tool, which will use a VectorIndex linked AI Profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the tool</p></li>
+<li><p><strong>profile_name</strong> (<em>str</em>) – The name of the profile to
+use for Vector Index based RAG</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
+is False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.create_slack_notification_tool">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_slack_notification_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.create_slack_notification_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Register a Slack notification tool</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the Slack notification tool</p></li>
+<li><p><strong>credential_name</strong> (<em>str</em>) – The name of the Slack credential</p></li>
+<li><p><strong>slack_channel</strong> (<em>str</em>) – The name of the Slack channel</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the Slack notification tool</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
+is False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.create_sql_tool">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_sql_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.create_sql_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Register a SQL tool to perform natural language to SQL translation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the tool</p></li>
+<li><p><strong>profile_name</strong> (<em>str</em>) – The name of the profile to use for SQL
+translation</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
+is False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.create_websearch_tool">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_websearch_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.create_websearch_tool" title="Link to this definition">¶</a></dt>
+<dd><p>Register a built-in websearch tool to search information
+on the web</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the tool</p></li>
+<li><p><strong>credential_name</strong> (<em>str</em>) – The name of the credential object
+storing OpenAI credentials</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace the existing tool</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Tool.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete AI Tool from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>bool</em>) – Force the deletion. Default value is False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.disable">
+<span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Tool.disable" title="Link to this definition">¶</a></dt>
+<dd><p>Disable AI Tool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.enable">
+<span class="sig-name descname"><span class="pre">enable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Tool.enable" title="Link to this definition">¶</a></dt>
+<dd><p>Enable AI Tool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.fetch">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a></span></span><a class="headerlink" href="#select_ai.agent.Tool.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch AI Tool attributes from the Database and build a proxy object in
+the Python layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool_name</strong> (<em>str</em>) – The name of the AI Task</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>select_ai.agent.Tool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>select_ai.errors.AgentToolNotFoundError</strong> – If the AI Tool is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.agent.Tool" title="select_ai.agent.tool.Tool"><span class="pre">Tool</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.agent.Tool.list" title="Link to this definition">¶</a></dt>
+<dd><p>List AI Tools</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tool_name_pattern</strong> (<em>str</em>) – Regular expressions can be used
+to specify a pattern. Function REGEXP_LIKE is used to perform the
+match. Default value is “.*” i.e. match all tool name.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator[Tool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.agent.Tool.set_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Set the attribute of the AI Agent tool specified by
+<cite>attribute_name</cite> and <cite>attribute_value</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Tool.set_attributes">
+<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.ToolAttributes" title="select_ai.agent.tool.ToolAttributes"><span class="pre">ToolAttributes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.agent.Tool.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Set the attributes of the AI Agent tool</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="create-tool">
+<h2><span class="section-number">1.2. </span>Create Tool<a class="headerlink" href="#create-tool" title="Link to this heading">¶</a></h2>
+<p>The following example shows creation of an AI agent tool to perform natural
+language translation to SQL using an OCI AI profile</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pformat</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai.agent</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+<span class="n">profile_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+    <span class="n">object_list</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MOVIE&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ACTOR&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DIRECTOR&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">provider</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">OCIGenAIProvider</span><span class="p">(</span>
+        <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-chicago-1&quot;</span><span class="p">,</span>
+        <span class="n">oci_apiformat</span><span class="o">=</span><span class="s2">&quot;GENERIC&quot;</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="s2">&quot;meta.llama-4-maverick-17b-128e-instruct-fp8&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;LLAMA_4_MAVERICK&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">profile_attributes</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MY OCI AI Profile&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Use the OCI AI Profile to perform natural</span>
+<span class="c1"># language SQL translation</span>
+<span class="n">sql_tool</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">Tool</span><span class="o">.</span><span class="n">create_sql_tool</span><span class="p">(</span>
+    <span class="n">tool_name</span><span class="o">=</span><span class="s2">&quot;MOVIE_SQL_TOOL&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;My Select AI MOVIE SQL agent tool&quot;</span><span class="p">,</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;LLAMA_4_MAVERICK&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sql_tool</span><span class="o">.</span><span class="n">tool_name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pformat</span><span class="p">(</span><span class="n">sql_tool</span><span class="o">.</span><span class="n">attributes</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MOVIE_SQL_TOOL</span>
+
+<span class="n">ToolAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">tool_params</span><span class="o">=</span><span class="n">SQLToolParams</span><span class="p">(</span><span class="n">_REQUIRED_FIELDS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                         <span class="n">credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                         <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                         <span class="n">notification_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                         <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_ai_profile&#39;</span><span class="p">,</span>
+                                         <span class="n">recipient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                         <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                         <span class="n">slack_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                         <span class="n">smtp_host</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+               <span class="n">tool_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">tool_type</span><span class="o">=&lt;</span><span class="n">ToolType</span><span class="o">.</span><span class="n">SQL</span><span class="p">:</span> <span class="s1">&#39;SQL&#39;</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="list-tools">
+<h2><span class="section-number">1.3. </span>List Tools<a class="headerlink" href="#list-tools" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai.agent</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">Tool</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tool</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">MOVIE_SQL_TOOL</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ToolAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="s1">&#39;This tool is used to work with SQL queries using natural language. Input should be a natural language query about data or database operations. The tool behavior depends on the configured action: RUNSQL - generates and executes the SQL query returning actual data; SHOWSQL - generates and displays the SQL statement without executing it; EXPLAINSQL - generates SQL and provides a natural language explanation of what the query does. Always provide clear, specific questions about the data you want to retrieve or analyze.&#39;</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s1">&#39;dbms_cloud_ai_agent.sql_tool&#39;</span><span class="p">,</span> <span class="n">tool_params</span><span class="o">=</span><span class="n">SQLToolParams</span><span class="p">(</span><span class="n">_REQUIRED_FIELDS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notification_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_ai_profile&#39;</span><span class="p">,</span> <span class="n">recipient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slack_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smtp_host</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">tool_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;SQL&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">My</span> <span class="n">Select</span> <span class="n">AI</span> <span class="n">MOVIE</span> <span class="n">SQL</span> <span class="n">agent</span> <span class="n">tool</span><span class="p">)</span>
+
+<span class="n">Tool</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">LLM_CHAT_TOOL</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ToolAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="s1">&#39;This tool is used to work with SQL queries using natural language. Input should be a natural language query about data or database operations. The tool behavior depends on the configured action: RUNSQL - generates and executes the SQL query returning actual data; SHOWSQL - generates and displays the SQL statement without executing it; EXPLAINSQL - generates SQL and provides a natural language explanation of what the query does. Always provide clear, specific questions about the data you want to retrieve or analyze.&#39;</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s1">&#39;dbms_cloud_ai_agent.sql_tool&#39;</span><span class="p">,</span> <span class="n">tool_params</span><span class="o">=</span><span class="n">SQLToolParams</span><span class="p">(</span><span class="n">_REQUIRED_FIELDS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notification_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_ai_profile&#39;</span><span class="p">,</span> <span class="n">recipient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slack_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smtp_host</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">tool_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;SQL&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">My</span> <span class="n">Select</span> <span class="n">AI</span> <span class="n">agent</span> <span class="n">tool</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="task">
+<h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">Task</span></code><a class="headerlink" href="#task" title="Link to this heading">¶</a></h1>
+<p>Each task is identified by a <code class="docutils literal notranslate"><span class="pre">task_name</span></code> and includes a set of attributes that
+guide the agent’s behavior during execution.
+Key attributes include the <code class="docutils literal notranslate"><span class="pre">instruction</span></code>, which describes the task’s purpose and
+provides context for the agent to reason about when and how to use it,
+and the <code class="docutils literal notranslate"><span class="pre">tools</span></code> list, which specifies which tools the agent can choose from to
+accomplish the task. An optional <code class="docutils literal notranslate"><span class="pre">input</span></code> field allows a task to depend on the
+output of prior tasks, enabling task chaining and multi-step workflows.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.TaskAttributes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">TaskAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_human_tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.TaskAttributes" title="Link to this definition">¶</a></dt>
+<dd><p>AI Task attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instruction</strong> (<em>str</em>) – Statement describing what the task is
+meant to accomplish</p></li>
+<li><p><strong>tools</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of tools the agent can use to
+execute the task</p></li>
+<li><p><strong>input</strong> (<em>str</em>) – Task name whose output will be automatically
+provided by select ai to LLM</p></li>
+<li><p><strong>enable_human_tool</strong> (<em>bool</em>) – Enable agent to ask question
+to user when it requires information or clarification
+during a task. Default value is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.Task">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.TaskAttributes" title="select_ai.agent.task.TaskAttributes"><span class="pre">TaskAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Task" title="Link to this definition">¶</a></dt>
+<dd><p>select_ai.agent.Task class lets you create, delete, enable, disable and
+list AI Tasks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_name</strong> (<em>str</em>) – The name of the AI task</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Optional description of the AI task</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.agent.TaskAttributes" title="select_ai.agent.TaskAttributes"><em>select_ai.agent.TaskAttributes</em></a>) – AI task attributes</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Task.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create a task that a Select AI agent can include in its
+reasoning process</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<em>bool</em>) – Whether the AI Task should be enabled.
+Default value is True.</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether the AI Task should be replaced.
+Default value is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Task.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete AI Task from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>bool</em>) – Force the deletion. Default value is False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.disable">
+<span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Task.disable" title="Link to this definition">¶</a></dt>
+<dd><p>Disable AI Task</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.enable">
+<span class="sig-name descname"><span class="pre">enable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Task.enable" title="Link to this definition">¶</a></dt>
+<dd><p>Enable AI Task</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.fetch">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Task" title="select_ai.agent.task.Task"><span class="pre">Task</span></a></span></span><a class="headerlink" href="#select_ai.agent.Task.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch AI Task attributes from the Database and build a proxy object in
+the Python layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_name</strong> (<em>str</em>) – The name of the AI Task</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>select_ai.agent.Task</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>select_ai.errors.AgentTaskNotFoundError</strong> – If the AI Task is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.agent.Task" title="select_ai.agent.task.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.agent.Task.list" title="Link to this definition">¶</a></dt>
+<dd><p>List AI Tasks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_name_pattern</strong> (<em>str</em>) – Regular expressions can be used
+to specify a pattern. Function REGEXP_LIKE is used to perform the
+match. Default value is “.*” i.e. match all tasks.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator[Task]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Task.set_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Set a single AI Task attribute specified using name and value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute_name</strong> (<em>str</em>) – The name of the AI Task attribute</p></li>
+<li><p><strong>attribute_value</strong> (<em>str</em>) – The value of the AI Task attribute</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Task.set_attributes">
+<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.TaskAttributes" title="select_ai.agent.task.TaskAttributes"><span class="pre">TaskAttributes</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Task.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Set AI Task attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.agent.TaskAttributes" title="select_ai.agent.TaskAttributes"><em>select_ai.agent.TaskAttributes</em></a>) – Multiple attributes
+can be specified by passing a TaskAttributes object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="create-task">
+<h2><span class="section-number">2.1. </span>Create Task<a class="headerlink" href="#create-task" title="Link to this heading">¶</a></h2>
+<p>In the following task, we use the <code class="docutils literal notranslate"><span class="pre">MOVIE_SQL_TOOL</span></code> created in the
+previous step</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pformat</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai.agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">select_ai.agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">TaskAttributes</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+<span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span>
+    <span class="n">task_name</span><span class="o">=</span><span class="s2">&quot;ANALYZE_MOVIE_TASK&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Movie task involving a human&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">TaskAttributes</span><span class="p">(</span>
+        <span class="n">instruction</span><span class="o">=</span><span class="s2">&quot;Help the user with their request about movies. &quot;</span>
+        <span class="s2">&quot;User question: </span><span class="si">{query}</span><span class="s2">. &quot;</span>
+        <span class="s2">&quot;You can use SQL tool to search the data from database&quot;</span><span class="p">,</span>
+        <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;MOVIE_SQL_TOOL&quot;</span><span class="p">],</span>
+        <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">task</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">task_name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pformat</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">attributes</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ANALYZE_MOVIE_TASK</span>
+
+<span class="n">TaskAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="s1">&#39;Help the user with their request about movies. &#39;</span>
+                           <span class="s1">&#39;User question: </span><span class="si">{query}</span><span class="s1">. You can use SQL tool to &#39;</span>
+                           <span class="s1">&#39;search the data from database&#39;</span><span class="p">,</span>
+               <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;MOVIE_SQL_TOOL&#39;</span><span class="p">],</span>
+               <span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="list-tasks">
+<h2><span class="section-number">2.2. </span>List Tasks<a class="headerlink" href="#list-tasks" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai.agent</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">Task</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Task</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="n">ANALYZE_MOVIE_TASK</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">TaskAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="s1">&#39;Help the user with their request about movies. User question: </span><span class="si">{query}</span><span class="s1">. You can use SQL tool to search the data from database&#39;</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="s1">&#39;[&quot;MOVIE_SQL_TOOL&quot;]&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">Movie</span> <span class="n">task</span> <span class="n">involving</span> <span class="n">a</span> <span class="n">human</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id1">
+<h1><span class="section-number">3. </span><code class="docutils literal notranslate"><span class="pre">Agent</span></code><a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p>A Select AI Agent is defined using <code class="docutils literal notranslate"><span class="pre">agent_name</span></code>, its <code class="docutils literal notranslate"><span class="pre">attributes</span></code> and an
+optional description. The attributes must include key agent properties such as
+<code class="docutils literal notranslate"><span class="pre">profile_name</span></code> which specifies the LLM profile used for prompt generation
+and <code class="docutils literal notranslate"><span class="pre">role</span></code>, which outlines the agent’s intended role and behavioral context.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.AgentAttributes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">AgentAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_human_tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.AgentAttributes" title="Link to this definition">¶</a></dt>
+<dd><p>AI Agent Attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>profile_name</strong> (<em>str</em>) – Name of the AI Profile which agent will
+use to send request to LLM</p></li>
+<li><p><strong>role</strong> (<em>str</em>) – Agent’s role also sent to LLM</p></li>
+<li><p><strong>enable_human_tool</strong> (<em>bool</em>) – Enable human tool support. Agent
+will ask question to the user for any clarification</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.Agent">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.AgentAttributes" title="select_ai.agent.core.AgentAttributes"><span class="pre">AgentAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Agent" title="Link to this definition">¶</a></dt>
+<dd><p>select_ai.agent.Agent class lets you create, delete, enable, disable
+and list AI agents</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent_name</strong> (<em>str</em>) – The name of the AI Agent</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Optional description of the AI agent</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.agent.AgentAttributes" title="select_ai.agent.AgentAttributes"><em>select_ai.agent.AgentAttributes</em></a>) – AI agent attributes</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Agent.create" title="Link to this definition">¶</a></dt>
+<dd><p>Register a new AI Agent within the Select AI framework</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<em>bool</em>) – Whether the AI Agent should be enabled.
+Default value is True.</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether the AI Agent should be replaced.
+Default value is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Agent.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete AI Agent from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>bool</em>) – Force the deletion. Default value is False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.disable">
+<span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Agent.disable" title="Link to this definition">¶</a></dt>
+<dd><p>Disable AI Agent</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.enable">
+<span class="sig-name descname"><span class="pre">enable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Agent.enable" title="Link to this definition">¶</a></dt>
+<dd><p>Enable AI Agent</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.fetch">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Agent" title="select_ai.agent.core.Agent"><span class="pre">Agent</span></a></span></span><a class="headerlink" href="#select_ai.agent.Agent.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch AI Agent attributes from the Database and build a proxy object in
+the Python layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agent_name</strong> (<em>str</em>) – The name of the AI Agent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>select_ai.agent.Agent</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>select_ai.errors.AgentNotFoundError</strong> – If the AI Agent is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.agent.Agent" title="select_ai.agent.core.Agent"><span class="pre">Agent</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.agent.Agent.list" title="Link to this definition">¶</a></dt>
+<dd><p>List AI agents matching a pattern</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agent_name_pattern</strong> (<em>str</em>) – Regular expressions can be used
+to specify a pattern. Function REGEXP_LIKE is used to perform the
+match. Default value is “.*” i.e. match all agent names.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator[Agent]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.agent.Agent.set_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Set a single AI Agent attribute specified using name and value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Agent.set_attributes">
+<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.AgentAttributes" title="select_ai.agent.core.AgentAttributes"><span class="pre">AgentAttributes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.agent.Agent.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Set AI Agent attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.agent.AgentAttributes" title="select_ai.agent.AgentAttributes"><em>select_ai.agent.AgentAttributes</em></a>) – Multiple attributes
+can be specified by passing an AgentAttributes object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="create-agent">
+<h2><span class="section-number">3.1. </span>Create Agent<a class="headerlink" href="#create-agent" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">select_ai.agent</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Agent</span><span class="p">,</span>
+    <span class="n">AgentAttributes</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">agent_attributes</span> <span class="o">=</span> <span class="n">AgentAttributes</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;LLAMA_4_MAVERICK&quot;</span><span class="p">,</span>
+    <span class="n">role</span><span class="o">=</span><span class="s2">&quot;You are an AI Movie Analyst. &quot;</span>
+    <span class="s2">&quot;Your can help answer a variety of questions related to movies. &quot;</span><span class="p">,</span>
+    <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">agent_name</span><span class="o">=</span><span class="s2">&quot;MOVIE_ANALYST&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">agent_attributes</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">agent</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created Agent:&quot;</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Created</span> <span class="n">Agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">(</span><span class="n">agent_name</span><span class="o">=</span><span class="n">MOVIE_ANALYST</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">AgentAttributes</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;LLAMA_4_MAVERICK&#39;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s1">&#39;You are an AI Movie Analyst. Your can help answer a variety of questions related to movies. &#39;</span><span class="p">,</span> <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="team">
+<h1><span class="section-number">4. </span>Team<a class="headerlink" href="#team" title="Link to this heading">¶</a></h1>
+<p>AI Agent Team coordinates the execution of multiple agents working together to
+fulfill a user request. Each team is uniquely identified by a <code class="docutils literal notranslate"><span class="pre">team_name</span></code> and
+configured through a set of <code class="docutils literal notranslate"><span class="pre">attributes</span></code> that define its composition and
+execution strategy. The <code class="docutils literal notranslate"><span class="pre">agents</span></code> attribute specifies an array of agent-task
+pairings, allowing users to assign specific tasks to designated agents. User
+can perform multiple tasks by assigning the same agent to different tasks.
+The <code class="docutils literal notranslate"><span class="pre">process</span></code> attribute defines how tasks should be executed.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.TeamAttributes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">TeamAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sequential'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.TeamAttributes" title="Link to this definition">¶</a></dt>
+<dd><p>AI agent team attributes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agents</strong> (<em>List</em><em>[</em><em>Mapping</em><em>]</em>) – A List of Python dictionaries, each defining
+the agent and the task name. [{“name”: “&lt;agent_name&gt;”,
+“task”: “&lt;task_name&gt;”}]</p></li>
+<li><p><strong>process</strong> (<em>str</em>) – Execution order of tasks. Currently only “sequential”
+is supported.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.agent.Team">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">Team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.TeamAttributes" title="select_ai.agent.team.TeamAttributes"><span class="pre">TeamAttributes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Team" title="Link to this definition">¶</a></dt>
+<dd><p>A Team of AI agents work together to accomplish tasks
+select_ai.agent.Team class lets you create, delete, enable, disable and
+list AI Tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>team_name</strong> (<em>str</em>) – The name of the AI team</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Optional description of the AI team</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.agent.TeamAttributes" title="select_ai.agent.TeamAttributes"><em>select_ai.agent.TeamAttributes</em></a>) – AI team attributes</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Team.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create a team of AI agents that work together to accomplish tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> (<em>bool</em>) – Whether the AI agent team should be enabled.
+Default value is True.</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Whether the AI agent team should be replaced.
+Default value is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Team.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete an AI agent team from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>bool</em>) – Force the deletion. Default value is False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.disable">
+<span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Team.disable" title="Link to this definition">¶</a></dt>
+<dd><p>Disable the AI agent team</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.enable">
+<span class="sig-name descname"><span class="pre">enable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Team.enable" title="Link to this definition">¶</a></dt>
+<dd><p>Enable the AI agent team</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.fetch">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.Team" title="select_ai.agent.team.Team"><span class="pre">Team</span></a></span></span><a class="headerlink" href="#select_ai.agent.Team.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch AI Team attributes from the Database and build a proxy object in
+the Python layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>team_name</strong> (<em>str</em>) – The name of the AI Team</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>select_ai.agent.Team</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>select_ai.errors.AgentTeamNotFoundError</strong> – If the AI Team is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.agent.Team" title="select_ai.agent.team.Team"><span class="pre">Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.agent.Team.list" title="Link to this definition">¶</a></dt>
+<dd><p>List AI Agent Teams</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>team_name_pattern</strong> (<em>str</em>) – Regular expressions can be used
+to specify a pattern. Function REGEXP_LIKE is used to perform the
+match. Default value is “.*” i.e. match all teams.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator[Team]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.Team.run" title="Link to this definition">¶</a></dt>
+<dd><p>Start a new AI agent team or resume a paused one that is waiting
+for human input. If you provide an existing process ID and the
+associated team process is in the WAITING_FOR_HUMAN state, the
+function resumes the workflow using the input you provide as
+the human response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Optional prompt for the user. If the task is
+in the RUNNING state, the input acts as a placeholder for the
+{query} in the task instruction. If the task is in the
+WAITING_FOR_HUMAN state, the input serves as the human response.</p></li>
+<li><p><strong>params</strong> (<em>Mapping</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – <p>Optional parameters for the task.
+Currently, the following parameters are supported:</p>
+<ul>
+<li><p>conversation_id: Identifies the conversation session associated</p></li>
+</ul>
+<p>with the agent team</p>
+<ul>
+<li><p>variables: key-value pairs that provide additional input to the agent team.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.agent.Team.set_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Set the attribute of the AI Agent team specified by
+<cite>attribute_name</cite> and <cite>attribute_value</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.Team.set_attributes">
+<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.TeamAttributes" title="select_ai.agent.team.TeamAttributes"><span class="pre">TeamAttributes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.agent.Team.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Set the attributes of the AI Agent team</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="run-team">
+<h2><span class="section-number">4.1. </span>Run Team<a class="headerlink" href="#run-team" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">select_ai.agent</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Team</span><span class="p">,</span>
+    <span class="n">TeamAttributes</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">conversation_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+<span class="c1"># Team</span>
+<span class="n">team</span> <span class="o">=</span> <span class="n">Team</span><span class="p">(</span>
+    <span class="n">team_name</span><span class="o">=</span><span class="s2">&quot;MOVIE_AGENT_TEAM&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">TeamAttributes</span><span class="p">(</span>
+        <span class="n">agents</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MOVIE_ANALYST&quot;</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="s2">&quot;ANALYZE_MOVIE_TASK&quot;</span><span class="p">}],</span>
+        <span class="n">process</span><span class="o">=</span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">team</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">team</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Could you list the movies in the database?&quot;</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;conversation_id&quot;</span><span class="p">:</span> <span class="n">conversation_id</span><span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">database</span> <span class="n">contains</span> <span class="mi">100</span> <span class="n">movies</span> <span class="k">with</span> <span class="n">various</span> <span class="n">titles</span><span class="p">,</span> <span class="n">genres</span><span class="p">,</span> <span class="ow">and</span> <span class="n">release</span> <span class="n">dates</span><span class="o">.</span> <span class="n">The</span> <span class="nb">list</span> <span class="n">includes</span> <span class="n">a</span> <span class="n">wide</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">genres</span> <span class="n">such</span> <span class="k">as</span> <span class="n">Action</span><span class="p">,</span> <span class="n">Comedy</span><span class="p">,</span> <span class="n">Drama</span><span class="p">,</span> <span class="n">Thriller</span><span class="p">,</span> <span class="n">Romance</span><span class="p">,</span> <span class="n">Adventure</span><span class="p">,</span> <span class="n">Mystery</span><span class="p">,</span> <span class="n">Sci</span><span class="o">-</span><span class="n">Fi</span><span class="p">,</span> <span class="n">Historical</span><span class="p">,</span> <span class="n">Biography</span><span class="p">,</span> <span class="n">War</span><span class="p">,</span> <span class="n">Sports</span><span class="p">,</span> <span class="n">Music</span><span class="p">,</span> <span class="n">Documentary</span><span class="p">,</span> <span class="n">Animated</span><span class="p">,</span> <span class="n">Fantasy</span><span class="p">,</span> <span class="n">Horror</span><span class="p">,</span> <span class="n">Western</span><span class="p">,</span> <span class="n">Family</span><span class="p">,</span> <span class="ow">and</span> <span class="n">more</span><span class="o">.</span> <span class="n">The</span> <span class="n">release</span> <span class="n">dates</span> <span class="n">are</span> <span class="n">primarily</span> <span class="ow">in</span> <span class="n">January</span> <span class="ow">and</span> <span class="n">February</span> <span class="n">of</span> <span class="mf">2019.</span> <span class="n">Here</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">summary</span> <span class="n">of</span> <span class="n">the</span> <span class="n">movies</span><span class="p">:</span>
+
+<span class="mf">1.</span> <span class="n">Action</span> <span class="n">Movie</span> <span class="p">(</span><span class="n">Action</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span><span class="p">)</span>
+<span class="mf">2.</span> <span class="n">Comedy</span> <span class="n">Film</span> <span class="p">(</span><span class="n">Comedy</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span><span class="p">)</span>
+<span class="mf">3.</span> <span class="n">Drama</span> <span class="n">Series</span> <span class="p">(</span><span class="n">Drama</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span><span class="p">)</span>
+<span class="mf">4.</span> <span class="n">Thriller</span> <span class="n">Night</span> <span class="p">(</span><span class="n">Thriller</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span><span class="p">)</span>
+<span class="mf">5.</span> <span class="n">Romance</span> <span class="n">Story</span> <span class="p">(</span><span class="n">Romance</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span><span class="p">)</span>
+<span class="mf">6.</span> <span class="n">Adventure</span> <span class="n">Time</span> <span class="p">(</span><span class="n">Adventure</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">06</span><span class="p">)</span>
+<span class="mf">7.</span> <span class="n">Mystery</span> <span class="n">Solver</span> <span class="p">(</span><span class="n">Mystery</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">07</span><span class="p">)</span>
+<span class="mf">8.</span> <span class="n">Sci</span><span class="o">-</span><span class="n">Fi</span> <span class="n">World</span> <span class="p">(</span><span class="n">Sci</span><span class="o">-</span><span class="n">Fi</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">08</span><span class="p">)</span>
+<span class="mf">9.</span> <span class="n">Historical</span> <span class="n">Epic</span> <span class="p">(</span><span class="n">Historical</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">09</span><span class="p">)</span>
+<span class="mf">10.</span> <span class="n">Biographical</span> <span class="p">(</span><span class="n">Biography</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">...</span> <span class="p">(</span><span class="nb">list</span> <span class="n">continues</span> <span class="n">up</span> <span class="n">to</span> <span class="mi">100</span> <span class="n">movies</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="ai-agent-examples">
+<h1><span class="section-number">5. </span>AI agent examples<a class="headerlink" href="#ai-agent-examples" title="Link to this heading">¶</a></h1>
+<section id="web-search-agent-using-openai-s-gpt-model">
+<h2><span class="section-number">5.1. </span>Web Search Agent using OpenAI’s GPT model<a class="headerlink" href="#web-search-agent-using-openai-s-gpt-model" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># Copyright (c) 2025, Oracle and/or its affiliates.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Universal Permissive License v 1.0 as shown at</span>
+<span class="c1"># http://oss.oracle.com/licenses/upl.</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+<span class="c1"># -----------------------------------------------------------------------------</span>
+<span class="c1"># movie_analyst.py</span>
+<span class="c1">#</span>
+<span class="c1"># Demonstrates web search AI agent</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">select_ai.agent</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Agent</span><span class="p">,</span>
+    <span class="n">AgentAttributes</span><span class="p">,</span>
+    <span class="n">Task</span><span class="p">,</span>
+    <span class="n">TaskAttributes</span><span class="p">,</span>
+    <span class="n">Team</span><span class="p">,</span>
+    <span class="n">TeamAttributes</span><span class="p">,</span>
+    <span class="n">Tool</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">OPEN_AI_CREDENTIAL_NAME</span> <span class="o">=</span> <span class="s2">&quot;OPENAI_CRED&quot;</span>
+<span class="n">OPEN_AI_PROFILE_NAME</span> <span class="o">=</span> <span class="s2">&quot;OPENAI_PROFILE&quot;</span>
+<span class="n">SELECT_AI_AGENT_NAME</span> <span class="o">=</span> <span class="s2">&quot;WEB_SEARCH_AGENT&quot;</span>
+<span class="n">SELECT_AI_TASK_NAME</span> <span class="o">=</span> <span class="s2">&quot;WEB_SEARCH_TASK&quot;</span>
+<span class="n">SELECT_AI_TOOL_NAME</span> <span class="o">=</span> <span class="s2">&quot;WEB_SEARCH_TOOL&quot;</span>
+<span class="n">SELECT_AI_TEAM_NAME</span> <span class="o">=</span> <span class="s2">&quot;WEB_SEARCH_TEAM&quot;</span>
+
+<span class="n">USER_QUERIES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;d917b055-e8a1-463a-a489-d4328a7b2210&quot;</span><span class="p">:</span> <span class="s2">&quot;What are the key features for the product highlighted at &quot;</span>
+    <span class="s2">&quot;this URL https://www.oracle.com/artificial-intelligence/database-machine-learning&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;c2e3ff20-f56d-40e7-987c-cc72740c75a5&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the main topic at this URL https://www.oracle.com/artificial-intelligence/database-machine-learning&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;25e23a25-07b9-4ed7-be11-f7e5e445d286&quot;</span><span class="p">:</span> <span class="s2">&quot;What is the main topic at this URL https://openai.com&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># connect</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+<span class="c1"># Create Open AI credential</span>
+<span class="n">select_ai</span><span class="o">.</span><span class="n">create_credential</span><span class="p">(</span>
+    <span class="n">credential</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;credential_name&quot;</span><span class="p">:</span> <span class="n">OPEN_AI_CREDENTIAL_NAME</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;OPENAI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPEN_AI_API_KEY&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created credential: &quot;</span><span class="p">,</span> <span class="n">OPEN_AI_CREDENTIAL_NAME</span><span class="p">)</span>
+
+<span class="c1"># # Create Open AI Profile</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="n">OPEN_AI_PROFILE_NAME</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+        <span class="n">credential_name</span><span class="o">=</span><span class="n">OPEN_AI_CREDENTIAL_NAME</span><span class="p">,</span>
+        <span class="n">provider</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">OpenAIProvider</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4.1&quot;</span><span class="p">),</span>
+    <span class="p">),</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;My Open AI Profile&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created profile: &quot;</span><span class="p">,</span> <span class="n">OPEN_AI_PROFILE_NAME</span><span class="p">)</span>
+
+<span class="c1"># Create an AI Agent team</span>
+<span class="n">team</span> <span class="o">=</span> <span class="n">Team</span><span class="p">(</span>
+    <span class="n">team_name</span><span class="o">=</span><span class="n">SELECT_AI_TEAM_NAME</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">TeamAttributes</span><span class="p">(</span>
+        <span class="n">agents</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">SELECT_AI_AGENT_NAME</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="n">SELECT_AI_TASK_NAME</span><span class="p">}]</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">team</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Agent</span>
+<span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span>
+    <span class="n">agent_name</span><span class="o">=</span><span class="n">SELECT_AI_AGENT_NAME</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">AgentAttributes</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="n">OPEN_AI_PROFILE_NAME</span><span class="p">,</span>
+        <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">role</span><span class="o">=</span><span class="s2">&quot;You are a specialized web search agent that can access web page &quot;</span>
+        <span class="s2">&quot;contents and respond to questions based on its content.&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">agent</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Task</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span>
+    <span class="n">task_name</span><span class="o">=</span><span class="n">SELECT_AI_TASK_NAME</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">TaskAttributes</span><span class="p">(</span>
+        <span class="n">instruction</span><span class="o">=</span><span class="s2">&quot;Answer the user question about the provided URL:</span><span class="si">{query}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">SELECT_AI_TOOL_NAME</span><span class="p">],</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">task</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Tool</span>
+<span class="n">web_search_tool</span> <span class="o">=</span> <span class="n">Tool</span><span class="o">.</span><span class="n">create_websearch_tool</span><span class="p">(</span>
+    <span class="n">tool_name</span><span class="o">=</span><span class="n">SELECT_AI_TOOL_NAME</span><span class="p">,</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="n">OPEN_AI_CREDENTIAL_NAME</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Web Search Tool using OpenAI&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created tool: &quot;</span><span class="p">,</span> <span class="n">SELECT_AI_TOOL_NAME</span><span class="p">)</span>
+
+<span class="c1"># Run the Agent Team</span>
+<span class="k">for</span> <span class="n">conversation_id</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">USER_QUERIES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">team</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;conversation_id&quot;</span><span class="p">:</span> <span class="n">conversation_id</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Created credential:  OPENAI_CRED
+Created profile:  OPENAI_PROFILE
+Created tool:  WEB_SEARCH_TOOL
+The key features of Oracle Database Machine Learning, as highlighted on the Oracle website, include:
+
+- In-database machine learning: Build, train, and deploy machine learning models directly inside the Oracle Database, eliminating the need to move data.
+- Support for multiple languages: Use SQL, Python, and R for machine learning tasks, allowing flexibility for data scientists and developers.
+- Automated machine learning (AutoML): Automates feature selection, model selection, and hyperparameter tuning to speed up model development.
+- Scalability and performance: Utilizes Oracle Database’s scalability, security, and high performance for machine learning workloads.
+- Integration with Oracle Cloud: Seamlessly integrates with Oracle Cloud Infrastructure for scalable and secure deployment.
+- Security and governance: Inherits Oracle Database’s robust security, data privacy, and governance features.
+- Prebuilt algorithms: Offers a wide range of in-database algorithms for classification, regression, clustering, anomaly detection, and more.
+- No data movement: Keeps data secure and compliant by performing analytics and machine learning where the data resides.
+
+These features enable organizations to operationalize machine learning at scale, improve productivity, and maintain data security and compliance.
+
+The main topic at the URL https://www.oracle.com/artificial-intelligence/database-machine-learning is Oracle&#39;s database machine learning capabilities, specifically how Oracle integrates artificial intelligence and machine learning features directly into its database products. The page highlights how users can leverage these built-in AI and ML tools to analyze data, build predictive models, and enhance business applications without moving data outside the Oracle Database environment.
+
+The main topic of the website https://openai.com is artificial intelligence research and development. OpenAI focuses on creating and promoting advanced AI technologies, including products like ChatGPT, and provides information about their research, products, and mission to ensure that artificial general intelligence benefits all of humanity.
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">Tool</span></code></a><ul>
+<li><a class="reference internal" href="#supported-tools">1.1. Supported Tools</a><ul>
+<li><a class="reference internal" href="#select_ai.agent.ToolAttributes"><code class="docutils literal notranslate"><span class="pre">ToolAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.ToolParams"><code class="docutils literal notranslate"><span class="pre">ToolParams</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool"><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_built_in_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_built_in_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_email_notification_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_email_notification_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_pl_sql_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_pl_sql_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_rag_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_rag_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_slack_notification_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_slack_notification_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_sql_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_sql_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.create_websearch_tool"><code class="docutils literal notranslate"><span class="pre">Tool.create_websearch_tool()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.delete"><code class="docutils literal notranslate"><span class="pre">Tool.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.disable"><code class="docutils literal notranslate"><span class="pre">Tool.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.enable"><code class="docutils literal notranslate"><span class="pre">Tool.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.fetch"><code class="docutils literal notranslate"><span class="pre">Tool.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.list"><code class="docutils literal notranslate"><span class="pre">Tool.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.set_attribute"><code class="docutils literal notranslate"><span class="pre">Tool.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Tool.set_attributes"><code class="docutils literal notranslate"><span class="pre">Tool.set_attributes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-tool">1.2. Create Tool</a></li>
+<li><a class="reference internal" href="#list-tools">1.3. List Tools</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#task">2. <code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.TaskAttributes"><code class="docutils literal notranslate"><span class="pre">TaskAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task"><code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Task.create"><code class="docutils literal notranslate"><span class="pre">Task.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.delete"><code class="docutils literal notranslate"><span class="pre">Task.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.disable"><code class="docutils literal notranslate"><span class="pre">Task.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.enable"><code class="docutils literal notranslate"><span class="pre">Task.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.fetch"><code class="docutils literal notranslate"><span class="pre">Task.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.list"><code class="docutils literal notranslate"><span class="pre">Task.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.set_attribute"><code class="docutils literal notranslate"><span class="pre">Task.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Task.set_attributes"><code class="docutils literal notranslate"><span class="pre">Task.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-task">2.1. Create Task</a></li>
+<li><a class="reference internal" href="#list-tasks">2.2. List Tasks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">3. <code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.AgentAttributes"><code class="docutils literal notranslate"><span class="pre">AgentAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Agent.create"><code class="docutils literal notranslate"><span class="pre">Agent.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.delete"><code class="docutils literal notranslate"><span class="pre">Agent.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.disable"><code class="docutils literal notranslate"><span class="pre">Agent.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.enable"><code class="docutils literal notranslate"><span class="pre">Agent.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.fetch"><code class="docutils literal notranslate"><span class="pre">Agent.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.list"><code class="docutils literal notranslate"><span class="pre">Agent.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.set_attribute"><code class="docutils literal notranslate"><span class="pre">Agent.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Agent.set_attributes"><code class="docutils literal notranslate"><span class="pre">Agent.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-agent">3.1. Create Agent</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#team">4. Team</a><ul>
+<li><a class="reference internal" href="#select_ai.agent.TeamAttributes"><code class="docutils literal notranslate"><span class="pre">TeamAttributes</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team"><code class="docutils literal notranslate"><span class="pre">Team</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.Team.create"><code class="docutils literal notranslate"><span class="pre">Team.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.delete"><code class="docutils literal notranslate"><span class="pre">Team.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.disable"><code class="docutils literal notranslate"><span class="pre">Team.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.enable"><code class="docutils literal notranslate"><span class="pre">Team.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.fetch"><code class="docutils literal notranslate"><span class="pre">Team.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.list"><code class="docutils literal notranslate"><span class="pre">Team.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.run"><code class="docutils literal notranslate"><span class="pre">Team.run()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.set_attribute"><code class="docutils literal notranslate"><span class="pre">Team.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.agent.Team.set_attributes"><code class="docutils literal notranslate"><span class="pre">Team.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run-team">4.1. Run Team</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ai-agent-examples">5. AI agent examples</a><ul>
+<li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="synthetic_data.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/agent.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>

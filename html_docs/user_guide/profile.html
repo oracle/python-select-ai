@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Profile Object Model &#8212; Select AI for Python 1.2.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=9235ea19"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. AsyncProfile API" href="async_profile.html" />
+    <link rel="prev" title="1. ProfileAttributes" href="profile_attributes.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Profile Object Model</a></li>
+<li><a class="reference internal" href="#base-profile-api">Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.BaseProfile"><code class="docutils literal notranslate"><span class="pre">BaseProfile</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#profile-api"><code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.Profile"><code class="docutils literal notranslate"><span class="pre">Profile</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.Profile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_negative_feedback()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_positive_feedback()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.chat"><code class="docutils literal notranslate"><span class="pre">Profile.chat()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.chat_session"><code class="docutils literal notranslate"><span class="pre">Profile.chat_session()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.create"><code class="docutils literal notranslate"><span class="pre">Profile.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.delete"><code class="docutils literal notranslate"><span class="pre">Profile.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.delete_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.delete_feedback()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.explain_sql"><code class="docutils literal notranslate"><span class="pre">Profile.explain_sql()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.fetch"><code class="docutils literal notranslate"><span class="pre">Profile.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.generate"><code class="docutils literal notranslate"><span class="pre">Profile.generate()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.generate_synthetic_data"><code class="docutils literal notranslate"><span class="pre">Profile.generate_synthetic_data()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.get_attributes"><code class="docutils literal notranslate"><span class="pre">Profile.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.list"><code class="docutils literal notranslate"><span class="pre">Profile.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.narrate"><code class="docutils literal notranslate"><span class="pre">Profile.narrate()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.run_sql"><code class="docutils literal notranslate"><span class="pre">Profile.run_sql()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.set_attribute"><code class="docutils literal notranslate"><span class="pre">Profile.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.set_attributes"><code class="docutils literal notranslate"><span class="pre">Profile.set_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.show_prompt"><code class="docutils literal notranslate"><span class="pre">Profile.show_prompt()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.show_sql"><code class="docutils literal notranslate"><span class="pre">Profile.show_sql()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.summarize"><code class="docutils literal notranslate"><span class="pre">Profile.summarize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-profile">Create Profile</a></li>
+<li><a class="reference internal" href="#narrate">Narrate</a></li>
+<li><a class="reference internal" href="#show-sql">Show SQL</a></li>
+<li><a class="reference internal" href="#run-sql">Run SQL</a></li>
+<li><a class="reference internal" href="#chat">Chat</a></li>
+<li><a class="reference internal" href="#summarize">Summarize</a></li>
+<li><a class="reference internal" href="#list-profiles">List profiles</a></li>
+<li><a class="reference internal" href="#async-profile">Async Profile</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="profile_attributes.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="async_profile.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/profile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="async_profile.html" title="1. AsyncProfile API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="profile_attributes.html" title="1. ProfileAttributes"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href="">Profile Object Model</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <p id="profile">An AI profile is a specification that includes the AI provider to use and other
+details regarding metadata and database objects required for generating
+responses to natural language prompts.</p>
+<p>An AI profile object can be created using <code class="docutils literal notranslate"><span class="pre">select_ai.Profile()</span></code></p>
+<section id="profile-object-model">
+<h1>Profile Object Model<a class="headerlink" href="#profile-object-model" title="Link to this heading">¶</a></h1>
+<figure class="align-default" id="profilefig">
+<img alt="Select AI Profile and Providers" src="../_images/profile_provider.png" />
+</figure>
+</section>
+<section id="base-profile-api">
+<h1>Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API<a class="headerlink" href="#base-profile-api" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.BaseProfile">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">BaseProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="profile_attributes.html#select_ai.ProfileAttributes" title="select_ai.base_profile.ProfileAttributes"><span class="pre">ProfileAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error_if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.BaseProfile" title="Link to this definition">¶</a></dt>
+<dd><p>BaseProfile is an abstract base class representing a Profile
+for Select AI’s interactions with AI service providers (LLMs).
+Use either select_ai.Profile or select_ai.AsyncProfile to
+instantiate an AI profile object.</p>
+<p>:param str profile_name : Name of the profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attributes</strong> (<a class="reference internal" href="profile_attributes.html#select_ai.ProfileAttributes" title="select_ai.ProfileAttributes"><em>select_ai.ProfileAttributes</em></a>) – Object specifying AI profile attributes</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Description of the profile</p></li>
+<li><p><strong>merge</strong> (<em>bool</em>) – Fetches the profile
+from database, merges the non-null attributes and saves it back
+in the database. Default value is False</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – Replaces the profile and attributes
+in the database. Default value is False</p></li>
+<li><p><strong>raise_error_if_exists</strong> (<em>bool</em>) – Raise ProfileExistsError
+if profile exists in the database and replace = False and
+merge = False. Default value is True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="profile-api">
+<h1><code class="docutils literal notranslate"><span class="pre">Profile</span></code> API<a class="headerlink" href="#profile-api" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.Profile">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">Profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile" title="Link to this definition">¶</a></dt>
+<dd><p>Profile class represents an AI Profile. It defines
+attributes and methods to interact with the underlying
+AI Provider. All methods in this class are synchronous
+or blocking</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.add_negative_feedback">
+<span class="sig-name descname"><span class="pre">add_negative_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feedback_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile.add_negative_feedback" title="Link to this definition">¶</a></dt>
+<dd><p>Give negative feedback to the LLM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt_spec</strong> (<em>Tuple</em><em>[</em><em>str</em><em>, </em><em>Action</em><em>]</em>) – First element is the prompt and
+second is the corresponding action</p></li>
+<li><p><strong>sql_id</strong> (<em>str</em>) – SQL identifier from V$MAPPED_SQL view</p></li>
+<li><p><strong>response</strong> (<em>str</em>) – Expected SQL from LLM</p></li>
+<li><p><strong>feedback_content</strong> (<em>str</em>) – Actual feedback in natural language</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.add_positive_feedback">
+<span class="sig-name descname"><span class="pre">add_positive_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile.add_positive_feedback" title="Link to this definition">¶</a></dt>
+<dd><p>Give positive feedback to the LLM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt_spec</strong> (<em>Tuple</em><em>[</em><em>str</em><em>, </em><em>Action</em><em>]</em>) – First element is the prompt and
+second is the corresponding action</p></li>
+<li><p><strong>sql_id</strong> (<em>str</em>) – SQL identifier from V$MAPPED_SQL view</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.chat">
+<span class="sig-name descname"><span class="pre">chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.chat" title="Link to this definition">¶</a></dt>
+<dd><p>Chat with the LLM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
+<li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.chat_session">
+<span class="sig-name descname"><span class="pre">chat_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conversation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="conversation.html#select_ai.Conversation" title="select_ai.conversation.Conversation"><span class="pre">Conversation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile.chat_session" title="Link to this definition">¶</a></dt>
+<dd><p>Starts a new chat session for context-aware conversations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conversation</strong> (<a class="reference internal" href="conversation.html#select_ai.Conversation" title="select_ai.Conversation"><em>Conversation</em></a>) – Conversation object to use for this
+chat session</p></li>
+<li><p><strong>delete</strong> (<em>bool</em>) – Delete conversation after session ends</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.Profile.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create an AI Profile in the Database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>replace</strong> (<em>bool</em>) – Set True to replace else False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.Profile.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes an AI profile from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>bool</em>) – Ignores errors if AI profile does not exist.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.delete_feedback">
+<span class="sig-name descname"><span class="pre">delete_feedback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile.delete_feedback" title="Link to this definition">¶</a></dt>
+<dd><p>Delete feedback from the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt_spec</strong> (<em>Tuple</em><em>[</em><em>str</em><em>, </em><em>Action</em><em>]</em>) – First element is the prompt and
+second is the corresponding action</p></li>
+<li><p><strong>sql_id</strong> (<em>str</em>) – SQL identifier from V$MAPPED_SQL view</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.explain_sql">
+<span class="sig-name descname"><span class="pre">explain_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.explain_sql" title="Link to this definition">¶</a></dt>
+<dd><p>Explain the generated SQL</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
+<li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.fetch">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.Profile" title="select_ai.profile.Profile"><span class="pre">Profile</span></a></span></span><a class="headerlink" href="#select_ai.Profile.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Create a proxy Profile object from fetched attributes saved in the
+database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>profile_name</strong> (<em>str</em>) – The name of the AI profile</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>select_ai.Profile</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ProfileNotFoundError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Action.RUNSQL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.Profile.generate" title="Link to this definition">¶</a></dt>
+<dd><p>Perform AI translation using this profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt to translate</p></li>
+<li><p><strong>action</strong> (<em>select_ai.profile.Action</em>)</p></li>
+<li><p><strong>params</strong> – Parameters to include in the LLM request. For e.g.
+conversation_id for context-aware chats</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Union[pandas.DataFrame, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.generate_synthetic_data">
+<span class="sig-name descname"><span class="pre">generate_synthetic_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">synthetic_data_attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="synthetic_data.html#select_ai.SyntheticDataAttributes" title="select_ai.synthetic_data.SyntheticDataAttributes"><span class="pre">SyntheticDataAttributes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.Profile.generate_synthetic_data" title="Link to this definition">¶</a></dt>
+<dd><p>Generate synthetic data for a single table, multiple tables or a
+full schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>synthetic_data_attributes</strong> (<a class="reference internal" href="synthetic_data.html#select_ai.SyntheticDataAttributes" title="select_ai.SyntheticDataAttributes"><em>select_ai.SyntheticDataAttributes</em></a>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.get_attributes">
+<span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="profile_attributes.html#select_ai.ProfileAttributes" title="select_ai.base_profile.ProfileAttributes"><span class="pre">ProfileAttributes</span></a></span></span><a class="headerlink" href="#select_ai.Profile.get_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Get AI profile attributes from the Database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>select_ai.ProfileAttributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.Profile" title="select_ai.profile.Profile"><span class="pre">Profile</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.Profile.list" title="Link to this definition">¶</a></dt>
+<dd><p>List AI Profiles saved in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>profile_name_pattern</strong> (<em>str</em>) – Regular expressions can be used
+to specify a pattern. Function REGEXP_LIKE is used to perform the
+match. Default value is “.*” i.e. match all AI profiles.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator[Profile]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.narrate">
+<span class="sig-name descname"><span class="pre">narrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.narrate" title="Link to this definition">¶</a></dt>
+<dd><p>Narrate the result of the SQL</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
+<li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.run_sql">
+<span class="sig-name descname"><span class="pre">run_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#select_ai.Profile.run_sql" title="Link to this definition">¶</a></dt>
+<dd><p>Run the generate SQL statement and return a pandas Dataframe built
+using the result set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
+<li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="provider.html#select_ai.Provider" title="select_ai.provider.Provider"><span class="pre">Provider</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile.set_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Updates AI profile attribute on the Python object and also
+saves it in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute_name</strong> (<em>str</em>) – Name of the AI profile attribute</p></li>
+<li><p><strong>attribute_value</strong> (<em>Union</em><em>[</em><em>bool</em><em>, </em><em>str</em><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><a class="reference internal" href="provider.html#select_ai.Provider" title="select_ai.Provider"><em>Provider</em></a><em>]</em>) – Value of
+the profile attribute</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.set_attributes">
+<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="profile_attributes.html#select_ai.ProfileAttributes" title="select_ai.base_profile.ProfileAttributes"><span class="pre">ProfileAttributes</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Updates AI profile attributes on the Python object and also
+saves it in the database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attributes</strong> (<em>ProviderAttributes</em>) – Object specifying AI profile
+attributes</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.show_prompt">
+<span class="sig-name descname"><span class="pre">show_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.show_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Show the prompt sent to LLM</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
+<li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.show_sql">
+<span class="sig-name descname"><span class="pre">show_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.show_sql" title="Link to this definition">¶</a></dt>
+<dd><p>Show the generated SQL</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
+<li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.summarize">
+<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SummaryParams</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.summarize" title="Link to this definition">¶</a></dt>
+<dd><p>Generate summary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt to guide the summary
+generation</p></li>
+<li><p><strong>content</strong> (<em>str</em>) – Specifies the text you want to summarize</p></li>
+<li><p><strong>location_uri</strong> (<em>str</em>) – Provides the URI where the text is stored or
+the path to a local file stored</p></li>
+<li><p><strong>credential_name</strong> (<em>str</em>) – Identifies the credential object used to
+authenticate with the object store</p></li>
+<li><p><strong>params</strong> (<em>select_ai.summary.SummaryParams</em>) – Parameters to include
+in the LLM request</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="create-profile">
+<h1>Create Profile<a class="headerlink" href="#create-profile" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pformat</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">provider</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OCIGenAIProvider</span><span class="p">(</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-chicago-1&quot;</span><span class="p">,</span> <span class="n">oci_apiformat</span><span class="o">=</span><span class="s2">&quot;GENERIC&quot;</span>
+<span class="p">)</span>
+<span class="n">profile_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+    <span class="n">object_list</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">}],</span>
+    <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">profile_attributes</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MY OCI AI Profile&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created profile &quot;</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">profile_name</span><span class="p">)</span>
+<span class="n">profile_attributes</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Profile attributes are: &quot;</span><span class="p">,</span>
+    <span class="n">pformat</span><span class="p">(</span><span class="n">profile_attributes</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_null</span><span class="o">=</span><span class="kc">False</span><span class="p">)),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Created</span> <span class="n">profile</span>  <span class="n">oci_ai_profile</span>
+<span class="n">Profile</span> <span class="n">attributes</span> <span class="n">are</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;annotations&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;case_sensitive_values&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;comments&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;constraints&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;conversation&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;credential_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;enable_source_offsets&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;enable_sources&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;enforce_object_list&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;max_tokens&#39;</span><span class="p">:</span> <span class="s1">&#39;1024&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;object_list&#39;</span><span class="p">:</span> <span class="s1">&#39;[{&quot;owner&quot;:&quot;SH&quot;}]&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;object_list_mode&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;provider&#39;</span><span class="p">:</span> <span class="n">OCIGenAIProvider</span><span class="p">(</span><span class="n">embedding_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">provider_name</span><span class="o">=</span><span class="s1">&#39;oci&#39;</span><span class="p">,</span>
+                              <span class="n">provider_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-chicago-1&#39;</span><span class="p">,</span>
+                              <span class="n">oci_apiformat</span><span class="o">=</span><span class="s1">&#39;GENERIC&#39;</span><span class="p">,</span>
+                              <span class="n">oci_compartment_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">oci_endpoint_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">oci_runtimetype</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+ <span class="s1">&#39;seed&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;stop_tokens&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;streaming&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;vector_index_name&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="narrate">
+<h1>Narrate<a class="headerlink" href="#narrate" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">narration</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">narrate</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions?&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">narration</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">There</span> <span class="n">are</span> <span class="mi">503</span> <span class="n">promotions</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">database</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="show-sql">
+<h1>Show SQL<a class="headerlink" href="#show-sql" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">sql</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions ?&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span>
+<span class="n">COUNT</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="o">.</span><span class="s2">&quot;PROMO_ID&quot;</span><span class="p">)</span> <span class="n">AS</span> <span class="s2">&quot;Number of Promotions&quot;</span>
+<span class="n">FROM</span> <span class="s2">&quot;SH&quot;</span><span class="o">.</span><span class="s2">&quot;PROMOTIONS&quot;</span> <span class="s2">&quot;p&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="run-sql">
+<h1>Run SQL<a class="headerlink" href="#run-sql" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">run_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions ?&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Index</span><span class="p">([</span><span class="s1">&#39;Number of Promotions&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+    <span class="n">Number</span> <span class="n">of</span> <span class="n">Promotions</span>
+<span class="mi">0</span>                    <span class="mi">503</span>
+</pre></div>
+</div>
+</section>
+<section id="chat">
+<h1>Chat<a class="headerlink" href="#chat" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;What is OCI ?&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OCI</span> <span class="n">stands</span> <span class="k">for</span> <span class="n">Oracle</span> <span class="n">Cloud</span> <span class="n">Infrastructure</span><span class="o">.</span> <span class="n">It</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">comprehensive</span> <span class="n">cloud</span> <span class="n">computing</span> <span class="n">platform</span> <span class="n">provided</span> <span class="n">by</span> <span class="n">Oracle</span> <span class="n">Corporation</span> <span class="n">that</span> <span class="n">offers</span> <span class="n">a</span> <span class="n">wide</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">services</span> <span class="k">for</span> <span class="n">computing</span><span class="p">,</span> <span class="n">storage</span><span class="p">,</span> <span class="n">networking</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="ow">and</span> <span class="n">more</span><span class="o">.</span>
+<span class="o">...</span>
+<span class="o">...</span>
+<span class="n">OCI</span> <span class="n">competes</span> <span class="k">with</span> <span class="n">other</span> <span class="n">major</span> <span class="n">cloud</span> <span class="n">providers</span><span class="p">,</span> <span class="n">including</span> <span class="n">Amazon</span> <span class="n">Web</span> <span class="n">Services</span> <span class="p">(</span><span class="n">AWS</span><span class="p">),</span> <span class="n">Microsoft</span> <span class="n">Azure</span><span class="p">,</span> <span class="n">Google</span> <span class="n">Cloud</span> <span class="n">Platform</span> <span class="p">(</span><span class="n">GCP</span><span class="p">),</span> <span class="ow">and</span> <span class="n">IBM</span> <span class="n">Cloud</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="summarize">
+<h1>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">A gas cloud in our galaxy, Sagittarius B2, contains enough alcohol to brew 400</span>
+<span class="s2">trillion pints of beer, and some stars are so cool that you could touch them</span>
+<span class="s2">without being burned. Meanwhile, on the exoplanet 55 Cancri e, a form of</span>
+<span class="s2">&quot;hot ice&quot; exists where high pressure prevents water from becoming gas even at</span>
+<span class="s2">high temperatures. Additionally, some ancient stars found in the Milky Way&#39;s</span>
+<span class="s2">halo are much older than the Sun, providing clues about the early universe and</span>
+<span class="s2">its composition</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="n">gas</span> <span class="n">cloud</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">Sagittarius</span> <span class="n">B2</span> <span class="n">galaxy</span> <span class="n">contains</span> <span class="n">a</span> <span class="n">large</span> <span class="n">amount</span> <span class="n">of</span> <span class="n">alcohol</span><span class="p">,</span>
+<span class="k">while</span> <span class="n">some</span> <span class="n">stars</span> <span class="n">are</span> <span class="n">cool</span> <span class="n">enough</span> <span class="n">to</span> <span class="n">touch</span> <span class="n">without</span> <span class="n">being</span> <span class="n">burned</span><span class="o">.</span> <span class="n">The</span> <span class="n">exoplanet</span>
+<span class="mi">55</span> <span class="n">Cancri</span> <span class="n">e</span> <span class="n">has</span> <span class="n">a</span> <span class="n">unique</span> <span class="n">form</span> <span class="n">of</span> <span class="s2">&quot;hot ice&quot;</span> <span class="n">where</span> <span class="n">water</span> <span class="n">remains</span> <span class="n">solid</span> <span class="n">despite</span>
+<span class="n">high</span> <span class="n">temperatures</span> <span class="n">due</span> <span class="n">to</span> <span class="n">high</span> <span class="n">pressure</span><span class="o">.</span> <span class="n">Ancient</span> <span class="n">stars</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">Milky</span> <span class="n">Way</span><span class="s1">&#39;s halo</span>
+<span class="n">are</span> <span class="n">older</span> <span class="n">than</span> <span class="n">the</span> <span class="n">Sun</span><span class="p">,</span> <span class="n">providing</span> <span class="n">insights</span> <span class="n">into</span> <span class="n">the</span> <span class="n">early</span> <span class="n">universe</span> <span class="ow">and</span> <span class="n">its</span> <span class="n">composition</span><span class="p">,</span>
+<span class="n">offering</span> <span class="n">clues</span> <span class="n">about</span> <span class="n">the</span> <span class="n">universe</span><span class="s1">&#39;s formation and evolution.</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span>
+    <span class="n">location_uri</span><span class="o">=</span><span class="s2">&quot;https://en.wikipedia.org/wiki/Astronomy&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Astronomy</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">natural</span> <span class="n">science</span> <span class="n">that</span> <span class="n">studies</span> <span class="n">celestial</span> <span class="n">objects</span> <span class="ow">and</span> <span class="n">phenomena</span><span class="p">,</span>
+<span class="n">using</span> <span class="n">mathematics</span><span class="p">,</span> <span class="n">physics</span><span class="p">,</span> <span class="ow">and</span> <span class="n">chemistry</span> <span class="n">to</span> <span class="n">explain</span> <span class="n">their</span> <span class="n">origin</span> <span class="ow">and</span> <span class="n">evolution</span><span class="o">.</span>
+<span class="n">The</span> <span class="n">field</span> <span class="n">has</span> <span class="n">a</span> <span class="n">long</span> <span class="n">history</span><span class="p">,</span> <span class="k">with</span> <span class="n">early</span> <span class="n">civilizations</span> <span class="n">making</span> <span class="n">methodical</span>
+<span class="n">observations</span> <span class="n">of</span> <span class="n">the</span> <span class="n">night</span> <span class="n">sky</span><span class="p">,</span> <span class="ow">and</span> <span class="n">has</span> <span class="n">since</span> <span class="n">split</span> <span class="n">into</span> <span class="n">observational</span> <span class="ow">and</span>
+<span class="n">theoretical</span> <span class="n">branches</span><span class="o">.</span> <span class="n">Observational</span> <span class="n">astronomy</span> <span class="n">focuses</span> <span class="n">on</span> <span class="n">acquiring</span> <span class="n">data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">observations</span><span class="p">,</span> <span class="k">while</span> <span class="n">theoretical</span> <span class="n">astronomy</span> <span class="n">develops</span> <span class="n">computer</span> <span class="ow">or</span>
+<span class="n">analytical</span> <span class="n">models</span> <span class="n">to</span> <span class="n">describe</span> <span class="n">astronomical</span> <span class="n">objects</span> <span class="ow">and</span> <span class="n">phenomena</span><span class="o">.</span> <span class="n">The</span> <span class="n">study</span>
+<span class="n">of</span> <span class="n">astronomy</span> <span class="n">has</span> <span class="n">led</span> <span class="n">to</span> <span class="n">numerous</span> <span class="n">discoveries</span><span class="p">,</span> <span class="n">including</span> <span class="n">the</span> <span class="n">existence</span> <span class="n">of</span>
+<span class="n">galaxies</span><span class="p">,</span> <span class="n">the</span> <span class="n">expansion</span> <span class="n">of</span> <span class="n">the</span> <span class="n">universe</span><span class="p">,</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">detection</span> <span class="n">of</span> <span class="n">gravitational</span>
+<span class="n">waves</span><span class="o">.</span> <span class="n">Astronomers</span> <span class="n">use</span> <span class="n">various</span> <span class="n">methods</span><span class="p">,</span> <span class="n">such</span> <span class="k">as</span> <span class="n">radio</span><span class="p">,</span> <span class="n">infrared</span><span class="p">,</span> <span class="n">optical</span><span class="p">,</span>
+<span class="n">ultraviolet</span><span class="p">,</span> <span class="n">X</span><span class="o">-</span><span class="n">ray</span><span class="p">,</span> <span class="ow">and</span> <span class="n">gamma</span><span class="o">-</span><span class="n">ray</span> <span class="n">astronomy</span><span class="p">,</span> <span class="n">to</span> <span class="n">study</span> <span class="n">objects</span> <span class="ow">and</span> <span class="n">events</span> <span class="ow">in</span>
+<span class="n">the</span> <span class="n">universe</span><span class="o">.</span> <span class="n">The</span> <span class="n">field</span> <span class="n">has</span> <span class="n">also</span> <span class="n">led</span> <span class="n">to</span> <span class="n">the</span> <span class="n">development</span> <span class="n">of</span> <span class="n">new</span> <span class="n">technologies</span> <span class="ow">and</span>
+<span class="n">has</span> <span class="n">inspired</span> <span class="n">new</span> <span class="n">areas</span> <span class="n">of</span> <span class="n">research</span><span class="p">,</span> <span class="n">such</span> <span class="k">as</span> <span class="n">astrobiology</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">search</span> <span class="k">for</span>
+<span class="n">extraterrestrial</span> <span class="n">life</span><span class="o">.</span> <span class="n">Overall</span><span class="p">,</span> <span class="n">astronomy</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">dynamic</span> <span class="ow">and</span> <span class="n">constantly</span> <span class="n">evolving</span>
+<span class="n">field</span> <span class="n">that</span> <span class="n">seeks</span> <span class="n">to</span> <span class="n">understand</span> <span class="n">the</span> <span class="n">universe</span> <span class="ow">and</span> <span class="n">its</span> <span class="n">many</span> <span class="n">mysteries</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="list-profiles">
+<h1>List profiles<a class="headerlink" href="#list-profiles" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">()</span>
+
+<span class="c1"># matches all the profiles</span>
+<span class="k">for</span> <span class="n">fetched_profile</span> <span class="ow">in</span> <span class="n">profile</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fetched_profile</span><span class="o">.</span><span class="n">profile_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ASYNC_OCI_AI_PROFILE</span>
+<span class="n">OCI_VECTOR_AI_PROFILE</span>
+<span class="n">ASYNC_OCI_VECTOR_AI_PROFILE</span>
+<span class="n">OCI_AI_PROFILE</span>
+</pre></div>
+</div>
+</section>
+<section id="async-profile">
+<h1>Async Profile<a class="headerlink" href="#async-profile" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.chat"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.chat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.chat_session"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.chat_session()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.create"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.delete"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.delete_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.delete_feedback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.explain_sql"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.explain_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.generate"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.generate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.generate_synthetic_data"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.generate_synthetic_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.list"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.narrate"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.narrate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.run_pipeline"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.run_pipeline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.run_sql"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.run_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.set_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.show_prompt"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_prompt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.show_sql"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.summarize"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.summarize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-profile-creation">2. Async Profile creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-explain-sql">3. Async explain SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-run-sql">4. Async run SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-show-sql">5. Async show SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-concurrent-sql">6. Async concurrent SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-chat">7. Async chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#summarize">8. Summarize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-pipeline">9. Async pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#list-profiles-asynchronously">10. List profiles asynchronously</a></li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Profile Object Model</a></li>
+<li><a class="reference internal" href="#base-profile-api">Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.BaseProfile"><code class="docutils literal notranslate"><span class="pre">BaseProfile</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#profile-api"><code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.Profile"><code class="docutils literal notranslate"><span class="pre">Profile</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.Profile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_negative_feedback()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_positive_feedback()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.chat"><code class="docutils literal notranslate"><span class="pre">Profile.chat()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.chat_session"><code class="docutils literal notranslate"><span class="pre">Profile.chat_session()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.create"><code class="docutils literal notranslate"><span class="pre">Profile.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.delete"><code class="docutils literal notranslate"><span class="pre">Profile.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.delete_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.delete_feedback()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.explain_sql"><code class="docutils literal notranslate"><span class="pre">Profile.explain_sql()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.fetch"><code class="docutils literal notranslate"><span class="pre">Profile.fetch()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.generate"><code class="docutils literal notranslate"><span class="pre">Profile.generate()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.generate_synthetic_data"><code class="docutils literal notranslate"><span class="pre">Profile.generate_synthetic_data()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.get_attributes"><code class="docutils literal notranslate"><span class="pre">Profile.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.list"><code class="docutils literal notranslate"><span class="pre">Profile.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.narrate"><code class="docutils literal notranslate"><span class="pre">Profile.narrate()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.run_sql"><code class="docutils literal notranslate"><span class="pre">Profile.run_sql()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.set_attribute"><code class="docutils literal notranslate"><span class="pre">Profile.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.set_attributes"><code class="docutils literal notranslate"><span class="pre">Profile.set_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.show_prompt"><code class="docutils literal notranslate"><span class="pre">Profile.show_prompt()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.show_sql"><code class="docutils literal notranslate"><span class="pre">Profile.show_sql()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.summarize"><code class="docutils literal notranslate"><span class="pre">Profile.summarize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-profile">Create Profile</a></li>
+<li><a class="reference internal" href="#narrate">Narrate</a></li>
+<li><a class="reference internal" href="#show-sql">Show SQL</a></li>
+<li><a class="reference internal" href="#run-sql">Run SQL</a></li>
+<li><a class="reference internal" href="#chat">Chat</a></li>
+<li><a class="reference internal" href="#summarize">Summarize</a></li>
+<li><a class="reference internal" href="#list-profiles">List profiles</a></li>
+<li><a class="reference internal" href="#async-profile">Async Profile</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="profile_attributes.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="async_profile.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/profile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="async_profile.html" title="1. AsyncProfile API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="profile_attributes.html" title="1. ProfileAttributes"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href="">Profile Object Model</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>

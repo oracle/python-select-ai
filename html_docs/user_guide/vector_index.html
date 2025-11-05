@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. VectorIndex Object Model &#8212; Select AI for Python 1.2.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=9235ea19"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. SyntheticDataAttributes" href="synthetic_data.html" />
+    <link rel="prev" title="1. Conversation Object model" href="conversation.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></li>
+<li><a class="reference internal" href="#vectorindexattributes">2. <code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.VectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a></li>
+<li><a class="reference internal" href="#oraclevectorindexattributes">2.1. <code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.OracleVectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vectorindex-api">3. <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.VectorIndex"><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.VectorIndex.create"><code class="docutils literal notranslate"><span class="pre">VectorIndex.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">VectorIndex.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_profile()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.list"><code class="docutils literal notranslate"><span class="pre">VectorIndex.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-vector-index">3.1. Create vector index</a></li>
+<li><a class="reference internal" href="#list-vector-index">3.2. List vector index</a></li>
+<li><a class="reference internal" href="#get-vector-index-attributes">3.3. Get vector index attributes</a></li>
+<li><a class="reference internal" href="#update-vector-index-attributes">3.4. Update vector index attributes</a></li>
+<li><a class="reference internal" href="#rag-using-vector-index">3.5. RAG using vector index</a></li>
+<li><a class="reference internal" href="#delete-vector-index">3.6. Delete vector index</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#asyncvectorindex-api">4. <code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.create"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_profile()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.list"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#async-create-vector-index">4.1. Async create vector index</a></li>
+<li><a class="reference internal" href="#async-list-vector-index">4.2. Async list vector index</a></li>
+<li><a class="reference internal" href="#async-get-vector-index-attributes">4.3. Async get vector index attributes</a></li>
+<li><a class="reference internal" href="#async-update-vector-index-attributes">4.4. Async update vector index attributes</a></li>
+<li><a class="reference internal" href="#async-rag-using-vector-index">4.5. Async RAG using vector index</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="conversation.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="synthetic_data.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/vector_index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="conversation.html" title="1. Conversation Object model"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <p id="vector-index"><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> supports Retrieval Augmented Generation (RAG).
+For e.g., you can convert text into vector embeddings and store them in a
+vector store. Select AI will augment the natural language prompt by retrieving
+content from the vector store using semantic similarity search.</p>
+<section id="vectorindex-object-model">
+<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model<a class="headerlink" href="#vectorindex-object-model" title="Link to this heading">¶</a></h1>
+<figure class="align-default" id="vectorindexfig">
+<img alt="Select AI Vector Index" src="../_images/vector_index.png" />
+</figure>
+</section>
+<section id="vectorindexattributes">
+<h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code><a class="headerlink" href="#vectorindexattributes" title="Link to this heading">¶</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code> object can be created with
+<code class="docutils literal notranslate"><span class="pre">select_ai.VectorIndexAttributes()</span></code>. Also check
+<a class="reference external" href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/dbms-cloud-ai-package.html#GUID-F6A65B2A-AE6D-4751-BDD7-137D49248160">vector index attributes</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.VectorIndexAttributes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">VectorIndexAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_storage_credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_distance_metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorDistanceMetric</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_db_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_db_credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_db_provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorDBProvider</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndexAttributes" title="Link to this definition">¶</a></dt>
+<dd><p>Attributes of a vector index help to manage and configure the behavior of
+the vector index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chunk_size</strong> (<em>int</em>) – Text size of chunking the input data.</p></li>
+<li><p><strong>chunk_overlap</strong> (<em>int</em>) – Specifies the amount of overlapping
+characters between adjacent chunks of text.</p></li>
+<li><p><strong>location</strong> (<em>str</em>) – Location of the object store.</p></li>
+<li><p><strong>match_limit</strong> (<em>int</em>) – Specifies the maximum number of results to return
+in a vector search query</p></li>
+<li><p><strong>object_storage_credential_name</strong> (<em>str</em>) – Name of the credentials for
+accessing object storage.</p></li>
+<li><p><strong>profile_name</strong> (<em>str</em>) – Name of the AI profile which is used for
+embedding source data and user prompts.</p></li>
+<li><p><strong>refresh_rate</strong> (<em>int</em>) – Interval of updating data in the vector store.
+The unit is minutes.</p></li>
+<li><p><strong>similarity_threshold</strong> (<em>float</em>) – Defines the minimum level of similarity
+required for two items to be considered a match</p></li>
+<li><p><strong>vector_distance_metric</strong> (<em>VectorDistanceMetric</em>) – Specifies the type of
+distance calculation used to compare vectors in a database</p></li>
+<li><p><strong>vector_db_provider</strong> (<em>VectorDBProvider</em>) – Name of the Vector database
+provider. Default value is “oracle”</p></li>
+<li><p><strong>vector_db_endpoint</strong> (<em>str</em>) – Endpoint to access the Vector database</p></li>
+<li><p><strong>vector_db_credential_name</strong> (<em>str</em>) – Name of the credentials for accessing
+Vector database</p></li>
+<li><p><strong>vector_dimension</strong> (<em>int</em>) – Specifies the number of elements in each
+vector within the vector store</p></li>
+<li><p><strong>vector_table_name</strong> (<em>str</em>) – Specifies the name of the table or collection
+to store vector embeddings and chunked data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="oraclevectorindexattributes">
+<h2><span class="section-number">2.1. </span><code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code><a class="headerlink" href="#oraclevectorindexattributes" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.OracleVectorIndexAttributes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">OracleVectorIndexAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_storage_credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">similarity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_distance_metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorDistanceMetric</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_db_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_db_credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_db_provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorDBProvider</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">VectorDBProvider.ORACLE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.OracleVectorIndexAttributes" title="Link to this definition">¶</a></dt>
+<dd><p>Oracle specific vector index attributes</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="vectorindex-api">
+<h1><span class="section-number">3. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> API<a class="headerlink" href="#vectorindex-api" title="Link to this heading">¶</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> object can be created with <code class="docutils literal notranslate"><span class="pre">select_ai.VectorIndex()</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.VectorIndex">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">VectorIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="profile.html#select_ai.BaseProfile" title="select_ai.base_profile.BaseProfile"><span class="pre">BaseProfile</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndex" title="Link to this definition">¶</a></dt>
+<dd><p>VectorIndex objects let you manage vector indexes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index_name</strong> (<em>str</em>) – The name of the vector index</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the vector index</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.VectorIndexAttributes"><em>select_ai.VectorIndexAttributes</em></a>) – The attributes of the vector index</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndex.create" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Create a vector index in the database and populates the index</dt><dd><p>with data from an object store bucket using an async scheduler job</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>replace</strong> (<em>bool</em>) – Replace vector index if it exists</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndex.delete" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure removes a vector store index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_data</strong> (<em>bool</em>) – Indicates whether to delete
+both the customer’s vector store and vector index
+along with the vector index object</p></li>
+<li><p><strong>force</strong> (<em>bool</em>) – Indicates whether to ignore errors
+that occur if the vector index does not exist</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.disable">
+<span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndex.disable" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure disables a vector index object in the current
+database. When disabled, an AI profile cannot use the vector index,
+and the system does not load data into the vector store as new data
+is added to the object store and does not perform indexing, searching
+or querying based on the index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.enable">
+<span class="sig-name descname"><span class="pre">enable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndex.enable" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure enables or activates a previously disabled vector
+index object. Generally, when you create a vector index, by default
+it is enabled such that the AI profile can use it to perform indexing
+and searching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.get_attributes">
+<span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a></span></span><a class="headerlink" href="#select_ai.VectorIndex.get_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Get attributes of this vector index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>select_ai.VectorIndexAttributes</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>VectorIndexNotFoundError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.get_profile">
+<span class="sig-name descname"><span class="pre">get_profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="profile.html#select_ai.Profile" title="select_ai.profile.Profile"><span class="pre">Profile</span></a></span></span><a class="headerlink" href="#select_ai.VectorIndex.get_profile" title="Link to this definition">¶</a></dt>
+<dd><p>Get Profile object linked to this vector index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>select_ai.Profile</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ProfileNotFoundError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.VectorIndex" title="select_ai.vector_index.VectorIndex"><span class="pre">VectorIndex</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.VectorIndex.list" title="Link to this definition">¶</a></dt>
+<dd><p>List Vector Indexes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index_name_pattern</strong> (<em>str</em>) – Regular expressions can be used
+to specify a pattern. Function REGEXP_LIKE is used to perform the
+match. Default value is “.*” i.e. match all vector indexes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterator[VectorIndex]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndex.set_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure updates an existing vector store index with a specified
+value of the vector index attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute_name</strong> (<em>str</em>) – Custom attribute name</p></li>
+<li><p><strong>attribute_value</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>, </em><em>float</em><em>]</em>) – Attribute Value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.set_attributes">
+<span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.VectorIndex.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure updates an existing vector store index with a specified
+value of the vector index attributes. Specify multiple attributes by
+passing an object of type :class <cite>VectorIndexAttributes</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.VectorIndexAttributes"><em>select_ai.VectorIndexAttributes</em></a>) – Use this to
+update multiple attribute values</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Check the examples below to understand how to create vector indexes</p>
+<section id="create-vector-index">
+<h2><span class="section-number">3.1. </span>Create vector index<a class="headerlink" href="#create-vector-index" title="Link to this heading">¶</a></h2>
+<p>In the following example, vector database provider is Oracle and
+objects (to create embedding for) reside in OCI’s object store</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="c1"># Configure an AI provider with an embedding model</span>
+<span class="c1"># of your choice</span>
+<span class="n">provider</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OCIGenAIProvider</span><span class="p">(</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-chicago-1&quot;</span><span class="p">,</span>
+    <span class="n">oci_apiformat</span><span class="o">=</span><span class="s2">&quot;GENERIC&quot;</span><span class="p">,</span>
+    <span class="n">embedding_model</span><span class="o">=</span><span class="s2">&quot;cohere.embed-english-v3.0&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Create an AI profile to use the Vector index with</span>
+<span class="n">profile_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+    <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_vector_ai_profile&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">profile_attributes</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MY OCI AI Profile&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Specify objects to create an embedding for. In this example,</span>
+<span class="c1"># the objects reside in ObjectStore and the vector database is</span>
+<span class="c1"># Oracle</span>
+<span class="n">vector_index_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span>
+    <span class="n">location</span><span class="o">=</span><span class="s2">&quot;https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph&quot;</span><span class="p">,</span>
+    <span class="n">object_storage_credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Create a Vector index object</span>
+<span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">VectorIndex</span><span class="p">(</span>
+    <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">vector_index_attributes</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Test vector index&quot;</span><span class="p">,</span>
+    <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">vector_index</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created vector index: test_vector_index&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Created</span> <span class="n">vector</span> <span class="n">index</span><span class="p">:</span> <span class="n">test_vector_index</span>
+</pre></div>
+</div>
+</section>
+<section id="list-vector-index">
+<h2><span class="section-number">3.2. </span>List vector index<a class="headerlink" href="#list-vector-index" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">VectorIndex</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">vector_index</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">index_name_pattern</span><span class="o">=</span><span class="s2">&quot;^test&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Vector index&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">index_name</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Vector index profile&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">profile</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Vector</span> <span class="n">index</span> <span class="n">TEST_VECTOR_INDEX</span>
+<span class="n">Vector</span> <span class="n">index</span> <span class="n">profile</span> <span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="n">oci_vector_ai_profile</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ProfileAttributes</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case_sensitive_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conversation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">enable_sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_source_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enforce_object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">object_list_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider</span><span class="o">=</span><span class="n">OCIGenAIProvider</span><span class="p">(</span><span class="n">embedding_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider_name</span><span class="o">=</span><span class="s1">&#39;oci&#39;</span><span class="p">,</span> <span class="n">provider_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-chicago-1&#39;</span><span class="p">,</span> <span class="n">oci_apiformat</span><span class="o">=</span><span class="s1">&#39;GENERIC&#39;</span><span class="p">,</span> <span class="n">oci_compartment_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_endpoint_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_runtimetype</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_index_name</span><span class="o">=</span><span class="s1">&#39;test_vector_index&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="get-vector-index-attributes">
+<h2><span class="section-number">3.3. </span>Get vector index attributes<a class="headerlink" href="#get-vector-index-attributes" title="Link to this heading">¶</a></h2>
+<p>You can fetch the vector index attributes and associated AI profile using
+<code class="docutils literal notranslate"><span class="pre">vector_index.get_attributes()</span></code> and <code class="docutils literal notranslate"><span class="pre">vector_index.get_profile()</span></code> methods
+respectively.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+<span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">VectorIndex</span><span class="p">(</span>
+    <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">get_profile</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph&#39;</span><span class="p">,</span> <span class="n">match_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_storage_credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_vector_ai_profile&#39;</span><span class="p">,</span> <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span> <span class="n">similarity_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vector_distance_metric</span><span class="o">=</span><span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="n">vector_db_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_provider</span><span class="o">=&lt;</span><span class="n">VectorDBProvider</span><span class="o">.</span><span class="n">ORACLE</span><span class="p">:</span> <span class="s1">&#39;oracle&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">vector_dimension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_table_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pipeline_name</span><span class="o">=</span><span class="s1">&#39;TEST_VECTOR_INDEX$VECPIPELINE&#39;</span><span class="p">)</span>
+
+<span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="n">oci_vector_ai_profile</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ProfileAttributes</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case_sensitive_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conversation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">enable_custom_source_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_source_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enforce_object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">object_list_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider</span><span class="o">=</span><span class="n">OCIGenAIProvider</span><span class="p">(</span><span class="n">embedding_model</span><span class="o">=</span><span class="s1">&#39;cohere.embed-english-v3.0&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider_name</span><span class="o">=</span><span class="s1">&#39;oci&#39;</span><span class="p">,</span> <span class="n">provider_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-chicago-1&#39;</span><span class="p">,</span> <span class="n">oci_apiformat</span><span class="o">=</span><span class="s1">&#39;GENERIC&#39;</span><span class="p">,</span> <span class="n">oci_compartment_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_endpoint_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_runtimetype</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_index_name</span><span class="o">=</span><span class="s1">&#39;test_vector_index&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">MY</span> <span class="n">OCI</span> <span class="n">AI</span> <span class="n">Profile</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="update-vector-index-attributes">
+<h2><span class="section-number">3.4. </span>Update vector index attributes<a class="headerlink" href="#update-vector-index-attributes" title="Link to this heading">¶</a></h2>
+<p>To update attributes, use either <code class="docutils literal notranslate"><span class="pre">vector_index.set_attribute()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">vector_index.set_attributes()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">VectorIndex</span><span class="p">(</span>
+    <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Use vector_index.set_attributes to update a multiple attributes</span>
+<span class="n">updated_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span>
+    <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">vector_index</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">updated_attributes</span><span class="p">)</span>
+
+<span class="c1"># Use vector_index.set_attribute to update a single attribute</span>
+<span class="n">vector_index</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
+    <span class="n">attribute_name</span><span class="o">=</span><span class="s2">&quot;similarity_threshold&quot;</span><span class="p">,</span> <span class="n">attribute_value</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph&#39;</span><span class="p">,</span> <span class="n">match_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_storage_credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_vector_ai_profile&#39;</span><span class="p">,</span> <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span> <span class="n">similarity_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vector_distance_metric</span><span class="o">=</span><span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="n">vector_db_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_provider</span><span class="o">=&lt;</span><span class="n">VectorDBProvider</span><span class="o">.</span><span class="n">ORACLE</span><span class="p">:</span> <span class="s1">&#39;oracle&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">vector_dimension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_table_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pipeline_name</span><span class="o">=</span><span class="s1">&#39;TEST_VECTOR_INDEX$VECPIPELINE&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="rag-using-vector-index">
+<h2><span class="section-number">3.5. </span>RAG using vector index<a class="headerlink" href="#rag-using-vector-index" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_vector_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">narrate</span><span class="p">(</span><span class="s2">&quot;list the conda environments in my object store&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">conda</span> <span class="n">environments</span> <span class="ow">in</span> <span class="n">your</span> <span class="nb">object</span> <span class="n">store</span> <span class="n">are</span><span class="p">:</span>
+ <span class="mf">1.</span> <span class="n">fccenv</span>
+ <span class="mf">2.</span> <span class="n">myrenv</span>
+ <span class="mf">3.</span> <span class="n">fully</span><span class="o">-</span><span class="n">loaded</span><span class="o">-</span><span class="n">mlenv</span>
+ <span class="mf">4.</span> <span class="n">graphenv</span>
+
+ <span class="n">These</span> <span class="n">environments</span> <span class="n">are</span> <span class="n">listed</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">provided</span> <span class="n">data</span> <span class="k">as</span> <span class="n">separate</span> <span class="n">JSON</span> <span class="n">documents</span><span class="p">,</span> <span class="n">each</span> <span class="n">containing</span> <span class="n">information</span> <span class="n">about</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">conda</span> <span class="n">environment</span><span class="o">.</span>
+
+ <span class="n">Sources</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">fccenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">fccenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+   <span class="o">-</span> <span class="n">myrenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">myrenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+   <span class="o">-</span> <span class="n">fully</span><span class="o">-</span><span class="n">loaded</span><span class="o">-</span><span class="n">mlenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">fully</span><span class="o">-</span><span class="n">loaded</span><span class="o">-</span><span class="n">mlenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+   <span class="o">-</span> <span class="n">graphenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">graphenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="delete-vector-index">
+<h2><span class="section-number">3.6. </span>Delete vector index<a class="headerlink" href="#delete-vector-index" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">VectorIndex</span><span class="p">(</span><span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">)</span>
+<span class="n">vector_index</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deleted vector index: test_vector_index&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Deleted</span> <span class="n">vector</span> <span class="n">index</span><span class="p">:</span> <span class="n">test_vector_index</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="asyncvectorindex-api">
+<h1><span class="section-number">4. </span><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code> API<a class="headerlink" href="#asyncvectorindex-api" title="Link to this heading">¶</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code> object can be created with <code class="docutils literal notranslate"><span class="pre">select_ai.AsyncVectorIndex()</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AsyncVectorIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="profile.html#select_ai.BaseProfile" title="select_ai.base_profile.BaseProfile"><span class="pre">BaseProfile</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncVectorIndex" title="Link to this definition">¶</a></dt>
+<dd><p>AsyncVectorIndex objects let you manage vector indexes
+using async APIs. Use this for non-blocking concurrent
+requests</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index_name</strong> (<em>str</em>) – The name of the vector index</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the vector index</p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.VectorIndexAttributes"><em>VectorIndexAttributes</em></a>) – The attributes of the vector index</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.create">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create a vector index in the database and populates it with data
+from an object store bucket using an async scheduler job</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>replace</strong> (<em>bool</em>) – True to replace existing vector index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.delete">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.delete" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure removes a vector store index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_data</strong> (<em>bool</em>) – Indicates whether to delete
+both the customer’s vector store and vector index
+along with the vector index object.</p></li>
+<li><p><strong>force</strong> (<em>bool</em>) – Indicates whether to ignore errors
+that occur if the vector index does not exist.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.disable">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.disable" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure disables a vector index object in the current
+database. When disabled, an AI profile cannot use the vector index,
+and the system does not load data into the vector store as new data
+is added to the object store and does not perform indexing, searching
+or querying based on the index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.enable">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.enable" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure enables or activates a previously disabled vector
+index object. Generally, when you create a vector index, by default
+it is enabled such that the AI profile can use it to perform indexing
+and searching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.get_attributes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.get_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Get attributes of a vector index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>select_ai.VectorIndexAttributes</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>VectorIndexNotFoundError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.get_profile">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile" title="select_ai.async_profile.AsyncProfile"><span class="pre">AsyncProfile</span></a></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.get_profile" title="Link to this definition">¶</a></dt>
+<dd><p>Get AsyncProfile object linked to this vector index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>select_ai.AsyncProfile</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>ProfileNotFoundError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.list">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.VectorIndex" title="select_ai.vector_index.VectorIndex"><span class="pre">VectorIndex</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.list" title="Link to this definition">¶</a></dt>
+<dd><p>List Vector Indexes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index_name_pattern</strong> (<em>str</em>) – Regular expressions can be used
+to specify a pattern. Function REGEXP_LIKE is used to perform the
+match. Default value is “.*” i.e. match all vector indexes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>AsyncGenerator[VectorIndex]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.set_attribute">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.set_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure updates an existing vector store index with a specified
+value of the vector index attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute_name</strong> (<em>str</em>) – Custom attribute name</p></li>
+<li><p><strong>attribute_value</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>int</em><em>, </em><em>float</em><em>]</em>) – Attribute Value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.set_attributes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.set_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>This procedure updates an existing vector store index with a specified
+value of the vector index attribute. multiple attributes by passing
+an object of type :class <cite>VectorIndexAttributes</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attributes</strong> (<a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.VectorIndexAttributes"><em>select_ai.VectorIndexAttributes</em></a>) – Use this to
+update multiple attribute values</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>oracledb.DatabaseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="async-create-vector-index">
+<h2><span class="section-number">4.1. </span>Async create vector index<a class="headerlink" href="#async-create-vector-index" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+    <span class="n">provider</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OCIGenAIProvider</span><span class="p">(</span>
+        <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-chicago-1&quot;</span><span class="p">,</span>
+        <span class="n">oci_apiformat</span><span class="o">=</span><span class="s2">&quot;GENERIC&quot;</span><span class="p">,</span>
+        <span class="n">embedding_model</span><span class="o">=</span><span class="s2">&quot;cohere.embed-english-v3.0&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">profile_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+        <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+        <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_vector_ai_profile&quot;</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="n">profile_attributes</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MY OCI AI Profile&quot;</span><span class="p">,</span>
+        <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">vector_index_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span>
+        <span class="n">location</span><span class="o">=</span><span class="s2">&quot;https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph&quot;</span><span class="p">,</span>
+        <span class="n">object_storage_credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">async_vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncVectorIndex</span><span class="p">(</span>
+        <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="n">vector_index_attributes</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Vector index for conda environments&quot;</span><span class="p">,</span>
+        <span class="n">profile</span><span class="o">=</span><span class="n">async_profile</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created vector index: test_vector_index&quot;</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">created</span> <span class="n">vector</span> <span class="n">index</span><span class="p">:</span> <span class="n">test_vector_index</span>
+</pre></div>
+</div>
+</section>
+<section id="async-list-vector-index">
+<h2><span class="section-number">4.2. </span>Async list vector index<a class="headerlink" href="#async-list-vector-index" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncVectorIndex</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">vector_index</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">index_name_pattern</span><span class="o">=</span><span class="s2">&quot;^test&quot;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Vector index&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">index_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Vector index profile&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">profile</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Vector</span> <span class="n">index</span> <span class="n">TEST_VECTOR_INDEX</span>
+<span class="n">Vector</span> <span class="n">index</span> <span class="n">profile</span> <span class="n">AsyncProfile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="n">oci_vector_ai_profile</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ProfileAttributes</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case_sensitive_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conversation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">enable_sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_source_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enforce_object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">object_list_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider</span><span class="o">=</span><span class="n">OCIGenAIProvider</span><span class="p">(</span><span class="n">embedding_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider_name</span><span class="o">=</span><span class="s1">&#39;oci&#39;</span><span class="p">,</span> <span class="n">provider_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-chicago-1&#39;</span><span class="p">,</span> <span class="n">oci_apiformat</span><span class="o">=</span><span class="s1">&#39;GENERIC&#39;</span><span class="p">,</span> <span class="n">oci_compartment_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_endpoint_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_runtimetype</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_index_name</span><span class="o">=</span><span class="s1">&#39;test_vector_index&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="async-get-vector-index-attributes">
+<h2><span class="section-number">4.3. </span>Async get vector index attributes<a class="headerlink" href="#async-get-vector-index-attributes" title="Link to this heading">¶</a></h2>
+<p>You can fetch the vector index attributes and associated AI profile using
+<code class="docutils literal notranslate"><span class="pre">async_vector_index.get_attributes()</span></code> and <code class="docutils literal notranslate"><span class="pre">async_vector_index.get_profile()</span></code>
+methods respectively.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+
+    <span class="n">async_vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncVectorIndex</span><span class="p">(</span>
+        <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">get_profile</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">async_profile</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph&#39;</span><span class="p">,</span> <span class="n">match_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_storage_credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_vector_ai_profile&#39;</span><span class="p">,</span> <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span> <span class="n">similarity_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vector_distance_metric</span><span class="o">=</span><span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="n">vector_db_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_provider</span><span class="o">=&lt;</span><span class="n">VectorDBProvider</span><span class="o">.</span><span class="n">ORACLE</span><span class="p">:</span> <span class="s1">&#39;oracle&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">vector_dimension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_table_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pipeline_name</span><span class="o">=</span><span class="s1">&#39;TEST_VECTOR_INDEX$VECPIPELINE&#39;</span><span class="p">)</span>
+
+<span class="n">AsyncProfile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="n">oci_vector_ai_profile</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ProfileAttributes</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case_sensitive_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constraints</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conversation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">enable_custom_source_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_source_offsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enforce_object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">object_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">object_list_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider</span><span class="o">=</span><span class="n">OCIGenAIProvider</span><span class="p">(</span><span class="n">embedding_model</span><span class="o">=</span><span class="s1">&#39;cohere.embed-english-v3.0&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provider_name</span><span class="o">=</span><span class="s1">&#39;oci&#39;</span><span class="p">,</span> <span class="n">provider_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;us-chicago-1&#39;</span><span class="p">,</span> <span class="n">oci_apiformat</span><span class="o">=</span><span class="s1">&#39;GENERIC&#39;</span><span class="p">,</span> <span class="n">oci_compartment_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_endpoint_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oci_runtimetype</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop_tokens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_index_name</span><span class="o">=</span><span class="s1">&#39;test_vector_index&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">MY</span> <span class="n">OCI</span> <span class="n">AI</span> <span class="n">Profile</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="async-update-vector-index-attributes">
+<h2><span class="section-number">4.4. </span>Async update vector index attributes<a class="headerlink" href="#async-update-vector-index-attributes" title="Link to this heading">¶</a></h2>
+<p>To update attributes, use either <code class="docutils literal notranslate"><span class="pre">async_vector_index.set_attribute()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">async_vector_index.set_attributes()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="n">async_vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncVectorIndex</span><span class="p">(</span>
+        <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Use vector_index.set_attributes to update a multiple attributes</span>
+    <span class="n">updated_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span>
+        <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">updated_attributes</span><span class="p">)</span>
+
+    <span class="c1"># Use vector_index.set_attribute to update a single attribute</span>
+    <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
+        <span class="n">attribute_name</span><span class="o">=</span><span class="s2">&quot;similarity_threshold&quot;</span><span class="p">,</span> <span class="n">attribute_value</span><span class="o">=</span><span class="mf">0.5</span>
+    <span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph&#39;</span><span class="p">,</span> <span class="n">match_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">object_storage_credential_name</span><span class="o">=</span><span class="s1">&#39;my_oci_ai_profile_key&#39;</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_vector_ai_profile&#39;</span><span class="p">,</span> <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span> <span class="n">similarity_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vector_distance_metric</span><span class="o">=</span><span class="s1">&#39;COSINE&#39;</span><span class="p">,</span> <span class="n">vector_db_endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_db_provider</span><span class="o">=&lt;</span><span class="n">VectorDBProvider</span><span class="o">.</span><span class="n">ORACLE</span><span class="p">:</span> <span class="s1">&#39;oracle&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">vector_dimension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector_table_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pipeline_name</span><span class="o">=</span><span class="s1">&#39;TEST_VECTOR_INDEX$VECPIPELINE&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="async-rag-using-vector-index">
+<h2><span class="section-number">4.5. </span>Async RAG using vector index<a class="headerlink" href="#async-rag-using-vector-index" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_vector_ai_profile&quot;</span>
+    <span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">narrate</span><span class="p">(</span>
+        <span class="s2">&quot;list the conda environments in my object store&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">conda</span> <span class="n">environments</span> <span class="ow">in</span> <span class="n">your</span> <span class="nb">object</span> <span class="n">store</span> <span class="n">are</span><span class="p">:</span>
+<span class="mf">1.</span> <span class="n">fccenv</span>
+<span class="mf">2.</span> <span class="n">myrenv</span>
+<span class="mf">3.</span> <span class="n">fully</span><span class="o">-</span><span class="n">loaded</span><span class="o">-</span><span class="n">mlenv</span>
+<span class="mf">4.</span> <span class="n">graphenv</span>
+
+<span class="n">These</span> <span class="n">environments</span> <span class="n">are</span> <span class="n">listed</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">provided</span> <span class="n">data</span> <span class="k">as</span> <span class="n">separate</span> <span class="n">JSON</span> <span class="n">documents</span><span class="p">,</span> <span class="n">each</span> <span class="n">containing</span> <span class="n">information</span> <span class="n">about</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">conda</span> <span class="n">environment</span><span class="o">.</span>
+
+<span class="n">Sources</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">fccenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">fccenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+  <span class="o">-</span> <span class="n">myrenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">myrenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+  <span class="o">-</span> <span class="n">fully</span><span class="o">-</span><span class="n">loaded</span><span class="o">-</span><span class="n">mlenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">fully</span><span class="o">-</span><span class="n">loaded</span><span class="o">-</span><span class="n">mlenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+  <span class="o">-</span> <span class="n">graphenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span> <span class="p">(</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">objectstorage</span><span class="o">.</span><span class="n">us</span><span class="o">-</span><span class="n">ashburn</span><span class="o">-</span><span class="mf">1.</span><span class="n">oraclecloud</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">n</span><span class="o">/</span><span class="n">dwcsdev</span><span class="o">/</span><span class="n">b</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">environment</span><span class="o">/</span><span class="n">o</span><span class="o">/</span><span class="n">tenant1</span><span class="o">-</span><span class="n">pdb3</span><span class="o">/</span><span class="n">graph</span><span class="o">/</span><span class="n">graphenv</span><span class="o">-</span><span class="n">manifest</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></li>
+<li><a class="reference internal" href="#vectorindexattributes">2. <code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.VectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a></li>
+<li><a class="reference internal" href="#oraclevectorindexattributes">2.1. <code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.OracleVectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vectorindex-api">3. <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.VectorIndex"><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.VectorIndex.create"><code class="docutils literal notranslate"><span class="pre">VectorIndex.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">VectorIndex.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_profile()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.list"><code class="docutils literal notranslate"><span class="pre">VectorIndex.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-vector-index">3.1. Create vector index</a></li>
+<li><a class="reference internal" href="#list-vector-index">3.2. List vector index</a></li>
+<li><a class="reference internal" href="#get-vector-index-attributes">3.3. Get vector index attributes</a></li>
+<li><a class="reference internal" href="#update-vector-index-attributes">3.4. Update vector index attributes</a></li>
+<li><a class="reference internal" href="#rag-using-vector-index">3.5. RAG using vector index</a></li>
+<li><a class="reference internal" href="#delete-vector-index">3.6. Delete vector index</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#asyncvectorindex-api">4. <code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code> API</a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.create"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.delete()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.disable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_profile()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.list"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.list()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#async-create-vector-index">4.1. Async create vector index</a></li>
+<li><a class="reference internal" href="#async-list-vector-index">4.2. Async list vector index</a></li>
+<li><a class="reference internal" href="#async-get-vector-index-attributes">4.3. Async get vector index attributes</a></li>
+<li><a class="reference internal" href="#async-update-vector-index-attributes">4.4. Async update vector index attributes</a></li>
+<li><a class="reference internal" href="#async-rag-using-vector-index">4.5. Async RAG using vector index</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="conversation.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="synthetic_data.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/vector_index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="conversation.html" title="1. Conversation Object model"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>
