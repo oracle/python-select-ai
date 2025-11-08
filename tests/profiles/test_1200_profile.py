@@ -145,7 +145,11 @@ def test_1208(oci_credential):
     profile = Profile(PYSAI_1200_PROFILE)
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
-        provider=select_ai.OCIGenAIProvider(),
+        provider=select_ai.OCIGenAIProvider(
+            model="meta.llama-4-maverick-17b-128e-instruct-fp8",
+            region="us-chicago-1",
+            oci_apiformat="GENERIC",
+        ),
         object_list=[{"owner": "ADMIN", "name": "gymnasts"}],
         comments=True,
     )
@@ -155,6 +159,7 @@ def test_1208(oci_credential):
     ]
     assert profile.attributes.comments is True
     fetched_attributes = profile.get_attributes()
+    print(fetched_attributes.provider)
     assert fetched_attributes == profile_attrs
 
 

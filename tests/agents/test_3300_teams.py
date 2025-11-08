@@ -109,9 +109,9 @@ def test_3300(team, team_attributes):
 @pytest.mark.parametrize("team_name_pattern", [None, "^PYSAI_3300_TEAM_"])
 def test_3301(team_name_pattern):
     if team_name_pattern:
-        teams = list(select_ai.agent.Team.list(team_name_pattern))
+        teams = list(Team.list(team_name_pattern))
     else:
-        teams = list(select_ai.agent.Team.list())
+        teams = list(Team.list())
     team_names = set(team.team_name for team in teams)
     team_descriptions = set(team.description for team in teams)
     assert PYSAI_3300_TEAM_NAME in team_names
@@ -119,7 +119,16 @@ def test_3301(team_name_pattern):
 
 
 def test_3302(team_attributes):
-    team = select_ai.agent.Team.fetch(team_name=PYSAI_3300_TEAM_NAME)
+    team = Team.fetch(team_name=PYSAI_3300_TEAM_NAME)
     assert team.team_name == PYSAI_3300_TEAM_NAME
     assert team.description == PYSAI_3300_TEAM_DESCRIPTION
     assert team.attributes == team_attributes
+
+
+def test_3303(team):
+    response = team.run(
+        prompt="In the movie Titanic, was there enough space for Jack ? ",
+        params={"conversation_id": str(uuid.uuid4())},
+    )
+    assert isinstance(response, str)
+    assert len(response) > 0

@@ -6,10 +6,11 @@
 # -----------------------------------------------------------------------------
 
 
-from .core import Agent, AgentAttributes
-from .task import Task, TaskAttributes
-from .team import Team, TeamAttributes
+from .core import Agent, AgentAttributes, AsyncAgent
+from .task import AsyncTask, Task, TaskAttributes
+from .team import AsyncTeam, Team, TeamAttributes
 from .tool import (
+    AsyncTool,
     EmailNotificationToolParams,
     HTTPToolParams,
     HumanToolParams,
