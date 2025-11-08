@@ -85,7 +85,7 @@ Released under the Universal Permissive License v1.0 as shown at
 <https://oss.oracle.com/licenses/upl/>.
 
 [contributing]: https://github.com/oracle/python-select-ai/blob/main/CONTRIBUTING.md
-[documentation]: https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/pysai/
+[documentation]: https://oracle.github.io/python-select-ai/
 [ghdiscussions]: https://github.com/oracle/python-select-ai/discussions
 [ghissues]: https://github.com/oracle/python-select-ai/issues
 [samples]: https://github.com/oracle/python-select-ai/tree/main/samples

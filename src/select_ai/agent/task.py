@@ -298,3 +298,224 @@ class Task(BaseTask):
                 "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
+
+
+class AsyncTask(BaseTask):
+    """
+    select_ai.agent.AsyncTask class lets you create, delete, enable, disable and
+    list AI Tasks asynchronously
+
+    :param str task_name: The name of the AI task
+    :param str description: Optional description of the AI task
+    :param select_ai.agent.TaskAttributes attributes: AI task attributes
+
+    """
+
+    @staticmethod
+    async def _get_attributes(task_name: str) -> TaskAttributes:
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_USER_AI_AGENT_TASK_ATTRIBUTES, task_name=task_name.upper()
+            )
+            attributes = await cr.fetchall()
+            if attributes:
+                post_processed_attributes = {}
+                for k, v in attributes:
+                    if isinstance(v, oracledb.AsyncLOB):
+                        post_processed_attributes[k] = await v.read()
+                    else:
+                        post_processed_attributes[k] = v
+                return TaskAttributes(**post_processed_attributes)
+            else:
+                raise AgentTaskNotFoundError(task_name=task_name)
+
+    @staticmethod
+    async def _get_description(task_name: str) -> Union[str, None]:
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_USER_AI_AGENT_TASK, task_name=task_name.upper()
+            )
+            task = await cr.fetchone()
+            if task:
+                if task[1] is not None:
+                    return await task[1].read()
+                else:
+                    return None
+            else:
+                raise AgentTaskNotFoundError(task_name)
+
+    async def create(
+        self, enabled: Optional[bool] = True, replace: Optional[bool] = False
+    ):
+        """
+        Create a task that a Select AI agent can include in its
+        reasoning process
+
+        :param bool enabled: Whether the AI Task should be enabled.
+         Default value is True.
+
+        :param bool replace: Whether the AI Task should be replaced.
+         Default value is False.
+
+        """
+        if self.task_name is None:
+            raise AttributeError("Task must have a name")
+        if self.attributes is None:
+            raise AttributeError("Task must have attributes")
+
+        parameters = {
+            "task_name": self.task_name,
+            "attributes": self.attributes.json(),
+        }
+
+        if self.description:
+            parameters["description"] = self.description
+
+        if not enabled:
+            parameters["status"] = "disabled"
+
+        async with async_cursor() as cr:
+            try:
+                await cr.callproc(
+                    "DBMS_CLOUD_AI_AGENT.CREATE_TASK",
+                    keyword_parameters=parameters,
+                )
+            except oracledb.Error as err:
+                (err_obj,) = err.args
+                if err_obj.code in (20051, 20052) and replace:
+                    await self.delete(force=True)
+                    await cr.callproc(
+                        "DBMS_CLOUD_AI_AGENT.CREATE_TASK",
+                        keyword_parameters=parameters,
+                    )
+                else:
+                    raise
+
+    async def delete(self, force: bool = False):
+        """
+        Delete AI Task from the database
+
+        :param bool force: Force the deletion. Default value is False.
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DROP_TASK",
+                keyword_parameters={
+                    "task_name": self.task_name,
+                    "force": force,
+                },
+            )
+
+    async def disable(self):
+        """
+        Disable AI Task
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DISABLE_TASK",
+                keyword_parameters={
+                    "task_name": self.task_name,
+                },
+            )
+
+    async def enable(self):
+        """
+        Enable AI Task
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.ENABLE_TASK",
+                keyword_parameters={
+                    "task_name": self.task_name,
+                },
+            )
+
+    @classmethod
+    async def list(
+        cls, task_name_pattern: Optional[str] = ".*"
+    ) -> AsyncGenerator["AsyncTask", None]:
+        """List AI Tasks
+
+        :param str task_name_pattern: Regular expressions can be used
+         to specify a pattern. Function REGEXP_LIKE is used to perform the
+         match. Default value is ".*" i.e. match all tasks.
+
+        :return: AsyncGenerator[Task]
+        """
+        async with async_cursor() as cr:
+            await cr.execute(
+                LIST_USER_AI_AGENT_TASKS,
+                task_name_pattern=task_name_pattern,
+            )
+            rows = await cr.fetchall()
+            for row in rows:
+                task_name = row[0]
+                if row[1]:
+                    description = await row[1].read()  # Oracle.AsyncLOB
+                else:
+                    description = None
+                attributes = await cls._get_attributes(task_name=task_name)
+                yield cls(
+                    task_name=task_name,
+                    description=description,
+                    attributes=attributes,
+                )
+
+    @classmethod
+    async def fetch(cls, task_name: str) -> "AsyncTask":
+        """
+        Fetch AI Task attributes from the Database and build a proxy object in
+        the Python layer
+
+        :param str task_name: The name of the AI Task
+
+        :return: select_ai.agent.Task
+
+        :raises select_ai.errors.AgentTaskNotFoundError:
+         If the AI Task is not found
+        """
+        attributes = await cls._get_attributes(task_name=task_name)
+        description = await cls._get_description(task_name=task_name)
+        return cls(
+            task_name=task_name,
+            description=description,
+            attributes=attributes,
+        )
+
+    async def set_attributes(self, attributes: TaskAttributes):
+        """
+        Set AI Task attributes
+
+        :param select_ai.agent.TaskAttributes attributes: Multiple attributes
+         can be specified by passing a TaskAttributes object
+        """
+        parameters = {
+            "object_name": self.task_name,
+            "object_type": "task",
+            "attributes": attributes.json(),
+        }
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                keyword_parameters=parameters,
+            )
+
+    async def set_attribute(self, attribute_name: str, attribute_value: Any):
+        """
+        Set a single AI Task attribute specified using name and value
+
+        :param str attribute_name: The name of the AI Task attribute
+        :param str attribute_value: The value of the AI Task attribute
+
+        """
+        parameters = {
+            "object_name": self.task_name,
+            "object_type": "task",
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                keyword_parameters=parameters,
+            )

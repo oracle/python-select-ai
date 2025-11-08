@@ -688,3 +688,442 @@ class Tool(_BaseTool):
                 "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
+
+
+class AsyncTool(_BaseTool):
+
+    @staticmethod
+    async def _get_attributes(tool_name: str) -> ToolAttributes:
+        """Get attributes of an AI tool
+
+        :return: select_ai.agent.ToolAttributes
+        :raises: AgentToolNotFoundError
+        """
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_USER_AI_AGENT_TOOL_ATTRIBUTES, tool_name=tool_name.upper()
+            )
+            attributes = await cr.fetchall()
+            if attributes:
+                post_processed_attributes = {}
+                for k, v in attributes:
+                    if isinstance(v, oracledb.AsyncLOB):
+                        post_processed_attributes[k] = await v.read()
+                    else:
+                        post_processed_attributes[k] = v
+                return ToolAttributes.create(**post_processed_attributes)
+            else:
+                raise AgentToolNotFoundError(tool_name=tool_name)
+
+    @staticmethod
+    async def _get_description(tool_name: str) -> Union[str, None]:
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_USER_AI_AGENT_TOOL, tool_name=tool_name.upper()
+            )
+            tool = await cr.fetchone()
+            if tool:
+                if tool[1] is not None:
+                    return await tool[1].read()
+                else:
+                    return None
+            else:
+                raise AgentToolNotFoundError(tool_name=tool_name)
+
+    async def create(
+        self, enabled: Optional[bool] = True, replace: Optional[bool] = False
+    ):
+        if self.tool_name is None:
+            raise AttributeError("Tool must have a name")
+        if self.attributes is None:
+            raise AttributeError("Tool must have attributes")
+
+        parameters = {
+            "tool_name": self.tool_name,
+            "attributes": self.attributes.json(),
+        }
+        if self.description:
+            parameters["description"] = self.description
+
+        if not enabled:
+            parameters["status"] = "disabled"
+
+        async with async_cursor() as cr:
+            try:
+                await cr.callproc(
+                    "DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
+                    keyword_parameters=parameters,
+                )
+            except oracledb.Error as err:
+                (err_obj,) = err.args
+                if err_obj.code in (20050, 20052) and replace:
+                    await self.delete(force=True)
+                    await cr.callproc(
+                        "DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
+                        keyword_parameters=parameters,
+                    )
+                else:
+                    raise
+
+    @classmethod
+    async def create_built_in_tool(
+        cls,
+        tool_name: str,
+        tool_params: ToolParams,
+        tool_type: ToolType,
+        description: Optional[str] = None,
+        replace: Optional[bool] = False,
+    ) -> "AsyncTool":
+        """
+        Register a built-in tool
+
+        :param str tool_name: The name of the tool
+        :param select_ai.agent.ToolParams tool_params:
+         Parameters required by built-in tool
+        :param select_ai.agent.ToolType tool_type: The built-in tool type
+        :param str description: Description of the tool
+        :param bool replace: Whether to replace the existing tool.
+         Default value is False
+
+        :return: select_ai.agent.Tool
+        """
+        if not isinstance(tool_params, ToolParams):
+            raise TypeError(
+                "'tool_params' must be an object of "
+                "type select_ai.agent.ToolParams"
+            )
+        attributes = ToolAttributes(
+            tool_params=tool_params, tool_type=tool_type
+        )
+        tool = cls(
+            tool_name=tool_name, attributes=attributes, description=description
+        )
+        await tool.create(replace=replace)
+        return tool
+
+    @classmethod
+    async def create_email_notification_tool(
+        cls,
+        tool_name: str,
+        credential_name: str,
+        recipient: str,
+        sender: str,
+        smtp_host: str,
+        description: Optional[str],
+        replace: bool = False,
+    ) -> "AsyncTool":
+        """
+        Register an email notification tool
+
+        :param str tool_name: The name of the tool
+        :param str credential_name: The name of the credential
+        :param str recipient: The recipient of the email
+        :param str sender: The sender of the email
+        :param str smtp_host: The SMTP host of the email server
+        :param str description: The description of the tool
+        :param bool replace: Whether to replace the existing tool.
+         Default value is False
+
+        :return: select_ai.agent.Tool
+
+        """
+        email_notification_tool_params = EmailNotificationToolParams(
+            credential_name=credential_name,
+            recipient=recipient,
+            sender=sender,
+            smtp_host=smtp_host,
+        )
+        return await cls.create_built_in_tool(
+            tool_name=tool_name,
+            tool_type=ToolType.EMAIL,
+            tool_params=email_notification_tool_params,
+            description=description,
+            replace=replace,
+        )
+
+    @classmethod
+    async def create_http_tool(
+        cls,
+        tool_name: str,
+        credential_name: str,
+        endpoint: str,
+        description: Optional[str] = None,
+        replace: bool = False,
+    ) -> "AsyncTool":
+        http_tool_params = HTTPToolParams(
+            credential_name=credential_name, endpoint=endpoint
+        )
+        return await cls.create_built_in_tool(
+            tool_name=tool_name,
+            tool_type=ToolType.HTTP,
+            tool_params=http_tool_params,
+            description=description,
+            replace=replace,
+        )
+
+    @classmethod
+    async def create_pl_sql_tool(
+        cls,
+        tool_name: str,
+        function: str,
+        description: Optional[str] = None,
+        replace: bool = False,
+    ) -> "AsyncTool":
+        """
+        Create a custom tool to invoke PL/SQL procedure or function
+
+        :param str tool_name: The name of the tool
+        :param str function: The name of the PL/SQL procedure or function
+        :param str description: The description of the tool
+        :param bool replace: Whether to replace existing tool. Default value
+         is False
+
+        """
+        tool_attributes = ToolAttributes(function=function)
+        tool = cls(
+            tool_name=tool_name,
+            attributes=tool_attributes,
+            description=description,
+        )
+        await tool.create(replace=replace)
+        return tool
+
+    @classmethod
+    async def create_rag_tool(
+        cls,
+        tool_name: str,
+        profile_name: str,
+        description: Optional[str] = None,
+        replace: bool = False,
+    ) -> "AsyncTool":
+        """
+        Register a RAG tool, which will use a VectorIndex linked AI Profile
+
+        :param str tool_name: The name of the tool
+        :param str profile_name: The name of the profile to
+         use for Vector Index based RAG
+        :param str description: The description of the tool
+        :param bool replace: Whether to replace existing tool. Default value
+         is False
+        """
+        tool_params = RAGToolParams(profile_name=profile_name)
+        return await cls.create_built_in_tool(
+            tool_name=tool_name,
+            tool_type=ToolType.RAG,
+            tool_params=tool_params,
+            description=description,
+            replace=replace,
+        )
+
+    @classmethod
+    async def create_sql_tool(
+        cls,
+        tool_name: str,
+        profile_name: str,
+        description: Optional[str] = None,
+        replace: bool = False,
+    ) -> "AsyncTool":
+        """
+        Register a SQL tool to perform natural language to SQL translation
+
+        :param str tool_name: The name of the tool
+        :param str profile_name: The name of the profile to use for SQL
+         translation
+        :param str description: The description of the tool
+        :param bool replace: Whether to replace existing tool. Default value
+         is False
+        """
+        tool_params = SQLToolParams(profile_name=profile_name)
+        return await cls.create_built_in_tool(
+            tool_name=tool_name,
+            tool_type=ToolType.SQL,
+            tool_params=tool_params,
+            description=description,
+            replace=replace,
+        )
+
+    @classmethod
+    async def create_slack_notification_tool(
+        cls,
+        tool_name: str,
+        credential_name: str,
+        slack_channel: str,
+        description: Optional[str] = None,
+        replace: bool = False,
+    ) -> "AsyncTool":
+        """
+        Register a Slack notification tool
+
+        :param str tool_name: The name of the Slack notification tool
+        :param str credential_name: The name of the Slack credential
+        :param str slack_channel: The name of the Slack channel
+        :param str description: The description of the Slack notification tool
+        :param bool replace: Whether to replace existing tool. Default value
+         is False
+
+        """
+        slack_notification_tool_params = SlackNotificationToolParams(
+            credential_name=credential_name,
+            slack_channel=slack_channel,
+        )
+        return await cls.create_built_in_tool(
+            tool_name=tool_name,
+            tool_type=ToolType.SLACK,
+            tool_params=slack_notification_tool_params,
+            description=description,
+            replace=replace,
+        )
+
+    @classmethod
+    async def create_websearch_tool(
+        cls,
+        tool_name: str,
+        credential_name: str,
+        description: Optional[str],
+        replace: bool = False,
+    ) -> "AsyncTool":
+        """
+        Register a built-in websearch tool to search information
+        on the web
+
+        :param str tool_name: The name of the tool
+        :param str credential_name: The name of the credential object
+         storing OpenAI credentials
+        :param str description: The description of the tool
+        :param bool replace: Whether to replace the existing tool
+
+        """
+        web_search_tool_params = WebSearchToolParams(
+            credential_name=credential_name,
+        )
+        return await cls.create_built_in_tool(
+            tool_name=tool_name,
+            tool_type=ToolType.WEBSEARCH,
+            tool_params=web_search_tool_params,
+            description=description,
+            replace=replace,
+        )
+
+    async def delete(self, force: bool = False):
+        """
+        Delete AI Tool from the database
+
+        :param bool force: Force the deletion. Default value is False.
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DROP_TOOL",
+                keyword_parameters={
+                    "tool_name": self.tool_name,
+                    "force": force,
+                },
+            )
+
+    async def disable(self):
+        """
+        Disable AI Tool
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.DISABLE_TOOL",
+                keyword_parameters={
+                    "tool_name": self.tool_name,
+                },
+            )
+
+    async def enable(self):
+        """
+        Enable AI Tool
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.ENABLE_TOOL",
+                keyword_parameters={
+                    "tool_name": self.tool_name,
+                },
+            )
+
+    @classmethod
+    async def fetch(cls, tool_name: str) -> "AsyncTool":
+        """
+        Fetch AI Tool attributes from the Database and build a proxy object in
+        the Python layer
+
+        :param str tool_name: The name of the AI Task
+
+        :return: select_ai.agent.Tool
+
+        :raises select_ai.errors.AgentToolNotFoundError:
+         If the AI Tool is not found
+
+        """
+        attributes = await cls._get_attributes(tool_name)
+        description = await cls._get_description(tool_name)
+        return cls(
+            tool_name=tool_name, attributes=attributes, description=description
+        )
+
+    @classmethod
+    async def list(
+        cls, tool_name_pattern: str = ".*"
+    ) -> AsyncGenerator["AsyncTool", None]:
+        """List AI Tools
+
+        :param str tool_name_pattern: Regular expressions can be used
+         to specify a pattern. Function REGEXP_LIKE is used to perform the
+         match. Default value is ".*" i.e. match all tool name.
+
+        :return: Iterator[Tool]
+        """
+        async with async_cursor() as cr:
+            await cr.execute(
+                LIST_USER_AI_AGENT_TOOLS,
+                tool_name_pattern=tool_name_pattern,
+            )
+            rows = await cr.fetchall()
+            for row in rows:
+                tool_name = row[0]
+                if row[1]:
+                    description = await row[1].read()  # Oracle.AsyncLOB
+                else:
+                    description = None
+                attributes = await cls._get_attributes(tool_name=tool_name)
+                yield cls(
+                    tool_name=tool_name,
+                    description=description,
+                    attributes=attributes,
+                )
+
+    async def set_attributes(self, attributes: ToolAttributes) -> None:
+        """
+        Set the attributes of the AI Agent tool
+        """
+        parameters = {
+            "object_name": self.tool_name,
+            "object_type": "tool",
+            "attributes": attributes.json(),
+        }
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                keyword_parameters=parameters,
+            )
+
+    async def set_attribute(
+        self, attribute_name: str, attribute_value: Any
+    ) -> None:
+        """
+        Set the attribute of the AI Agent tool specified by
+        `attribute_name` and `attribute_value`.
+        """
+        parameters = {
+            "object_name": self.tool_name,
+            "object_type": "tool",
+            "attribute_name": attribute_name,
+            "attribute_value": attribute_value,
+        }
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                keyword_parameters=parameters,
+            )

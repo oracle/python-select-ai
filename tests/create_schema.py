@@ -31,6 +31,31 @@ CREATE_GYMNAST_DDL = """
                 )
 """
 
+CREATE_DIRECTOR_DDL = """
+    CREATE TABLE Director (
+     director_id     INT PRIMARY KEY,
+     name            VARCHAR(10)
+)
+"""
+
+CREATE_MOVIE_DDL = """
+CREATE TABLE Movie (
+     movie_id        INT PRIMARY KEY,
+     title           VARCHAR(100),
+     release_date    DATE,
+     genre           VARCHAR(50),
+     director_id     INT,
+     FOREIGN KEY (director_id) REFERENCES Director(director_id)
+)
+"""
+
+CREATE_ACTOR_DDL = """
+    CREATE TABLE Actor (
+     actor_id        INT PRIMARY KEY,
+     name            VARCHAR(100)
+)
+"""
+
 INSERT_PEOPLE_DML = """
      INSERT INTO people (id, name, age, height, hometown)
      VALUES (: 1, :2, :3, :4, :5)
@@ -62,15 +87,22 @@ GYMNAST_DATA = [
 
 
 def test_create_schema(connection, cursor):
-    for tbl in ("gymnast", "people"):
+    for tbl in ("gymnast", "people", "director", "movie", "actor"):
         try:
             cursor.execute(f"DROP TABLE {tbl} CASCADE CONSTRAINTS")
             print(f"Dropped table {tbl}")
         except oracledb.Error:
             print(f"Table {tbl} does not exist, skipping")
 
-    cursor.execute(CREATE_PEOPLE_DDL)
-    cursor.execute(CREATE_GYMNAST_DDL)
+    for ddl in (
+        CREATE_PEOPLE_DDL,
+        CREATE_GYMNAST_DDL,
+        CREATE_DIRECTOR_DDL,
+        CREATE_MOVIE_DDL,
+        CREATE_ACTOR_DDL,
+    ):
+        cursor.execute(ddl)
+
     cursor.executemany(INSERT_PEOPLE_DML, PEOPLE_DATA)
     cursor.executemany(INSERT_GYMNAST_DML, GYMNAST_DATA)
     connection.commit()

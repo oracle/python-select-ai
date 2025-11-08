@@ -25,7 +25,7 @@ select_ai.connect(user=user, password=password, dsn=dsn)
 
 task = Task(
     task_name="ANALYZE_MOVIE_TASK",
-    description="Movie task involving a human",
+    description="Search for movies in the database",
     attributes=TaskAttributes(
         instruction="Help the user with their request about movies. "
         "User question: {query}. "

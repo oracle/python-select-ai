@@ -62,19 +62,21 @@ WHERE REGEXP_LIKE(t.tool_name, :tool_name_pattern, 'i')
 
 
 GET_USER_AI_AGENT_TEAM = """
-SELECT t.tool_name, t.description
+SELECT t.agent_team_name as team_name, t.description
 FROM USER_AI_AGENT_TEAMS t
-WHERE t.team_name = :team_name
+WHERE t.agent_team_name = :team_name
 """
+
 
 GET_USER_AI_AGENT_TEAM_ATTRIBUTES = """
 SELECT attribute_name, attribute_value
 FROM USER_AI_AGENT_TEAM_ATTRIBUTES
-WHERE team_name = :team_name
+WHERE agent_team_name = :team_name
 """
 
+
 LIST_USER_AI_AGENT_TEAMS = """
-SELECT t.tool_name, t.description
+SELECT t.AGENT_TEAM_NAME as team_name, description
 FROM USER_AI_AGENT_TEAMS t
-WHERE REGEXP_LIKE(t.team_name, :team_name_pattern, 'i')
+WHERE REGEXP_LIKE(t.AGENT_TEAM_NAME, :team_name_pattern, 'i')
 """

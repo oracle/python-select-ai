@@ -154,7 +154,11 @@ async def test_1308(oci_credential):
     profile = await AsyncProfile(PYSAI_ASYNC_1300_PROFILE)
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
-        provider=select_ai.OCIGenAIProvider(),
+        provider=select_ai.OCIGenAIProvider(
+            model="meta.llama-4-maverick-17b-128e-instruct-fp8",
+            region="us-chicago-1",
+            oci_apiformat="GENERIC",
+        ),
         object_list=[{"owner": "ADMIN", "name": "gymnasts"}],
         comments=True,
     )
