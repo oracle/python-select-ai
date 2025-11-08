@@ -27,6 +27,17 @@ def _bool(value: Any) -> bool:
         raise ValueError(f"Invalid boolean value: {value}")
 
 
+def _is_json(field, value) -> bool:
+    if field.type in (
+        typing.List[Mapping],
+        typing.Optional[Mapping],
+        typing.Optional[List[str]],
+        typing.Optional[List[typing.Mapping]],
+    ) and isinstance(value, (str, bytes, bytearray)):
+        return True
+    return False
+
+
 @dataclass
 class SelectAIDataClass(ABC):
     """SelectAIDataClass is an abstract container for all data
@@ -65,13 +76,7 @@ class SelectAIDataClass(ABC):
                     setattr(self, field.name, _bool(value))
                 elif field.type is typing.Optional[float]:
                     setattr(self, field.name, float(value))
-                elif field.type is typing.Optional[Mapping] and isinstance(
-                    value, (str, bytes, bytearray)
-                ):
-                    setattr(self, field.name, json.loads(value))
-                elif field.type is typing.Optional[
-                    List[typing.Mapping]
-                ] and isinstance(value, (str, bytes, bytearray)):
+                elif _is_json(field, value):
                     setattr(self, field.name, json.loads(value))
                 else:
                     setattr(self, field.name, value)

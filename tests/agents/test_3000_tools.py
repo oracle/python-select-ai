@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 
 """
-3000 - Module for testing select_ai agents
+3000 - Module for testing select_ai agent tools
 """
 
 import uuid

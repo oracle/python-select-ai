@@ -110,7 +110,7 @@ class Team(BaseTeam):
     @staticmethod
     def _get_description(team_name: str) -> Union[str, None]:
         with cursor() as cr:
-            cr.execute(GET_USER_AI_AGENT_TEAM, task_name=team_name.upper())
+            cr.execute(GET_USER_AI_AGENT_TEAM, team_name=team_name.upper())
             team = cr.fetchone()
             if team:
                 if team[1] is not None:
