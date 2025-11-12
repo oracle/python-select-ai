@@ -6,21 +6,25 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# tasks_list.py
+# async/agents_list.py
 #
-# List all tasks saved in the database
+# List all AI agents
 # -----------------------------------------------------------------------------
 
+import asyncio
 import os
 
 import select_ai
-import select_ai.agent
+from select_ai.agent import AsyncAgent
 
-user = os.getenv("SELECT_AI_USER")
-password = os.getenv("SELECT_AI_PASSWORD")
-dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
-select_ai.connect(user=user, password=password, dsn=dsn)
+async def main():
+    user = os.getenv("SELECT_AI_USER")
+    password = os.getenv("SELECT_AI_PASSWORD")
+    dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+    await select_ai.async_connect(user=user, password=password, dsn=dsn)
+    async for agent in AsyncAgent.list():
+        print(agent.agent_name)
 
-for task in select_ai.agent.Task.list():
-    print(task.task_name)
+
+asyncio.run(main())

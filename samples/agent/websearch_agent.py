@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # movie_analyst.py
 #
-# Demonstrates web search AI agent
+# Demonstrates web search AI agent using OpenAI search
 # -----------------------------------------------------------------------------
 
 import os

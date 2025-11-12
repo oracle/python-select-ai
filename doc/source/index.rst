@@ -99,8 +99,8 @@ Synthetic Data
     user_guide/synthetic_data.rst
 
 
-Select AI Agents
-================
+AI Agent
+========
 
 .. toctree::
     :numbered:

@@ -1,94 +1,13 @@
-.. _agent:
+.. _async_agent:
 
-``select_ai.agent`` adds a thin Python layer over Oracle Autonomous Database's
-``DBMS_CLOUD_AI_AGENT`` package so you can define tools, compose tasks, wire up
-agents and run teams from Python using the existing select_ai connection objects
+``select_ai.agent`` also provides async interfaces to be used with
+``async`` / ``await`` keywords
 
-- Keep agent state and orchestration in the database
+*************
+``AsyncTool``
+*************
 
-- Register callable tools (PL/SQL procedure or functions, SQL, external HTTP
-  endpoints, Slack or Email notifications) and attach them to tasks
-
-- Group agents into teams and invoke them with a single API call
-
-.. latex:clearpage::
-
-********
-``Tool``
-********
-
-A callable which Select AI agent can invoke to accomplish a certain task.
-Users can either register built-in tools or create a custom tool using a PL/SQL
-stored procedure.
-
-Supported Tools
-+++++++++++++++
-
-Following class methods of ``select_ai.agent.Tool`` class
-can be used to create tools. Invoking them will create a proxy object in the
-Python layer and persist the tool in the Database using
-``DBMS_CLOUD_AI_AGENT.CREATE_TOOL``
-
-
-.. list-table:: Select AI Agent Tools
-    :header-rows: 1
-    :widths: 20 50 30
-    :align: left
-
-    * - Tool Type
-      - Class Method
-      - Arguments
-    * - ``EMAIL``
-      - ``select_ai.agent.Tool.create_email_notification_tool``
-      -  - ``tool_name``
-         - ``credential_name``
-         - ``recipient``
-         - ``sender``
-         - ``smtp_host``
-    * - ``HTTP``
-      - ``select_ai.agent.Tool.create_http_tool``
-      - - ``tool_name``
-        - ``credential_name``
-        - ``endpoint``
-    * - ``SQL``
-      - ``select_ai.agent.Tool.create_sql_tool``
-      - - ``tool_name``
-        - ``profile_name``
-    * - ``SLACK``
-      - ``select_ai.agent.Tool.create_slack_notification_tool``
-      - - ``tool_name``
-        - ``credential_name``
-        - ``slack_channel``
-    * - ``WEBSEARCH``
-      - ``select_ai.agent.Tool.create_websearch_tool``
-      - - ``tool_name``
-        - ``credential_name``
-    * - ``PL/SQL custom tool``
-      - ``select_ai.agent.Tool.create_pl_sql_tool``
-      - - ``tool_name``
-        - ``function``
-    * - ``RAG``
-      - ``select_ai.agent.Tool.create_rag_tool``
-      - - ``tool_name``
-        - ``profile_name``
-
-.. note::
-
-   Use ``select_ai.agent.AsyncTool.create_<tool>`` for corresponding async
-   methods. For e.g. ``await select_ai.agent.AsyncTool.create_rag_tool()``
-   can be used to create an RAG tool in an async application.
-
-.. latex:clearpage::
-
-.. autoclass:: select_ai.agent.ToolAttributes
-   :members:
-
-.. autoclass:: select_ai.agent.ToolParams
-   :members:
-
-.. latex:clearpage::
-
-.. autoclass:: select_ai.agent.Tool
+.. autoclass:: select_ai.agent.AsyncTool
    :members:
 
 .. latex:clearpage::
@@ -96,14 +15,12 @@ Python layer and persist the tool in the Database using
 Create Tool
 +++++++++++
 
-The following example shows creation of an AI agent tool to perform natural
-language translation to SQL using an OCI AI profile
+The following example shows async creation of an AI agent tool to perform
+natural language translation to SQL using an OCI AI profile
 
-.. literalinclude:: ../../../samples/agent/tool_create.py
+.. literalinclude:: ../../../samples/agent/async/tool_create.py
    :language: python
    :lines: 14-
-
-.. latex:clearpage::
 
 output::
 
@@ -123,15 +40,12 @@ output::
                    tool_inputs=None,
                    tool_type=<ToolType.SQL: 'SQL'>)
 
-
-
 .. latex:clearpage::
-
 
 List Tools
 ++++++++++
 
-.. literalinclude:: ../../../samples/agent/tools_list.py
+.. literalinclude:: ../../../samples/agent/async/tools_list.py
    :language: python
    :lines: 14-
 
@@ -143,28 +57,15 @@ output::
 
 .. latex:clearpage::
 
-********
-``Task``
-********
 
-Each task is identified by a ``task_name`` and includes a set of attributes that
-guide the agent’s behavior during execution.
-Key attributes include the ``instruction``, which describes the task’s purpose and
-provides context for the agent to reason about when and how to use it,
-and the ``tools`` list, which specifies which tools the agent can choose from to
-accomplish the task. An optional ``input`` field allows a task to depend on the
-output of prior tasks, enabling task chaining and multi-step workflows.
+*************
+``AsyncTask``
+*************
 
-.. autoclass:: select_ai.agent.TaskAttributes
+.. autoclass:: select_ai.agent.AsyncTask
    :members:
 
 .. latex:clearpage::
-
-.. autoclass:: select_ai.agent.Task
-   :members:
-
-.. latex:clearpage::
-
 
 Create Task
 +++++++++++
@@ -172,14 +73,13 @@ Create Task
 In the following task, we use the ``MOVIE_SQL_TOOL`` created in the
 previous step
 
-.. literalinclude:: ../../../samples/agent/task_create.py
+.. literalinclude:: ../../../samples/agent/async/task_create.py
    :language: python
-   :lines: 14-
+   :lines: 13-
 
 output::
 
     ANALYZE_MOVIE_TASK
-
     TaskAttributes(instruction='Help the user with their request about movies. '
                                'User question: {query}. You can use SQL tool to '
                                'search the data from database',
@@ -193,9 +93,9 @@ output::
 List Tasks
 +++++++++++
 
-.. literalinclude:: ../../../samples/agent/tasks_list.py
+.. literalinclude:: ../../../samples/agent/async/tasks_list.py
    :language: python
-   :lines: 14-
+   :lines: 13-
 
 output::
 
@@ -204,21 +104,11 @@ output::
 
 .. latex:clearpage::
 
-*********
-``Agent``
-*********
+**************
+``AsyncAgent``
+**************
 
-A Select AI Agent is defined using ``agent_name``, its ``attributes`` and an
-optional description. The attributes must include key agent properties such as
-``profile_name`` which specifies the LLM profile used for prompt generation
-and ``role``, which outlines the agent’s intended role and behavioral context.
-
-.. autoclass:: select_ai.agent.AgentAttributes
-   :members:
-
-.. latex:clearpage::
-
-.. autoclass:: select_ai.agent.Agent
+.. autoclass:: select_ai.agent.AsyncAgent
    :members:
 
 .. latex:clearpage::
@@ -226,7 +116,7 @@ and ``role``, which outlines the agent’s intended role and behavioral context.
 Create Agent
 ++++++++++++
 
-.. literalinclude:: ../../../samples/agent/agent_create.py
+.. literalinclude:: ../../../samples/agent/async/agent_create.py
    :language: python
    :lines: 14-
 
@@ -238,27 +128,27 @@ output::
     Your can help answer a variety of questions related to movies. ',
     enable_human_tool=False), description=None)
 
+List Agents
+++++++++++++
+
+.. literalinclude:: ../../../samples/agent/async/agents_list.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    WEB_SEARCH_AGENT
+    MOVIE_ANALYST
+
 
 .. latex:clearpage::
 
-****
-Team
-****
+**********
+AsyncTeam
+**********
 
-AI Agent Team coordinates the execution of multiple agents working together to
-fulfill a user request. Each team is uniquely identified by a ``team_name`` and
-configured through a set of ``attributes`` that define its composition and
-execution strategy. The ``agents`` attribute specifies an array of agent-task
-pairings, allowing users to assign specific tasks to designated agents. User
-can perform multiple tasks by assigning the same agent to different tasks.
-The ``process`` attribute defines how tasks should be executed.
 
-.. autoclass:: select_ai.agent.TeamAttributes
-   :members:
-
-.. latex:clearpage::
-
-.. autoclass:: select_ai.agent.Team
+.. autoclass:: select_ai.agent.AsyncTeam
    :members:
 
 .. latex:clearpage::
@@ -266,7 +156,7 @@ The ``process`` attribute defines how tasks should be executed.
 Run Team
 ++++++++
 
-.. literalinclude:: ../../../samples/agent/team_create.py
+.. literalinclude:: ../../../samples/agent/async/team_create.py
    :language: python
    :lines: 14-
 
@@ -293,14 +183,30 @@ output::
 
 .. latex:clearpage::
 
-*****************
-AI agent examples
-*****************
+
+List Teams
+++++++++++
+
+.. literalinclude:: ../../../samples/agent/async/teams_list.py
+   :language: python
+   :lines: 13-
+
+output::
+
+    WEB_SEARCH_TEAM
+    MOVIE_AGENT_TEAM
+
+
+.. latex:clearpage::
+
+***********************
+Async AI agent examples
+***********************
 
 Web Search Agent using OpenAI's GPT model
 +++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: ../../../samples/agent/websearch_agent.py
+.. literalinclude:: ../../../samples/agent/async/websearch_agent.py
    :language: python
    :lines: 14-
 
@@ -346,14 +252,3 @@ output::
      promoting advanced AI technologies, including products like ChatGPT, and
      provides information about their research, products, and mission to ensure
      that artificial general intelligence benefits all of humanity.
-
-
-**************
-Async AI Agent
-**************
-
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    async_agent.rst

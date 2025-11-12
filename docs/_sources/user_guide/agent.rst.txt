@@ -72,6 +72,12 @@ Python layer and persist the tool in the Database using
       - - ``tool_name``
         - ``profile_name``
 
+.. note::
+
+   Use ``select_ai.agent.AsyncTool.create_<tool>`` for corresponding async
+   methods. For e.g. ``await select_ai.agent.AsyncTool.create_rag_tool()``
+   can be used to create an RAG tool in an async application.
+
 .. latex:clearpage::
 
 .. autoclass:: select_ai.agent.ToolAttributes
@@ -131,9 +137,9 @@ List Tools
 
 output::
 
-    Tool(tool_name=MOVIE_SQL_TOOL, attributes=ToolAttributes(instruction='This tool is used to work with SQL queries using natural language. Input should be a natural language query about data or database operations. The tool behavior depends on the configured action: RUNSQL - generates and executes the SQL query returning actual data; SHOWSQL - generates and displays the SQL statement without executing it; EXPLAINSQL - generates SQL and provides a natural language explanation of what the query does. Always provide clear, specific questions about the data you want to retrieve or analyze.', function='dbms_cloud_ai_agent.sql_tool', tool_params=SQLToolParams(_REQUIRED_FIELDS=None, credential_name=None, endpoint=None, notification_type=None, profile_name='oci_ai_profile', recipient=None, sender=None, slack_channel=None, smtp_host=None), tool_inputs=None, tool_type='SQL'), description=My Select AI MOVIE SQL agent tool)
-
-    Tool(tool_name=LLM_CHAT_TOOL, attributes=ToolAttributes(instruction='This tool is used to work with SQL queries using natural language. Input should be a natural language query about data or database operations. The tool behavior depends on the configured action: RUNSQL - generates and executes the SQL query returning actual data; SHOWSQL - generates and displays the SQL statement without executing it; EXPLAINSQL - generates SQL and provides a natural language explanation of what the query does. Always provide clear, specific questions about the data you want to retrieve or analyze.', function='dbms_cloud_ai_agent.sql_tool', tool_params=SQLToolParams(_REQUIRED_FIELDS=None, credential_name=None, endpoint=None, notification_type=None, profile_name='oci_ai_profile', recipient=None, sender=None, slack_channel=None, smtp_host=None), tool_inputs=None, tool_type='SQL'), description=My Select AI agent tool)
+    WEB_SEARCH_TOOL
+    MOVIE_SQL_TOOL
+    LLM_CHAT_TOOL
 
 .. latex:clearpage::
 
@@ -193,7 +199,8 @@ List Tasks
 
 output::
 
-    Task(task_name=ANALYZE_MOVIE_TASK, attributes=TaskAttributes(instruction='Help the user with their request about movies. User question: {query}. You can use SQL tool to search the data from database', tools='["MOVIE_SQL_TOOL"]', input=None, enable_human_tool=False), description=Movie task involving a human)
+    WEB_SEARCH_TASK
+    ANALYZE_MOVIE_TASK
 
 .. latex:clearpage::
 
@@ -225,7 +232,11 @@ Create Agent
 
 output::
 
-    Created Agent: Agent(agent_name=MOVIE_ANALYST, attributes=AgentAttributes(profile_name='LLAMA_4_MAVERICK', role='You are an AI Movie Analyst. Your can help answer a variety of questions related to movies. ', enable_human_tool=False), description=None)
+    Created Agent: Agent(agent_name=MOVIE_ANALYST,
+    attributes=AgentAttributes(profile_name='LLAMA_4_MAVERICK',
+    role='You are an AI Movie Analyst.
+    Your can help answer a variety of questions related to movies. ',
+    enable_human_tool=False), description=None)
 
 
 .. latex:clearpage::
@@ -261,7 +272,12 @@ Run Team
 
 output::
 
-    The database contains 100 movies with various titles, genres, and release dates. The list includes a wide range of genres such as Action, Comedy, Drama, Thriller, Romance, Adventure, Mystery, Sci-Fi, Historical, Biography, War, Sports, Music, Documentary, Animated, Fantasy, Horror, Western, Family, and more. The release dates are primarily in January and February of 2019. Here is a summary of the movies:
+    The database contains 100 movies with various titles, genres, and release
+    dates. The list includes a wide range of genres such as Action, Comedy, Drama,
+    Thriller, Romance, Adventure, Mystery, Sci-Fi, Historical, Biography, War,
+    Sports, Music, Documentary, Animated, Fantasy, Horror, Western, Family,
+    and more. The release dates are primarily in January and February of 2019.
+    Here is a summary of the movies:
 
     1. Action Movie (Action, 2019-01-01)
     2. Comedy Film (Comedy, 2019-01-02)
@@ -286,25 +302,58 @@ Web Search Agent using OpenAI's GPT model
 
 .. literalinclude:: ../../../samples/agent/websearch_agent.py
    :language: python
+   :lines: 14-
 
 output::
 
     Created credential:  OPENAI_CRED
     Created profile:  OPENAI_PROFILE
     Created tool:  WEB_SEARCH_TOOL
-    The key features of Oracle Database Machine Learning, as highlighted on the Oracle website, include:
+    The key features of Oracle Database Machine Learning, as highlighted on the
+     Oracle website, include:
 
-    - In-database machine learning: Build, train, and deploy machine learning models directly inside the Oracle Database, eliminating the need to move data.
-    - Support for multiple languages: Use SQL, Python, and R for machine learning tasks, allowing flexibility for data scientists and developers.
-    - Automated machine learning (AutoML): Automates feature selection, model selection, and hyperparameter tuning to speed up model development.
-    - Scalability and performance: Utilizes Oracle Database’s scalability, security, and high performance for machine learning workloads.
-    - Integration with Oracle Cloud: Seamlessly integrates with Oracle Cloud Infrastructure for scalable and secure deployment.
-    - Security and governance: Inherits Oracle Database’s robust security, data privacy, and governance features.
-    - Prebuilt algorithms: Offers a wide range of in-database algorithms for classification, regression, clustering, anomaly detection, and more.
-    - No data movement: Keeps data secure and compliant by performing analytics and machine learning where the data resides.
+    - In-database machine learning: Build, train, and deploy machine learning
+      models directly inside the Oracle Database, eliminating the need to move
+      data.
+    - Support for multiple languages: Use SQL, Python, and R for machine
+      learning tasks, allowing flexibility for data scientists and developers.
+    - Automated machine learning (AutoML): Automates feature selection, model
+      selection, and hyperparameter tuning to speed up model development.
+    - Scalability and performance: Utilizes Oracle Database’s scalability,
+      security, and high performance for machine learning workloads.
+    - Integration with Oracle Cloud: Seamlessly integrates with Oracle
+      Cloud Infrastructure for scalable and secure deployment.
+    - Security and governance: Inherits Oracle Database’s robust security,
+      data privacy, and governance features.
+    - Prebuilt algorithms: Offers a wide range of in-database algorithms for
+      classification, regression, clustering, anomaly detection, and more.
+    - No data movement: Keeps data secure and compliant by performing
+      analytics and machine learning where the data resides.
 
-    These features enable organizations to operationalize machine learning at scale, improve productivity, and maintain data security and compliance.
+    These features enable organizations to operationalize machine learning at
+    scale, improve productivity, and maintain data security and compliance.
 
-    The main topic at the URL https://www.oracle.com/artificial-intelligence/database-machine-learning is Oracle's database machine learning capabilities, specifically how Oracle integrates artificial intelligence and machine learning features directly into its database products. The page highlights how users can leverage these built-in AI and ML tools to analyze data, build predictive models, and enhance business applications without moving data outside the Oracle Database environment.
+    The main topic at the URL https://www.oracle.com/artificial-intelligence/database-machine-learning
+    is Oracle's database machine learning capabilities, specifically how Oracle
+    integrates artificial intelligence and machine learning features directly
+    into its database products. The page highlights how users can leverage these
+    built-in AI and ML tools to analyze data, build predictive models, and enhance
+    business applications without moving data outside the Oracle Database
+    environment.
 
-    The main topic of the website https://openai.com is artificial intelligence research and development. OpenAI focuses on creating and promoting advanced AI technologies, including products like ChatGPT, and provides information about their research, products, and mission to ensure that artificial general intelligence benefits all of humanity.
+    The main topic of the website https://openai.com is artificial
+    intelligence research and development. OpenAI focuses on creating and
+     promoting advanced AI technologies, including products like ChatGPT, and
+     provides information about their research, products, and mission to ensure
+     that artificial general intelligence benefits all of humanity.
+
+
+**************
+Async AI Agent
+**************
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    async_agent.rst
