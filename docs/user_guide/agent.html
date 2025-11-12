@@ -5,19 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Tool &#8212; Select AI for Python 1.2.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Tool &#8212; Select AI for Python 1.2.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
     <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=9235ea19"></script>
+    <script src="../_static/documentation_options.js?v=6efca38a"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.1. AsyncTool" href="async_agent.html" />
     <link rel="prev" title="1. SyntheticDataAttributes" href="synthetic_data.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
@@ -143,6 +144,7 @@
 <li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#async-ai-agent">6. Async AI Agent</a></li>
 </ul>
 
   </div>
@@ -150,6 +152,11 @@
     <h4>Previous topic</h4>
     <p class="topless"><a href="synthetic_data.html"
                           title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="async_agent.html"
+                          title="next chapter"><span class="section-number">6.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -179,6 +186,9 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="async_agent.html" title="6.1. AsyncTool"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
              accesskey="P">previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
@@ -189,7 +199,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a></li>
@@ -319,6 +329,12 @@ Python layer and persist the tool in the Database using
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">select_ai.agent.AsyncTool.create_&lt;tool&gt;</span></code> for corresponding async
+methods. For e.g. <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">select_ai.agent.AsyncTool.create_rag_tool()</span></code>
+can be used to create an RAG tool in an async application.</p>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.agent.ToolAttributes">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">ToolAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.agent.ToolParams" title="select_ai.agent.tool.ToolParams"><span class="pre">ToolParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ToolType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.ToolAttributes" title="Link to this definition">¶</a></dt>
@@ -661,13 +677,13 @@ language translation to SQL using an OCI AI profile</p>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">Tool</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">tool_name</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tool</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">MOVIE_SQL_TOOL</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ToolAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="s1">&#39;This tool is used to work with SQL queries using natural language. Input should be a natural language query about data or database operations. The tool behavior depends on the configured action: RUNSQL - generates and executes the SQL query returning actual data; SHOWSQL - generates and displays the SQL statement without executing it; EXPLAINSQL - generates SQL and provides a natural language explanation of what the query does. Always provide clear, specific questions about the data you want to retrieve or analyze.&#39;</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s1">&#39;dbms_cloud_ai_agent.sql_tool&#39;</span><span class="p">,</span> <span class="n">tool_params</span><span class="o">=</span><span class="n">SQLToolParams</span><span class="p">(</span><span class="n">_REQUIRED_FIELDS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notification_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_ai_profile&#39;</span><span class="p">,</span> <span class="n">recipient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slack_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smtp_host</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">tool_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;SQL&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">My</span> <span class="n">Select</span> <span class="n">AI</span> <span class="n">MOVIE</span> <span class="n">SQL</span> <span class="n">agent</span> <span class="n">tool</span><span class="p">)</span>
-
-<span class="n">Tool</span><span class="p">(</span><span class="n">tool_name</span><span class="o">=</span><span class="n">LLM_CHAT_TOOL</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">ToolAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="s1">&#39;This tool is used to work with SQL queries using natural language. Input should be a natural language query about data or database operations. The tool behavior depends on the configured action: RUNSQL - generates and executes the SQL query returning actual data; SHOWSQL - generates and displays the SQL statement without executing it; EXPLAINSQL - generates SQL and provides a natural language explanation of what the query does. Always provide clear, specific questions about the data you want to retrieve or analyze.&#39;</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s1">&#39;dbms_cloud_ai_agent.sql_tool&#39;</span><span class="p">,</span> <span class="n">tool_params</span><span class="o">=</span><span class="n">SQLToolParams</span><span class="p">(</span><span class="n">_REQUIRED_FIELDS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">credential_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notification_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;oci_ai_profile&#39;</span><span class="p">,</span> <span class="n">recipient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slack_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smtp_host</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">tool_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tool_type</span><span class="o">=</span><span class="s1">&#39;SQL&#39;</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">My</span> <span class="n">Select</span> <span class="n">AI</span> <span class="n">agent</span> <span class="n">tool</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WEB_SEARCH_TOOL</span>
+<span class="n">MOVIE_SQL_TOOL</span>
+<span class="n">LLM_CHAT_TOOL</span>
 </pre></div>
 </div>
 </section>
@@ -836,7 +852,7 @@ previous step</p>
 
 <span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span>
     <span class="n">task_name</span><span class="o">=</span><span class="s2">&quot;ANALYZE_MOVIE_TASK&quot;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Movie task involving a human&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Search for movies in the database&quot;</span><span class="p">,</span>
     <span class="n">attributes</span><span class="o">=</span><span class="n">TaskAttributes</span><span class="p">(</span>
         <span class="n">instruction</span><span class="o">=</span><span class="s2">&quot;Help the user with their request about movies. &quot;</span>
         <span class="s2">&quot;User question: </span><span class="si">{query}</span><span class="s2">. &quot;</span>
@@ -876,11 +892,12 @@ previous step</p>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">Task</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">task_name</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Task</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="n">ANALYZE_MOVIE_TASK</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">TaskAttributes</span><span class="p">(</span><span class="n">instruction</span><span class="o">=</span><span class="s1">&#39;Help the user with their request about movies. User question: </span><span class="si">{query}</span><span class="s1">. You can use SQL tool to search the data from database&#39;</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="s1">&#39;[&quot;MOVIE_SQL_TOOL&quot;]&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">Movie</span> <span class="n">task</span> <span class="n">involving</span> <span class="n">a</span> <span class="n">human</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WEB_SEARCH_TASK</span>
+<span class="n">ANALYZE_MOVIE_TASK</span>
 </pre></div>
 </div>
 </section>
@@ -1044,7 +1061,11 @@ can be specified by passing an AgentAttributes object</p>
 </pre></div>
 </div>
 <p>output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Created</span> <span class="n">Agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">(</span><span class="n">agent_name</span><span class="o">=</span><span class="n">MOVIE_ANALYST</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">AgentAttributes</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;LLAMA_4_MAVERICK&#39;</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s1">&#39;You are an AI Movie Analyst. Your can help answer a variety of questions related to movies. &#39;</span><span class="p">,</span> <span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Created</span> <span class="n">Agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">(</span><span class="n">agent_name</span><span class="o">=</span><span class="n">MOVIE_ANALYST</span><span class="p">,</span>
+<span class="n">attributes</span><span class="o">=</span><span class="n">AgentAttributes</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s1">&#39;LLAMA_4_MAVERICK&#39;</span><span class="p">,</span>
+<span class="n">role</span><span class="o">=</span><span class="s1">&#39;You are an AI Movie Analyst.</span>
+<span class="n">Your</span> <span class="n">can</span> <span class="n">help</span> <span class="n">answer</span> <span class="n">a</span> <span class="n">variety</span> <span class="n">of</span> <span class="n">questions</span> <span class="n">related</span> <span class="n">to</span> <span class="n">movies</span><span class="o">.</span> <span class="s1">&#39;,</span>
+<span class="n">enable_human_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1246,7 +1267,12 @@ Currently, the following parameters are supported:</p>
 </pre></div>
 </div>
 <p>output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">database</span> <span class="n">contains</span> <span class="mi">100</span> <span class="n">movies</span> <span class="k">with</span> <span class="n">various</span> <span class="n">titles</span><span class="p">,</span> <span class="n">genres</span><span class="p">,</span> <span class="ow">and</span> <span class="n">release</span> <span class="n">dates</span><span class="o">.</span> <span class="n">The</span> <span class="nb">list</span> <span class="n">includes</span> <span class="n">a</span> <span class="n">wide</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">genres</span> <span class="n">such</span> <span class="k">as</span> <span class="n">Action</span><span class="p">,</span> <span class="n">Comedy</span><span class="p">,</span> <span class="n">Drama</span><span class="p">,</span> <span class="n">Thriller</span><span class="p">,</span> <span class="n">Romance</span><span class="p">,</span> <span class="n">Adventure</span><span class="p">,</span> <span class="n">Mystery</span><span class="p">,</span> <span class="n">Sci</span><span class="o">-</span><span class="n">Fi</span><span class="p">,</span> <span class="n">Historical</span><span class="p">,</span> <span class="n">Biography</span><span class="p">,</span> <span class="n">War</span><span class="p">,</span> <span class="n">Sports</span><span class="p">,</span> <span class="n">Music</span><span class="p">,</span> <span class="n">Documentary</span><span class="p">,</span> <span class="n">Animated</span><span class="p">,</span> <span class="n">Fantasy</span><span class="p">,</span> <span class="n">Horror</span><span class="p">,</span> <span class="n">Western</span><span class="p">,</span> <span class="n">Family</span><span class="p">,</span> <span class="ow">and</span> <span class="n">more</span><span class="o">.</span> <span class="n">The</span> <span class="n">release</span> <span class="n">dates</span> <span class="n">are</span> <span class="n">primarily</span> <span class="ow">in</span> <span class="n">January</span> <span class="ow">and</span> <span class="n">February</span> <span class="n">of</span> <span class="mf">2019.</span> <span class="n">Here</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">summary</span> <span class="n">of</span> <span class="n">the</span> <span class="n">movies</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">database</span> <span class="n">contains</span> <span class="mi">100</span> <span class="n">movies</span> <span class="k">with</span> <span class="n">various</span> <span class="n">titles</span><span class="p">,</span> <span class="n">genres</span><span class="p">,</span> <span class="ow">and</span> <span class="n">release</span>
+<span class="n">dates</span><span class="o">.</span> <span class="n">The</span> <span class="nb">list</span> <span class="n">includes</span> <span class="n">a</span> <span class="n">wide</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">genres</span> <span class="n">such</span> <span class="k">as</span> <span class="n">Action</span><span class="p">,</span> <span class="n">Comedy</span><span class="p">,</span> <span class="n">Drama</span><span class="p">,</span>
+<span class="n">Thriller</span><span class="p">,</span> <span class="n">Romance</span><span class="p">,</span> <span class="n">Adventure</span><span class="p">,</span> <span class="n">Mystery</span><span class="p">,</span> <span class="n">Sci</span><span class="o">-</span><span class="n">Fi</span><span class="p">,</span> <span class="n">Historical</span><span class="p">,</span> <span class="n">Biography</span><span class="p">,</span> <span class="n">War</span><span class="p">,</span>
+<span class="n">Sports</span><span class="p">,</span> <span class="n">Music</span><span class="p">,</span> <span class="n">Documentary</span><span class="p">,</span> <span class="n">Animated</span><span class="p">,</span> <span class="n">Fantasy</span><span class="p">,</span> <span class="n">Horror</span><span class="p">,</span> <span class="n">Western</span><span class="p">,</span> <span class="n">Family</span><span class="p">,</span>
+<span class="ow">and</span> <span class="n">more</span><span class="o">.</span> <span class="n">The</span> <span class="n">release</span> <span class="n">dates</span> <span class="n">are</span> <span class="n">primarily</span> <span class="ow">in</span> <span class="n">January</span> <span class="ow">and</span> <span class="n">February</span> <span class="n">of</span> <span class="mf">2019.</span>
+<span class="n">Here</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">summary</span> <span class="n">of</span> <span class="n">the</span> <span class="n">movies</span><span class="p">:</span>
 
 <span class="mf">1.</span> <span class="n">Action</span> <span class="n">Movie</span> <span class="p">(</span><span class="n">Action</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span><span class="p">)</span>
 <span class="mf">2.</span> <span class="n">Comedy</span> <span class="n">Film</span> <span class="p">(</span><span class="n">Comedy</span><span class="p">,</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">02</span><span class="p">)</span>
@@ -1267,20 +1293,7 @@ Currently, the following parameters are supported:</p>
 <h1><span class="section-number">5. </span>AI agent examples<a class="headerlink" href="#ai-agent-examples" title="Link to this heading">¶</a></h1>
 <section id="web-search-agent-using-openai-s-gpt-model">
 <h2><span class="section-number">5.1. </span>Web Search Agent using OpenAI’s GPT model<a class="headerlink" href="#web-search-agent-using-openai-s-gpt-model" title="Link to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -----------------------------------------------------------------------------</span>
-<span class="c1"># Copyright (c) 2025, Oracle and/or its affiliates.</span>
-<span class="c1">#</span>
-<span class="c1"># Licensed under the Universal Permissive License v 1.0 as shown at</span>
-<span class="c1"># http://oss.oracle.com/licenses/upl.</span>
-<span class="c1"># -----------------------------------------------------------------------------</span>
-
-<span class="c1"># -----------------------------------------------------------------------------</span>
-<span class="c1"># movie_analyst.py</span>
-<span class="c1">#</span>
-<span class="c1"># Demonstrates web search AI agent</span>
-<span class="c1"># -----------------------------------------------------------------------------</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">select_ai.agent</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -1389,25 +1402,128 @@ Currently, the following parameters are supported:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Created credential:  OPENAI_CRED
 Created profile:  OPENAI_PROFILE
 Created tool:  WEB_SEARCH_TOOL
-The key features of Oracle Database Machine Learning, as highlighted on the Oracle website, include:
+The key features of Oracle Database Machine Learning, as highlighted on the
+ Oracle website, include:
 
-- In-database machine learning: Build, train, and deploy machine learning models directly inside the Oracle Database, eliminating the need to move data.
-- Support for multiple languages: Use SQL, Python, and R for machine learning tasks, allowing flexibility for data scientists and developers.
-- Automated machine learning (AutoML): Automates feature selection, model selection, and hyperparameter tuning to speed up model development.
-- Scalability and performance: Utilizes Oracle Database’s scalability, security, and high performance for machine learning workloads.
-- Integration with Oracle Cloud: Seamlessly integrates with Oracle Cloud Infrastructure for scalable and secure deployment.
-- Security and governance: Inherits Oracle Database’s robust security, data privacy, and governance features.
-- Prebuilt algorithms: Offers a wide range of in-database algorithms for classification, regression, clustering, anomaly detection, and more.
-- No data movement: Keeps data secure and compliant by performing analytics and machine learning where the data resides.
+- In-database machine learning: Build, train, and deploy machine learning
+  models directly inside the Oracle Database, eliminating the need to move
+  data.
+- Support for multiple languages: Use SQL, Python, and R for machine
+  learning tasks, allowing flexibility for data scientists and developers.
+- Automated machine learning (AutoML): Automates feature selection, model
+  selection, and hyperparameter tuning to speed up model development.
+- Scalability and performance: Utilizes Oracle Database’s scalability,
+  security, and high performance for machine learning workloads.
+- Integration with Oracle Cloud: Seamlessly integrates with Oracle
+  Cloud Infrastructure for scalable and secure deployment.
+- Security and governance: Inherits Oracle Database’s robust security,
+  data privacy, and governance features.
+- Prebuilt algorithms: Offers a wide range of in-database algorithms for
+  classification, regression, clustering, anomaly detection, and more.
+- No data movement: Keeps data secure and compliant by performing
+  analytics and machine learning where the data resides.
 
-These features enable organizations to operationalize machine learning at scale, improve productivity, and maintain data security and compliance.
+These features enable organizations to operationalize machine learning at
+scale, improve productivity, and maintain data security and compliance.
 
-The main topic at the URL https://www.oracle.com/artificial-intelligence/database-machine-learning is Oracle&#39;s database machine learning capabilities, specifically how Oracle integrates artificial intelligence and machine learning features directly into its database products. The page highlights how users can leverage these built-in AI and ML tools to analyze data, build predictive models, and enhance business applications without moving data outside the Oracle Database environment.
+The main topic at the URL https://www.oracle.com/artificial-intelligence/database-machine-learning
+is Oracle&#39;s database machine learning capabilities, specifically how Oracle
+integrates artificial intelligence and machine learning features directly
+into its database products. The page highlights how users can leverage these
+built-in AI and ML tools to analyze data, build predictive models, and enhance
+business applications without moving data outside the Oracle Database
+environment.
 
-The main topic of the website https://openai.com is artificial intelligence research and development. OpenAI focuses on creating and promoting advanced AI technologies, including products like ChatGPT, and provides information about their research, products, and mission to ensure that artificial general intelligence benefits all of humanity.
+The main topic of the website https://openai.com is artificial
+intelligence research and development. OpenAI focuses on creating and
+ promoting advanced AI technologies, including products like ChatGPT, and
+ provides information about their research, products, and mission to ensure
+ that artificial general intelligence benefits all of humanity.
 </pre></div>
 </div>
 </section>
+</section>
+<section id="async-ai-agent">
+<h1><span class="section-number">6. </span>Async AI Agent<a class="headerlink" href="#async-ai-agent" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html">6.1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool"><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_built_in_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_built_in_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_email_notification_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_email_notification_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_pl_sql_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_pl_sql_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_rag_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_rag_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_slack_notification_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_slack_notification_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_sql_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_sql_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_websearch_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_websearch_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTool.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.disable"><code class="docutils literal notranslate"><span class="pre">AsyncTool.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.enable"><code class="docutils literal notranslate"><span class="pre">AsyncTool.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncTool.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.list"><code class="docutils literal notranslate"><span class="pre">AsyncTool.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncTool.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTool.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-tool">6.1.1. Create Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-tools">6.1.2. List Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asynctask">6.2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask"><code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.create"><code class="docutils literal notranslate"><span class="pre">AsyncTask.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTask.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.disable"><code class="docutils literal notranslate"><span class="pre">AsyncTask.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.enable"><code class="docutils literal notranslate"><span class="pre">AsyncTask.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncTask.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.list"><code class="docutils literal notranslate"><span class="pre">AsyncTask.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncTask.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTask.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-task">6.2.1. Create Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-tasks">6.2.2. List Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asyncagent">6.3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent"><code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.create"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.delete"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.disable"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.enable"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.list"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-agent">6.3.1. Create Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-agents">6.3.2. List Agents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asyncteam">6.4. AsyncTeam</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam"><code class="docutils literal notranslate"><span class="pre">AsyncTeam</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.create"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.disable"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.enable"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.enable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.list"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.run"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.set_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#run-team">6.4.1. Run Team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-teams">6.4.2. List Teams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#async-ai-agent-examples">6.5. Async AI agent examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#web-search-agent-using-openai-s-gpt-model">6.5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </section>
 
 
@@ -1501,6 +1617,7 @@ The main topic of the website https://openai.com is artificial intelligence rese
 <li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#async-ai-agent">6. Async AI Agent</a></li>
 </ul>
 
   </div>
@@ -1508,6 +1625,11 @@ The main topic of the website https://openai.com is artificial intelligence rese
     <h4>Previous topic</h4>
     <p class="topless"><a href="synthetic_data.html"
                           title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="async_agent.html"
+                          title="next chapter"><span class="section-number">6.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -1537,6 +1659,9 @@ The main topic of the website https://openai.com is artificial intelligence rese
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="async_agent.html" title="6.1. AsyncTool"
+             >next</a> |</li>
+        <li class="right" >
           <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
              >previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
@@ -1547,7 +1672,7 @@ The main topic of the website https://openai.com is artificial intelligence rese
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.0rc1 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a></li>

@@ -4,23 +4,27 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
-
 # -----------------------------------------------------------------------------
-# tasks_list.py
+# agent/async/tasks_list.py
 #
 # List all tasks saved in the database
 # -----------------------------------------------------------------------------
 
+import asyncio
 import os
 
 import select_ai
-import select_ai.agent
+from select_ai.agent import AsyncTask
 
 user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
-select_ai.connect(user=user, password=password, dsn=dsn)
 
-for task in select_ai.agent.Task.list():
-    print(task.task_name)
+async def main():
+    await select_ai.async_connect(user=user, password=password, dsn=dsn)
+    async for task in AsyncTask.list():
+        print(task.task_name)
+
+
+asyncio.run(main())

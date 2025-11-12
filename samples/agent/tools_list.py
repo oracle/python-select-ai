@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# tool_list.py
+# tools_list.py
 #
 # List all the Agent Tools
 # -----------------------------------------------------------------------------
@@ -23,4 +23,4 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 select_ai.connect(user=user, password=password, dsn=dsn)
 
 for tool in select_ai.agent.Tool.list():
-    print(tool)
+    print(tool.tool_name)
