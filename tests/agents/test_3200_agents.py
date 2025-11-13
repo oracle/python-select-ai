@@ -34,8 +34,8 @@ def python_gen_ai_profile(profile_attributes):
 def agent_attributes():
     agent_attributes = AgentAttributes(
         profile_name=PYSAI_3200_PROFILE_NAME,
-        role="You are an AI Movie Analyst. "
-        "Your can help answer a variety of questions related to movies. ",
+        role="You are an AI Movie Analyst."
+        "You can help answer a variety of questions related to movies.",
         enable_human_tool=False,
     )
     return agent_attributes
@@ -69,3 +69,10 @@ def test_3201(agent_name_pattern):
     agent_descriptions = set(agent.description for agent in agents)
     assert PYSAI_3200_AGENT_NAME in agent_names
     assert PYSAI_3200_AGENT_DESCRIPTION in agent_descriptions
+
+
+def test_3203(agent_attributes):
+    agent = Agent.fetch(agent_name=PYSAI_3200_AGENT_NAME)
+    assert agent.agent_name == PYSAI_3200_AGENT_NAME
+    assert agent.attributes == agent_attributes
+    assert agent.description == PYSAI_3200_AGENT_DESCRIPTION

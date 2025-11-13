@@ -24,13 +24,11 @@ vector_index = select_ai.VectorIndex(
 )
 
 # Use vector_index.set_attributes to update a multiple attributes
-updated_attributes = select_ai.OracleVectorIndexAttributes(
-    refresh_rate=1450,
-)
+updated_attributes = select_ai.OracleVectorIndexAttributes(refresh_rate=1450)
 vector_index.set_attributes(attributes=updated_attributes)
 
 # Use vector_index.set_attribute to update a single attribute
 vector_index.set_attribute(
     attribute_name="similarity_threshold", attribute_value=0.5
 )
-print(vector_index.get_attributes())
+print(vector_index.attributes)

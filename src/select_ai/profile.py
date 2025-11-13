@@ -8,8 +8,7 @@
 import json
 from contextlib import contextmanager
 from dataclasses import replace as dataclass_replace
-from pprint import pformat
-from typing import Generator, Iterator, Mapping, Optional, Tuple, Union
+from typing import Generator, Mapping, Optional, Tuple, Union
 
 import oracledb
 import pandas

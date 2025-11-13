@@ -20,18 +20,9 @@ from select_ai.db import async_cursor, cursor
 from select_ai.errors import ProfileNotFoundError, VectorIndexNotFoundError
 from select_ai.profile import Profile
 from select_ai.sql import (
+    GET_USER_VECTOR_INDEX,
     GET_USER_VECTOR_INDEX_ATTRIBUTES,
     LIST_USER_VECTOR_INDEXES,
-)
-
-UNMODIFIABLE_VECTOR_INDEX_ATTRIBUTES = (
-    "location",
-    "chunk_size",
-    "chunk_overlap",
-    "pipeline_name",
-    "vector_dimension",
-    "vector_table_name",
-    "vector_distance_metric",
 )
 
 
@@ -161,7 +152,7 @@ class VectorIndex(_BaseVectorIndex):
         :return: select_ai.VectorIndexAttributes
         :raises: VectorIndexNotFoundError
         """
-        if index_name is None:
+        if not index_name:
             raise AttributeError("'index_name' is required")
         with cursor() as cr:
             cr.execute(
@@ -178,6 +169,27 @@ class VectorIndex(_BaseVectorIndex):
                 return VectorIndexAttributes.create(
                     **post_processed_attributes
                 )
+            else:
+                raise VectorIndexNotFoundError(index_name=index_name)
+
+    @staticmethod
+    def _get_description(index_name) -> Union[str, None]:
+        """Get description of the Vector Index from USER_CLOUD_VECTOR_INDEXES
+
+        :param str index_name: The name of the vector index
+        :return: Union[str, None] profile description
+        :raises: ProfileNotFoundError
+        """
+        if not index_name:
+            raise AttributeError("'index_name' is required")
+        with cursor() as cr:
+            cr.execute(GET_USER_VECTOR_INDEX, index_name=index_name.upper())
+            index = cr.fetchone()
+            if index:
+                if index[1] is not None:
+                    return index[1].read()
+                else:
+                    return None
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
@@ -292,6 +304,28 @@ class VectorIndex(_BaseVectorIndex):
                 else:
                     raise
 
+    @classmethod
+    def fetch(cls, index_name: str) -> "VectorIndex":
+        """
+        Fetches vector index attributes from the
+        database and builds a proxy object for the
+        passed index_name
+
+        :param str index_name: The name of the vector index
+        """
+        description = cls._get_description(index_name)
+        attributes = cls._get_attributes(index_name)
+        try:
+            profile = Profile(profile_name=attributes.profile_name)
+        except ProfileNotFoundError:
+            profile = None
+        return cls(
+            description=description,
+            attributes=attributes,
+            profile=profile,
+            index_name=index_name,
+        )
+
     def set_attribute(
         self,
         attribute_name: str,
@@ -377,21 +411,7 @@ class VectorIndex(_BaseVectorIndex):
             )
             for row in cr.fetchall():
                 index_name = row[0]
-                if row[1]:
-                    description = row[1].read()  # Oracle.LOB
-                else:
-                    description = None
-                attributes = cls._get_attributes(index_name=index_name)
-                try:
-                    profile = Profile(profile_name=attributes.profile_name)
-                except ProfileNotFoundError:
-                    profile = None
-                yield cls(
-                    index_name=index_name,
-                    description=description,
-                    attributes=attributes,
-                    profile=profile,
-                )
+                yield cls.fetch(index_name=index_name)
 
 
 class AsyncVectorIndex(_BaseVectorIndex):
@@ -412,6 +432,8 @@ class AsyncVectorIndex(_BaseVectorIndex):
         :return: select_ai.VectorIndexAttributes
         :raises: VectorIndexNotFoundError
         """
+        if not index_name:
+            raise AttributeError("'index_name' is required")
         async with async_cursor() as cr:
             await cr.execute(
                 GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name.upper()
@@ -427,6 +449,29 @@ class AsyncVectorIndex(_BaseVectorIndex):
                 return VectorIndexAttributes.create(
                     **post_processed_attributes
                 )
+            else:
+                raise VectorIndexNotFoundError(index_name=index_name)
+
+    @staticmethod
+    async def _get_description(index_name) -> Union[str, None]:
+        """Get description of the Vector Index from USER_CLOUD_VECTOR_INDEXES
+
+        :param str index_name: The name of the vector index
+        :return: Union[str, None] profile description
+        :raises: ProfileNotFoundError
+        """
+        if not index_name:
+            raise AttributeError("'index_name' is required")
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_USER_VECTOR_INDEX, index_name=index_name.upper()
+            )
+            index = await cr.fetchone()
+            if index:
+                if index[1] is not None:
+                    return await index[1].read()
+                else:
+                    return None
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
@@ -539,6 +584,28 @@ class AsyncVectorIndex(_BaseVectorIndex):
                 else:
                     raise
 
+    @classmethod
+    async def fetch(cls, index_name: str) -> "AsyncVectorIndex":
+        """
+        Fetches vector index attributes from the
+        database and builds a proxy object for the
+        passed index_name
+
+        :param str index_name: The name of the vector index
+        """
+        description = await cls._get_description(index_name)
+        attributes = await cls._get_attributes(index_name)
+        try:
+            profile = await AsyncProfile(profile_name=attributes.profile_name)
+        except ProfileNotFoundError:
+            profile = None
+        return cls(
+            description=description,
+            attributes=attributes,
+            profile=profile,
+            index_name=index_name,
+        )
+
     async def set_attribute(
         self, attribute_name: str, attribute_value: Union[str, int, float]
     ) -> None:
@@ -605,7 +672,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
     @classmethod
     async def list(
         cls, index_name_pattern: str = ".*"
-    ) -> AsyncGenerator[VectorIndex, None]:
+    ) -> AsyncGenerator["AsyncVectorIndex", None]:
         """List Vector Indexes.
 
         :param str index_name_pattern: Regular expressions can be used
@@ -623,20 +690,5 @@ class AsyncVectorIndex(_BaseVectorIndex):
             rows = await cr.fetchall()
             for row in rows:
                 index_name = row[0]
-                if row[1]:
-                    description = await row[1].read()  # AsyncLOB
-                else:
-                    description = None
-                attributes = await cls._get_attributes(index_name=index_name)
-                try:
-                    profile = await AsyncProfile(
-                        profile_name=attributes.profile_name,
-                    )
-                except ProfileNotFoundError:
-                    profile = None
-                yield VectorIndex(
-                    index_name=index_name,
-                    description=description,
-                    attributes=attributes,
-                    profile=profile,
-                )
+                index = await cls.fetch(index_name=index_name)
+                yield index
