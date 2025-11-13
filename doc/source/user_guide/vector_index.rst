@@ -82,7 +82,7 @@ output::
 .. latex:clearpage::
 
 
-Get vector index attributes
+Fetch vector index
 +++++++++++++++++++++++++++
 
 You can fetch the vector index attributes and associated AI profile using
@@ -195,7 +195,7 @@ output::
 .. latex:clearpage::
 
 
-Async get vector index attributes
+Async fetch vector index
 +++++++++++++++++++++++++++++++++
 
 You can fetch the vector index attributes and associated AI profile using
