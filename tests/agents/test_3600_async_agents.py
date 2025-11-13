@@ -35,8 +35,8 @@ async def async_python_gen_ai_profile(profile_attributes):
 def agent_attributes():
     agent_attributes = AgentAttributes(
         profile_name=PYSAI_3600_PROFILE_NAME,
-        role="You are an AI Movie Analyst. "
-        "Your can help answer a variety of questions related to movies. ",
+        role="You are an AI Movie Analyst."
+        "Your can help answer a variety of questions related to movies.",
         enable_human_tool=False,
     )
     return agent_attributes
@@ -75,3 +75,10 @@ async def test_3201(agent_name_pattern):
     agent_descriptions = set(agent.description for agent in agents)
     assert PYSAI_3600_AGENT_NAME in agent_names
     assert PYSAI_3600_AGENT_DESCRIPTION in agent_descriptions
+
+
+async def test_3203(agent_attributes):
+    agent = await AsyncAgent.fetch(agent_name=PYSAI_3600_AGENT_NAME)
+    assert agent.agent_name == PYSAI_3600_AGENT_NAME
+    assert agent.attributes == agent_attributes
+    assert agent.description == PYSAI_3600_AGENT_DESCRIPTION

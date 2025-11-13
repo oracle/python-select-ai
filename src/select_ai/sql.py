@@ -88,6 +88,12 @@ FROM USER_CLOUD_VECTOR_INDEXES v
 WHERE REGEXP_LIKE(v.index_name, :index_name_pattern, 'i')
 """
 
+GET_USER_VECTOR_INDEX = """
+select index_name, description
+from USER_CLOUD_VECTOR_INDEXES v
+where index_name = :index_name
+"""
+
 GET_USER_VECTOR_INDEX_ATTRIBUTES = """
 SELECT attribute_name, attribute_value
 FROM USER_CLOUD_VECTOR_INDEX_ATTRIBUTES

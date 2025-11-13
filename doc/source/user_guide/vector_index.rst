@@ -86,10 +86,9 @@ Get vector index attributes
 +++++++++++++++++++++++++++
 
 You can fetch the vector index attributes and associated AI profile using
-``vector_index.get_attributes()`` and ``vector_index.get_profile()`` methods
-respectively.
+the class method ``VectorIndex.fetch(index_name)``
 
-.. literalinclude:: ../../../samples/vector_index_get_attributes.py
+.. literalinclude:: ../../../samples/vector_index_fetch.py
    :language: python
    :lines: 14-
 
@@ -200,10 +199,9 @@ Async get vector index attributes
 +++++++++++++++++++++++++++++++++
 
 You can fetch the vector index attributes and associated AI profile using
-``async_vector_index.get_attributes()`` and ``async_vector_index.get_profile()``
-methods respectively.
+the class method ``AsyncVectorIndex.fetch(index_name)``
 
-.. literalinclude:: ../../../samples/async/vector_index_get_attributes.py
+.. literalinclude:: ../../../samples/async/vector_index_fetch.py
    :language: python
    :lines: 14-
 

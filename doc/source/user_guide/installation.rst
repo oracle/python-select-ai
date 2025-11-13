@@ -11,7 +11,12 @@ Installation requirements
 
 To use ``select_ai`` you need:
 
-- Python 3.9, 3.10, 3.11, 3.12 or 3.13
+- Python 3.9, 3.10, 3.11, 3.12, 3.13 or 3.14
+
+.. warning::
+For async APIs, use Python 3.11 or higher. Python 3.11 introduced
+stabilized the async event loop management and introduced better-structured
+APIs
 
 - ``python-oracledb`` - This package is automatically installed as a dependency requirement
 
@@ -28,7 +33,7 @@ To use ``select_ai`` you need:
 `pip <https://pip.pypa.io/en/latest/installation/>`__.
 
 1. Install `Python 3 <https://www.python.org/downloads>`__ if it is not already
-   available. Use any version from Python 3.9 through 3.13.
+   available. Use any version from Python 3.9 through 3.14.
 
 2. Install ``select_ai``:
 

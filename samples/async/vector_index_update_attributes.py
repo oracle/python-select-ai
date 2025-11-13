@@ -29,7 +29,7 @@ async def main():
 
     # Use vector_index.set_attributes to update a multiple attributes
     updated_attributes = select_ai.OracleVectorIndexAttributes(
-        refresh_rate=1450,
+        refresh_rate=1450
     )
     await async_vector_index.set_attributes(attributes=updated_attributes)
 
@@ -37,8 +37,7 @@ async def main():
     await async_vector_index.set_attribute(
         attribute_name="similarity_threshold", attribute_value=0.5
     )
-    attributes = await async_vector_index.get_attributes()
-    print(attributes)
+    print(async_vector_index.attributes)
 
 
 asyncio.run(main())

@@ -6,11 +6,12 @@
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# vector_index_get_attributes.py
+# async/vector_index_fetch.py
 #
-# Gets attributes for a vector index
+# Get vector index attributes
 # -----------------------------------------------------------------------------
 
+import asyncio
 import os
 
 import select_ai
@@ -19,11 +20,14 @@ user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
-select_ai.connect(user=user, password=password, dsn=dsn)
 
-vector_index = select_ai.VectorIndex(
-    index_name="test_vector_index",
-)
+async def main():
+    await select_ai.async_connect(user=user, password=password, dsn=dsn)
+    async_vector_index = await select_ai.AsyncVectorIndex.fetch(
+        index_name="test_vector_index"
+    )
+    print(async_vector_index.attributes)
+    print(async_vector_index.profile)
 
-print(vector_index.get_attributes())
-print(vector_index.get_profile())
+
+asyncio.run(main())
