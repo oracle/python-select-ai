@@ -32,6 +32,15 @@ Actions
 
     user_guide/actions.rst
 
+Privileges
+==========
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/privileges.rst
+
 Provider
 ========
 

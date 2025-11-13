@@ -161,7 +161,14 @@
 <span id="id1"></span><h2><span class="section-number">2.1. </span>Installation requirements<a class="headerlink" href="#installation-requirements" title="Link to this heading">¶</a></h2>
 <p>To use <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> you need:</p>
 <ul class="simple">
-<li><p>Python 3.9, 3.10, 3.11, 3.12 or 3.13</p></li>
+<li><p>Python 3.9, 3.10, 3.11, 3.12, 3.13 or 3.14</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For async APIs, use Python 3.11 or higher. Python 3.11 stabilized the async
+event loop management and introduced better-structured APIs</p>
+</div>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">python-oracledb</span></code> - This package is automatically installed as a dependency requirement</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> - This package is automatically installed as a dependency requirement</p></li>
 </ul>
@@ -173,7 +180,7 @@
 <a class="reference external" href="https://pip.pypa.io/en/latest/installation/">pip</a>.</p>
 <ol class="arabic simple">
 <li><p>Install <a class="reference external" href="https://www.python.org/downloads">Python 3</a> if it is not already
-available. Use any version from Python 3.9 through 3.13.</p></li>
+available. Use any version from Python 3.9 through 3.14.</p></li>
 <li><p>Install <code class="docutils literal notranslate"><span class="pre">select_ai</span></code>:</p></li>
 </ol>
 <blockquote>

@@ -78,6 +78,7 @@
 <li><a class="reference internal" href="#select_ai.VectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">VectorIndex.delete()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.disable()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.fetch"><code class="docutils literal notranslate"><span class="pre">VectorIndex.fetch()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_attributes()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_profile()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.list"><code class="docutils literal notranslate"><span class="pre">VectorIndex.list()</span></code></a></li>
@@ -87,7 +88,7 @@
 </li>
 <li><a class="reference internal" href="#create-vector-index">3.1. Create vector index</a></li>
 <li><a class="reference internal" href="#list-vector-index">3.2. List vector index</a></li>
-<li><a class="reference internal" href="#get-vector-index-attributes">3.3. Get vector index attributes</a></li>
+<li><a class="reference internal" href="#fetch-vector-index">3.3. Fetch vector index</a></li>
 <li><a class="reference internal" href="#update-vector-index-attributes">3.4. Update vector index attributes</a></li>
 <li><a class="reference internal" href="#rag-using-vector-index">3.5. RAG using vector index</a></li>
 <li><a class="reference internal" href="#delete-vector-index">3.6. Delete vector index</a></li>
@@ -99,6 +100,7 @@
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.delete()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.disable()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.fetch()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_attributes()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_profile()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.list"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.list()</span></code></a></li>
@@ -108,7 +110,7 @@
 </li>
 <li><a class="reference internal" href="#async-create-vector-index">4.1. Async create vector index</a></li>
 <li><a class="reference internal" href="#async-list-vector-index">4.2. Async list vector index</a></li>
-<li><a class="reference internal" href="#async-get-vector-index-attributes">4.3. Async get vector index attributes</a></li>
+<li><a class="reference internal" href="#async-fetch-vector-index">4.3. Async fetch vector index</a></li>
 <li><a class="reference internal" href="#async-update-vector-index-attributes">4.4. Async update vector index attributes</a></li>
 <li><a class="reference internal" href="#async-rag-using-vector-index">4.5. Async RAG using vector index</a></li>
 </ul>
@@ -355,6 +357,19 @@ and searching.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="select_ai.VectorIndex.fetch">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.VectorIndex" title="select_ai.vector_index.VectorIndex"><span class="pre">VectorIndex</span></a></span></span><a class="headerlink" href="#select_ai.VectorIndex.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetches vector index attributes from the
+database and builds a proxy object for the
+passed index_name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index_name</strong> (<em>str</em>) – The name of the vector index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="select_ai.VectorIndex.get_attributes">
 <span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a></span></span><a class="headerlink" href="#select_ai.VectorIndex.get_attributes" title="Link to this definition">¶</a></dt>
 <dd><p>Get attributes of this vector index</p>
@@ -517,11 +532,10 @@ objects (to create embedding for) reside in OCI’s object store</p>
 </pre></div>
 </div>
 </section>
-<section id="get-vector-index-attributes">
-<h2><span class="section-number">3.3. </span>Get vector index attributes<a class="headerlink" href="#get-vector-index-attributes" title="Link to this heading">¶</a></h2>
+<section id="fetch-vector-index">
+<h2><span class="section-number">3.3. </span>Fetch vector index<a class="headerlink" href="#fetch-vector-index" title="Link to this heading">¶</a></h2>
 <p>You can fetch the vector index attributes and associated AI profile using
-<code class="docutils literal notranslate"><span class="pre">vector_index.get_attributes()</span></code> and <code class="docutils literal notranslate"><span class="pre">vector_index.get_profile()</span></code> methods
-respectively.</p>
+the class method <code class="docutils literal notranslate"><span class="pre">VectorIndex.fetch(index_name)</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -532,12 +546,9 @@ respectively.</p>
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 
-<span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">VectorIndex</span><span class="p">(</span>
-    <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">get_profile</span><span class="p">())</span>
+<span class="n">vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">VectorIndex</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">profile</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
@@ -564,16 +575,14 @@ respectively.</p>
 <span class="p">)</span>
 
 <span class="c1"># Use vector_index.set_attributes to update a multiple attributes</span>
-<span class="n">updated_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span>
-    <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">updated_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span><span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">)</span>
 <span class="n">vector_index</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">updated_attributes</span><span class="p">)</span>
 
 <span class="c1"># Use vector_index.set_attribute to update a single attribute</span>
 <span class="n">vector_index</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
     <span class="n">attribute_name</span><span class="o">=</span><span class="s2">&quot;similarity_threshold&quot;</span><span class="p">,</span> <span class="n">attribute_value</span><span class="o">=</span><span class="mf">0.5</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vector_index</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
@@ -725,6 +734,19 @@ and searching.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.fetch">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.AsyncVectorIndex" title="select_ai.vector_index.AsyncVectorIndex"><span class="pre">AsyncVectorIndex</span></a></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.fetch" title="Link to this definition">¶</a></dt>
+<dd><p>Fetches vector index attributes from the
+database and builds a proxy object for the
+passed index_name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index_name</strong> (<em>str</em>) – The name of the vector index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.get_attributes">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.VectorIndexAttributes" title="select_ai.vector_index.VectorIndexAttributes"><span class="pre">VectorIndexAttributes</span></a></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.get_attributes" title="Link to this definition">¶</a></dt>
 <dd><p>Get attributes of a vector index</p>
@@ -754,7 +776,7 @@ and searching.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncVectorIndex.list">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.VectorIndex" title="select_ai.vector_index.VectorIndex"><span class="pre">VectorIndex</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.list" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_name_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.*'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#select_ai.AsyncVectorIndex" title="select_ai.vector_index.AsyncVectorIndex"><span class="pre">AsyncVectorIndex</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.AsyncVectorIndex.list" title="Link to this definition">¶</a></dt>
 <dd><p>List Vector Indexes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -888,11 +910,10 @@ update multiple attribute values</p>
 </pre></div>
 </div>
 </section>
-<section id="async-get-vector-index-attributes">
-<h2><span class="section-number">4.3. </span>Async get vector index attributes<a class="headerlink" href="#async-get-vector-index-attributes" title="Link to this heading">¶</a></h2>
+<section id="async-fetch-vector-index">
+<h2><span class="section-number">4.3. </span>Async fetch vector index<a class="headerlink" href="#async-fetch-vector-index" title="Link to this heading">¶</a></h2>
 <p>You can fetch the vector index attributes and associated AI profile using
-<code class="docutils literal notranslate"><span class="pre">async_vector_index.get_attributes()</span></code> and <code class="docutils literal notranslate"><span class="pre">async_vector_index.get_profile()</span></code>
-methods respectively.</p>
+the class method <code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.fetch(index_name)</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -905,14 +926,11 @@ methods respectively.</p>
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
-
-    <span class="n">async_vector_index</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncVectorIndex</span><span class="p">(</span>
-        <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span><span class="p">,</span>
+    <span class="n">async_vector_index</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncVectorIndex</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span>
+        <span class="n">index_name</span><span class="o">=</span><span class="s2">&quot;test_vector_index&quot;</span>
     <span class="p">)</span>
-    <span class="n">attributes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
-    <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">get_profile</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">async_profile</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">async_vector_index</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">async_vector_index</span><span class="o">.</span><span class="n">profile</span><span class="p">)</span>
 
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
@@ -947,7 +965,7 @@ methods respectively.</p>
 
     <span class="c1"># Use vector_index.set_attributes to update a multiple attributes</span>
     <span class="n">updated_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OracleVectorIndexAttributes</span><span class="p">(</span>
-        <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span><span class="p">,</span>
+        <span class="n">refresh_rate</span><span class="o">=</span><span class="mi">1450</span>
     <span class="p">)</span>
     <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">updated_attributes</span><span class="p">)</span>
 
@@ -955,8 +973,7 @@ methods respectively.</p>
     <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
         <span class="n">attribute_name</span><span class="o">=</span><span class="s2">&quot;similarity_threshold&quot;</span><span class="p">,</span> <span class="n">attribute_value</span><span class="o">=</span><span class="mf">0.5</span>
     <span class="p">)</span>
-    <span class="n">attributes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_vector_index</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">async_vector_index</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
 
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
@@ -1036,6 +1053,7 @@ methods respectively.</p>
 <li><a class="reference internal" href="#select_ai.VectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">VectorIndex.delete()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.disable()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.VectorIndex.fetch"><code class="docutils literal notranslate"><span class="pre">VectorIndex.fetch()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_attributes()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_profile()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.VectorIndex.list"><code class="docutils literal notranslate"><span class="pre">VectorIndex.list()</span></code></a></li>
@@ -1045,7 +1063,7 @@ methods respectively.</p>
 </li>
 <li><a class="reference internal" href="#create-vector-index">3.1. Create vector index</a></li>
 <li><a class="reference internal" href="#list-vector-index">3.2. List vector index</a></li>
-<li><a class="reference internal" href="#get-vector-index-attributes">3.3. Get vector index attributes</a></li>
+<li><a class="reference internal" href="#fetch-vector-index">3.3. Fetch vector index</a></li>
 <li><a class="reference internal" href="#update-vector-index-attributes">3.4. Update vector index attributes</a></li>
 <li><a class="reference internal" href="#rag-using-vector-index">3.5. RAG using vector index</a></li>
 <li><a class="reference internal" href="#delete-vector-index">3.6. Delete vector index</a></li>
@@ -1057,6 +1075,7 @@ methods respectively.</p>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.delete"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.delete()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.disable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.disable()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.enable()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncVectorIndex.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.fetch()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_attributes()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_profile()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncVectorIndex.list"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.list()</span></code></a></li>
@@ -1066,7 +1085,7 @@ methods respectively.</p>
 </li>
 <li><a class="reference internal" href="#async-create-vector-index">4.1. Async create vector index</a></li>
 <li><a class="reference internal" href="#async-list-vector-index">4.2. Async list vector index</a></li>
-<li><a class="reference internal" href="#async-get-vector-index-attributes">4.3. Async get vector index attributes</a></li>
+<li><a class="reference internal" href="#async-fetch-vector-index">4.3. Async fetch vector index</a></li>
 <li><a class="reference internal" href="#async-update-vector-index-attributes">4.4. Async update vector index attributes</a></li>
 <li><a class="reference internal" href="#async-rag-using-vector-index">4.5. Async RAG using vector index</a></li>
 </ul>

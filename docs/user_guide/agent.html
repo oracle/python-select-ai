@@ -18,7 +18,7 @@
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6.1. AsyncTool" href="async_agent.html" />
+    <link rel="next" title="1. AsyncTool" href="async_agent.html" />
     <link rel="prev" title="1. SyntheticDataAttributes" href="synthetic_data.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
@@ -156,7 +156,7 @@
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="async_agent.html"
-                          title="next chapter"><span class="section-number">6.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -186,7 +186,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="async_agent.html" title="6.1. AsyncTool"
+          <a href="async_agent.html" title="1. AsyncTool"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
@@ -242,12 +242,12 @@ endpoints, Slack or Email notifications) and attach them to tasks</p></li>
 <li><p>Group agents into teams and invoke them with a single API call</p></li>
 </ul>
 <section id="tool">
-<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code><a class="headerlink" href="#tool" title="Link to this heading">¶</a></h1>
+<h1><code class="docutils literal notranslate"><span class="pre">Tool</span></code><a class="headerlink" href="#tool" title="Link to this heading">¶</a></h1>
 <p>A callable which Select AI agent can invoke to accomplish a certain task.
 Users can either register built-in tools or create a custom tool using a PL/SQL
 stored procedure.</p>
 <section id="supported-tools">
-<h2><span class="section-number">1.1. </span>Supported Tools<a class="headerlink" href="#supported-tools" title="Link to this heading">¶</a></h2>
+<h2>Supported Tools<a class="headerlink" href="#supported-tools" title="Link to this heading">¶</a></h2>
 <p>Following class methods of <code class="docutils literal notranslate"><span class="pre">select_ai.agent.Tool</span></code> class
 can be used to create tools. Invoking them will create a proxy object in the
 Python layer and persist the tool in the Database using
@@ -597,7 +597,7 @@ match. Default value is “.*” i.e. match all tool name.</p>
 
 </section>
 <section id="create-tool">
-<h2><span class="section-number">1.2. </span>Create Tool<a class="headerlink" href="#create-tool" title="Link to this heading">¶</a></h2>
+<h2>Create Tool<a class="headerlink" href="#create-tool" title="Link to this heading">¶</a></h2>
 <p>The following example shows creation of an AI agent tool to perform natural
 language translation to SQL using an OCI AI profile</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -664,7 +664,7 @@ language translation to SQL using an OCI AI profile</p>
 </div>
 </section>
 <section id="list-tools">
-<h2><span class="section-number">1.3. </span>List Tools<a class="headerlink" href="#list-tools" title="Link to this heading">¶</a></h2>
+<h2>List Tools<a class="headerlink" href="#list-tools" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -689,7 +689,7 @@ language translation to SQL using an OCI AI profile</p>
 </section>
 </section>
 <section id="task">
-<h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">Task</span></code><a class="headerlink" href="#task" title="Link to this heading">¶</a></h1>
+<h1><code class="docutils literal notranslate"><span class="pre">Task</span></code><a class="headerlink" href="#task" title="Link to this heading">¶</a></h1>
 <p>Each task is identified by a <code class="docutils literal notranslate"><span class="pre">task_name</span></code> and includes a set of attributes that
 guide the agent’s behavior during execution.
 Key attributes include the <code class="docutils literal notranslate"><span class="pre">instruction</span></code>, which describes the task’s purpose and
@@ -835,7 +835,7 @@ can be specified by passing a TaskAttributes object</p>
 </dd></dl>
 
 <section id="create-task">
-<h2><span class="section-number">2.1. </span>Create Task<a class="headerlink" href="#create-task" title="Link to this heading">¶</a></h2>
+<h2>Create Task<a class="headerlink" href="#create-task" title="Link to this heading">¶</a></h2>
 <p>In the following task, we use the <code class="docutils literal notranslate"><span class="pre">MOVIE_SQL_TOOL</span></code> created in the
 previous step</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -879,7 +879,7 @@ previous step</p>
 </div>
 </section>
 <section id="list-tasks">
-<h2><span class="section-number">2.2. </span>List Tasks<a class="headerlink" href="#list-tasks" title="Link to this heading">¶</a></h2>
+<h2>List Tasks<a class="headerlink" href="#list-tasks" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -903,7 +903,7 @@ previous step</p>
 </section>
 </section>
 <section id="id1">
-<h1><span class="section-number">3. </span><code class="docutils literal notranslate"><span class="pre">Agent</span></code><a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<h1><code class="docutils literal notranslate"><span class="pre">Agent</span></code><a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <p>A Select AI Agent is defined using <code class="docutils literal notranslate"><span class="pre">agent_name</span></code>, its <code class="docutils literal notranslate"><span class="pre">attributes</span></code> and an
 optional description. The attributes must include key agent properties such as
 <code class="docutils literal notranslate"><span class="pre">profile_name</span></code> which specifies the LLM profile used for prompt generation
@@ -1033,7 +1033,7 @@ can be specified by passing an AgentAttributes object</p>
 </dd></dl>
 
 <section id="create-agent">
-<h2><span class="section-number">3.1. </span>Create Agent<a class="headerlink" href="#create-agent" title="Link to this heading">¶</a></h2>
+<h2>Create Agent<a class="headerlink" href="#create-agent" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -1071,7 +1071,7 @@ can be specified by passing an AgentAttributes object</p>
 </section>
 </section>
 <section id="team">
-<h1><span class="section-number">4. </span>Team<a class="headerlink" href="#team" title="Link to this heading">¶</a></h1>
+<h1>Team<a class="headerlink" href="#team" title="Link to this heading">¶</a></h1>
 <p>AI Agent Team coordinates the execution of multiple agents working together to
 fulfill a user request. Each team is uniquely identified by a <code class="docutils literal notranslate"><span class="pre">team_name</span></code> and
 configured through a set of <code class="docutils literal notranslate"><span class="pre">attributes</span></code> that define its composition and
@@ -1230,7 +1230,7 @@ Currently, the following parameters are supported:</p>
 </dd></dl>
 
 <section id="run-team">
-<h2><span class="section-number">4.1. </span>Run Team<a class="headerlink" href="#run-team" title="Link to this heading">¶</a></h2>
+<h2>Run Team<a class="headerlink" href="#run-team" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 
@@ -1290,9 +1290,9 @@ Currently, the following parameters are supported:</p>
 </section>
 </section>
 <section id="ai-agent-examples">
-<h1><span class="section-number">5. </span>AI agent examples<a class="headerlink" href="#ai-agent-examples" title="Link to this heading">¶</a></h1>
+<h1>AI agent examples<a class="headerlink" href="#ai-agent-examples" title="Link to this heading">¶</a></h1>
 <section id="web-search-agent-using-openai-s-gpt-model">
-<h2><span class="section-number">5.1. </span>Web Search Agent using OpenAI’s GPT model<a class="headerlink" href="#web-search-agent-using-openai-s-gpt-model" title="Link to this heading">¶</a></h2>
+<h2>Web Search Agent using OpenAI’s GPT model<a class="headerlink" href="#web-search-agent-using-openai-s-gpt-model" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -1444,10 +1444,10 @@ intelligence research and development. OpenAI focuses on creating and
 </section>
 </section>
 <section id="async-ai-agent">
-<h1><span class="section-number">6. </span>Async AI Agent<a class="headerlink" href="#async-ai-agent" title="Link to this heading">¶</a></h1>
+<h1>Async AI Agent<a class="headerlink" href="#async-ai-agent" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="async_agent.html">6.1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html">1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool"><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_built_in_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_built_in_tool()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.create_email_notification_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_email_notification_tool()</span></code></a></li>
@@ -1465,11 +1465,11 @@ intelligence research and development. OpenAI focuses on creating and
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTool.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTool.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-tool">6.1.1. Create Tool</a></li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-tools">6.1.2. List Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-tool">1.1. Create Tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-tools">1.2. List Tools</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asynctask">6.2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asynctask">2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask"><code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.create"><code class="docutils literal notranslate"><span class="pre">AsyncTask.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTask.delete()</span></code></a></li>
@@ -1481,11 +1481,11 @@ intelligence research and development. OpenAI focuses on creating and
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTask.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTask.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-task">6.2.1. Create Task</a></li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-tasks">6.2.2. List Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-task">2.1. Create Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-tasks">2.2. List Tasks</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asyncagent">6.3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asyncagent">3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent"><code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.create"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.delete"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.delete()</span></code></a></li>
@@ -1497,11 +1497,11 @@ intelligence research and development. OpenAI focuses on creating and
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncAgent.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-agent">6.3.1. Create Agent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-agents">6.3.2. List Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#create-agent">3.1. Create Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-agents">3.2. List Agents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asyncteam">6.4. AsyncTeam</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#asyncteam">4. AsyncTeam</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam"><code class="docutils literal notranslate"><span class="pre">AsyncTeam</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.create"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.delete()</span></code></a></li>
@@ -1514,12 +1514,12 @@ intelligence research and development. OpenAI focuses on creating and
 <li class="toctree-l3"><a class="reference internal" href="async_agent.html#select_ai.agent.AsyncTeam.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#run-team">6.4.1. Run Team</a></li>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-teams">6.4.2. List Teams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#run-team">4.1. Run Team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#list-teams">4.2. List Teams</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="async_agent.html#async-ai-agent-examples">6.5. Async AI agent examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="async_agent.html#web-search-agent-using-openai-s-gpt-model">6.5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_agent.html#async-ai-agent-examples">5. Async AI agent examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async_agent.html#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
 </ul>
 </li>
 </ul>
@@ -1629,7 +1629,7 @@ intelligence research and development. OpenAI focuses on creating and
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="async_agent.html"
-                          title="next chapter"><span class="section-number">6.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -1659,7 +1659,7 @@ intelligence research and development. OpenAI focuses on creating and
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="async_agent.html" title="6.1. AsyncTool"
+          <a href="async_agent.html" title="1. AsyncTool"
              >next</a> |</li>
         <li class="right" >
           <a href="synthetic_data.html" title="1. SyntheticDataAttributes"

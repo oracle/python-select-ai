@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. AsyncProfile API &#8212; Select AI for Python 1.2.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11.1. AsyncProfile API &#8212; Select AI for Python 1.2.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Conversation Object model" href="conversation.html" />
-    <link rel="prev" title="Profile Object Model" href="profile.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="prev" title="1. Profile Object Model" href="profile.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
             <script type="text/javascript" src="../_static/menu.js"></script>
@@ -63,7 +63,7 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li><a class="reference internal" href="#">11.1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
@@ -90,22 +90,22 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-profile-creation">2. Async Profile creation</a></li>
-<li><a class="reference internal" href="#async-explain-sql">3. Async explain SQL</a></li>
-<li><a class="reference internal" href="#async-run-sql">4. Async run SQL</a></li>
-<li><a class="reference internal" href="#async-show-sql">5. Async show SQL</a></li>
-<li><a class="reference internal" href="#async-concurrent-sql">6. Async concurrent SQL</a></li>
-<li><a class="reference internal" href="#async-chat">7. Async chat</a></li>
-<li><a class="reference internal" href="#summarize">8. Summarize</a></li>
-<li><a class="reference internal" href="#async-pipeline">9. Async pipeline</a></li>
-<li><a class="reference internal" href="#list-profiles-asynchronously">10. List profiles asynchronously</a></li>
+<li><a class="reference internal" href="#async-profile-creation">11.2. Async Profile creation</a></li>
+<li><a class="reference internal" href="#async-explain-sql">11.3. Async explain SQL</a></li>
+<li><a class="reference internal" href="#async-run-sql">11.4. Async run SQL</a></li>
+<li><a class="reference internal" href="#async-show-sql">11.5. Async show SQL</a></li>
+<li><a class="reference internal" href="#async-concurrent-sql">11.6. Async concurrent SQL</a></li>
+<li><a class="reference internal" href="#async-chat">11.7. Async chat</a></li>
+<li><a class="reference internal" href="#summarize">11.8. Summarize</a></li>
+<li><a class="reference internal" href="#async-pipeline">11.9. Async pipeline</a></li>
+<li><a class="reference internal" href="#list-profiles-asynchronously">11.10. List profiles asynchronously</a></li>
 </ul>
 
   </div>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="profile.html"
-                          title="previous chapter">Profile Object Model</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Profile Object Model</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -143,7 +143,7 @@
           <a href="conversation.html" title="1. Conversation Object model"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="profile.html" title="Profile Object Model"
+          <a href="profile.html" title="1. Profile Object Model"
              accesskey="P">previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -156,8 +156,8 @@
               <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
 
           </li>
-          <li class="nav-item nav-item-1"><a href="profile.html" accesskey="U">Profile Object Model</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
+          <li class="nav-item nav-item-1"><a href="profile.html" accesskey="U"><span class="section-number">1. </span>Profile Object Model</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
                 <li class="right">
 
 
@@ -192,7 +192,7 @@
 Unless explicitly noted as synchronous, the <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> methods should be
 used with <code class="docutils literal notranslate"><span class="pre">await</span></code>.</p>
 <section id="asyncprofile-api">
-<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API<a class="headerlink" href="#asyncprofile-api" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API<a class="headerlink" href="#asyncprofile-api" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AsyncProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile" title="Link to this definition">¶</a></dt>
@@ -560,7 +560,7 @@ in the LLM request</p></li>
 
 </section>
 <section id="async-profile-creation">
-<h1><span class="section-number">2. </span>Async Profile creation<a class="headerlink" href="#async-profile-creation" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.2. </span>Async Profile creation<a class="headerlink" href="#async-profile-creation" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pformat</span>
@@ -632,7 +632,7 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="async-explain-sql">
-<h1><span class="section-number">3. </span>Async explain SQL<a class="headerlink" href="#async-explain-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.3. </span>Async explain SQL<a class="headerlink" href="#async-explain-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -677,7 +677,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-run-sql">
-<h1><span class="section-number">4. </span>Async run SQL<a class="headerlink" href="#async-run-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.4. </span>Async run SQL<a class="headerlink" href="#async-run-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -709,7 +709,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-show-sql">
-<h1><span class="section-number">5. </span>Async show SQL<a class="headerlink" href="#async-show-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.5. </span>Async show SQL<a class="headerlink" href="#async-show-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -738,7 +738,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-concurrent-sql">
-<h1><span class="section-number">6. </span>Async concurrent SQL<a class="headerlink" href="#async-concurrent-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.6. </span>Async concurrent SQL<a class="headerlink" href="#async-concurrent-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -797,7 +797,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-chat">
-<h1><span class="section-number">7. </span>Async chat<a class="headerlink" href="#async-chat" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.7. </span>Async chat<a class="headerlink" href="#async-chat" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -846,7 +846,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="summarize">
-<h1><span class="section-number">8. </span>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.8. </span>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -932,7 +932,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-pipeline">
-<h1><span class="section-number">9. </span>Async pipeline<a class="headerlink" href="#async-pipeline" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.9. </span>Async pipeline<a class="headerlink" href="#async-pipeline" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1001,7 +1001,7 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
 </div>
 </section>
 <section id="list-profiles-asynchronously">
-<h1><span class="section-number">10. </span>List profiles asynchronously<a class="headerlink" href="#list-profiles-asynchronously" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11.10. </span>List profiles asynchronously<a class="headerlink" href="#list-profiles-asynchronously" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1042,7 +1042,7 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li><a class="reference internal" href="#">11.1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
@@ -1069,22 +1069,22 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-profile-creation">2. Async Profile creation</a></li>
-<li><a class="reference internal" href="#async-explain-sql">3. Async explain SQL</a></li>
-<li><a class="reference internal" href="#async-run-sql">4. Async run SQL</a></li>
-<li><a class="reference internal" href="#async-show-sql">5. Async show SQL</a></li>
-<li><a class="reference internal" href="#async-concurrent-sql">6. Async concurrent SQL</a></li>
-<li><a class="reference internal" href="#async-chat">7. Async chat</a></li>
-<li><a class="reference internal" href="#summarize">8. Summarize</a></li>
-<li><a class="reference internal" href="#async-pipeline">9. Async pipeline</a></li>
-<li><a class="reference internal" href="#list-profiles-asynchronously">10. List profiles asynchronously</a></li>
+<li><a class="reference internal" href="#async-profile-creation">11.2. Async Profile creation</a></li>
+<li><a class="reference internal" href="#async-explain-sql">11.3. Async explain SQL</a></li>
+<li><a class="reference internal" href="#async-run-sql">11.4. Async run SQL</a></li>
+<li><a class="reference internal" href="#async-show-sql">11.5. Async show SQL</a></li>
+<li><a class="reference internal" href="#async-concurrent-sql">11.6. Async concurrent SQL</a></li>
+<li><a class="reference internal" href="#async-chat">11.7. Async chat</a></li>
+<li><a class="reference internal" href="#summarize">11.8. Summarize</a></li>
+<li><a class="reference internal" href="#async-pipeline">11.9. Async pipeline</a></li>
+<li><a class="reference internal" href="#list-profiles-asynchronously">11.10. List profiles asynchronously</a></li>
 </ul>
 
   </div>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="profile.html"
-                          title="previous chapter">Profile Object Model</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Profile Object Model</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -1122,7 +1122,7 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
           <a href="conversation.html" title="1. Conversation Object model"
              >next</a> |</li>
         <li class="right" >
-          <a href="profile.html" title="Profile Object Model"
+          <a href="profile.html" title="1. Profile Object Model"
              >previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -1135,8 +1135,8 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
               <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
 
           </li>
-          <li class="nav-item nav-item-1"><a href="profile.html" >Profile Object Model</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
+          <li class="nav-item nav-item-1"><a href="profile.html" ><span class="section-number">1. </span>Profile Object Model</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
                 <li class="right">
 
 
