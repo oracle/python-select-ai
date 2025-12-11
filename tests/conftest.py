@@ -125,13 +125,13 @@ def async_connection():
     return select_ai.db.async_get_connection()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def cursor():
     with select_ai.cursor() as cr:
         yield cr
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 async def async_cursor():
     async with select_ai.async_cursor() as cr:
         yield cr

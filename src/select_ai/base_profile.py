@@ -8,12 +8,14 @@
 import json
 from abc import ABC
 from dataclasses import dataclass
+from dataclasses import replace as dataclass_replace
 from typing import List, Mapping, Optional, Tuple
 
 import oracledb
 
 from select_ai._abc import SelectAIDataClass
 from select_ai.action import Action
+from select_ai.errors import ProfileExistsError
 from select_ai.feedback import (
     FeedbackOperation,
     FeedbackType,
@@ -159,6 +161,10 @@ class BaseProfile(ABC):
      if profile exists in the database and replace = False and
      merge = False. Default value is True
 
+    :param bool  raise_error_on_empty_attributes: Raise
+     ProfileEmptyAttributesError, if profile attributes are empty
+     in database. Default value is False.
+
     """
 
     def __init__(
@@ -169,6 +175,7 @@ class BaseProfile(ABC):
         merge: Optional[bool] = False,
         replace: Optional[bool] = False,
         raise_error_if_exists: Optional[bool] = True,
+        raise_error_on_empty_attributes: Optional[bool] = False,
     ):
         """Initialize a base profile"""
         self.profile_name = profile_name
@@ -182,6 +189,34 @@ class BaseProfile(ABC):
         self.merge = merge
         self.replace = replace
         self.raise_error_if_exists = raise_error_if_exists
+        self.raise_error_on_empty_attributes = raise_error_on_empty_attributes
+
+    def _raise_error_if_profile_exists(self):
+        """
+        Helper method to raise ProfileExistsError if profile exists
+        in the database and replace = False and merge = False
+        """
+        if not self.replace and not self.merge:
+            if self.attributes is not None or self.description is not None:
+                if self.raise_error_if_exists:
+                    raise ProfileExistsError(self.profile_name)
+
+    def _merge_attributes(self, saved_attributes, saved_description):
+        """
+        Helper method to merge user passed attributes with the attributes saved
+        in the database.
+        """
+        if self.description is None and not self.replace:
+            self.description = saved_description
+        if self.attributes is None:
+            self.attributes = saved_attributes
+        if self.merge:
+            self.replace = True
+            if self.attributes is not None:
+                self.attributes = dataclass_replace(
+                    saved_attributes,
+                    **self.attributes.dict(exclude_null=True),
+                )
 
     def __repr__(self):
         return (
@@ -206,15 +241,15 @@ def validate_params_for_feedback(
     response: Optional[str] = None,
     operation: Optional[FeedbackOperation] = FeedbackOperation.ADD,
 ):
-    if sql_id and prompt_spec:
-        raise AttributeError("Either sql_id or prompt_spec must be specified")
     if not sql_id and not prompt_spec:
         raise AttributeError("Either sql_id or prompt_spec must be specified")
-    parameters = {
-        "feedback_type": feedback_type.value,
-        "feedback_content": feedback_content,
-        "operation": operation.value,
-    }
+    parameters = {"operation": operation.value}
+    if feedback_content:
+        parameters["feedback_content"] = feedback_content
+    if feedback_type:
+        parameters["feedback_type"] = feedback_type.value
+    if response:
+        parameters["response"] = response
     if prompt_spec:
         prompt, action = prompt_spec
         if action not in (Action.RUNSQL, Action.SHOWSQL, Action.EXPLAINSQL):

@@ -56,6 +56,18 @@ class ProfileExistsError(SelectAIError):
         )
 
 
+class ProfileAttributesEmptyError(SelectAIError):
+    """Profile attributes empty in the database"""
+
+    def __init__(self, profile_name: str):
+        self.profile_name = profile_name
+
+    def __str__(self):
+        return (
+            f"Profile {self.profile_name} attributes empty in the database. "
+        )
+
+
 class VectorIndexNotFoundError(SelectAIError):
     """VectorIndex not found in the database"""
 

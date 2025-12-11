@@ -30,7 +30,11 @@ from select_ai.base_profile import (
 )
 from select_ai.conversation import AsyncConversation
 from select_ai.db import async_cursor, async_get_connection
-from select_ai.errors import ProfileExistsError, ProfileNotFoundError
+from select_ai.errors import (
+    ProfileAttributesEmptyError,
+    ProfileExistsError,
+    ProfileNotFoundError,
+)
 from select_ai.feedback import (
     FeedbackOperation,
     FeedbackType,
@@ -70,34 +74,22 @@ class AsyncProfile(BaseProfile):
             profile_exists = False
             try:
                 saved_attributes = await self._get_attributes(
+                    profile_name=self.profile_name,
+                    raise_on_empty=True,
+                )
+                saved_description = await self._get_profile_description(
                     profile_name=self.profile_name
                 )
                 profile_exists = True
-                if not self.replace and not self.merge:
-                    if (
-                        self.attributes is not None
-                        or self.description is not None
-                    ):
-                        if self.raise_error_if_exists:
-                            raise ProfileExistsError(self.profile_name)
-
-                if self.description is None and not self.replace:
-                    self.description = await self._get_profile_description(
-                        profile_name=self.profile_name
-                    )
+                self._raise_error_if_profile_exists()
+            except ProfileAttributesEmptyError:
+                if self.raise_error_on_empty_attributes:
+                    raise
             except ProfileNotFoundError:
                 if self.attributes is None and self.description is None:
                     raise
             else:
-                if self.attributes is None:
-                    self.attributes = saved_attributes
-                if self.merge:
-                    self.replace = True
-                    if self.attributes is not None:
-                        self.attributes = dataclass_replace(
-                            saved_attributes,
-                            **self.attributes.dict(exclude_null=True),
-                        )
+                self._merge_attributes(saved_attributes, saved_description)
             if self.replace or not profile_exists:
                 await self.create(replace=self.replace)
         else:  # profile name is None:
@@ -132,12 +124,15 @@ class AsyncProfile(BaseProfile):
                 raise ProfileNotFoundError(profile_name)
 
     @staticmethod
-    async def _get_attributes(profile_name) -> ProfileAttributes:
+    async def _get_attributes(
+        profile_name: str, raise_on_empty: bool = True
+    ) -> Union[ProfileAttributes, None]:
         """Asynchronously gets AI profile attributes from the Database
 
         :param str profile_name: Name of the profile
+        :param bool raise_on_empty: Raise an error if attributes are empty
         :return: select_ai.provider.ProviderAttributes
-        :raises: ProfileNotFoundError
+        :raises: select_ai.errors.ProfileAttributesEmptyError
 
         """
         async with async_cursor() as cr:
@@ -149,7 +144,11 @@ class AsyncProfile(BaseProfile):
             if attributes:
                 return await ProfileAttributes.async_create(**dict(attributes))
             else:
-                raise ProfileNotFoundError(profile_name=profile_name)
+                if raise_on_empty:
+                    raise ProfileAttributesEmptyError(
+                        profile_name=profile_name
+                    )
+                return None
 
     async def get_attributes(self) -> ProfileAttributes:
         """Asynchronously gets AI profile attributes from the Database
@@ -387,7 +386,9 @@ class AsyncProfile(BaseProfile):
             for row in rows:
                 profile_name = row[0]
                 yield await cls(
-                    profile_name=profile_name, raise_error_if_exists=False
+                    profile_name=profile_name,
+                    raise_error_if_exists=False,
+                    raise_error_on_empty_attributes=False,
                 )
 
     async def generate(

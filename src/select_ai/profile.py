@@ -23,7 +23,11 @@ from select_ai.base_profile import (
     validate_params_for_summary,
 )
 from select_ai.db import cursor
-from select_ai.errors import ProfileExistsError, ProfileNotFoundError
+from select_ai.errors import (
+    ProfileAttributesEmptyError,
+    ProfileExistsError,
+    ProfileNotFoundError,
+)
 from select_ai.feedback import FeedbackOperation, FeedbackType
 from select_ai.provider import Provider
 from select_ai.sql import (
@@ -56,34 +60,22 @@ class Profile(BaseProfile):
             profile_exists = False
             try:
                 saved_attributes = self._get_attributes(
+                    profile_name=self.profile_name,
+                    raise_on_empty=True,
+                )
+                saved_description = self._get_profile_description(
                     profile_name=self.profile_name
                 )
                 profile_exists = True
-                if not self.replace and not self.merge:
-                    if (
-                        self.attributes is not None
-                        or self.description is not None
-                    ):
-                        if self.raise_error_if_exists:
-                            raise ProfileExistsError(self.profile_name)
-
-                if self.description is None and not self.replace:
-                    self.description = self._get_profile_description(
-                        profile_name=self.profile_name
-                    )
+                self._raise_error_if_profile_exists()
+            except ProfileAttributesEmptyError:
+                if self.raise_error_on_empty_attributes:
+                    raise
             except ProfileNotFoundError:
                 if self.attributes is None and self.description is None:
                     raise
             else:
-                if self.attributes is None:
-                    self.attributes = saved_attributes
-                if self.merge:
-                    self.replace = True
-                    if self.attributes is not None:
-                        self.attributes = dataclass_replace(
-                            saved_attributes,
-                            **self.attributes.dict(exclude_null=True),
-                        )
+                self._merge_attributes(saved_attributes, saved_description)
             if self.replace or not profile_exists:
                 self.create(replace=self.replace)
         else:  # profile name is None
@@ -112,12 +104,15 @@ class Profile(BaseProfile):
                 raise ProfileNotFoundError(profile_name)
 
     @staticmethod
-    def _get_attributes(profile_name) -> ProfileAttributes:
+    def _get_attributes(
+        profile_name, raise_on_empty: bool = False
+    ) -> Union[ProfileAttributes, None]:
         """Get AI profile attributes from the Database
 
         :param str profile_name: Name of the profile
+        :param bool raise_on_empty: Raise an error if attributes are empty
         :return: select_ai.ProfileAttributes
-        :raises: ProfileNotFoundError
+        :raises: select_ai.errors.ProfileAttributesEmptyError
         """
         with cursor() as cr:
             cr.execute(
@@ -128,7 +123,11 @@ class Profile(BaseProfile):
             if attributes:
                 return ProfileAttributes.create(**dict(attributes))
             else:
-                raise ProfileNotFoundError(profile_name=profile_name)
+                if raise_on_empty:
+                    raise ProfileAttributesEmptyError(
+                        profile_name=profile_name
+                    )
+                return None
 
     def get_attributes(self) -> ProfileAttributes:
         """Get AI profile attributes from the Database
@@ -278,7 +277,6 @@ class Profile(BaseProfile):
             operation=operation,
         )
         params["profile_name"] = self.profile_name
-        print(params)
         with cursor() as cr:
             cr.callproc("DBMS_CLOUD_AI.FEEDBACK", keyword_parameters=params)
 
@@ -363,7 +361,9 @@ class Profile(BaseProfile):
             for row in cr.fetchall():
                 profile_name = row[0]
                 yield cls(
-                    profile_name=profile_name, raise_error_if_exists=False
+                    profile_name=profile_name,
+                    raise_error_if_exists=False,
+                    raise_error_on_empty_attributes=False,
                 )
 
     def generate(
@@ -513,7 +513,6 @@ class Profile(BaseProfile):
             params=params,
         )
         parameters["profile_name"] = self.profile_name
-        print(parameters)
         with cursor() as cr:
             data = cr.callfunc(
                 "DBMS_CLOUD_AI.SUMMARIZE",
