@@ -1,10 +1,7 @@
 import logging
-import os
 import select_ai
 from select_ai.action import Action
-import oracledb
 import pytest
-import uuid
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -12,7 +9,7 @@ logger = logging.getLogger(__name__)
 PROFILE_NAME = "PYSAI_TEST_FEEDBACK_PROFILE"
 PROFILE_DESCRIPTION = "OCI Gen AI Test Profile"
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def profile(oci_credential, oci_compartment_id, test_env):
     profile = select_ai.Profile(
         profile_name=PROFILE_NAME,
