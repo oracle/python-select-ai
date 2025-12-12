@@ -7,7 +7,6 @@
 
 import json
 from contextlib import asynccontextmanager
-from dataclasses import replace as dataclass_replace
 from typing import (
     AsyncGenerator,
     List,
@@ -32,7 +31,6 @@ from select_ai.conversation import AsyncConversation
 from select_ai.db import async_cursor, async_get_connection
 from select_ai.errors import (
     ProfileAttributesEmptyError,
-    ProfileExistsError,
     ProfileNotFoundError,
 )
 from select_ai.feedback import (
@@ -73,14 +71,14 @@ class AsyncProfile(BaseProfile):
         if self.profile_name:
             profile_exists = False
             try:
-                saved_attributes = await self._get_attributes(
-                    profile_name=self.profile_name,
-                    raise_on_empty=True,
-                )
                 saved_description = await self._get_profile_description(
                     profile_name=self.profile_name
                 )
                 profile_exists = True
+                saved_attributes = await self._get_attributes(
+                    profile_name=self.profile_name,
+                    raise_on_empty=True,
+                )
                 self._raise_error_if_profile_exists()
             except ProfileAttributesEmptyError:
                 if self.raise_error_on_empty_attributes:
@@ -623,6 +621,34 @@ class AsyncProfile(BaseProfile):
             else:
                 responses.append(result.error)
         return responses
+
+    async def translate(
+        self, text: str, source_language: str, target_language: str
+    ) -> Union[str, None]:
+        """
+        Translate a text using a source language and a target language
+
+        :param str text: Text to translate
+        :param str source_language: Source language
+        :param str target_language: Target language
+        :return: str
+        """
+        parameters = {
+            "profile_name": self.profile_name,
+            "text": text,
+            "source_language": source_language,
+            "target_language": target_language,
+        }
+        async with async_cursor() as cr:
+            data = await cr.callfunc(
+                "DBMS_CLOUD_AI.TRANSLATE",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters=parameters,
+            )
+        if data is not None:
+            result = await data.read()
+            return result
+        return None
 
 
 class AsyncSession:

@@ -83,10 +83,9 @@ async def python_gen_ai_neg_feedback(async_cursor, python_gen_ai_profile):
         ],
     )
     await async_cursor.execute(
-        f"""
-                  BEGIN
-                      dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
-                  END;
+        f"""BEGIN
+             dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
+            END;
        """
     )
     prompt = "Total points of each gymnasts"
@@ -117,10 +116,9 @@ async def python_gen_ai_pos_feedback(async_cursor, python_gen_ai_profile):
         ["prompt", "action", "sql_text"],
     )
     await async_cursor.execute(
-        f"""
-                  BEGIN
-                      dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
-                  END;
+        f"""BEGIN
+             dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
+            END;
        """
     )
     prompt = "Lists the name of all people"
@@ -370,3 +368,11 @@ async def test_1317(
     assert (
         feedback_attributes["sql_text"] == python_gen_ai_pos_feedback.sql_text
     )
+
+
+async def test_1318(python_gen_ai_profile):
+    """Test translate"""
+    response = await python_gen_ai_profile.translate(
+        text="Thank you", source_language="en", target_language="de"
+    )
+    assert response == "Danke"

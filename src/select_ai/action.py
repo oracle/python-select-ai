@@ -21,3 +21,4 @@ class Action(StrEnum):
     SHOWPROMPT = "showprompt"
     FEEDBACK = "feedback"
     SUMMARIZE = "summarize"
+    TRANSLATE = "translate"

@@ -79,11 +79,9 @@ def python_gen_ai_neg_feedback(cursor, python_gen_ai_profile):
         ],
     )
     cursor.execute(
-        f"""
-                  BEGIN
-                      dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
-                  END;
-       """
+        f"""BEGIN
+             dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
+            END;"""
     )
     prompt = "Total points of each gymnasts"
     action = select_ai.Action.SHOWSQL
@@ -113,10 +111,9 @@ def python_gen_ai_pos_feedback(cursor, python_gen_ai_profile):
         ["prompt", "action", "sql_text"],
     )
     cursor.execute(
-        f"""
-                  BEGIN
-                      dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
-                  END;
+        f"""BEGIN
+             dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
+            END;
        """
     )
     prompt = "Lists the name of all people"
@@ -349,3 +346,11 @@ def test_1217(cursor, python_gen_ai_profile, python_gen_ai_pos_feedback):
     assert (
         feedback_attributes["sql_text"] == python_gen_ai_pos_feedback.sql_text
     )
+
+
+def test_1218(python_gen_ai_profile):
+    """Test translate"""
+    response = python_gen_ai_profile.translate(
+        text="Thank you", source_language="en", target_language="de"
+    )
+    assert response == "Danke"
