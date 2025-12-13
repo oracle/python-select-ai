@@ -8,6 +8,7 @@
 """
 1300 - Module for testing the AsyncProfile proxy object
 """
+import collections
 import uuid
 
 import oracledb
@@ -67,6 +68,72 @@ async def python_gen_ai_duplicate_profile(min_profile_attributes):
     )
     yield profile
     await profile.delete(force=True)
+
+
+@pytest.fixture(scope="module")
+async def python_gen_ai_neg_feedback(async_cursor, python_gen_ai_profile):
+    feedback_metadata = collections.namedtuple(
+        "FeedbackMetadata",
+        [
+            "prompt",
+            "action",
+            "feedback_response",
+            "feedback_content",
+            "sql_text",
+        ],
+    )
+    await async_cursor.execute(
+        f"""BEGIN
+             dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
+            END;
+       """
+    )
+    prompt = "Total points of each gymnasts"
+    action = select_ai.Action.SHOWSQL
+    sql_text = f"select ai {action.value} {prompt}"
+    await async_cursor.execute(sql_text)
+    feedback_response = "SELECT * from gymnast"
+    feedback_content = "print in ascending order of total_points"
+    await python_gen_ai_profile.add_negative_feedback(
+        prompt_spec=(prompt, action),
+        response=feedback_response,
+        feedback_content=feedback_content,
+    )
+    yield feedback_metadata(
+        prompt=prompt,
+        action=action,
+        feedback_response=feedback_response,
+        feedback_content=feedback_content,
+        sql_text=sql_text,
+    )
+    await python_gen_ai_profile.delete_feedback(prompt_spec=(prompt, action))
+
+
+@pytest.fixture(scope="module")
+async def python_gen_ai_pos_feedback(async_cursor, python_gen_ai_profile):
+    feedback_metadata = collections.namedtuple(
+        "PositiveFeedbackMetadata",
+        ["prompt", "action", "sql_text"],
+    )
+    await async_cursor.execute(
+        f"""BEGIN
+             dbms_cloud_ai.set_profile('{python_gen_ai_profile.profile_name}');
+            END;
+       """
+    )
+    prompt = "Lists the name of all people"
+    action = select_ai.Action.SHOWSQL
+    sql_text = f"select ai {action.value} {prompt}"
+    await async_cursor.execute(sql_text)
+    await python_gen_ai_profile.add_positive_feedback(
+        prompt_spec=(prompt, action),
+    )
+    yield feedback_metadata(
+        prompt=prompt,
+        action=action,
+        sql_text=sql_text,
+    )
+    await python_gen_ai_profile.delete_feedback(prompt_spec=(prompt, action))
 
 
 def test_1300(python_gen_ai_profile, profile_attributes):
@@ -261,3 +328,51 @@ async def test_1315(profile_attributes):
     assert async_profile.profile_name == PYSAI_ASYNC_1300_PROFILE_2
     assert async_profile.attributes == profile_attributes
     assert async_profile.description == "OCI GENAI Profile 2"
+
+
+async def test_1316(
+    async_cursor, python_gen_ai_profile, python_gen_ai_neg_feedback
+):
+    """Test profile negative feedback"""
+    await async_cursor.execute(
+        f"select CONTENT, ATTRIBUTES "
+        f"from {python_gen_ai_profile.profile_name.upper()}_FEEDBACK_VECINDEX$VECTAB "
+        f"where JSON_VALUE(attributes, '$.sql_text') = '{python_gen_ai_neg_feedback.sql_text}'"
+    )
+    data = await async_cursor.fetchone()
+    prompt = await data[0].read()
+    assert prompt == python_gen_ai_neg_feedback.prompt
+    feedback_attributes = data[1]
+    assert (
+        feedback_attributes["sql_text"] == python_gen_ai_neg_feedback.sql_text
+    )
+    assert (
+        feedback_attributes["feedback_content"]
+        == python_gen_ai_neg_feedback.feedback_content
+    )
+
+
+async def test_1317(
+    async_cursor, python_gen_ai_profile, python_gen_ai_pos_feedback
+):
+    """Test profile positive feedback"""
+    await async_cursor.execute(
+        f"select CONTENT, ATTRIBUTES "
+        f"from {python_gen_ai_profile.profile_name.upper()}_FEEDBACK_VECINDEX$VECTAB "
+        f"where JSON_VALUE(attributes, '$.sql_text') = '{python_gen_ai_pos_feedback.sql_text}'"
+    )
+    data = await async_cursor.fetchone()
+    prompt = await data[0].read()
+    assert prompt == python_gen_ai_pos_feedback.prompt
+    feedback_attributes = data[1]
+    assert (
+        feedback_attributes["sql_text"] == python_gen_ai_pos_feedback.sql_text
+    )
+
+
+async def test_1318(python_gen_ai_profile):
+    """Test translate"""
+    response = await python_gen_ai_profile.translate(
+        text="Thank you", source_language="en", target_language="de"
+    )
+    assert response == "Danke"

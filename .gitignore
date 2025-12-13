@@ -19,3 +19,4 @@ pytest.env
 sample_connect.py
 async_pipeline_test.py
 parquet.py
+local_sample
