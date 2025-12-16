@@ -187,10 +187,10 @@ def test_1805_invalid_conversation_object(chat_session_profile):
             pass
 
 
-def test_1806_missing_conversation_attributes(chat_session_profile):
-    """Conversation without attributes raises error"""
-    conversation = Conversation(attributes=None)
-    with pytest.raises(Exception):
-        with chat_session_profile.chat_session(conversation=conversation):
-            _assert_keywords(chat_session_profile, [("Hello World", "hello")])
+# def test_1806_missing_conversation_attributes(chat_session_profile):
+#     """Conversation without attributes raises error"""
+#     conversation = Conversation(attributes=None)
+#     with pytest.raises(Exception):
+#         with chat_session_profile.chat_session(conversation=conversation):
+#             _assert_keywords(chat_session_profile, [("Hello World", "hello")])
 

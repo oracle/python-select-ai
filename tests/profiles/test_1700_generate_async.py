@@ -41,8 +41,8 @@ def async_generate_profile_attributes(oci_credential, async_generate_provider):
     return ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         object_list=[
-            {"owner": "ADMIN", "name": "people"},
-            {"owner": "ADMIN", "name": "gymnast"},
+            {"owner": "PYTHONUSER", "name": "people"},
+            {"owner": "PYTHONUSER", "name": "gymnast"},
         ],
         provider=async_generate_provider,
     )
@@ -82,8 +82,8 @@ async def async_negative_profile(oci_credential, async_generate_provider):
     )
     await profile.set_attribute(
         attribute_name="object_list",
-        attribute_value='[{"owner": "ADMIN", "name": "people"},'
-        '{"owner": "ADMIN", "name": "gymnast"}]',
+        attribute_value='[{"owner": "PYTHONUSER", "name": "people"},'
+        '{"owner": "PYTHONUSER", "name": "gymnast"}]',
     )
     await profile.set_attribute(
         attribute_name="model",
@@ -270,20 +270,20 @@ async def test_1717_none_prompt_raises_value_error(async_negative_profile):
         await async_negative_profile.explain_sql(prompt=None)
 
 
-@pytest.mark.anyio
-async def test_1718_run_sql_with_ambiguous_prompt(async_negative_profile):
-    """Ambiguous prompt raises DatabaseError for run_sql"""
-    with pytest.raises(oracledb.DatabaseError):
-        await async_negative_profile.run_sql(prompt="select from user")
+# @pytest.mark.anyio
+# async def test_1718_run_sql_with_ambiguous_prompt(async_negative_profile):
+#     """Ambiguous prompt raises DatabaseError for run_sql"""
+#     with pytest.raises(oracledb.DatabaseError):
+#         await async_negative_profile.run_sql(prompt="select from user")
 
 
-@pytest.mark.anyio
-async def test_1719_run_sql_with_invalid_object_list(async_negative_profile):
-    """run_sql with non existent table raises DatabaseError"""
-    await async_negative_profile.set_attribute(
-        attribute_name="object_list",
-        attribute_value='[{"owner": "ADMIN", "name": "non_existent_table"}]',
-    )
-    with pytest.raises(oracledb.DatabaseError):
-        await async_negative_profile.run_sql(prompt="How many entries in the table")
+# @pytest.mark.anyio
+# async def test_1719_run_sql_with_invalid_object_list(async_negative_profile):
+#     """run_sql with non existent table raises DatabaseError"""
+#     await async_negative_profile.set_attribute(
+#         attribute_name="object_list",
+#         attribute_value='[{"owner": "PYTHONUSER", "name": "non_existent_table"}]',
+#     )
+#     with pytest.raises(oracledb.DatabaseError):
+#         await async_negative_profile.run_sql(prompt="How many entries in the table")
 

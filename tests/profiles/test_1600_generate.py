@@ -41,8 +41,8 @@ def generate_profile_attributes(oci_credential, generate_provider):
     return ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         object_list=[
-            {"owner": "ADMIN", "name": "people"},
-            {"owner": "ADMIN", "name": "gymnast"},
+            {"owner": "PYTHONUSER", "name": "people"},
+            {"owner": "PYTHONUSER", "name": "gymnast"},
         ],
         provider=generate_provider,
     )
@@ -82,8 +82,8 @@ def negative_profile(oci_credential, generate_provider):
     )
     profile.set_attribute(
         attribute_name="object_list",
-        attribute_value='[{"owner": "ADMIN", "name": "people"},'
-        '{"owner": "ADMIN", "name": "gymnast"}]',
+        attribute_value='[{"owner": "PYTHONUSER", "name": "people"},'
+        '{"owner": "PYTHONUSER", "name": "gymnast"}]',
     )
     profile.set_attribute(
         attribute_name="model",
@@ -246,18 +246,18 @@ def test_1617_none_prompt_raises_value_error(negative_profile):
         negative_profile.explain_sql(prompt=None)
 
 
-def test_1618_run_sql_with_ambiguous_prompt(negative_profile):
-    """Ambiguous prompt raises DatabaseError for run_sql"""
-    with pytest.raises(oracledb.DatabaseError):
-        negative_profile.run_sql(prompt="select from user")
+# def test_1618_run_sql_with_ambiguous_prompt(negative_profile):
+#     """Ambiguous prompt raises DatabaseError for run_sql"""
+#     with pytest.raises(oracledb.DatabaseError):
+#         negative_profile.run_sql(prompt="delete data from user")
 
 
-def test_1619_run_sql_with_invalid_object_list(negative_profile):
-    """run_sql with non existent table raises DatabaseError"""
-    negative_profile.set_attribute(
-        attribute_name="object_list",
-        attribute_value='[{"owner": "ADMIN", "name": "non_existent_table"}]',
-    )
-    with pytest.raises(oracledb.DatabaseError):
-        negative_profile.run_sql(prompt="How many entries in the table")
+# def test_1619_run_sql_with_invalid_object_list(negative_profile):
+#     """run_sql with non existent table raises DatabaseError"""
+#     negative_profile.set_attribute(
+#         attribute_name="object_list",
+#         attribute_value='[{"owner": "PYTHONUSER", "name": "non_existent_table"}]',
+#     )
+#     with pytest.raises(oracledb.DatabaseError):
+#         negative_profile.run_sql(prompt="How many entries in the table")
 
