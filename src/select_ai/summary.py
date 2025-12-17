@@ -13,18 +13,40 @@ from select_ai._enums import StrEnum
 
 
 class Style(StrEnum):
+    """
+    Specifies the format style for the summary. The following are the available
+    summary format options:
+    - Style.PARAGRAPH - the summary is presented in one or more paragraphs.
+    - Style.LIST - the summary is a list of key points from the text.
+    """
 
     PARAGRAPH = "paragraph"
     LIST = "list"
 
 
 class ChunkProcessingMethod(StrEnum):
+    """
+    When the text exceeds the token limit that the LLM can process,
+    it must be split into manageable chunks. This parameter enables you to
+    choose the method for processing these chunks
+    - ChunkProcessingMethod.ITERATIVE_REFINEMENT
+    - ChunkProcessingMethod.MAP_REDUCE
+    """
 
     ITERATIVE_REFINEMENT = "iterative_refinement"
     MAP_REDUCE = "map_reduce"
 
 
 class ExtractivenessLevel(StrEnum):
+    """
+    Determines how closely the summary follows the original wording of the
+    input. It controls the degree to which the model extracts versus
+    rephrases it. The following are the options:
+    - ExtractivenessLevel.LOW
+    - ExtractivenessLevel.MEDIUM
+    - ExtractivenessLevel.HIGH
+
+    """
 
     LOW = "low"
     MEDIUM = "medium"

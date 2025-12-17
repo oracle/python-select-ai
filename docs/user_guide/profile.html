@@ -5,20 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Profile Object Model &#8212; Select AI for Python 1.2.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Profile Object Model &#8212; Select AI for Python 1.2.1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4eb63a40" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=6efca38a"></script>
+    <script src="../_static/documentation_options.js?v=ca842793"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="11.1. AsyncProfile API" href="async_profile.html" />
+    <link rel="next" title="1. AsyncProfile API" href="async_profile.html" />
     <link rel="prev" title="1. ProfileAttributes" href="profile_attributes.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
@@ -90,6 +90,7 @@
 <li><a class="reference internal" href="#select_ai.Profile.show_prompt"><code class="docutils literal notranslate"><span class="pre">Profile.show_prompt()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.Profile.show_sql"><code class="docutils literal notranslate"><span class="pre">Profile.show_sql()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.Profile.summarize"><code class="docutils literal notranslate"><span class="pre">Profile.summarize()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.translate"><code class="docutils literal notranslate"><span class="pre">Profile.translate()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -100,8 +101,9 @@
 <li><a class="reference internal" href="#run-sql">7. Run SQL</a></li>
 <li><a class="reference internal" href="#chat">8. Chat</a></li>
 <li><a class="reference internal" href="#summarize">9. Summarize</a></li>
-<li><a class="reference internal" href="#list-profiles">10. List profiles</a></li>
-<li><a class="reference internal" href="#async-profile">11. Async Profile</a></li>
+<li><a class="reference internal" href="#translate">10. Translate</a></li>
+<li><a class="reference internal" href="#list-profiles">11. List profiles</a></li>
+<li><a class="reference internal" href="#async-profile">12. Async Profile</a></li>
 </ul>
 
   </div>
@@ -113,7 +115,7 @@
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="async_profile.html"
-                          title="next chapter"><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -143,7 +145,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="async_profile.html" title="11.1. AsyncProfile API"
+          <a href="async_profile.html" title="1. AsyncProfile API"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="profile_attributes.html" title="1. ProfileAttributes"
@@ -156,7 +158,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.2.1 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Profile Object Model</a></li>
@@ -194,16 +196,16 @@ details regarding metadata and database objects required for generating
 responses to natural language prompts.</p>
 <p>An AI profile object can be created using <code class="docutils literal notranslate"><span class="pre">select_ai.Profile()</span></code></p>
 <section id="profile-object-model">
-<h1><span class="section-number">1. </span>Profile Object Model<a class="headerlink" href="#profile-object-model" title="Link to this heading">¶</a></h1>
+<h1>Profile Object Model<a class="headerlink" href="#profile-object-model" title="Link to this heading">¶</a></h1>
 <figure class="align-default" id="profilefig">
 <img alt="Select AI Profile and Providers" src="../_images/profile_provider.png" />
 </figure>
 </section>
 <section id="base-profile-api">
-<h1><span class="section-number">2. </span>Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API<a class="headerlink" href="#base-profile-api" title="Link to this heading">¶</a></h1>
+<h1>Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API<a class="headerlink" href="#base-profile-api" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.BaseProfile">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">BaseProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="profile_attributes.html#select_ai.ProfileAttributes" title="select_ai.base_profile.ProfileAttributes"><span class="pre">ProfileAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error_if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.BaseProfile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">BaseProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="profile_attributes.html#select_ai.ProfileAttributes" title="select_ai.base_profile.ProfileAttributes"><span class="pre">ProfileAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error_if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_error_on_empty_attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.BaseProfile" title="Link to this definition">¶</a></dt>
 <dd><p>BaseProfile is an abstract base class representing a Profile
 for Select AI’s interactions with AI service providers (LLMs).
 Use either select_ai.Profile or select_ai.AsyncProfile to
@@ -222,6 +224,9 @@ in the database. Default value is False</p></li>
 <li><p><strong>raise_error_if_exists</strong> (<em>bool</em>) – Raise ProfileExistsError
 if profile exists in the database and replace = False and
 merge = False. Default value is True</p></li>
+<li><p><strong>raise_error_on_empty_attributes</strong> (<em>bool</em>) – Raise
+ProfileEmptyAttributesError, if profile attributes are empty
+in database. Default value is False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -229,7 +234,7 @@ merge = False. Default value is True</p></li>
 
 </section>
 <section id="profile-api">
-<h1><span class="section-number">3. </span><code class="docutils literal notranslate"><span class="pre">Profile</span></code> API<a class="headerlink" href="#profile-api" title="Link to this heading">¶</a></h1>
+<h1><code class="docutils literal notranslate"><span class="pre">Profile</span></code> API<a class="headerlink" href="#profile-api" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.Profile">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">Profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Profile" title="Link to this definition">¶</a></dt>
@@ -558,7 +563,7 @@ attributes</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.Profile.summarize">
-<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SummaryParams</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.summarize" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="summary.html#select_ai.summary.SummaryParams" title="select_ai.summary.SummaryParams"><span class="pre">SummaryParams</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.Profile.summarize" title="Link to this definition">¶</a></dt>
 <dd><p>Generate summary</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -570,9 +575,27 @@ generation</p></li>
 the path to a local file stored</p></li>
 <li><p><strong>credential_name</strong> (<em>str</em>) – Identifies the credential object used to
 authenticate with the object store</p></li>
-<li><p><strong>params</strong> (<em>select_ai.summary.SummaryParams</em>) – Parameters to include
+<li><p><strong>params</strong> (<a class="reference internal" href="summary.html#select_ai.summary.SummaryParams" title="select_ai.summary.SummaryParams"><em>select_ai.summary.SummaryParams</em></a>) – Parameters to include
 in the LLM request</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.Profile.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.Profile.translate" title="Link to this definition">¶</a></dt>
+<dd><p>Translate a text using a source language and a target language</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Text to translate</p></li>
+<li><p><strong>source_language</strong> (<em>str</em>) – Source language</p></li>
+<li><p><strong>target_language</strong> (<em>str</em>) – Target language</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -581,7 +604,7 @@ in the LLM request</p></li>
 
 </section>
 <section id="create-profile">
-<h1><span class="section-number">4. </span>Create Profile<a class="headerlink" href="#create-profile" title="Link to this heading">¶</a></h1>
+<h1>Create Profile<a class="headerlink" href="#create-profile" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pformat</span>
 
@@ -646,7 +669,7 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="narrate">
-<h1><span class="section-number">5. </span>Narrate<a class="headerlink" href="#narrate" title="Link to this heading">¶</a></h1>
+<h1>Narrate<a class="headerlink" href="#narrate" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -669,7 +692,7 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="show-sql">
-<h1><span class="section-number">6. </span>Show SQL<a class="headerlink" href="#show-sql" title="Link to this heading">¶</a></h1>
+<h1>Show SQL<a class="headerlink" href="#show-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -692,7 +715,7 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="run-sql">
-<h1><span class="section-number">7. </span>Run SQL<a class="headerlink" href="#run-sql" title="Link to this heading">¶</a></h1>
+<h1>Run SQL<a class="headerlink" href="#run-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -716,7 +739,7 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="chat">
-<h1><span class="section-number">8. </span>Chat<a class="headerlink" href="#chat" title="Link to this heading">¶</a></h1>
+<h1>Chat<a class="headerlink" href="#chat" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -740,7 +763,8 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="summarize">
-<h1><span class="section-number">9. </span>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
+<h1>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
+<p>Summarize inline content</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -774,6 +798,7 @@ in the LLM request</p></li>
 <span class="n">offering</span> <span class="n">clues</span> <span class="n">about</span> <span class="n">the</span> <span class="n">universe</span><span class="s1">&#39;s formation and evolution.</span>
 </pre></div>
 </div>
+<p>Summarize content accessible via a URL</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -809,8 +834,33 @@ in the LLM request</p></li>
 </pre></div>
 </div>
 </section>
+<section id="translate">
+<h1>Translate<a class="headerlink" href="#translate" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+    <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Thank you&quot;</span><span class="p">,</span>
+    <span class="n">source_language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="n">target_language</span><span class="o">=</span><span class="s2">&quot;de&quot;</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Danke</span>
+</pre></div>
+</div>
+</section>
 <section id="list-profiles">
-<h1><span class="section-number">10. </span>List profiles<a class="headerlink" href="#list-profiles" title="Link to this heading">¶</a></h1>
+<h1>List profiles<a class="headerlink" href="#list-profiles" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -836,10 +886,10 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="async-profile">
-<h1><span class="section-number">11. </span>Async Profile<a class="headerlink" href="#async-profile" title="Link to this heading">¶</a></h1>
+<h1>Async Profile<a class="headerlink" href="#async-profile" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html">11.1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
@@ -862,19 +912,21 @@ in the LLM request</p></li>
 <li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.show_prompt"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_prompt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.show_sql"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_sql()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.summarize"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.summarize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="async_profile.html#select_ai.AsyncProfile.translate"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.translate()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-profile-creation">11.2. Async Profile creation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-explain-sql">11.3. Async explain SQL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-run-sql">11.4. Async run SQL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-show-sql">11.5. Async show SQL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-concurrent-sql">11.6. Async concurrent SQL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-chat">11.7. Async chat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#summarize">11.8. Summarize</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-pipeline">11.9. Async pipeline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="async_profile.html#list-profiles-asynchronously">11.10. List profiles asynchronously</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-profile-creation">2. Async Profile creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-explain-sql">3. Async explain SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-run-sql">4. Async run SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-show-sql">5. Async show SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-concurrent-sql">6. Async concurrent SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-chat">7. Async chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#summarize">8. Summarize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#translate">9. Translate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#async-pipeline">10. Async pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async_profile.html#list-profiles-asynchronously">11. List profiles asynchronously</a></li>
 </ul>
 </div>
 </section>
@@ -916,6 +968,7 @@ in the LLM request</p></li>
 <li><a class="reference internal" href="#select_ai.Profile.show_prompt"><code class="docutils literal notranslate"><span class="pre">Profile.show_prompt()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.Profile.show_sql"><code class="docutils literal notranslate"><span class="pre">Profile.show_sql()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.Profile.summarize"><code class="docutils literal notranslate"><span class="pre">Profile.summarize()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.Profile.translate"><code class="docutils literal notranslate"><span class="pre">Profile.translate()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -926,8 +979,9 @@ in the LLM request</p></li>
 <li><a class="reference internal" href="#run-sql">7. Run SQL</a></li>
 <li><a class="reference internal" href="#chat">8. Chat</a></li>
 <li><a class="reference internal" href="#summarize">9. Summarize</a></li>
-<li><a class="reference internal" href="#list-profiles">10. List profiles</a></li>
-<li><a class="reference internal" href="#async-profile">11. Async Profile</a></li>
+<li><a class="reference internal" href="#translate">10. Translate</a></li>
+<li><a class="reference internal" href="#list-profiles">11. List profiles</a></li>
+<li><a class="reference internal" href="#async-profile">12. Async Profile</a></li>
 </ul>
 
   </div>
@@ -939,7 +993,7 @@ in the LLM request</p></li>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="async_profile.html"
-                          title="next chapter"><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -969,7 +1023,7 @@ in the LLM request</p></li>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="async_profile.html" title="11.1. AsyncProfile API"
+          <a href="async_profile.html" title="1. AsyncProfile API"
              >next</a> |</li>
         <li class="right" >
           <a href="profile_attributes.html" title="1. ProfileAttributes"
@@ -982,7 +1036,7 @@ in the LLM request</p></li>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.2.1 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Profile Object Model</a></li>

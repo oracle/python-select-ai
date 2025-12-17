@@ -60,10 +60,10 @@ class ProfileAttributes(SelectAIDataClass):
 
     """
 
-    annotations: Optional[str] = None
+    annotations: Optional[bool] = None
     case_sensitive_values: Optional[bool] = None
     comments: Optional[bool] = None
-    constraints: Optional[str] = None
+    constraints: Optional[bool] = None
     conversation: Optional[bool] = None
     credential_name: Optional[str] = None
     enable_custom_source_uri: Optional[bool] = None

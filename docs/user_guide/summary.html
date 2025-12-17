@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. SummaryParams &#8212; Select AI for Python 1.2.1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4eb63a40" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=ca842793"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. Tool" href="agent.html" />
+    <link rel="prev" title="1. SyntheticDataAttributes" href="synthetic_data.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. SummaryParams</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.SummaryParams"><code class="docutils literal notranslate"><span class="pre">SummaryParams</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chunkprocessingmethod">2. ChunkProcessingMethod</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.ChunkProcessingMethod"><code class="docutils literal notranslate"><span class="pre">ChunkProcessingMethod</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extractivenesslevel">3. ExtractivenessLevel</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.ExtractivenessLevel"><code class="docutils literal notranslate"><span class="pre">ExtractivenessLevel</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summarystyle">4. SummaryStyle</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.Style"><code class="docutils literal notranslate"><span class="pre">Style</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="synthetic_data.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="agent.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/summary.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="agent.html" title="1. Tool"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>SummaryParams</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="summaryparams">
+<span id="summary"></span><h1><span class="section-number">1. </span>SummaryParams<a class="headerlink" href="#summaryparams" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.summary.SummaryParams">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.summary.</span></span><span class="sig-name descname"><span class="pre">SummaryParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_words</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_words</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary_style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.summary.Style" title="select_ai.summary.Style"><span class="pre">Style</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_processing_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.summary.ChunkProcessingMethod" title="select_ai.summary.ChunkProcessingMethod"><span class="pre">ChunkProcessingMethod</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extractiveness_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.summary.ExtractivenessLevel" title="select_ai.summary.ExtractivenessLevel"><span class="pre">ExtractivenessLevel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.summary.SummaryParams" title="Link to this definition">¶</a></dt>
+<dd><p>Customize summary generation using these parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>min_words</strong> (<em>int</em>) – approximate minimum number of words the generated
+summary is expected to contain.</p></li>
+<li><p><strong>max_words</strong> (<em>int</em>) – approximate maximum number of words the generated
+summary is expected to contain.</p></li>
+<li><p><strong>summary_style</strong> (<a class="reference internal" href="#select_ai.summary.Style" title="select_ai.summary.Style"><em>select_ai.summary.Style</em></a>) – Specifies the format
+style for the summary</p></li>
+<li><p><strong>chunk_processing_method</strong> (<a class="reference internal" href="#select_ai.summary.ChunkProcessingMethod" title="select_ai.summary.ChunkProcessingMethod"><em>select_ai.summary.ChunkProcessingMethod</em></a>) – When the text exceeds the token limit that the LLM can process, it must
+be split into manageable chunks</p></li>
+<li><p><strong>extractiveness_level</strong> (<a class="reference internal" href="#select_ai.summary.ExtractivenessLevel" title="select_ai.summary.ExtractivenessLevel"><em>select_ai.summary.ExtractivenessLevel</em></a>) – Determines how closely the summary follows the original wording
+of the input</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="chunkprocessingmethod">
+<h1><span class="section-number">2. </span>ChunkProcessingMethod<a class="headerlink" href="#chunkprocessingmethod" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.summary.ChunkProcessingMethod">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.summary.</span></span><span class="sig-name descname"><span class="pre">ChunkProcessingMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.summary.ChunkProcessingMethod" title="Link to this definition">¶</a></dt>
+<dd><p>When the text exceeds the token limit that the LLM can process,
+it must be split into manageable chunks. This parameter enables you to
+choose the method for processing these chunks
+- ChunkProcessingMethod.ITERATIVE_REFINEMENT
+- ChunkProcessingMethod.MAP_REDUCE</p>
+</dd></dl>
+
+</section>
+<section id="extractivenesslevel">
+<h1><span class="section-number">3. </span>ExtractivenessLevel<a class="headerlink" href="#extractivenesslevel" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.summary.ExtractivenessLevel">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.summary.</span></span><span class="sig-name descname"><span class="pre">ExtractivenessLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.summary.ExtractivenessLevel" title="Link to this definition">¶</a></dt>
+<dd><p>Determines how closely the summary follows the original wording of the
+input. It controls the degree to which the model extracts versus
+rephrases it. The following are the options:
+- ExtractivenessLevel.LOW
+- ExtractivenessLevel.MEDIUM
+- ExtractivenessLevel.HIGH</p>
+</dd></dl>
+
+</section>
+<section id="summarystyle">
+<h1><span class="section-number">4. </span>SummaryStyle<a class="headerlink" href="#summarystyle" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="select_ai.summary.Style">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.summary.</span></span><span class="sig-name descname"><span class="pre">Style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.summary.Style" title="Link to this definition">¶</a></dt>
+<dd><p>Specifies the format style for the summary. The following are the available
+summary format options:
+- Style.PARAGRAPH - the summary is presented in one or more paragraphs.
+- Style.LIST - the summary is a list of key points from the text.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. SummaryParams</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.SummaryParams"><code class="docutils literal notranslate"><span class="pre">SummaryParams</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chunkprocessingmethod">2. ChunkProcessingMethod</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.ChunkProcessingMethod"><code class="docutils literal notranslate"><span class="pre">ChunkProcessingMethod</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extractivenesslevel">3. ExtractivenessLevel</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.ExtractivenessLevel"><code class="docutils literal notranslate"><span class="pre">ExtractivenessLevel</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summarystyle">4. SummaryStyle</a><ul>
+<li><a class="reference internal" href="#select_ai.summary.Style"><code class="docutils literal notranslate"><span class="pre">Style</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="synthetic_data.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="agent.html"
+                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/summary.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="agent.html" title="1. Tool"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="synthetic_data.html" title="1. SyntheticDataAttributes"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.2.1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>SummaryParams</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>
