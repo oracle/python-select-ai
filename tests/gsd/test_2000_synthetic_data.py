@@ -13,7 +13,12 @@ import uuid
 
 import pytest
 import select_ai
-from select_ai import Profile, ProfileAttributes, SyntheticDataAttributes, SyntheticDataParams
+from select_ai import (
+    Profile,
+    ProfileAttributes,
+    SyntheticDataAttributes,
+    SyntheticDataParams,
+)
 
 PROFILE_PREFIX = f"PYSAI_2000_{uuid.uuid4().hex.upper()}"
 
@@ -130,4 +135,3 @@ def test_2008_generate_with_none_attributes(synthetic_profile):
     """Passing None as attributes raises error"""
     with pytest.raises(Exception):
         synthetic_profile.generate_synthetic_data(None)
-

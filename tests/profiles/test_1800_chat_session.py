@@ -13,8 +13,12 @@ import uuid
 
 import pytest
 import select_ai
-from select_ai import Conversation, ConversationAttributes, Profile, ProfileAttributes
-
+from select_ai import (
+    Conversation,
+    ConversationAttributes,
+    Profile,
+    ProfileAttributes,
+)
 
 PROFILE_PREFIX = f"PYSAI_1800_{uuid.uuid4().hex.upper()}"
 
@@ -85,10 +89,7 @@ def chat_session_profile(oci_credential, chat_session_provider):
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
-    try:
-        profile.delete(force=True)
-    except Exception:
-        pass
+    profile.delete(force=True)
 
 
 @pytest.fixture
@@ -96,7 +97,9 @@ def conversation_factory():
     conversations = []
 
     def _create(**kwargs):
-        conversation = Conversation(attributes=ConversationAttributes(**kwargs))
+        conversation = Conversation(
+            attributes=ConversationAttributes(**kwargs)
+        )
         conversation.create()
         conversations.append(conversation)
         return conversation
@@ -104,10 +107,7 @@ def conversation_factory():
     yield _create
 
     for conversation in conversations:
-        try:
-            conversation.delete(force=True)
-        except Exception:
-            pass
+        conversation.delete(force=True)
 
 
 def _assert_keywords(session, prompts):
@@ -116,53 +116,79 @@ def _assert_keywords(session, prompts):
         assert keyword.lower() in response.lower()
 
 
-def test_1800_database_chat_session(chat_session_profile, conversation_factory):
+def test_1800_database_chat_session(
+    chat_session_profile, conversation_factory
+):
     """Chat session processes database prompts"""
     conversation = conversation_factory(
         title="Database",
         description="LLM's understanding of databases",
     )
-    with chat_session_profile.chat_session(conversation=conversation, delete=False) as session:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session:
         assert session is not None
         _assert_keywords(session, CATEGORY_PROMPTS["database"])
 
 
-def test_1801_physics_chat_session_delete_true(chat_session_profile, conversation_factory):
+def test_1801_physics_chat_session_delete_true(
+    chat_session_profile, conversation_factory
+):
     """Chat session deletes conversation when delete=True"""
     conversation = conversation_factory(title="Physics")
-    with chat_session_profile.chat_session(conversation=conversation, delete=True) as session:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=True
+    ) as session:
         _assert_keywords(session, CATEGORY_PROMPTS["physics"])
     with pytest.raises(Exception):
         conversation.delete()
 
 
-def test_1802_multiple_sessions_same_conversation(chat_session_profile, conversation_factory):
+def test_1802_multiple_sessions_same_conversation(
+    chat_session_profile, conversation_factory
+):
     """Same conversation supports multiple chat sessions"""
     conversation = conversation_factory(
         title="Cloud Two Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
     )
-    with chat_session_profile.chat_session(conversation=conversation) as session_one:
+    with chat_session_profile.chat_session(
+        conversation=conversation
+    ) as session_one:
         _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
-    with chat_session_profile.chat_session(conversation=conversation) as session_two:
+    with chat_session_profile.chat_session(
+        conversation=conversation
+    ) as session_two:
         _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
 
 
-def test_1803_many_sessions_same_conversation(chat_session_profile, conversation_factory):
+def test_1803_many_sessions_same_conversation(
+    chat_session_profile, conversation_factory
+):
     """Conversation reused across several sessions"""
     conversation = conversation_factory(
         title="Multi Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
     )
-    with chat_session_profile.chat_session(conversation=conversation, delete=False) as session_one:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_one:
         _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
-    with chat_session_profile.chat_session(conversation=conversation, delete=False) as session_two:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_two:
         _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
-    with chat_session_profile.chat_session(conversation=conversation, delete=False) as session_three:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_three:
         _assert_keywords(session_three, CATEGORY_PROMPTS["ai"][:3])
-    with chat_session_profile.chat_session(conversation=conversation, delete=False) as session_four:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_four:
         _assert_keywords(session_four, CATEGORY_PROMPTS["ai"][3:])
-    with chat_session_profile.chat_session(conversation=conversation, delete=False) as session_five:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_five:
         _assert_keywords(session_five, CATEGORY_PROMPTS["general"])
 
 
@@ -172,7 +198,9 @@ def test_1804_special_characters(chat_session_profile, conversation_factory):
         title="Special Character Test ✨😊你",
         description="♥️✨你好",
     )
-    with chat_session_profile.chat_session(conversation=conversation, delete=True) as session:
+    with chat_session_profile.chat_session(
+        conversation=conversation, delete=True
+    ) as session:
         response = session.chat(
             prompt="Tell me something with lot of emojis and special characters 🚀🔥"
         )
@@ -193,4 +221,3 @@ def test_1805_invalid_conversation_object(chat_session_profile):
 #     with pytest.raises(Exception):
 #         with chat_session_profile.chat_session(conversation=conversation):
 #             _assert_keywords(chat_session_profile, [("Hello World", "hello")])
-

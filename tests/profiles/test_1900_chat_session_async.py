@@ -20,7 +20,6 @@ from select_ai import (
     ProfileAttributes,
 )
 
-
 PROFILE_PREFIX = f"PYSAI_1900_{uuid.uuid4().hex.upper()}"
 
 CATEGORY_PROMPTS = {
@@ -71,7 +70,9 @@ def async_chat_session_provider(oci_compartment_id):
 
 
 @pytest.fixture(scope="module")
-async def async_chat_session_profile(oci_credential, async_chat_session_provider):
+async def async_chat_session_profile(
+    oci_credential, async_chat_session_provider
+):
     profile = await AsyncProfile(
         profile_name=f"{PROFILE_PREFIX}_PROFILE",
         attributes=ProfileAttributes(
@@ -90,10 +91,7 @@ async def async_chat_session_profile(oci_credential, async_chat_session_provider
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
-    try:
-        await profile.delete(force=True)
-    except Exception:
-        pass
+    await profile.delete(force=True)
 
 
 @pytest.fixture
@@ -111,10 +109,7 @@ async def async_conversation_factory():
     yield _create
 
     for conversation in conversations:
-        try:
-            await conversation.delete(force=True)
-        except Exception:
-            pass
+        await conversation.delete(force=True)
 
 
 async def _assert_keywords(session, prompts):
@@ -124,67 +119,97 @@ async def _assert_keywords(session, prompts):
 
 
 @pytest.mark.anyio
-async def test_1900_database_chat_session(async_chat_session_profile, async_conversation_factory):
+async def test_1900_database_chat_session(
+    async_chat_session_profile, async_conversation_factory
+):
     """Async chat session processes database prompts"""
     conversation = await async_conversation_factory(
         title="Database",
         description="LLM's understanding of databases",
     )
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=False) as session:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session:
         assert session is not None
         await _assert_keywords(session, CATEGORY_PROMPTS["database"])
 
 
 @pytest.mark.anyio
-async def test_1901_physics_chat_session_delete_true(async_chat_session_profile, async_conversation_factory):
+async def test_1901_physics_chat_session_delete_true(
+    async_chat_session_profile, async_conversation_factory
+):
     """Async chat session deletes conversation when delete=True"""
     conversation = await async_conversation_factory(title="Physics")
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=True) as session:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=True
+    ) as session:
         await _assert_keywords(session, CATEGORY_PROMPTS["physics"])
     with pytest.raises(Exception):
         await conversation.delete()
 
 
 @pytest.mark.anyio
-async def test_1902_multiple_sessions_same_conversation(async_chat_session_profile, async_conversation_factory):
+async def test_1902_multiple_sessions_same_conversation(
+    async_chat_session_profile, async_conversation_factory
+):
     """Same async conversation supports multiple chat sessions"""
     conversation = await async_conversation_factory(
         title="Cloud Two Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
     )
-    async with async_chat_session_profile.chat_session(conversation=conversation) as session_one:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation
+    ) as session_one:
         await _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
-    async with async_chat_session_profile.chat_session(conversation=conversation) as session_two:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation
+    ) as session_two:
         await _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
 
 
 @pytest.mark.anyio
-async def test_1903_many_sessions_same_conversation(async_chat_session_profile, async_conversation_factory):
+async def test_1903_many_sessions_same_conversation(
+    async_chat_session_profile, async_conversation_factory
+):
     """Conversation reused across several async sessions"""
     conversation = await async_conversation_factory(
         title="Multi Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
     )
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=False) as session_one:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_one:
         await _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=False) as session_two:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_two:
         await _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=False) as session_three:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_three:
         await _assert_keywords(session_three, CATEGORY_PROMPTS["ai"][:3])
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=False) as session_four:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_four:
         await _assert_keywords(session_four, CATEGORY_PROMPTS["ai"][3:])
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=False) as session_five:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=False
+    ) as session_five:
         await _assert_keywords(session_five, CATEGORY_PROMPTS["general"])
 
 
 @pytest.mark.anyio
-async def test_1904_special_characters(async_chat_session_profile, async_conversation_factory):
+async def test_1904_special_characters(
+    async_chat_session_profile, async_conversation_factory
+):
     """Async chat session handles special characters"""
     conversation = await async_conversation_factory(
         title="Special Character Test ✨😊你",
         description="♥️✨你好",
     )
-    async with async_chat_session_profile.chat_session(conversation=conversation, delete=True) as session:
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation, delete=True
+    ) as session:
         response = await session.chat(
             prompt="Tell me something with lot of emojis and special characters 🚀🔥"
         )
@@ -196,15 +221,20 @@ async def test_1904_special_characters(async_chat_session_profile, async_convers
 async def test_1905_invalid_conversation_object(async_chat_session_profile):
     """Passing non conversation object raises error"""
     with pytest.raises(Exception):
-        async with async_chat_session_profile.chat_session(conversation="fake-object"):
+        async with async_chat_session_profile.chat_session(
+            conversation="fake-object"
+        ):
             pass
 
 
 @pytest.mark.anyio
-async def test_1906_missing_conversation_attributes(async_chat_session_profile):
+async def test_1906_missing_conversation_attributes(
+    async_chat_session_profile,
+):
     """Conversation without attributes raises error"""
     conversation = AsyncConversation(attributes=None)
     with pytest.raises(Exception):
-        async with async_chat_session_profile.chat_session(conversation=conversation):
+        async with async_chat_session_profile.chat_session(
+            conversation=conversation
+        ):
             await conversation.chat(prompt="Hello World")
-

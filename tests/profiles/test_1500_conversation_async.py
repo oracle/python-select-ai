@@ -16,7 +16,6 @@ import select_ai
 from oracledb import DatabaseError
 from select_ai import AsyncConversation, ConversationAttributes
 
-
 CONVERSATION_PREFIX = f"PYSAI_1500_{uuid.uuid4().hex.upper()}"
 
 
@@ -34,15 +33,14 @@ async def async_conversation_factory():
     yield _create
 
     for conversation in created:
-        try:
-            await conversation.delete(force=True)
-        except Exception:
-            pass
+        await conversation.delete(force=True)
 
 
 @pytest.fixture
 async def async_conversation(async_conversation_factory):
-    return await async_conversation_factory(title=f"{CONVERSATION_PREFIX}_ACTIVE")
+    return await async_conversation_factory(
+        title=f"{CONVERSATION_PREFIX}_ACTIVE"
+    )
 
 
 @pytest.mark.anyio
@@ -60,7 +58,9 @@ async def test_1501_create_with_description(async_conversation_factory):
     )
     attributes = await conversation.get_attributes()
     assert attributes.title == f"{CONVERSATION_PREFIX}_HISTORY"
-    assert attributes.description == "LLM's understanding of history of science"
+    assert (
+        attributes.description == "LLM's understanding of history of science"
+    )
 
 
 @pytest.mark.anyio
@@ -110,7 +110,9 @@ async def test_1506_set_attributes_with_none(async_conversation):
 @pytest.mark.anyio
 async def test_1507_delete_conversation(async_conversation_factory):
     """Delete async conversation and validate removal"""
-    conversation = await async_conversation_factory(title=f"{CONVERSATION_PREFIX}_DELETE")
+    conversation = await async_conversation_factory(
+        title=f"{CONVERSATION_PREFIX}_DELETE"
+    )
     await conversation.delete(force=True)
     with pytest.raises(select_ai.errors.ConversationNotFoundError):
         await conversation.get_attributes()
@@ -119,7 +121,9 @@ async def test_1507_delete_conversation(async_conversation_factory):
 @pytest.mark.anyio
 async def test_1508_delete_twice(async_conversation_factory):
     """Deleting an already deleted async conversation raises DatabaseError"""
-    conversation = await async_conversation_factory(title=f"{CONVERSATION_PREFIX}_DELETE_TWICE")
+    conversation = await async_conversation_factory(
+        title=f"{CONVERSATION_PREFIX}_DELETE_TWICE"
+    )
     await conversation.delete(force=True)
     with pytest.raises(DatabaseError):
         await conversation.delete()
@@ -133,7 +137,9 @@ async def test_1509_list_contains_created_conversation(async_conversation):
 
 
 @pytest.mark.anyio
-async def test_1510_multiple_conversations_have_unique_ids(async_conversation_factory):
+async def test_1510_multiple_conversations_have_unique_ids(
+    async_conversation_factory,
+):
     """Multiple async conversations produce unique identifiers"""
     titles = [
         f"{CONVERSATION_PREFIX}_AI",
@@ -165,7 +171,9 @@ async def test_1512_set_attributes_with_invalid_id():
     """Updating async conversation with invalid id raises DatabaseError"""
     conversation = AsyncConversation(conversation_id="fake_id")
     with pytest.raises(DatabaseError):
-        await conversation.set_attributes(ConversationAttributes(title="Invalid"))
+        await conversation.set_attributes(
+            ConversationAttributes(title="Invalid")
+        )
 
 
 @pytest.mark.anyio
@@ -185,9 +193,13 @@ async def test_1514_get_attributes_with_invalid_id():
 
 
 @pytest.mark.anyio
-async def test_1515_get_attributes_for_deleted_conversation(async_conversation_factory):
+async def test_1515_get_attributes_for_deleted_conversation(
+    async_conversation_factory,
+):
     """Fetching attributes after deletion raises ConversationNotFound"""
-    conversation = await async_conversation_factory(title=f"{CONVERSATION_PREFIX}_TO_DELETE")
+    conversation = await async_conversation_factory(
+        title=f"{CONVERSATION_PREFIX}_TO_DELETE"
+    )
     await conversation.delete(force=True)
     with pytest.raises(select_ai.errors.ConversationNotFoundError):
         await conversation.get_attributes()
@@ -196,7 +208,9 @@ async def test_1515_get_attributes_for_deleted_conversation(async_conversation_f
 @pytest.mark.anyio
 async def test_1516_list_contains_new_conversation(async_conversation_factory):
     """List reflects newly created async conversation"""
-    conversation = await async_conversation_factory(title=f"{CONVERSATION_PREFIX}_LIST")
+    conversation = await async_conversation_factory(
+        title=f"{CONVERSATION_PREFIX}_LIST"
+    )
     listed = [item async for item in AsyncConversation.list()]
     assert any(
         item.conversation_id == conversation.conversation_id for item in listed
@@ -211,9 +225,13 @@ async def test_1517_list_returns_async_conversation_instances():
 
 
 @pytest.mark.anyio
-async def test_1518_get_attributes_without_description(async_conversation_factory):
+async def test_1518_get_attributes_without_description(
+    async_conversation_factory,
+):
     """Async conversation created without description has None description"""
-    conversation = await async_conversation_factory(title=f"{CONVERSATION_PREFIX}_NO_DESC")
+    conversation = await async_conversation_factory(
+        title=f"{CONVERSATION_PREFIX}_NO_DESC"
+    )
     attributes = await conversation.get_attributes()
     assert attributes.title == f"{CONVERSATION_PREFIX}_NO_DESC"
     assert attributes.description is None

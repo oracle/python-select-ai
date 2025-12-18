@@ -16,7 +16,6 @@ import select_ai
 from oracledb import DatabaseError
 from select_ai import Conversation, ConversationAttributes
 
-
 CONVERSATION_PREFIX = f"PYSAI_1400_{uuid.uuid4().hex.upper()}"
 
 
@@ -34,10 +33,7 @@ def conversation_factory():
     yield _create
 
     for conv in created:
-        try:
-            conv.delete(force=True)
-        except Exception:
-            pass
+        conv.delete(force=True)
 
 
 @pytest.fixture

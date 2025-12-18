@@ -13,7 +13,12 @@ import uuid
 
 import pytest
 import select_ai
-from select_ai import AsyncProfile, ProfileAttributes, SyntheticDataAttributes, SyntheticDataParams
+from select_ai import (
+    AsyncProfile,
+    ProfileAttributes,
+    SyntheticDataAttributes,
+    SyntheticDataParams,
+)
 
 PROFILE_PREFIX = f"PYSAI_2100_{uuid.uuid4().hex.upper()}"
 
@@ -35,7 +40,9 @@ def async_synthetic_provider(oci_compartment_id):
 
 
 @pytest.fixture(scope="module")
-def async_synthetic_profile_attributes(oci_credential, async_synthetic_provider):
+def async_synthetic_profile_attributes(
+    oci_credential, async_synthetic_provider
+):
     return ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         object_list=[

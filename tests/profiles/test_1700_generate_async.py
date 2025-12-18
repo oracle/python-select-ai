@@ -15,9 +15,13 @@ import oracledb
 import pandas as pd
 import pytest
 import select_ai
-from select_ai import AsyncConversation, AsyncProfile, ConversationAttributes, ProfileAttributes
+from select_ai import (
+    AsyncConversation,
+    AsyncProfile,
+    ConversationAttributes,
+    ProfileAttributes,
+)
 from select_ai.profile import Action
-
 
 PROFILE_PREFIX = f"PYSAI_1700_{uuid.uuid4().hex.upper()}"
 
@@ -41,8 +45,8 @@ def async_generate_profile_attributes(oci_credential, async_generate_provider):
     return ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         object_list=[
-            {"owner": "PYTHONUSER", "name": "people"},
-            {"owner": "PYTHONUSER", "name": "gymnast"},
+            {"owner": test_env.test_user, "name": "people"},
+            {"owner": test_env.test_user, "name": "gymnast"},
         ],
         provider=async_generate_provider,
     )
@@ -61,10 +65,7 @@ async def async_generate_profile(async_generate_profile_attributes):
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
-    try:
-        await profile.delete(force=True)
-    except Exception:
-        pass
+    await profile.delete(force=True)
 
 
 @pytest.fixture
@@ -82,24 +83,32 @@ async def async_negative_profile(oci_credential, async_generate_provider):
     )
     await profile.set_attribute(
         attribute_name="object_list",
-        attribute_value='[{"owner": "PYTHONUSER", "name": "people"},'
-        '{"owner": "PYTHONUSER", "name": "gymnast"}]',
+        attribute_value=json.dumps(
+            [
+                {"owner": test_env.test_user, "name": "people"},
+                {"owner": test_env.test_user, "name": "gymnast"},
+            ]
+        ),
     )
     await profile.set_attribute(
         attribute_name="model",
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
-    try:
-        await profile.delete(force=True)
-    except Exception:
-        pass
+    await profile.delete(force=True)
 
 
 @pytest.mark.anyio
 async def test_1700_action_enum_members():
     """Validate Action enum exposes expected members"""
-    for member in ["RUNSQL", "SHOWSQL", "EXPLAINSQL", "NARRATE", "CHAT", "SHOWPROMPT"]:
+    for member in [
+        "RUNSQL",
+        "SHOWSQL",
+        "EXPLAINSQL",
+        "NARRATE",
+        "CHAT",
+        "SHOWPROMPT",
+    ]:
         assert hasattr(Action, member)
 
 
@@ -177,7 +186,9 @@ async def test_1708_narrate(async_generate_profile):
 async def test_1709_chat_session(async_generate_profile):
     """chat_session provides a session context"""
     conversation = AsyncConversation(attributes=ConversationAttributes())
-    async with async_generate_profile.chat_session(conversation=conversation, delete=True) as session:
+    async with async_generate_profile.chat_session(
+        conversation=conversation, delete=True
+    ) as session:
         assert session is not None
 
 
@@ -193,14 +204,18 @@ async def test_1710_explain_sql(async_generate_profile):
 @pytest.mark.anyio
 async def test_1711_generate_runsql(async_generate_profile):
     """generate with RUNSQL returns DataFrame"""
-    dataframe = await async_generate_profile.generate(prompt=PROMPTS[1], action=Action.RUNSQL)
+    dataframe = await async_generate_profile.generate(
+        prompt=PROMPTS[1], action=Action.RUNSQL
+    )
     assert isinstance(dataframe, pd.DataFrame)
 
 
 @pytest.mark.anyio
 async def test_1712_generate_showsql(async_generate_profile):
     """generate with SHOWSQL returns SQL"""
-    sql = await async_generate_profile.generate(prompt=PROMPTS[1], action=Action.SHOWSQL)
+    sql = await async_generate_profile.generate(
+        prompt=PROMPTS[1], action=Action.SHOWSQL
+    )
     assert isinstance(sql, str)
     assert "SELECT" in sql.upper()
 
@@ -282,8 +297,9 @@ async def test_1717_none_prompt_raises_value_error(async_negative_profile):
 #     """run_sql with non existent table raises DatabaseError"""
 #     await async_negative_profile.set_attribute(
 #         attribute_name="object_list",
-#         attribute_value='[{"owner": "PYTHONUSER", "name": "non_existent_table"}]',
+#         attribute_value=json.dumps(
+#             [{"owner": test_env.test_user, "name": "non_existent_table"}]
+#         ),
 #     )
 #     with pytest.raises(oracledb.DatabaseError):
 #         await async_negative_profile.run_sql(prompt="How many entries in the table")
-
