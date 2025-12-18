@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>11.1. AsyncProfile API &#8212; Select AI for Python 1.2.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. AsyncProfile API &#8212; Select AI for Python 1.2.1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=8cd84f99" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4eb63a40" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=6efca38a"></script>
+    <script src="../_static/documentation_options.js?v=ca842793"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
@@ -63,7 +63,7 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">11.1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
@@ -86,19 +86,21 @@
 <li><a class="reference internal" href="#select_ai.AsyncProfile.show_prompt"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_prompt()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.show_sql"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_sql()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.summarize"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.summarize()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncProfile.translate"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.translate()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-profile-creation">11.2. Async Profile creation</a></li>
-<li><a class="reference internal" href="#async-explain-sql">11.3. Async explain SQL</a></li>
-<li><a class="reference internal" href="#async-run-sql">11.4. Async run SQL</a></li>
-<li><a class="reference internal" href="#async-show-sql">11.5. Async show SQL</a></li>
-<li><a class="reference internal" href="#async-concurrent-sql">11.6. Async concurrent SQL</a></li>
-<li><a class="reference internal" href="#async-chat">11.7. Async chat</a></li>
-<li><a class="reference internal" href="#summarize">11.8. Summarize</a></li>
-<li><a class="reference internal" href="#async-pipeline">11.9. Async pipeline</a></li>
-<li><a class="reference internal" href="#list-profiles-asynchronously">11.10. List profiles asynchronously</a></li>
+<li><a class="reference internal" href="#async-profile-creation">2. Async Profile creation</a></li>
+<li><a class="reference internal" href="#async-explain-sql">3. Async explain SQL</a></li>
+<li><a class="reference internal" href="#async-run-sql">4. Async run SQL</a></li>
+<li><a class="reference internal" href="#async-show-sql">5. Async show SQL</a></li>
+<li><a class="reference internal" href="#async-concurrent-sql">6. Async concurrent SQL</a></li>
+<li><a class="reference internal" href="#async-chat">7. Async chat</a></li>
+<li><a class="reference internal" href="#summarize">8. Summarize</a></li>
+<li><a class="reference internal" href="#translate">9. Translate</a></li>
+<li><a class="reference internal" href="#async-pipeline">10. Async pipeline</a></li>
+<li><a class="reference internal" href="#list-profiles-asynchronously">11. List profiles asynchronously</a></li>
 </ul>
 
   </div>
@@ -153,11 +155,11 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.2.1 documentation</a> &#187;
 
           </li>
           <li class="nav-item nav-item-1"><a href="profile.html" accesskey="U"><span class="section-number">1. </span>Profile Object Model</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
                 <li class="right">
 
 
@@ -192,7 +194,7 @@
 Unless explicitly noted as synchronous, the <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> methods should be
 used with <code class="docutils literal notranslate"><span class="pre">await</span></code>.</p>
 <section id="asyncprofile-api">
-<h1><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API<a class="headerlink" href="#asyncprofile-api" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API<a class="headerlink" href="#asyncprofile-api" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AsyncProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile" title="Link to this definition">¶</a></dt>
@@ -537,7 +539,7 @@ attributes</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile.summarize">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SummaryParams</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.summarize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="summary.html#select_ai.summary.SummaryParams" title="select_ai.summary.SummaryParams"><span class="pre">SummaryParams</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.summarize" title="Link to this definition">¶</a></dt>
 <dd><p>Generate summary</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -549,9 +551,27 @@ generation</p></li>
 the path to a local file stored</p></li>
 <li><p><strong>credential_name</strong> (<em>str</em>) – Identifies the credential object used to
 authenticate with the object store</p></li>
-<li><p><strong>params</strong> (<em>select_ai.summary.SummaryParams</em>) – Parameters to include
+<li><p><strong>params</strong> (<a class="reference internal" href="summary.html#select_ai.summary.SummaryParams" title="select_ai.summary.SummaryParams"><em>select_ai.summary.SummaryParams</em></a>) – Parameters to include
 in the LLM request</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.AsyncProfile.translate">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.translate" title="Link to this definition">¶</a></dt>
+<dd><p>Translate a text using a source language and a target language</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Text to translate</p></li>
+<li><p><strong>source_language</strong> (<em>str</em>) – Source language</p></li>
+<li><p><strong>target_language</strong> (<em>str</em>) – Target language</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -560,7 +580,7 @@ in the LLM request</p></li>
 
 </section>
 <section id="async-profile-creation">
-<h1><span class="section-number">11.2. </span>Async Profile creation<a class="headerlink" href="#async-profile-creation" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">2. </span>Async Profile creation<a class="headerlink" href="#async-profile-creation" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pformat</span>
@@ -632,7 +652,7 @@ in the LLM request</p></li>
 </div>
 </section>
 <section id="async-explain-sql">
-<h1><span class="section-number">11.3. </span>Async explain SQL<a class="headerlink" href="#async-explain-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">3. </span>Async explain SQL<a class="headerlink" href="#async-explain-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -677,7 +697,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-run-sql">
-<h1><span class="section-number">11.4. </span>Async run SQL<a class="headerlink" href="#async-run-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">4. </span>Async run SQL<a class="headerlink" href="#async-run-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -709,7 +729,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-show-sql">
-<h1><span class="section-number">11.5. </span>Async show SQL<a class="headerlink" href="#async-show-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">5. </span>Async show SQL<a class="headerlink" href="#async-show-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -738,7 +758,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-concurrent-sql">
-<h1><span class="section-number">11.6. </span>Async concurrent SQL<a class="headerlink" href="#async-concurrent-sql" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">6. </span>Async concurrent SQL<a class="headerlink" href="#async-concurrent-sql" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -797,7 +817,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-chat">
-<h1><span class="section-number">11.7. </span>Async chat<a class="headerlink" href="#async-chat" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">7. </span>Async chat<a class="headerlink" href="#async-chat" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -846,7 +866,8 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="summarize">
-<h1><span class="section-number">11.8. </span>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">8. </span>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
+<p>Summarize inline content</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -888,6 +909,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 <span class="n">offering</span> <span class="n">clues</span> <span class="n">about</span> <span class="n">the</span> <span class="n">universe</span><span class="s1">&#39;s formation and evolution.</span>
 </pre></div>
 </div>
+<p>Summarize content accessible via a URL</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -931,8 +953,41 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </pre></div>
 </div>
 </section>
+<section id="translate">
+<h1><span class="section-number">9. </span>Translate<a class="headerlink" href="#translate" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Thank you&quot;</span><span class="p">,</span>
+        <span class="n">source_language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span>
+        <span class="n">target_language</span><span class="o">=</span><span class="s2">&quot;de&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Danke</span>
+</pre></div>
+</div>
+</section>
 <section id="async-pipeline">
-<h1><span class="section-number">11.9. </span>Async pipeline<a class="headerlink" href="#async-pipeline" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">10. </span>Async pipeline<a class="headerlink" href="#async-pipeline" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1001,7 +1056,7 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
 </div>
 </section>
 <section id="list-profiles-asynchronously">
-<h1><span class="section-number">11.10. </span>List profiles asynchronously<a class="headerlink" href="#list-profiles-asynchronously" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">11. </span>List profiles asynchronously<a class="headerlink" href="#list-profiles-asynchronously" title="Link to this heading">¶</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1042,7 +1097,7 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">11.1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
@@ -1065,19 +1120,21 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
 <li><a class="reference internal" href="#select_ai.AsyncProfile.show_prompt"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_prompt()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.show_sql"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.show_sql()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.summarize"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.summarize()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.AsyncProfile.translate"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.translate()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-profile-creation">11.2. Async Profile creation</a></li>
-<li><a class="reference internal" href="#async-explain-sql">11.3. Async explain SQL</a></li>
-<li><a class="reference internal" href="#async-run-sql">11.4. Async run SQL</a></li>
-<li><a class="reference internal" href="#async-show-sql">11.5. Async show SQL</a></li>
-<li><a class="reference internal" href="#async-concurrent-sql">11.6. Async concurrent SQL</a></li>
-<li><a class="reference internal" href="#async-chat">11.7. Async chat</a></li>
-<li><a class="reference internal" href="#summarize">11.8. Summarize</a></li>
-<li><a class="reference internal" href="#async-pipeline">11.9. Async pipeline</a></li>
-<li><a class="reference internal" href="#list-profiles-asynchronously">11.10. List profiles asynchronously</a></li>
+<li><a class="reference internal" href="#async-profile-creation">2. Async Profile creation</a></li>
+<li><a class="reference internal" href="#async-explain-sql">3. Async explain SQL</a></li>
+<li><a class="reference internal" href="#async-run-sql">4. Async run SQL</a></li>
+<li><a class="reference internal" href="#async-show-sql">5. Async show SQL</a></li>
+<li><a class="reference internal" href="#async-concurrent-sql">6. Async concurrent SQL</a></li>
+<li><a class="reference internal" href="#async-chat">7. Async chat</a></li>
+<li><a class="reference internal" href="#summarize">8. Summarize</a></li>
+<li><a class="reference internal" href="#translate">9. Translate</a></li>
+<li><a class="reference internal" href="#async-pipeline">10. Async pipeline</a></li>
+<li><a class="reference internal" href="#list-profiles-asynchronously">11. List profiles asynchronously</a></li>
 </ul>
 
   </div>
@@ -1132,11 +1189,11 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.2.1 documentation</a> &#187;
 
           </li>
           <li class="nav-item nav-item-1"><a href="profile.html" ><span class="section-number">1. </span>Profile Object Model</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">11.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
                 <li class="right">
 
 

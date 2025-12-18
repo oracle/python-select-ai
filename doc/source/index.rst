@@ -107,6 +107,15 @@ Synthetic Data
 
     user_guide/synthetic_data.rst
 
+Summary
+=======
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/summary.rst
+
 
 AI Agent
 ========

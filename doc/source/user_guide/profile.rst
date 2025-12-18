@@ -143,6 +143,8 @@ output::
 Summarize
 **************************
 
+Summarize inline content
+
 .. literalinclude:: ../../../samples/profile_summarize_content.py
    :language: python
    :lines: 14-
@@ -158,6 +160,7 @@ output::
 
 .. latex:clearpage::
 
+Summarize content accessible via a URL
 
 .. literalinclude:: ../../../samples/profile_summarize_uri.py
    :language: python
@@ -180,6 +183,20 @@ output::
     has inspired new areas of research, such as astrobiology and the search for
     extraterrestrial life. Overall, astronomy is a dynamic and constantly evolving
     field that seeks to understand the universe and its many mysteries.
+
+.. latex:clearpage::
+
+***********
+Translate
+***********
+
+.. literalinclude:: ../../../samples/profile_translate.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    Danke
 
 .. latex:clearpage::
 
