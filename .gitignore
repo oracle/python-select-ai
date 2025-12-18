@@ -1,5 +1,6 @@
 my_examples
 .idea
+.env
 .venv
 .DS_Store
 select_ai.egg-info
