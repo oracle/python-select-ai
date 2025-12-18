@@ -49,9 +49,9 @@ def _ensure_test_user_exists(username: str, password: str):
         )
         if cr.fetchone():
             return
-        escaped_password = password.replace("\"", "\"\"")
+        escaped_password = password.replace('"', '""')
         cr.execute(
-            f"CREATE USER {username_upper} IDENTIFIED BY \"{escaped_password}\""
+            f'CREATE USER {username_upper} IDENTIFIED BY "{escaped_password}"'
         )
     select_ai.db.get_connection().commit()
 

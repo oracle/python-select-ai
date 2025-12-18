@@ -9,6 +9,7 @@
 1700 - AsyncProfile generate API tests
 """
 
+import json
 import uuid
 
 import oracledb
@@ -41,7 +42,9 @@ def async_generate_provider(oci_compartment_id):
 
 
 @pytest.fixture(scope="module")
-def async_generate_profile_attributes(oci_credential, async_generate_provider):
+def async_generate_profile_attributes(
+    oci_credential, async_generate_provider, test_env
+):
     return ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         object_list=[
@@ -69,7 +72,9 @@ async def async_generate_profile(async_generate_profile_attributes):
 
 
 @pytest.fixture
-async def async_negative_profile(oci_credential, async_generate_provider):
+async def async_negative_profile(
+    oci_credential, async_generate_provider, test_env
+):
     profile_name = f"{PROFILE_PREFIX}_NEG_{uuid.uuid4().hex.upper()}"
     attributes = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
@@ -293,7 +298,7 @@ async def test_1717_none_prompt_raises_value_error(async_negative_profile):
 
 
 # @pytest.mark.anyio
-# async def test_1719_run_sql_with_invalid_object_list(async_negative_profile):
+# async def test_1719_run_sql_with_invalid_object_list(async_negative_profile, test_env):
 #     """run_sql with non existent table raises DatabaseError"""
 #     await async_negative_profile.set_attribute(
 #         attribute_name="object_list",
