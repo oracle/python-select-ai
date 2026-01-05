@@ -9,6 +9,7 @@
 1800 - Chat session API tests
 """
 
+import logging
 import uuid
 
 import pytest
@@ -19,6 +20,8 @@ from select_ai import (
     Profile,
     ProfileAttributes,
 )
+
+logger = logging.getLogger(__name__)
 
 PROFILE_PREFIX = f"PYSAI_1800_{uuid.uuid4().hex.upper()}"
 
@@ -71,6 +74,9 @@ def chat_session_provider(oci_compartment_id):
 
 @pytest.fixture(scope="module")
 def chat_session_profile(oci_credential, chat_session_provider):
+    logger.info(
+        "Creating chat session profile %s", f"{PROFILE_PREFIX}_PROFILE"
+    )
     profile = Profile(
         profile_name=f"{PROFILE_PREFIX}_PROFILE",
         attributes=ProfileAttributes(
@@ -89,6 +95,7 @@ def chat_session_profile(oci_credential, chat_session_provider):
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
+    logger.info("Deleting chat session profile %s", profile.profile_name)
     profile.delete(force=True)
 
 
@@ -97,6 +104,7 @@ def conversation_factory():
     conversations = []
 
     def _create(**kwargs):
+        logger.info("Creating conversation with params %s", kwargs)
         conversation = Conversation(
             attributes=ConversationAttributes(**kwargs)
         )
@@ -107,12 +115,14 @@ def conversation_factory():
     yield _create
 
     for conversation in conversations:
+        logger.info("Deleting conversation %s", conversation.conversation_id)
         conversation.delete(force=True)
 
 
 def _assert_keywords(session, prompts):
     for prompt, keyword in prompts:
         response = session.chat(prompt=prompt)
+        logger.debug("Received response for prompt '%s': %s", prompt, response)
         assert keyword.lower() in response.lower()
 
 
@@ -120,6 +130,7 @@ def test_1800_database_chat_session(
     chat_session_profile, conversation_factory
 ):
     """Chat session processes database prompts"""
+    logger.info("Starting database chat session test")
     conversation = conversation_factory(
         title="Database",
         description="LLM's understanding of databases",
@@ -127,6 +138,10 @@ def test_1800_database_chat_session(
     with chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session:
+        logger.info(
+            "Chat session started with conversation %s",
+            conversation.conversation_id,
+        )
         assert session is not None
         _assert_keywords(session, CATEGORY_PROMPTS["database"])
 
@@ -135,10 +150,15 @@ def test_1801_physics_chat_session_delete_true(
     chat_session_profile, conversation_factory
 ):
     """Chat session deletes conversation when delete=True"""
+    logger.info("Starting physics chat session with delete=True")
     conversation = conversation_factory(title="Physics")
     with chat_session_profile.chat_session(
         conversation=conversation, delete=True
     ) as session:
+        logger.info(
+            "Chat session started for conversation %s with delete=True",
+            conversation.conversation_id,
+        )
         _assert_keywords(session, CATEGORY_PROMPTS["physics"])
     with pytest.raises(Exception):
         conversation.delete()
@@ -148,6 +168,7 @@ def test_1802_multiple_sessions_same_conversation(
     chat_session_profile, conversation_factory
 ):
     """Same conversation supports multiple chat sessions"""
+    logger.info("Validating multiple sessions for same conversation")
     conversation = conversation_factory(
         title="Cloud Two Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
@@ -155,10 +176,18 @@ def test_1802_multiple_sessions_same_conversation(
     with chat_session_profile.chat_session(
         conversation=conversation
     ) as session_one:
+        logger.info(
+            "First session started for conversation %s",
+            conversation.conversation_id,
+        )
         _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
     with chat_session_profile.chat_session(
         conversation=conversation
     ) as session_two:
+        logger.info(
+            "Second session started for conversation %s",
+            conversation.conversation_id,
+        )
         _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
 
 
@@ -166,6 +195,7 @@ def test_1803_many_sessions_same_conversation(
     chat_session_profile, conversation_factory
 ):
     """Conversation reused across several sessions"""
+    logger.info("Validating many sessions for same conversation")
     conversation = conversation_factory(
         title="Multi Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
@@ -173,27 +203,48 @@ def test_1803_many_sessions_same_conversation(
     with chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_one:
+        logger.info(
+            "Session one started for conversation %s",
+            conversation.conversation_id,
+        )
         _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
     with chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_two:
+        logger.info(
+            "Session two started for conversation %s",
+            conversation.conversation_id,
+        )
         _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
     with chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_three:
+        logger.info(
+            "Session three started for conversation %s",
+            conversation.conversation_id,
+        )
         _assert_keywords(session_three, CATEGORY_PROMPTS["ai"][:3])
     with chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_four:
+        logger.info(
+            "Session four started for conversation %s",
+            conversation.conversation_id,
+        )
         _assert_keywords(session_four, CATEGORY_PROMPTS["ai"][3:])
     with chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_five:
+        logger.info(
+            "Session five started for conversation %s",
+            conversation.conversation_id,
+        )
         _assert_keywords(session_five, CATEGORY_PROMPTS["general"])
 
 
 def test_1804_special_characters(chat_session_profile, conversation_factory):
     """Chat session handles special characters"""
+    logger.info("Validating special character handling in chat session")
     conversation = conversation_factory(
         title="Special Character Test ✨😊你",
         description="♥️✨你好",
@@ -201,6 +252,10 @@ def test_1804_special_characters(chat_session_profile, conversation_factory):
     with chat_session_profile.chat_session(
         conversation=conversation, delete=True
     ) as session:
+        logger.info(
+            "Chat session started for special character conversation %s",
+            conversation.conversation_id,
+        )
         response = session.chat(
             prompt="Tell me something with lot of emojis and special characters 🚀🔥"
         )
@@ -210,6 +265,7 @@ def test_1804_special_characters(chat_session_profile, conversation_factory):
 
 def test_1805_invalid_conversation_object(chat_session_profile):
     """Passing non conversation object raises error"""
+    logger.info("Validating invalid conversation object handling")
     with pytest.raises(Exception):
         with chat_session_profile.chat_session(conversation="fake-object"):
             pass

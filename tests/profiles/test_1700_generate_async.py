@@ -10,6 +10,7 @@
 """
 
 import json
+import logging
 import uuid
 
 import oracledb
@@ -23,6 +24,8 @@ from select_ai import (
     ProfileAttributes,
 )
 from select_ai.profile import Action
+
+logger = logging.getLogger(__name__)
 
 PROFILE_PREFIX = f"PYSAI_1700_{uuid.uuid4().hex.upper()}"
 
@@ -57,6 +60,9 @@ def async_generate_profile_attributes(
 
 @pytest.fixture(scope="module")
 async def async_generate_profile(async_generate_profile_attributes):
+    logger.info(
+        "Creating async generate profile %s", f"{PROFILE_PREFIX}_POSITIVE"
+    )
     profile = await AsyncProfile(
         profile_name=f"{PROFILE_PREFIX}_POSITIVE",
         attributes=async_generate_profile_attributes,
@@ -68,6 +74,7 @@ async def async_generate_profile(async_generate_profile_attributes):
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
+    logger.info("Deleting async generate profile %s", profile.profile_name)
     await profile.delete(force=True)
 
 
@@ -75,6 +82,7 @@ async def async_generate_profile(async_generate_profile_attributes):
 async def async_negative_profile(
     oci_credential, async_generate_provider, test_env
 ):
+    logger.info("Creating async negative generate profile")
     profile_name = f"{PROFILE_PREFIX}_NEG_{uuid.uuid4().hex.upper()}"
     attributes = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
@@ -100,12 +108,16 @@ async def async_negative_profile(
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
+    logger.info(
+        "Deleting async negative generate profile %s", profile.profile_name
+    )
     await profile.delete(force=True)
 
 
 @pytest.mark.anyio
 async def test_1700_action_enum_members():
     """Validate Action enum exposes expected members"""
+    logger.info("Validating async Action enum exposes expected members")
     for member in [
         "RUNSQL",
         "SHOWSQL",
@@ -120,6 +132,7 @@ async def test_1700_action_enum_members():
 @pytest.mark.anyio
 async def test_1701_action_enum_values():
     """Validate Action enum values"""
+    logger.info("Validating async Action enum values")
     assert Action.RUNSQL.value == "runsql"
     assert Action.SHOWSQL.value == "showsql"
     assert Action.EXPLAINSQL.value == "explainsql"
@@ -130,6 +143,7 @@ async def test_1701_action_enum_values():
 @pytest.mark.anyio
 async def test_1702_action_from_string():
     """Validate Action enum construction from string"""
+    logger.info("Validating async Action enum from string conversions")
     assert Action("runsql") is Action.RUNSQL
     assert Action("chat") is Action.CHAT
     assert Action("explainsql") is Action.EXPLAINSQL
@@ -140,6 +154,7 @@ async def test_1702_action_from_string():
 @pytest.mark.anyio
 async def test_1703_action_invalid_string():
     """Invalid enum string raises ValueError"""
+    logger.info("Validating async invalid Action string raises ValueError")
     with pytest.raises(ValueError):
         Action("invalid_action")
 
@@ -147,6 +162,7 @@ async def test_1703_action_invalid_string():
 @pytest.mark.anyio
 async def test_1704_show_sql(async_generate_profile):
     """show_sql returns SQL text"""
+    logger.info("Validating async show_sql returns SQL text")
     for prompt in PROMPTS:
         show_sql = await async_generate_profile.show_sql(prompt=prompt)
         assert isinstance(show_sql, str)
@@ -156,6 +172,7 @@ async def test_1704_show_sql(async_generate_profile):
 @pytest.mark.anyio
 async def test_1705_show_prompt(async_generate_profile):
     """show_prompt returns prompt text"""
+    logger.info("Validating async show_prompt returns text")
     for prompt in PROMPTS:
         show_prompt = await async_generate_profile.show_prompt(prompt=prompt)
         assert isinstance(show_prompt, str)
@@ -165,6 +182,7 @@ async def test_1705_show_prompt(async_generate_profile):
 @pytest.mark.anyio
 async def test_1706_run_sql(async_generate_profile):
     """run_sql returns DataFrame"""
+    logger.info("Validating async run_sql returns DataFrame")
     dataframe = await async_generate_profile.run_sql(prompt=PROMPTS[1])
     assert isinstance(dataframe, pd.DataFrame)
     assert len(dataframe.columns) > 0
@@ -173,6 +191,7 @@ async def test_1706_run_sql(async_generate_profile):
 @pytest.mark.anyio
 async def test_1707_chat(async_generate_profile):
     """chat returns text response"""
+    logger.info("Validating async chat returns text response")
     response = await async_generate_profile.chat(prompt="What is OCI ?")
     assert isinstance(response, str)
     assert len(response) > 0
@@ -181,6 +200,7 @@ async def test_1707_chat(async_generate_profile):
 @pytest.mark.anyio
 async def test_1708_narrate(async_generate_profile):
     """narrate returns narrative text"""
+    logger.info("Validating async narrate returns narrative text")
     for prompt in PROMPTS:
         narration = await async_generate_profile.narrate(prompt=prompt)
         assert isinstance(narration, str)
@@ -190,6 +210,7 @@ async def test_1708_narrate(async_generate_profile):
 @pytest.mark.anyio
 async def test_1709_chat_session(async_generate_profile):
     """chat_session provides a session context"""
+    logger.info("Validating async chat_session context manager")
     conversation = AsyncConversation(attributes=ConversationAttributes())
     async with async_generate_profile.chat_session(
         conversation=conversation, delete=True
@@ -200,6 +221,7 @@ async def test_1709_chat_session(async_generate_profile):
 @pytest.mark.anyio
 async def test_1710_explain_sql(async_generate_profile):
     """explain_sql returns explanation text"""
+    logger.info("Validating async explain_sql returns explanation text")
     for prompt in PROMPTS:
         explain_sql = await async_generate_profile.explain_sql(prompt=prompt)
         assert isinstance(explain_sql, str)
@@ -209,6 +231,7 @@ async def test_1710_explain_sql(async_generate_profile):
 @pytest.mark.anyio
 async def test_1711_generate_runsql(async_generate_profile):
     """generate with RUNSQL returns DataFrame"""
+    logger.info("Validating async generate with RUNSQL returns DataFrame")
     dataframe = await async_generate_profile.generate(
         prompt=PROMPTS[1], action=Action.RUNSQL
     )
@@ -218,6 +241,7 @@ async def test_1711_generate_runsql(async_generate_profile):
 @pytest.mark.anyio
 async def test_1712_generate_showsql(async_generate_profile):
     """generate with SHOWSQL returns SQL"""
+    logger.info("Validating async generate with SHOWSQL returns SQL")
     sql = await async_generate_profile.generate(
         prompt=PROMPTS[1], action=Action.SHOWSQL
     )
@@ -228,6 +252,7 @@ async def test_1712_generate_showsql(async_generate_profile):
 @pytest.mark.anyio
 async def test_1713_generate_chat(async_generate_profile):
     """generate with CHAT returns response"""
+    logger.info("Validating async generate with CHAT returns response")
     chat_response = await async_generate_profile.generate(
         prompt="Tell me about OCI", action=Action.CHAT
     )
@@ -238,6 +263,7 @@ async def test_1713_generate_chat(async_generate_profile):
 @pytest.mark.anyio
 async def test_1714_generate_narrate(async_generate_profile):
     """generate with NARRATE returns response"""
+    logger.info("Validating async generate with NARRATE returns response")
     narrate_response = await async_generate_profile.generate(
         prompt=PROMPTS[1], action=Action.NARRATE
     )
@@ -248,6 +274,9 @@ async def test_1714_generate_narrate(async_generate_profile):
 @pytest.mark.anyio
 async def test_1715_generate_explainsql(async_generate_profile):
     """generate with EXPLAINSQL returns explanation"""
+    logger.info(
+        "Validating async generate with EXPLAINSQL returns explanation"
+    )
     for prompt in PROMPTS:
         explain_sql = await async_generate_profile.generate(
             prompt=prompt, action=Action.EXPLAINSQL
@@ -259,6 +288,7 @@ async def test_1715_generate_explainsql(async_generate_profile):
 @pytest.mark.anyio
 async def test_1716_empty_prompt_raises_value_error(async_negative_profile):
     """Empty prompts raise ValueError for async profile methods"""
+    logger.info("Validating async empty prompts raise ValueError")
     with pytest.raises(ValueError):
         await async_negative_profile.chat(prompt="")
     with pytest.raises(ValueError):
@@ -276,6 +306,7 @@ async def test_1716_empty_prompt_raises_value_error(async_negative_profile):
 @pytest.mark.anyio
 async def test_1717_none_prompt_raises_value_error(async_negative_profile):
     """None prompts raise ValueError for async profile methods"""
+    logger.info("Validating async None prompts raise ValueError")
     with pytest.raises(ValueError):
         await async_negative_profile.chat(prompt=None)
     with pytest.raises(ValueError):

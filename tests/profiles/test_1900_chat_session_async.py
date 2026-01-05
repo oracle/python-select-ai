@@ -9,6 +9,7 @@
 1900 - Async chat session API tests
 """
 
+import logging
 import uuid
 
 import pytest
@@ -19,6 +20,8 @@ from select_ai import (
     ConversationAttributes,
     ProfileAttributes,
 )
+
+logger = logging.getLogger(__name__)
 
 PROFILE_PREFIX = f"PYSAI_1900_{uuid.uuid4().hex.upper()}"
 
@@ -73,6 +76,9 @@ def async_chat_session_provider(oci_compartment_id):
 async def async_chat_session_profile(
     oci_credential, async_chat_session_provider
 ):
+    logger.info(
+        "Creating async chat session profile %s", f"{PROFILE_PREFIX}_PROFILE"
+    )
     profile = await AsyncProfile(
         profile_name=f"{PROFILE_PREFIX}_PROFILE",
         attributes=ProfileAttributes(
@@ -91,6 +97,7 @@ async def async_chat_session_profile(
         attribute_value="meta.llama-3.1-405b-instruct",
     )
     yield profile
+    logger.info("Deleting async chat session profile %s", profile.profile_name)
     await profile.delete(force=True)
 
 
@@ -99,6 +106,7 @@ async def async_conversation_factory():
     conversations = []
 
     async def _create(**kwargs):
+        logger.info("Creating async conversation with params %s", kwargs)
         conversation = AsyncConversation(
             attributes=ConversationAttributes(**kwargs)
         )
@@ -109,12 +117,16 @@ async def async_conversation_factory():
     yield _create
 
     for conversation in conversations:
+        logger.info(
+            "Deleting async conversation %s", conversation.conversation_id
+        )
         await conversation.delete(force=True)
 
 
 async def _assert_keywords(session, prompts):
     for prompt, keyword in prompts:
         response = await session.chat(prompt=prompt)
+        logger.debug("Async response for prompt '%s': %s", prompt, response)
         assert keyword.lower() in response.lower()
 
 
@@ -123,6 +135,7 @@ async def test_1900_database_chat_session(
     async_chat_session_profile, async_conversation_factory
 ):
     """Async chat session processes database prompts"""
+    logger.info("Starting async database chat session test")
     conversation = await async_conversation_factory(
         title="Database",
         description="LLM's understanding of databases",
@@ -130,6 +143,10 @@ async def test_1900_database_chat_session(
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session:
+        logger.info(
+            "Async chat session started with conversation %s",
+            conversation.conversation_id,
+        )
         assert session is not None
         await _assert_keywords(session, CATEGORY_PROMPTS["database"])
 
@@ -139,10 +156,15 @@ async def test_1901_physics_chat_session_delete_true(
     async_chat_session_profile, async_conversation_factory
 ):
     """Async chat session deletes conversation when delete=True"""
+    logger.info("Starting async physics chat session with delete=True")
     conversation = await async_conversation_factory(title="Physics")
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=True
     ) as session:
+        logger.info(
+            "Async chat session started for conversation %s with delete=True",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session, CATEGORY_PROMPTS["physics"])
     with pytest.raises(Exception):
         await conversation.delete()
@@ -153,6 +175,7 @@ async def test_1902_multiple_sessions_same_conversation(
     async_chat_session_profile, async_conversation_factory
 ):
     """Same async conversation supports multiple chat sessions"""
+    logger.info("Validating multiple async sessions for same conversation")
     conversation = await async_conversation_factory(
         title="Cloud Two Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
@@ -160,10 +183,18 @@ async def test_1902_multiple_sessions_same_conversation(
     async with async_chat_session_profile.chat_session(
         conversation=conversation
     ) as session_one:
+        logger.info(
+            "Async session one started for conversation %s",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
     async with async_chat_session_profile.chat_session(
         conversation=conversation
     ) as session_two:
+        logger.info(
+            "Async session two started for conversation %s",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
 
 
@@ -172,6 +203,7 @@ async def test_1903_many_sessions_same_conversation(
     async_chat_session_profile, async_conversation_factory
 ):
     """Conversation reused across several async sessions"""
+    logger.info("Validating many async sessions for same conversation")
     conversation = await async_conversation_factory(
         title="Multi Session",
         description="LLM's understanding of cloud using multiple chat sessions.",
@@ -179,22 +211,42 @@ async def test_1903_many_sessions_same_conversation(
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_one:
+        logger.info(
+            "Async session one started for conversation %s",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session_one, CATEGORY_PROMPTS["cloud"][:3])
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_two:
+        logger.info(
+            "Async session two started for conversation %s",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session_two, CATEGORY_PROMPTS["cloud"][3:])
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_three:
+        logger.info(
+            "Async session three started for conversation %s",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session_three, CATEGORY_PROMPTS["ai"][:3])
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_four:
+        logger.info(
+            "Async session four started for conversation %s",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session_four, CATEGORY_PROMPTS["ai"][3:])
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=False
     ) as session_five:
+        logger.info(
+            "Async session five started for conversation %s",
+            conversation.conversation_id,
+        )
         await _assert_keywords(session_five, CATEGORY_PROMPTS["general"])
 
 
@@ -203,6 +255,7 @@ async def test_1904_special_characters(
     async_chat_session_profile, async_conversation_factory
 ):
     """Async chat session handles special characters"""
+    logger.info("Validating async special character handling in chat session")
     conversation = await async_conversation_factory(
         title="Special Character Test ✨😊你",
         description="♥️✨你好",
@@ -210,6 +263,10 @@ async def test_1904_special_characters(
     async with async_chat_session_profile.chat_session(
         conversation=conversation, delete=True
     ) as session:
+        logger.info(
+            "Async chat session started for special character conversation %s",
+            conversation.conversation_id,
+        )
         response = await session.chat(
             prompt="Tell me something with lot of emojis and special characters 🚀🔥"
         )
