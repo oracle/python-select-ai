@@ -14,6 +14,7 @@ import uuid
 
 import pytest
 import select_ai
+from oracledb import DatabaseError
 from select_ai import (
     AsyncProfile,
     ProfileAttributes,
@@ -145,6 +146,7 @@ async def test_2104_generate_low_priority(async_synthetic_profile):
     params = SyntheticDataParams(sample_rows=1, priority="LOW")
     attributes = _build_attributes(params=params)
     logger.info("Attributes = %s", attributes)
+    assert attributes.params.sample_rows is 1
     assert attributes.params.priority is "LOW"
     result = await async_synthetic_profile.generate_synthetic_data(attributes)
     assert result is None
@@ -156,7 +158,9 @@ async def test_2105_generate_missing_object_name(async_synthetic_profile):
     logger.info("Validating async missing object_name raises error")
     attributes = SyntheticDataAttributes(record_count=1)
     logger.info("Attributes = %s", attributes)
-    with pytest.raises(Exception):
+    with pytest.raises(
+        ValueError, match="One of object_name and object_list should be set"
+    ):
         await async_synthetic_profile.generate_synthetic_data(attributes)
 
 
@@ -167,8 +171,13 @@ async def test_2106_generate_invalid_priority(async_synthetic_profile):
     params = SyntheticDataParams(sample_rows=1, priority="CRITICAL")
     attributes = _build_attributes(params=params)
     logger.info("Attributes = %s", attributes)
-    with pytest.raises(Exception):
+    with pytest.raises(DatabaseError) as exc_info:
         await async_synthetic_profile.generate_synthetic_data(attributes)
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20000
+    assert "Invalid value for priority" in error.message
 
 
 @pytest.mark.anyio
@@ -177,13 +186,20 @@ async def test_2107_generate_negative_record_count(async_synthetic_profile):
     logger.info("Validating async negative record count raises error")
     attributes = _build_attributes(record_count=-5)
     logger.info("Attributes = %s", attributes)
-    with pytest.raises(Exception):
+    with pytest.raises(DatabaseError) as exc_info:
         await async_synthetic_profile.generate_synthetic_data(attributes)
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20000
+    assert "record_count cannot be smaller than 0" in error.message
 
 
 @pytest.mark.anyio
 async def test_2108_generate_with_none_attributes(async_synthetic_profile):
     """Passing None as attributes raises error"""
     logger.info("Validating async None attributes raise error")
-    with pytest.raises(Exception):
+    with pytest.raises(
+        ValueError, match="'synthetic_data_attributes' cannot be None"
+    ):
         await async_synthetic_profile.generate_synthetic_data(None)

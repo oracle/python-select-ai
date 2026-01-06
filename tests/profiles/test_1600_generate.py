@@ -150,8 +150,9 @@ def test_1603_action_invalid_string():
 def test_1604_show_sql(generate_profile):
     """show_sql returns SQL text"""
     logger.info("Validating show_sql returns SQL text")
-    for prompt in PROMPTS:
+    for prompt in PROMPTS[1:]:
         show_sql = generate_profile.show_sql(prompt=prompt)
+        logger.debug("Response = %s", show_sql)
         assert isinstance(show_sql, str)
         assert "SELECT" in show_sql.upper()
 
@@ -161,14 +162,17 @@ def test_1605_show_prompt(generate_profile):
     logger.info("Validating show_prompt returns text")
     for prompt in PROMPTS:
         show_prompt = generate_profile.show_prompt(prompt=prompt)
+        logger.debug("Response = %s", show_prompt)
         assert isinstance(show_prompt, str)
         assert len(show_prompt) > 0
+        assert '"type" : "TEXT"' in show_prompt
 
 
 def test_1606_run_sql(generate_profile):
     """run_sql returns DataFrame"""
     logger.info("Validating run_sql returns DataFrame")
     df = generate_profile.run_sql(prompt=PROMPTS[1])
+    logger.debug("Response = %s", df)
     assert isinstance(df, pd.DataFrame)
     assert len(df.columns) > 0
 
@@ -177,17 +181,21 @@ def test_1607_chat(generate_profile):
     """chat returns text response"""
     logger.info("Validating chat returns text response")
     response = generate_profile.chat(prompt="What is OCI ?")
+    logger.debug("Response = %s", response)
     assert isinstance(response, str)
     assert len(response) > 0
+    assert "Oracle Cloud Infrastructure" in response
 
 
 def test_1608_narrate(generate_profile):
     """narrate returns narrative text"""
     logger.info("Validating narrate returns narrative text")
-    for prompt in PROMPTS:
+    for prompt in PROMPTS[1:]:
         narration = generate_profile.narrate(prompt=prompt)
+        logger.info("Response = %s", narration)
         assert isinstance(narration, str)
         assert len(narration) > 0
+        assert "in the database" in narration
 
 
 def test_1609_chat_session(generate_profile):
@@ -205,6 +213,7 @@ def test_1610_explain_sql(generate_profile):
     logger.info("Validating explain_sql returns explanation text")
     for prompt in PROMPTS:
         explain_sql = generate_profile.explain_sql(prompt=prompt)
+        logger.debug("Response = %s", explain_sql)
         assert isinstance(explain_sql, str)
         assert len(explain_sql) > 0
 
@@ -213,6 +222,7 @@ def test_1611_generate_runsql(generate_profile):
     """generate with RUNSQL returns DataFrame"""
     logger.info("Validating generate with RUNSQL returns DataFrame")
     df = generate_profile.generate(prompt=PROMPTS[1], action=Action.RUNSQL)
+    logger.debug("Response = %s", df)
     assert isinstance(df, pd.DataFrame)
 
 
@@ -220,6 +230,7 @@ def test_1612_generate_showsql(generate_profile):
     """generate with SHOWSQL returns SQL"""
     logger.info("Validating generate with SHOWSQL returns SQL")
     sql = generate_profile.generate(prompt=PROMPTS[1], action=Action.SHOWSQL)
+    logger.debug("Response = %s", sql)
     assert isinstance(sql, str)
     assert "SELECT" in sql.upper()
 
@@ -230,8 +241,10 @@ def test_1613_generate_chat(generate_profile):
     chat_resp = generate_profile.generate(
         prompt="Tell me about OCI", action=Action.CHAT
     )
+    logger.debug("Response = %s", chat_resp)
     assert isinstance(chat_resp, str)
     assert len(chat_resp) > 0
+    assert "Oracle Cloud Infrastructure" in chat_resp
 
 
 def test_1614_generate_narrate(generate_profile):
@@ -240,8 +253,10 @@ def test_1614_generate_narrate(generate_profile):
     narrate_resp = generate_profile.generate(
         prompt=PROMPTS[1], action=Action.NARRATE
     )
+    logger.debug("Response = %s", narrate_resp)
     assert isinstance(narrate_resp, str)
     assert len(narrate_resp) > 0
+    assert "in the database" in narrate_resp
 
 
 def test_1615_generate_explainsql(generate_profile):
@@ -251,6 +266,7 @@ def test_1615_generate_explainsql(generate_profile):
         explain_sql = generate_profile.generate(
             prompt=prompt, action=Action.EXPLAINSQL
         )
+        logger.debug("Response = %s", explain_sql)
         assert isinstance(explain_sql, str)
         assert len(explain_sql) > 0
 

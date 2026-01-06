@@ -50,6 +50,7 @@ def conversation(conversation_factory):
 def test_1400_create_with_title(conversation):
     """Create a conversation with title"""
     logger.info("Validating conversation creation with title")
+    logger.info("Conversation = %s", conversation)
     assert conversation.conversation_id
 
 
@@ -60,6 +61,7 @@ def test_1401_create_with_description(conversation_factory):
         title=f"{CONVERSATION_PREFIX}_HISTORY",
         description="LLM's understanding of history of science",
     )
+    logger.info("Conversation = %s", conv)
     attrs = conv.get_attributes()
     logger.debug("Fetched attributes: %s", attrs)
     assert attrs.title == f"{CONVERSATION_PREFIX}_HISTORY"
@@ -70,7 +72,9 @@ def test_1402_create_without_title(conversation_factory):
     """Create a conversation without providing a title"""
     logger.info("Creating conversation without explicit title")
     conv = conversation_factory()
+    logger.info("Conversation = %s", conv)
     attrs = conv.get_attributes()
+    logger.debug("Fetched attributes: %s", attrs)
     assert attrs.title == "New Conversation"
 
 
@@ -78,7 +82,10 @@ def test_1403_create_with_missing_attributes():
     """Missing attributes raise AttributeError"""
     logger.info("Validating missing attributes raise AttributeError")
     conv = Conversation(attributes=None)
-    with pytest.raises(AttributeError):
+    logger.info("Conversation = %s", conv)
+    with pytest.raises(
+        AttributeError, match="'NoneType' object has no attribute 'json'"
+    ):
         conv.create()
 
 
@@ -113,7 +120,9 @@ def test_1406_set_attributes_with_none(conversation):
         "Validating setting None attributes raises AttributeError for %s",
         conversation.conversation_id,
     )
-    with pytest.raises(AttributeError):
+    with pytest.raises(
+        AttributeError, match="'NoneType' object has no attribute 'json'"
+    ):
         conversation.set_attributes(None)
 
 
@@ -131,8 +140,13 @@ def test_1408_delete_twice(conversation_factory):
     logger.info("Validating double deletion raises DatabaseError")
     conv = conversation_factory(title=f"{CONVERSATION_PREFIX}_DELETE_TWICE")
     conv.delete(force=True)
-    with pytest.raises(DatabaseError):
+    with pytest.raises(DatabaseError) as exc_info:
         conv.delete()
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert "does not exist" in error.message
 
 
 def test_1409_list_contains_created_conversation(conversation):
@@ -164,8 +178,15 @@ def test_1411_create_with_long_values():
             description="B" * 1000,
         )
     )
-    with pytest.raises(Exception):
+    with pytest.raises(DatabaseError) as exc_info:
         conv.create()
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert (
+        "Value is too long for conversation attribute - title" in error.message
+    )
 
 
 def test_1412_set_attributes_with_invalid_id():
@@ -174,16 +195,26 @@ def test_1412_set_attributes_with_invalid_id():
         "Validating set_attributes with invalid ID raises DatabaseError"
     )
     conv = Conversation(conversation_id="fake_id")
-    with pytest.raises(DatabaseError):
+    with pytest.raises(DatabaseError) as exc_info:
         conv.set_attributes(ConversationAttributes(title="Invalid"))
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert "Invalid value for conversation id" in error.message
 
 
 def test_1413_delete_with_invalid_id():
     """Deleting conversation with invalid id raises DatabaseError"""
     logger.info("Validating delete with invalid ID raises DatabaseError")
     conv = Conversation(conversation_id="fake_id")
-    with pytest.raises(DatabaseError):
+    with pytest.raises(DatabaseError) as exc_info:
         conv.delete()
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert "Invalid value for conversation id" in error.message
 
 
 def test_1414_get_attributes_with_invalid_id():
@@ -192,7 +223,9 @@ def test_1414_get_attributes_with_invalid_id():
         "Validating get_attributes with invalid ID raises ConversationNotFound"
     )
     conv = Conversation(conversation_id="invalid")
-    with pytest.raises(select_ai.errors.ConversationNotFoundError):
+    with pytest.raises(
+        select_ai.errors.ConversationNotFoundError, match="not found"
+    ):
         conv.get_attributes()
 
 
@@ -201,7 +234,9 @@ def test_1415_get_attributes_for_deleted_conversation(conversation_factory):
     logger.info("Validating get_attributes after deletion raises error")
     conv = conversation_factory(title=f"{CONVERSATION_PREFIX}_TO_DELETE")
     conv.delete(force=True)
-    with pytest.raises(select_ai.errors.ConversationNotFoundError):
+    with pytest.raises(
+        select_ai.errors.ConversationNotFoundError, match="not found"
+    ):
         conv.get_attributes()
 
 
@@ -210,6 +245,7 @@ def test_1416_list_contains_new_conversation(conversation_factory):
     logger.info("Ensuring list reflects newly created conversation")
     conv = conversation_factory(title=f"{CONVERSATION_PREFIX}_LIST")
     listed = list(Conversation.list())
+    logger.info("List = %s", listed)
     assert any(item.conversation_id == conv.conversation_id for item in listed)
 
 
@@ -217,6 +253,7 @@ def test_1417_list_returns_conversation_instances():
     """List returns Conversation objects"""
     logger.info("Validating Conversation.list returns Conversation instances")
     listed = list(Conversation.list())
+    logger.info("List = %s", listed)
     assert all(isinstance(item, Conversation) for item in listed)
 
 

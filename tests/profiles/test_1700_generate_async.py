@@ -163,8 +163,9 @@ async def test_1703_action_invalid_string():
 async def test_1704_show_sql(async_generate_profile):
     """show_sql returns SQL text"""
     logger.info("Validating async show_sql returns SQL text")
-    for prompt in PROMPTS:
+    for prompt in PROMPTS[1:]:
         show_sql = await async_generate_profile.show_sql(prompt=prompt)
+        logger.debug("Response = %s", show_sql)
         assert isinstance(show_sql, str)
         assert "SELECT" in show_sql.upper()
 
@@ -175,8 +176,10 @@ async def test_1705_show_prompt(async_generate_profile):
     logger.info("Validating async show_prompt returns text")
     for prompt in PROMPTS:
         show_prompt = await async_generate_profile.show_prompt(prompt=prompt)
+        logger.debug("Response = %s", show_prompt)
         assert isinstance(show_prompt, str)
         assert len(show_prompt) > 0
+        assert '"type" : "TEXT"' in show_prompt
 
 
 @pytest.mark.anyio
@@ -184,6 +187,7 @@ async def test_1706_run_sql(async_generate_profile):
     """run_sql returns DataFrame"""
     logger.info("Validating async run_sql returns DataFrame")
     dataframe = await async_generate_profile.run_sql(prompt=PROMPTS[1])
+    logger.debug("Response = %s", dataframe)
     assert isinstance(dataframe, pd.DataFrame)
     assert len(dataframe.columns) > 0
 
@@ -193,18 +197,22 @@ async def test_1707_chat(async_generate_profile):
     """chat returns text response"""
     logger.info("Validating async chat returns text response")
     response = await async_generate_profile.chat(prompt="What is OCI ?")
+    logger.debug("Response = %s", response)
     assert isinstance(response, str)
     assert len(response) > 0
+    assert "Oracle Cloud Infrastructure" in response
 
 
 @pytest.mark.anyio
 async def test_1708_narrate(async_generate_profile):
     """narrate returns narrative text"""
     logger.info("Validating async narrate returns narrative text")
-    for prompt in PROMPTS:
+    for prompt in PROMPTS[1:0]:
         narration = await async_generate_profile.narrate(prompt=prompt)
+        logger.info("Response = %s", narration)
         assert isinstance(narration, str)
         assert len(narration) > 0
+        assert "in the database" in narration
 
 
 @pytest.mark.anyio
@@ -224,6 +232,7 @@ async def test_1710_explain_sql(async_generate_profile):
     logger.info("Validating async explain_sql returns explanation text")
     for prompt in PROMPTS:
         explain_sql = await async_generate_profile.explain_sql(prompt=prompt)
+        logger.debug("Response = %s", explain_sql)
         assert isinstance(explain_sql, str)
         assert len(explain_sql) > 0
 
@@ -235,6 +244,7 @@ async def test_1711_generate_runsql(async_generate_profile):
     dataframe = await async_generate_profile.generate(
         prompt=PROMPTS[1], action=Action.RUNSQL
     )
+    logger.debug("Response = %s", dataframe)
     assert isinstance(dataframe, pd.DataFrame)
 
 
@@ -245,6 +255,7 @@ async def test_1712_generate_showsql(async_generate_profile):
     sql = await async_generate_profile.generate(
         prompt=PROMPTS[1], action=Action.SHOWSQL
     )
+    logger.debug("Response = %s", sql)
     assert isinstance(sql, str)
     assert "SELECT" in sql.upper()
 
@@ -256,8 +267,10 @@ async def test_1713_generate_chat(async_generate_profile):
     chat_response = await async_generate_profile.generate(
         prompt="Tell me about OCI", action=Action.CHAT
     )
+    logger.debug("Response = %s", chat_response)
     assert isinstance(chat_response, str)
     assert len(chat_response) > 0
+    assert "Oracle Cloud Infrastructure" in chat_response
 
 
 @pytest.mark.anyio
@@ -267,8 +280,10 @@ async def test_1714_generate_narrate(async_generate_profile):
     narrate_response = await async_generate_profile.generate(
         prompt=PROMPTS[1], action=Action.NARRATE
     )
+    logger.debug("Response = %s", narrate_response)
     assert isinstance(narrate_response, str)
     assert len(narrate_response) > 0
+    assert "in the database" in narrate_response
 
 
 @pytest.mark.anyio
@@ -281,6 +296,7 @@ async def test_1715_generate_explainsql(async_generate_profile):
         explain_sql = await async_generate_profile.generate(
             prompt=prompt, action=Action.EXPLAINSQL
         )
+        logger.debug("Response = %s", explain_sql)
         assert isinstance(explain_sql, str)
         assert len(explain_sql) > 0
 

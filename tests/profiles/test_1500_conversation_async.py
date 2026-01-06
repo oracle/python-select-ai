@@ -128,7 +128,9 @@ async def test_1506_set_attributes_with_none(async_conversation):
         "Validating async set_attributes(None) raises AttributeError for %s",
         async_conversation.conversation_id,
     )
-    with pytest.raises(AttributeError):
+    with pytest.raises(
+        AttributeError, match="'NoneType' object has no attribute 'json'"
+    ):
         await async_conversation.set_attributes(None)
 
 
@@ -154,8 +156,13 @@ async def test_1508_delete_twice(async_conversation_factory):
         title=f"{CONVERSATION_PREFIX}_DELETE_TWICE"
     )
     await conversation.delete(force=True)
-    with pytest.raises(DatabaseError):
+    with pytest.raises(DatabaseError) as exc_info:
         await conversation.delete()
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert "does not exist" in error.message
 
 
 @pytest.mark.anyio
@@ -196,8 +203,15 @@ async def test_1511_create_with_long_values():
             description="B" * 1000,
         )
     )
-    with pytest.raises(Exception):
+    with pytest.raises(DatabaseError) as exc_info:
         await conversation.create()
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert (
+        "Value is too long for conversation attribute - title" in error.message
+    )
 
 
 @pytest.mark.anyio
@@ -207,10 +221,15 @@ async def test_1512_set_attributes_with_invalid_id():
         "Validating async set_attributes invalid ID raises DatabaseError"
     )
     conversation = AsyncConversation(conversation_id="fake_id")
-    with pytest.raises(DatabaseError):
+    with pytest.raises(DatabaseError) as exc_info:
         await conversation.set_attributes(
             ConversationAttributes(title="Invalid")
         )
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert "Invalid value for conversation id" in error.message
 
 
 @pytest.mark.anyio
@@ -218,8 +237,13 @@ async def test_1513_delete_with_invalid_id():
     """Deleting async conversation with invalid id raises DatabaseError"""
     logger.info("Validating async delete invalid ID raises DatabaseError")
     conversation = AsyncConversation(conversation_id="fake_id")
-    with pytest.raises(DatabaseError):
+    with pytest.raises(DatabaseError) as exc_info:
         await conversation.delete()
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20050
+    assert "Invalid value for conversation id" in error.message
 
 
 @pytest.mark.anyio
@@ -229,7 +253,9 @@ async def test_1514_get_attributes_with_invalid_id():
         "Validating async get_attributes with invalid ID raises ConversationNotFound"
     )
     conversation = AsyncConversation(conversation_id="invalid")
-    with pytest.raises(select_ai.errors.ConversationNotFoundError):
+    with pytest.raises(
+        select_ai.errors.ConversationNotFoundError, match="not found"
+    ):
         await conversation.get_attributes()
 
 
@@ -243,7 +269,9 @@ async def test_1515_get_attributes_for_deleted_conversation(
         title=f"{CONVERSATION_PREFIX}_TO_DELETE"
     )
     await conversation.delete(force=True)
-    with pytest.raises(select_ai.errors.ConversationNotFoundError):
+    with pytest.raises(
+        select_ai.errors.ConversationNotFoundError, match="not found"
+    ):
         await conversation.get_attributes()
 
 
@@ -255,6 +283,7 @@ async def test_1516_list_contains_new_conversation(async_conversation_factory):
         title=f"{CONVERSATION_PREFIX}_LIST"
     )
     listed = [item async for item in AsyncConversation.list()]
+    logger.info("List = %s", listed)
     assert any(
         item.conversation_id == conversation.conversation_id for item in listed
     )
@@ -267,6 +296,7 @@ async def test_1517_list_returns_async_conversation_instances():
         "Validating AsyncConversation.list returns AsyncConversation instances"
     )
     listed = [item async for item in AsyncConversation.list()]
+    logger.info("List = %s", listed)
     assert all(isinstance(item, AsyncConversation) for item in listed)
 
 

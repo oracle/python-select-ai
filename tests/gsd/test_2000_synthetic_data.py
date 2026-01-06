@@ -14,6 +14,7 @@ import uuid
 
 import pytest
 import select_ai
+from oracledb import DatabaseError
 from select_ai import (
     Profile,
     ProfileAttributes,
@@ -111,6 +112,7 @@ def test_2002_generate_zero_sample_rows(synthetic_profile):
     params = SyntheticDataParams(sample_rows=0, priority="HIGH")
     attributes = _build_attributes(params=params)
     logger.info("Attributes = %s", attributes)
+    assert attributes.params.sample_rows is 0
     result = synthetic_profile.generate_synthetic_data(attributes)
     logger.info("Result = %s", result)
     assert result is None
@@ -122,6 +124,7 @@ def test_2003_generate_single_sample_row(synthetic_profile):
     params = SyntheticDataParams(sample_rows=1, priority="HIGH")
     attributes = _build_attributes(params=params)
     logger.info("Attributes = %s", attributes)
+    assert attributes.params.sample_rows is 1
     result = synthetic_profile.generate_synthetic_data(attributes)
     logger.info("Result = %s", result)
     assert result is None
@@ -133,6 +136,8 @@ def test_2004_generate_low_priority(synthetic_profile):
     params = SyntheticDataParams(sample_rows=1, priority="LOW")
     attributes = _build_attributes(params=params)
     logger.info("Attributes = %s", attributes)
+    assert attributes.params.sample_rows is 1
+    assert attributes.params.priority is "LOW"
     result = synthetic_profile.generate_synthetic_data(attributes)
     logger.info("Result = %s", result)
     assert result is None
@@ -140,9 +145,11 @@ def test_2004_generate_low_priority(synthetic_profile):
 
 def test_2005_generate_missing_object_name(synthetic_profile):
     """Missing object_name raises error"""
-    logger.info("Validating missing object_name raises error")
+    logger.info("Validating missing object_name raises ValueError")
     attributes = SyntheticDataAttributes(record_count=1)
-    with pytest.raises(Exception):
+    with pytest.raises(
+        ValueError, match="One of object_name and object_list should be set"
+    ):
         synthetic_profile.generate_synthetic_data(attributes)
 
 
@@ -152,8 +159,13 @@ def test_2006_generate_invalid_priority(synthetic_profile):
     params = SyntheticDataParams(sample_rows=1, priority="CRITICAL")
     attributes = _build_attributes(params=params)
     logger.info("Attributes = %s", attributes)
-    with pytest.raises(Exception):
+    with pytest.raises(DatabaseError) as exc_info:
         synthetic_profile.generate_synthetic_data(attributes)
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20000
+    assert "Invalid value for priority" in error.message
 
 
 def test_2007_generate_negative_record_count(synthetic_profile):
@@ -161,12 +173,19 @@ def test_2007_generate_negative_record_count(synthetic_profile):
     logger.info("Validating negative record count raises error")
     attributes = _build_attributes(record_count=-5)
     logger.info("Attributes = %s", attributes)
-    with pytest.raises(Exception):
+    with pytest.raises(DatabaseError) as exc_info:
         synthetic_profile.generate_synthetic_data(attributes)
+    (error,) = exc_info.value.args
+    logger.debug("Error code: %s", error.code)
+    logger.debug("Error message:\n%s", error.message)
+    assert error.code == 20000
+    assert "record_count cannot be smaller than 0" in error.message
 
 
 def test_2008_generate_with_none_attributes(synthetic_profile):
     """Passing None as attributes raises error"""
-    logger.info("Validating None attributes raise error")
-    with pytest.raises(Exception):
+    logger.info("Validating None attributes raise ValueError")
+    with pytest.raises(
+        ValueError, match="'synthetic_data_attributes' cannot be None"
+    ):
         synthetic_profile.generate_synthetic_data(None)
