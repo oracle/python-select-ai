@@ -180,7 +180,6 @@ def oci_credential(connect, test_env):
         "private_key": get_env_value("OCI_PRIVATE_KEY", required=True),
         "fingerprint": get_env_value("OCI_FINGERPRINT", required=True),
     }
-    print(credential)
     select_ai.create_credential(credential, replace=True)
     yield credential
     select_ai.delete_credential(PYSAI_OCI_CREDENTIAL_NAME)
