@@ -9,12 +9,15 @@
 1200 - Module for testing the Profile proxy object
 """
 import collections
+import logging
 import uuid
 
 import oracledb
 import pytest
 import select_ai
 from select_ai import Profile, ProfileAttributes
+
+logger = logging.getLogger(__name__)
 
 PYSAI_1200_PROFILE = f"PYSAI_1200_{uuid.uuid4().hex.upper()}"
 PYSAI_1200_PROFILE_2 = f"PYSAI_1200_2_{uuid.uuid4().hex.upper()}"
@@ -24,45 +27,59 @@ PYSAI_1200_DUP_PROFILE = f"PYSAI_1200_DUP_{uuid.uuid4().hex.upper()}"
 
 @pytest.fixture(scope="module")
 def python_gen_ai_profile(profile_attributes):
+    logger.info("Creating profile %s", PYSAI_1200_PROFILE)
     profile = select_ai.Profile(
         profile_name=PYSAI_1200_PROFILE,
         description="OCI GENAI Profile",
         attributes=profile_attributes,
     )
     yield profile
+    logger.info("Deleting profile %s", profile.profile_name)
     profile.delete(force=True)
 
 
 @pytest.fixture(scope="module")
 def python_gen_ai_profile_2(profile_attributes):
+    logger.info("Creating profile %s", PYSAI_1200_PROFILE_2)
     profile = select_ai.Profile(
         profile_name=PYSAI_1200_PROFILE_2,
         description="OCI GENAI Profile 2",
         attributes=profile_attributes,
     )
     profile.create(replace=True)
+    logger.debug("Profile = \n %s", profile)
     yield profile
+    logger.info("Deleting profile %s", profile.profile_name)
     profile.delete(force=True)
 
 
 @pytest.fixture(scope="module")
 def python_gen_ai_min_attr_profile(min_profile_attributes):
+    logger.info(
+        "Creating profile with minimum attributes %s",
+        PYSAI_1200_MIN_ATTR_PROFILE,
+    )
     profile = select_ai.Profile(
         profile_name=PYSAI_1200_MIN_ATTR_PROFILE,
         attributes=min_profile_attributes,
         description=None,
     )
+    logger.debug("Profile = \n %s", profile)
     yield profile
+    logger.info("Deleting minimum attributes profile %s", profile.profile_name)
     profile.delete(force=True)
 
 
 @pytest.fixture
 def python_gen_ai_duplicate_profile(min_profile_attributes):
+    logger.info("Creating duplicate profile %s", PYSAI_1200_DUP_PROFILE)
     profile = Profile(
         profile_name=PYSAI_1200_DUP_PROFILE,
         attributes=min_profile_attributes,
     )
+    logger.debug("Profile = \n %s", profile)
     yield profile
+    logger.info("Deleting duplicate profile %s", profile.profile_name)
     profile.delete(force=True)
 
 
@@ -206,7 +223,7 @@ def test_1207():
     assert profile.attributes.provider.model == "meta.llama-3.1-70b-instruct"
 
 
-def test_1208(oci_credential):
+def test_1208(oci_credential, oci_compartment_id):
     """Set multiple attributes for a Profile"""
     profile = Profile(PYSAI_1200_PROFILE)
     profile_attrs = ProfileAttributes(
@@ -214,6 +231,7 @@ def test_1208(oci_credential):
         provider=select_ai.OCIGenAIProvider(
             model="meta.llama-4-maverick-17b-128e-instruct-fp8",
             region="us-chicago-1",
+            oci_compartment_id=oci_compartment_id,
             oci_apiformat="GENERIC",
         ),
         object_list=[{"owner": "ADMIN", "name": "gymnasts"}],

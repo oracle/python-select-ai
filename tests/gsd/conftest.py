@@ -55,27 +55,3 @@ def log_test_case(request, configure_module_logging):
     logger.info("Starting test %s", request.node.name)
     yield
     logger.info("Finished test %s", request.node.name)
-
-
-@pytest.fixture(scope="module")
-def provider():
-    return select_ai.OCIGenAIProvider(
-        region="us-phoenix-1", oci_apiformat="GENERIC"
-    )
-
-
-@pytest.fixture(scope="module")
-def profile_attributes(provider, oci_credential):
-    return select_ai.ProfileAttributes(
-        credential_name=oci_credential["credential_name"],
-        object_list=[{"owner": "SH"}],
-        provider=provider,
-    )
-
-
-@pytest.fixture(scope="module")
-def min_profile_attributes(provider, oci_credential):
-    return select_ai.ProfileAttributes(
-        credential_name=oci_credential["credential_name"],
-        provider=select_ai.OCIGenAIProvider(),
-    )

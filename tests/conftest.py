@@ -33,6 +33,35 @@ import select_ai
 
 PYSAI_TEST_USER = "PYSAI_TEST_USER"
 PYSAI_OCI_CREDENTIAL_NAME = f"PYSAI_OCI_CREDENTIAL_{uuid.uuid4().hex.upper()}"
+_BASIC_SCHEMA_PRIVILEGES = (
+    "CREATE SESSION",
+    "CREATE TABLE",
+    "UNLIMITED TABLESPACE",
+)
+
+
+def _ensure_test_user_exists(username: str, password: str):
+    username_upper = username.upper()
+    with select_ai.cursor() as cr:
+        cr.execute(
+            "SELECT 1 FROM dba_users WHERE username = :username",
+            username=username_upper,
+        )
+        if cr.fetchone():
+            return
+        escaped_password = password.replace('"', '""')
+        cr.execute(
+            f'CREATE USER {username_upper} IDENTIFIED BY "{escaped_password}"'
+        )
+    select_ai.db.get_connection().commit()
+
+
+def _grant_basic_schema_privileges(username: str):
+    username_upper = username.upper()
+    with select_ai.cursor() as cr:
+        for privilege in _BASIC_SCHEMA_PRIVILEGES:
+            cr.execute(f"GRANT {privilege} TO {username_upper}")
+    select_ai.db.get_connection().commit()
 
 
 def get_env_value(name, default_value=None, required=False):
@@ -93,6 +122,11 @@ def test_env(pytestconfig):
 @pytest.fixture(autouse=True, scope="session")
 def setup_test_user(test_env):
     select_ai.connect(**test_env.connect_params(admin=True))
+    _ensure_test_user_exists(
+        username=test_env.test_user,
+        password=test_env.test_user_password,
+    )
+    _grant_basic_schema_privileges(username=test_env.test_user)
     select_ai.grant_privileges(users=[test_env.test_user])
     select_ai.grant_http_access(
         users=[test_env.test_user],

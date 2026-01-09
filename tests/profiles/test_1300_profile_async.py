@@ -9,6 +9,7 @@
 1300 - Module for testing the AsyncProfile proxy object
 """
 import collections
+import logging
 import uuid
 
 import oracledb
@@ -16,6 +17,7 @@ import pytest
 import select_ai
 from select_ai import AsyncProfile, ProfileAttributes
 
+logger = logging.getLogger(__name__)
 PYSAI_ASYNC_1300_PROFILE = f"PYSAI_ASYNC_1300_{uuid.uuid4().hex.upper()}"
 PYSAI_ASYNC_1300_PROFILE_2 = f"PYSAI_ASYNC_1300_2_{uuid.uuid4().hex.upper()}"
 PYSAI_ASYNC_1300_MIN_ATTR_PROFILE = (
@@ -28,45 +30,62 @@ PYSAI_ASYNC_1300_DUP_PROFILE = (
 
 @pytest.fixture(scope="module")
 async def python_gen_ai_profile(profile_attributes):
+    logger.info("Creating async profile %s", PYSAI_ASYNC_1300_PROFILE)
     profile = await AsyncProfile(
         profile_name=PYSAI_ASYNC_1300_PROFILE,
         description="OCI GENAI Profile",
         attributes=profile_attributes,
     )
+    logger.debug("AsyncProfile = \n %s", profile)
     yield profile
+    logger.info("Deleting async profile %s", profile.profile_name)
     await profile.delete(force=True)
 
 
 @pytest.fixture(scope="module")
 async def python_gen_ai_profile_2(profile_attributes):
+    logger.info("Creating async profile %s", PYSAI_ASYNC_1300_PROFILE_2)
     profile = await AsyncProfile(
         profile_name=PYSAI_ASYNC_1300_PROFILE_2,
         description="OCI GENAI Profile 2",
         attributes=profile_attributes,
     )
     await profile.create(replace=True)
+    logger.debug("AsyncProfile = \n %s", profile)
     yield profile
+    logger.info("Deleting async profile %s", profile.profile_name)
     await profile.delete(force=True)
 
 
 @pytest.fixture(scope="module")
 async def python_gen_ai_min_attr_profile(min_profile_attributes):
+    logger.info(
+        "Creating async profile with minimum attributes %s",
+        PYSAI_ASYNC_1300_MIN_ATTR_PROFILE,
+    )
     profile = await AsyncProfile(
         profile_name=PYSAI_ASYNC_1300_MIN_ATTR_PROFILE,
         attributes=min_profile_attributes,
         description=None,
     )
+    logger.debug("AsyncProfile = \n %s", profile)
     yield profile
+    logger.info("Deleting async profile %s", profile.profile_name)
     await profile.delete(force=True)
 
 
 @pytest.fixture
 async def python_gen_ai_duplicate_profile(min_profile_attributes):
+    logger.info(
+        "Creating duplicate async profile %s", PYSAI_ASYNC_1300_DUP_PROFILE
+    )
     profile = await AsyncProfile(
         profile_name=PYSAI_ASYNC_1300_DUP_PROFILE,
         attributes=min_profile_attributes,
     )
+    logger.debug("AsyncProfile = \n %s", profile)
     yield profile
+    logger.info("Cleaning up duplicate async profile %s", profile.profile_name)
     await profile.delete(force=True)
 
 
@@ -94,6 +113,10 @@ async def python_gen_ai_neg_feedback(async_cursor, python_gen_ai_profile):
     await async_cursor.execute(sql_text)
     feedback_response = "SELECT * from gymnast"
     feedback_content = "print in ascending order of total_points"
+    logger.info(
+        "Adding negative feedback for async profile %s",
+        python_gen_ai_profile.profile_name,
+    )
     await python_gen_ai_profile.add_negative_feedback(
         prompt_spec=(prompt, action),
         response=feedback_response,
@@ -105,6 +128,10 @@ async def python_gen_ai_neg_feedback(async_cursor, python_gen_ai_profile):
         feedback_response=feedback_response,
         feedback_content=feedback_content,
         sql_text=sql_text,
+    )
+    logger.info(
+        "Removing negative feedback for async profile %s",
+        python_gen_ai_profile.profile_name,
     )
     await python_gen_ai_profile.delete_feedback(prompt_spec=(prompt, action))
 
@@ -125,6 +152,10 @@ async def python_gen_ai_pos_feedback(async_cursor, python_gen_ai_profile):
     action = select_ai.Action.SHOWSQL
     sql_text = f"select ai {action.value} {prompt}"
     await async_cursor.execute(sql_text)
+    logger.info(
+        "Adding positive feedback for async profile %s",
+        python_gen_ai_profile.profile_name,
+    )
     await python_gen_ai_profile.add_positive_feedback(
         prompt_spec=(prompt, action),
     )
@@ -133,11 +164,18 @@ async def python_gen_ai_pos_feedback(async_cursor, python_gen_ai_profile):
         action=action,
         sql_text=sql_text,
     )
+    logger.info(
+        "Removing positive feedback for async profile %s",
+        python_gen_ai_profile.profile_name,
+    )
     await python_gen_ai_profile.delete_feedback(prompt_spec=(prompt, action))
 
 
 def test_1300(python_gen_ai_profile, profile_attributes):
     """Create basic Profile"""
+    logger.info(
+        "Validating async profile %s", python_gen_ai_profile.profile_name
+    )
     assert python_gen_ai_profile.profile_name == PYSAI_ASYNC_1300_PROFILE
     assert python_gen_ai_profile.attributes == profile_attributes
     assert python_gen_ai_profile.description == "OCI GENAI Profile"
@@ -145,6 +183,10 @@ def test_1300(python_gen_ai_profile, profile_attributes):
 
 def test_1301(python_gen_ai_profile_2, profile_attributes):
     """Create Profile using create method"""
+    logger.info(
+        "Validating async profile created via create %s",
+        python_gen_ai_profile_2.profile_name,
+    )
     assert python_gen_ai_profile_2.profile_name == PYSAI_ASYNC_1300_PROFILE_2
     assert python_gen_ai_profile_2.attributes == profile_attributes
     assert python_gen_ai_profile_2.description == "OCI GENAI Profile 2"
@@ -152,10 +194,14 @@ def test_1301(python_gen_ai_profile_2, profile_attributes):
 
 async def test_1302(profile_attributes):
     """Create duplicate profile with replace=True"""
+    logger.info("Creating duplicate async profile with replace=True")
     duplicate = await AsyncProfile(
         profile_name=PYSAI_ASYNC_1300_PROFILE,
         attributes=profile_attributes,
         replace=True,
+    )
+    logger.info(
+        "Validating duplicate async profile %s", duplicate.profile_name
     )
     assert duplicate.profile_name == PYSAI_ASYNC_1300_PROFILE
     assert duplicate.attributes == profile_attributes
@@ -164,6 +210,10 @@ async def test_1302(profile_attributes):
 
 def test_1303(python_gen_ai_min_attr_profile, min_profile_attributes):
     """Create Profile with minimum required attributes"""
+    logger.info(
+        "Validating async minimum attribute profile %s",
+        python_gen_ai_min_attr_profile.profile_name,
+    )
     assert (
         python_gen_ai_min_attr_profile.profile_name
         == PYSAI_ASYNC_1300_MIN_ATTR_PROFILE
@@ -174,6 +224,7 @@ def test_1303(python_gen_ai_min_attr_profile, min_profile_attributes):
 
 async def test_1304():
     """List profiles without regex"""
+    logger.info("Listing async profiles without regex")
     profile_list = [profile async for profile in AsyncProfile.list()]
     profile_names = set(profile.profile_name for profile in profile_list)
     descriptions = set(profile.description for profile in profile_list)
@@ -185,6 +236,7 @@ async def test_1304():
 
 async def test_1305():
     """List profiles with regex"""
+    logger.info("Listing async profiles with regex pattern")
     profile_list = [
         profile
         async for profile in AsyncProfile.list(
@@ -201,6 +253,9 @@ async def test_1305():
 
 async def test_1306(profile_attributes):
     """Get attributes for a Profile"""
+    logger.info(
+        "Fetching attributes for async profile %s", PYSAI_ASYNC_1300_PROFILE
+    )
     profile = await AsyncProfile(PYSAI_ASYNC_1300_PROFILE)
     fetched_attributes = await profile.get_attributes()
     assert fetched_attributes == profile_attributes
@@ -208,6 +263,10 @@ async def test_1306(profile_attributes):
 
 async def test_1307():
     """Set attributes for a Profile"""
+    logger.info(
+        "Setting single attribute on async profile %s",
+        PYSAI_ASYNC_1300_PROFILE,
+    )
     profile = await AsyncProfile(PYSAI_ASYNC_1300_PROFILE)
     assert profile.attributes.provider.model is None
     await profile.set_attribute(
@@ -218,6 +277,10 @@ async def test_1307():
 
 async def test_1308(oci_credential):
     """Set multiple attributes for a Profile"""
+    logger.info(
+        "Setting multiple attributes for async profile %s",
+        PYSAI_ASYNC_1300_PROFILE,
+    )
     profile = await AsyncProfile(PYSAI_ASYNC_1300_PROFILE)
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
@@ -235,12 +298,19 @@ async def test_1308(oci_credential):
     ]
     assert profile.attributes.comments is True
     fetched_attributes = await profile.get_attributes()
+    logger.debug(
+        "Fetched async provider attributes: %s", fetched_attributes.provider
+    )
     assert fetched_attributes == profile_attrs
 
 
 async def test_1309(python_gen_ai_duplicate_profile):
     """Create duplicate profile without replace"""
     # expected - ProfileExistsError
+    logger.info(
+        "Expecting ProfileExistsError for duplicate async profile %s",
+        python_gen_ai_duplicate_profile.profile_name,
+    )
     with pytest.raises(select_ai.errors.ProfileExistsError):
         await AsyncProfile(
             profile_name=python_gen_ai_duplicate_profile.profile_name,
@@ -251,6 +321,10 @@ async def test_1309(python_gen_ai_duplicate_profile):
 async def test_1310(python_gen_ai_duplicate_profile):
     """Create duplicate profile with replace=False"""
     # expected - select_ai.ProfileExistsError
+    logger.info(
+        "Expecting ProfileExistsError with replace=False for async profile %s",
+        python_gen_ai_duplicate_profile.profile_name,
+    )
     with pytest.raises(select_ai.errors.ProfileExistsError):
         await AsyncProfile(
             profile_name=python_gen_ai_duplicate_profile.profile_name,
@@ -270,6 +344,9 @@ async def test_1310(python_gen_ai_duplicate_profile):
 async def test_1311(invalid_provider):
     """Create Profile with invalid providers"""
     # expected - ValueError
+    logger.info(
+        "Validating async invalid provider handling: %s", invalid_provider
+    )
     with pytest.raises(ValueError):
         await AsyncProfile(
             profile_name="PYTHON_INVALID_PROFILE",
@@ -282,6 +359,7 @@ async def test_1311(invalid_provider):
 async def test_1312():
     # provider=None
     # expected - ORA-20047: Either provider or provider_endpoint must be specified
+    logger.info("Validating async provider=None raises DatabaseError")
     with pytest.raises(oracledb.DatabaseError):
         await AsyncProfile(
             profile_name="PYTHON_INVALID_PROFILE",
@@ -301,6 +379,10 @@ async def test_1312():
 async def test_1313(invalid_profile_name, min_profile_attributes):
     """Create Profile with empty profile_name"""
     # expected - ValueError
+    logger.info(
+        "Validating async empty profile name handling: %s",
+        invalid_profile_name,
+    )
     with pytest.raises(ValueError):
         await AsyncProfile(
             profile_name=invalid_profile_name,
@@ -311,6 +393,7 @@ async def test_1313(invalid_profile_name, min_profile_attributes):
 async def test_1314():
     """List Profile with invalid regex"""
     # expected - ORA-12726: unmatched bracket in regular expression
+    logger.info("Validating async invalid regex handling during list")
     with pytest.raises(oracledb.DatabaseError):
         profiles = [
             await profile
@@ -322,6 +405,7 @@ async def test_1314():
 
 async def test_1315(profile_attributes):
     """Test AsyncProfile.fetch"""
+    logger.info("Fetching async profile %s", PYSAI_ASYNC_1300_PROFILE_2)
     async_profile = await AsyncProfile.fetch(
         profile_name=PYSAI_ASYNC_1300_PROFILE_2
     )
@@ -334,6 +418,10 @@ async def test_1316(
     async_cursor, python_gen_ai_profile, python_gen_ai_neg_feedback
 ):
     """Test profile negative feedback"""
+    logger.info(
+        "Validating negative feedback persistence for async profile %s",
+        python_gen_ai_profile.profile_name,
+    )
     await async_cursor.execute(
         f"select CONTENT, ATTRIBUTES "
         f"from {python_gen_ai_profile.profile_name.upper()}_FEEDBACK_VECINDEX$VECTAB "
@@ -356,6 +444,10 @@ async def test_1317(
     async_cursor, python_gen_ai_profile, python_gen_ai_pos_feedback
 ):
     """Test profile positive feedback"""
+    logger.info(
+        "Validating positive feedback persistence for async profile %s",
+        python_gen_ai_profile.profile_name,
+    )
     await async_cursor.execute(
         f"select CONTENT, ATTRIBUTES "
         f"from {python_gen_ai_profile.profile_name.upper()}_FEEDBACK_VECINDEX$VECTAB "
@@ -372,6 +464,10 @@ async def test_1317(
 
 async def test_1318(python_gen_ai_profile):
     """Test translate"""
+    logger.info(
+        "Testing translate for async profile %s",
+        python_gen_ai_profile.profile_name,
+    )
     response = await python_gen_ai_profile.translate(
         text="Thank you", source_language="en", target_language="de"
     )
