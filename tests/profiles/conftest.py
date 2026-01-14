@@ -11,8 +11,7 @@ from pathlib import Path
 import pytest
 import select_ai
 
-LOG_FORMAT = "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s"
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+LOG_FORMAT = "%(levelname)s: [%(name)s] %(message)s"
 
 
 def _configure_logger(logger: logging.Logger, module_file: str) -> None:
@@ -21,10 +20,10 @@ def _configure_logger(logger: logging.Logger, module_file: str) -> None:
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / f"tkex_{Path(module_file).stem}.log"
 
-    formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=DATE_FORMAT)
+    formatter = logging.Formatter(fmt=LOG_FORMAT)
 
     file_handler = logging.FileHandler(log_file, mode="w", encoding="utf-8")
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
 
     console_handler = logging.StreamHandler()
