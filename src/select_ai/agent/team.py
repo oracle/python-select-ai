@@ -20,18 +20,17 @@ from typing import (
 
 import oracledb
 
-from select_ai import BaseProfile
 from select_ai._abc import SelectAIDataClass
-from select_ai._enums import StrEnum
 from select_ai.agent.sql import (
     GET_USER_AI_AGENT_TEAM,
     GET_USER_AI_AGENT_TEAM_ATTRIBUTES,
     LIST_USER_AI_AGENT_TEAMS,
 )
-from select_ai.async_profile import AsyncProfile
 from select_ai.db import async_cursor, cursor
-from select_ai.errors import AgentTeamNotFoundError
-from select_ai.profile import Profile
+from select_ai.errors import (
+    AgentTeamAttributesEmptyError,
+    AgentTeamNotFoundError,
+)
 
 
 @dataclass
@@ -105,7 +104,7 @@ class Team(BaseTeam):
                         post_processed_attributes[k] = v
                 return TeamAttributes(**post_processed_attributes)
             else:
-                raise AgentTeamNotFoundError(team_name=team_name)
+                raise AgentTeamAttributesEmptyError(team_name=team_name)
 
     @staticmethod
     def _get_description(team_name: str) -> Union[str, None]:
@@ -228,7 +227,10 @@ class Team(BaseTeam):
         :raises select_ai.errors.AgentTeamNotFoundError:
          If the AI Team is not found
         """
-        attributes = cls._get_attributes(team_name)
+        try:
+            attributes = cls._get_attributes(team_name)
+        except AgentTeamAttributesEmptyError:
+            attributes = None
         description = cls._get_description(team_name)
         return cls(
             team_name=team_name,
@@ -259,7 +261,10 @@ class Team(BaseTeam):
                     description = row[1].read()  # Oracle.LOB
                 else:
                     description = None
-                attributes = cls._get_attributes(team_name=team_name)
+                try:
+                    attributes = cls._get_attributes(team_name=team_name)
+                except AgentTeamAttributesEmptyError:
+                    attributes = None
                 yield cls(
                     team_name=team_name,
                     description=description,
@@ -369,7 +374,7 @@ class AsyncTeam(BaseTeam):
                         post_processed_attributes[k] = v
                 return TeamAttributes(**post_processed_attributes)
             else:
-                raise AgentTeamNotFoundError(team_name=team_name)
+                raise AgentTeamAttributesEmptyError(team_name=team_name)
 
     @staticmethod
     async def _get_description(team_name: str) -> Union[str, None]:
@@ -494,7 +499,10 @@ class AsyncTeam(BaseTeam):
         :raises select_ai.errors.AgentTeamNotFoundError:
          If the AI Team is not found
         """
-        attributes = await cls._get_attributes(team_name)
+        try:
+            attributes = await cls._get_attributes(team_name)
+        except AgentTeamAttributesEmptyError:
+            attributes = None
         description = await cls._get_description(team_name)
         return cls(
             team_name=team_name,
@@ -528,7 +536,10 @@ class AsyncTeam(BaseTeam):
                     description = await row[1].read()  # Oracle.AsyncLOB
                 else:
                     description = None
-                attributes = await cls._get_attributes(team_name=team_name)
+                try:
+                    attributes = await cls._get_attributes(team_name=team_name)
+                except AgentTeamAttributesEmptyError:
+                    attributes = None
                 yield cls(
                     team_name=team_name,
                     description=description,

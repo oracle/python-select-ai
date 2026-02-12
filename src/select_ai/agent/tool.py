@@ -30,7 +30,10 @@ from select_ai.agent.sql import (
 )
 from select_ai.async_profile import AsyncProfile
 from select_ai.db import async_cursor, cursor
-from select_ai.errors import AgentToolNotFoundError
+from select_ai.errors import (
+    AgentToolAttributesEmptyError,
+    AgentToolNotFoundError,
+)
 from select_ai.profile import Profile
 
 
@@ -291,7 +294,7 @@ class Tool(_BaseTool):
                         post_processed_attributes[k] = v
                 return ToolAttributes.create(**post_processed_attributes)
             else:
-                raise AgentToolNotFoundError(tool_name=tool_name)
+                raise AgentToolAttributesEmptyError(tool_name=tool_name)
 
     @staticmethod
     def _get_description(tool_name: str) -> Union[str, None]:
@@ -644,7 +647,10 @@ class Tool(_BaseTool):
          If the AI Tool is not found
 
         """
-        attributes = cls._get_attributes(tool_name)
+        try:
+            attributes = cls._get_attributes(tool_name)
+        except AgentToolAttributesEmptyError:
+            attributes = None
         description = cls._get_description(tool_name)
         return cls(
             tool_name=tool_name, attributes=attributes, description=description
@@ -667,16 +673,7 @@ class Tool(_BaseTool):
             )
             for row in cr.fetchall():
                 tool_name = row[0]
-                if row[1]:
-                    description = row[1].read()  # Oracle.LOB
-                else:
-                    description = None
-                attributes = cls._get_attributes(tool_name=tool_name)
-                yield cls(
-                    tool_name=tool_name,
-                    description=description,
-                    attributes=attributes,
-                )
+                yield cls.fetch(tool_name=tool_name)
 
     def set_attributes(self, attributes: ToolAttributes) -> None:
         """

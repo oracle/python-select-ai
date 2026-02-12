@@ -56,7 +56,8 @@ def _ensure_test_user_exists(username: str, password: str):
         cr.execute(
             f'CREATE USER {username_upper} IDENTIFIED BY "{escaped_password}"'
         )
-    select_ai.db.get_connection().commit()
+    with select_ai.db.get_connection() as conn:
+        conn.commit()
 
 
 def _grant_basic_schema_privileges(username: str):
@@ -64,7 +65,8 @@ def _grant_basic_schema_privileges(username: str):
     with select_ai.cursor() as cr:
         for privilege in _BASIC_SCHEMA_PRIVILEGES:
             cr.execute(f"GRANT {privilege} TO {username_upper}")
-    select_ai.db.get_connection().commit()
+    with select_ai.db.get_connection() as conn:
+        conn.commit()
 
 
 def get_env_value(name, default_value=None, required=False):
@@ -167,12 +169,14 @@ async def async_connect(setup_test_user, test_env, anyio_backend):
 
 @pytest.fixture
 def connection():
-    return select_ai.db.get_connection()
+    with select_ai.db.get_connection() as conn:
+        yield conn
 
 
 @pytest.fixture
 def async_connection():
-    return select_ai.db.async_get_connection()
+    with select_ai.db.async_get_connection() as conn:
+        yield conn
 
 
 @pytest.fixture(scope="module")

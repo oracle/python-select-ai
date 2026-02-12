@@ -8,7 +8,7 @@
 import contextlib
 import os
 from threading import get_ident
-from typing import Any, Dict, Generator, Hashable, Optional
+from typing import Any, AsyncGenerator, Dict, Generator, Hashable, Optional
 
 import oracledb
 from oracledb import Connection
@@ -61,7 +61,7 @@ def create_pool(
     password: str,
     dsn: str,
     min_size: Optional[int] = 1,
-    max_size: Optional[int] = 1,
+    max_size: Optional[int] = 2,
     increment: Optional[int] = 1,
     *args,
     **kwargs,
@@ -74,6 +74,7 @@ def create_pool(
         max=max_size,
         increment=increment,
         connection_id_prefix="python-select-ai",
+        getmode=oracledb.POOL_GETMODE_NOWAIT,
         *args,
         **kwargs,
     )
@@ -189,16 +190,18 @@ def _set_connection_pool(
         __async_pool__[key] = async_pool
 
 
-def get_connection() -> oracledb.Connection:
+@contextlib.contextmanager
+def get_connection() -> Generator[Connection, Any, None]:
     """Returns the connection object if connection is healthy"""
     with ConnectionManager().get_connection() as conn:
-        return conn
+        yield conn
 
 
-async def async_get_connection() -> oracledb.AsyncConnection:
+@contextlib.asynccontextmanager
+async def async_get_connection() -> AsyncGenerator[Any, Any]:
     """Returns the AsyncConnection object if connection is healthy"""
     async with ConnectionManager().get_connection() as conn:
-        return conn
+        yield conn
 
 
 @contextlib.contextmanager
@@ -309,7 +312,7 @@ class ConnectionManager:
         else:
             raise DatabaseNotConnectedError()
 
-    def disconnect(self, force=False):
+    def disconnect(self, force=True):
         global __pool__, __conn__
         if self.is_pool:
             self.pool.close(force=force)
