@@ -73,7 +73,7 @@ class ToolParams(SelectAIDataClass):
 
     :param str sender: Sender used for EMAIL notification
 
-    :param str slack_channel: Slack channel to use
+    :param str channel: Slack channel to use
 
     :param str smtp_host: SMTP host to use for EMAIL notification
 
@@ -87,7 +87,7 @@ class ToolParams(SelectAIDataClass):
     profile_name: Optional[str] = None
     recipient: Optional[str] = None
     sender: Optional[str] = None
-    slack_channel: Optional[str] = None
+    channel: Optional[str] = None
     smtp_host: Optional[str] = None
 
     def __post_init__(self):
@@ -119,7 +119,7 @@ class ToolParams(SelectAIDataClass):
             "profile_name",
             "recipient",
             "sender",
-            "slack_channel",
+            "channel",
             "smtp_host",
         }
 
@@ -145,7 +145,7 @@ class NotificationToolParams(ToolParams):
 @dataclass
 class SlackNotificationToolParams(NotificationToolParams):
 
-    _REQUIRED_FIELDS = ["credential_name", "slack_channel"]
+    _REQUIRED_FIELDS = ["credential_name", "channel"]
     notification_type: NotificationType = NotificationType.SLACK
 
 
@@ -523,7 +523,7 @@ class Tool(_BaseTool):
         cls,
         tool_name: str,
         credential_name: str,
-        slack_channel: str,
+        channel: str,
         description: Optional[str] = None,
         replace: bool = False,
     ) -> "Tool":
@@ -532,7 +532,7 @@ class Tool(_BaseTool):
 
         :param str tool_name: The name of the Slack notification tool
         :param str credential_name: The name of the Slack credential
-        :param str slack_channel: The name of the Slack channel
+        :param str channel: The name of the Slack channel
         :param str description: The description of the Slack notification tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
@@ -540,7 +540,7 @@ class Tool(_BaseTool):
         """
         slack_notification_tool_params = SlackNotificationToolParams(
             credential_name=credential_name,
-            slack_channel=slack_channel,
+            channel=channel,
         )
         return cls.create_built_in_tool(
             tool_name=tool_name,
@@ -968,7 +968,7 @@ class AsyncTool(_BaseTool):
         cls,
         tool_name: str,
         credential_name: str,
-        slack_channel: str,
+        channel: str,
         description: Optional[str] = None,
         replace: bool = False,
     ) -> "AsyncTool":
@@ -977,7 +977,7 @@ class AsyncTool(_BaseTool):
 
         :param str tool_name: The name of the Slack notification tool
         :param str credential_name: The name of the Slack credential
-        :param str slack_channel: The name of the Slack channel
+        :param str channel: The name of the Slack channel
         :param str description: The description of the Slack notification tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
@@ -985,7 +985,7 @@ class AsyncTool(_BaseTool):
         """
         slack_notification_tool_params = SlackNotificationToolParams(
             credential_name=credential_name,
-            slack_channel=slack_channel,
+            channel=channel,
         )
         return await cls.create_built_in_tool(
             tool_name=tool_name,

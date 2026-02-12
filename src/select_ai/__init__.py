@@ -25,6 +25,8 @@ from .db import (
     async_disconnect,
     async_is_connected,
     connect,
+    create_pool,
+    create_pool_async,
     cursor,
     disconnect,
     is_connected,

@@ -8,17 +8,23 @@
 import contextlib
 import os
 from threading import get_ident
-from typing import Dict, Hashable
+from typing import Any, Dict, Generator, Hashable, Optional
 
 import oracledb
+from oracledb import Connection
 
 from select_ai.errors import DatabaseNotConnectedError
 
 __conn__: Dict[Hashable, oracledb.Connection] = {}
 __async_conn__: Dict[Hashable, oracledb.AsyncConnection] = {}
 
+__pool__: Dict[Hashable, oracledb.ConnectionPool] = {}
+__async_pool__: Dict[Hashable, oracledb.AsyncConnectionPool] = {}
+
 __all__ = [
     "connect",
+    "create_pool",
+    "create_pool_async",
     "async_connect",
     "is_connected",
     "async_is_connected",
@@ -48,6 +54,54 @@ def connect(user: str, password: str, dsn: str, *args, **kwargs):
         **kwargs,
     )
     _set_connection(conn=conn)
+
+
+def create_pool(
+    user: str,
+    password: str,
+    dsn: str,
+    min_size: Optional[int] = 1,
+    max_size: Optional[int] = 1,
+    increment: Optional[int] = 1,
+    *args,
+    **kwargs,
+):
+    pool = oracledb.create_pool(
+        user=user,
+        password=password,
+        dsn=dsn,
+        min=min_size,
+        max=max_size,
+        increment=increment,
+        connection_id_prefix="python-select-ai",
+        *args,
+        **kwargs,
+    )
+    _set_connection_pool(pool=pool)
+
+
+def create_pool_async(
+    user: str,
+    password: str,
+    dsn: str,
+    min_size: Optional[int] = 1,
+    max_size: Optional[int] = 1,
+    increment: Optional[int] = 1,
+    *args,
+    **kwargs,
+):
+    async_pool = oracledb.create_pool_async(
+        user=user,
+        password=password,
+        dsn=dsn,
+        min=min_size,
+        max=max_size,
+        increment=increment,
+        connection_id_prefix="async-python-select-ai",
+        *args,
+        **kwargs,
+    )
+    _set_connection_pool(async_pool=async_pool)
 
 
 async def async_connect(user: str, password: str, dsn: str, *args, **kwargs):
@@ -115,22 +169,36 @@ def _set_connection(
         __async_conn__[key] = async_conn
 
 
+def _set_connection_pool(
+    pool: Optional[oracledb.ConnectionPool] = None,
+    async_pool: Optional[oracledb.AsyncConnectionPool] = None,
+):
+    """Set existing connection pool for select_ai Python API to reuse
+
+    :param pool: python-oracledb ConnectionPool object
+    :param async_pool: python-oracledb AsyncConnectionPool object
+
+    :return: None
+    """
+    key = (os.getpid(), get_ident())
+    if pool:
+        global __pool__
+        __pool__[key] = pool
+    if async_pool:
+        global __async_pool__
+        __async_pool__[key] = async_pool
+
+
 def get_connection() -> oracledb.Connection:
     """Returns the connection object if connection is healthy"""
-    if not is_connected():
-        raise DatabaseNotConnectedError()
-    global __conn__
-    key = (os.getpid(), get_ident())
-    return __conn__[key]
+    with ConnectionManager().get_connection() as conn:
+        return conn
 
 
 async def async_get_connection() -> oracledb.AsyncConnection:
     """Returns the AsyncConnection object if connection is healthy"""
-    if not await async_is_connected():
-        raise DatabaseNotConnectedError()
-    global __async_conn__
-    key = (os.getpid(), get_ident())
-    return __async_conn__[key]
+    async with ConnectionManager().get_connection() as conn:
+        return conn
 
 
 @contextlib.contextmanager
@@ -147,11 +215,12 @@ def cursor():
     of whether an exception occurred
 
     """
-    cr = get_connection().cursor()
-    try:
-        yield cr
-    finally:
-        cr.close()
+    with ConnectionManager().get_connection() as conn:
+        cr = conn.cursor()
+        try:
+            yield cr
+        finally:
+            cr.close()
 
 
 @contextlib.asynccontextmanager
@@ -165,27 +234,153 @@ async def async_cursor():
             await cr.execute(<QUERY>)
     :return:
     """
-    conn = await async_get_connection()
-    cr = conn.cursor()
-    try:
-        yield cr
-    finally:
-        cr.close()
+    async with AsyncConnectionManager().get_connection() as conn:
+        cr = conn.cursor()
+        try:
+            yield cr
+        finally:
+            cr.close()
 
 
 def disconnect():
-    try:
-        conn = get_connection()
-    except DatabaseNotConnectedError:
-        pass
-    else:
-        conn.close()
+    connection_manager = ConnectionManager()
+    connection_manager.disconnect()
 
 
 async def async_disconnect():
-    try:
-        conn = await async_get_connection()
-    except DatabaseNotConnectedError:
-        pass
-    else:
-        await conn.close()
+    connection_manager = AsyncConnectionManager()
+    await connection_manager.disconnect()
+
+
+class ConnectionManager:
+    """
+    Manages standalone connections and connection pools
+    """
+
+    def __init__(self):
+        global __conn__, __pool__
+        self.key = (os.getpid(), get_ident())
+        self.conn = __conn__.get(self.key)
+        self.pool = __pool__.get(self.key)
+        if self.conn and self.pool:
+            raise ValueError(
+                "Use either a standalone connection " "or a connection pool"
+            )
+
+    @property
+    def is_standalone(self):
+        return self.conn is not None
+
+    @property
+    def is_pool(self):
+        return self.pool is not None
+
+    @contextlib.contextmanager
+    def get_connection(self) -> Generator[Connection, Any, None]:
+        if self.is_pool:
+            with self.connection_from_pool() as conn:
+                yield conn
+        else:
+            with self.standalone_connection() as conn:
+                yield conn
+
+    @contextlib.contextmanager
+    def connection_from_pool(self) -> Generator[Connection, Any, None]:
+        if self.is_pool:
+            try:
+                conn = self.pool.acquire()
+            except (oracledb.DatabaseError, oracledb.InterfaceError):
+                raise DatabaseNotConnectedError()
+        else:
+            raise DatabaseNotConnectedError()
+        try:
+            yield conn
+        finally:
+            self.pool.release(conn)
+
+    @contextlib.contextmanager
+    def standalone_connection(self) -> Generator[Connection, Any, None]:
+        if self.is_standalone:
+            try:
+                self.conn.ping()
+            except (oracledb.DatabaseError, oracledb.InterfaceError):
+                raise DatabaseNotConnectedError()
+            yield self.conn
+        else:
+            raise DatabaseNotConnectedError()
+
+    def disconnect(self, force=False):
+        global __pool__, __conn__
+        if self.is_pool:
+            self.pool.close(force=force)
+            __pool__.pop(self.key, None)
+        elif self.is_standalone:
+            self.conn.close()
+            __conn__.pop(self.key, None)
+
+
+class AsyncConnectionManager:
+    """
+    Manages async standalone connections and connection pools
+    """
+
+    def __init__(self):
+        global __async_conn__, __async_pool__
+        self.key = (os.getpid(), get_ident())
+        self.conn = __async_conn__.get(self.key)
+        self.pool = __async_pool__.get(self.key)
+        if self.conn and self.pool:
+            raise ValueError(
+                "Use either a standalone connection " "or a connection pool"
+            )
+
+    @property
+    def is_standalone(self):
+        return self.conn is not None
+
+    @property
+    def is_pool(self):
+        return self.pool is not None
+
+    @contextlib.asynccontextmanager
+    async def get_connection(self):
+        if self.is_pool:
+            async with self.connection_from_pool() as conn:
+                yield conn
+        else:
+            async with self.standalone_connection() as conn:
+                yield conn
+
+    @contextlib.asynccontextmanager
+    async def connection_from_pool(self):
+        if self.is_pool:
+            try:
+                conn = await self.pool.acquire()
+            except (oracledb.DatabaseError, oracledb.InterfaceError):
+                raise DatabaseNotConnectedError()
+        else:
+            raise DatabaseNotConnectedError()
+        try:
+            yield conn
+        finally:
+            await self.pool.release(conn)
+
+    @contextlib.asynccontextmanager
+    async def standalone_connection(self):
+        if self.is_standalone:
+            try:
+                await self.conn.ping()
+            except (oracledb.DatabaseError, oracledb.InterfaceError):
+                raise DatabaseNotConnectedError()
+            yield self.conn
+        else:
+            raise DatabaseNotConnectedError()
+
+    async def disconnect(self, force=False):
+        global __async_conn__, __async_pool__
+        if self.is_pool:
+            await self.pool.close(force=force)
+            __async_pool__.pop(self.key, None)
+        elif self.is_standalone:
+            await self.conn.close()
+            __async_conn__.pop(self.key, None)
