@@ -11,6 +11,7 @@
 import logging
 import select_ai
 from select_ai.action import Action
+import oracledb
 import pytest
 import uuid
 import os
@@ -30,7 +31,14 @@ root.addHandler(fh)
 logger = logging.getLogger()
 
 
-PROFILE_NAME = f"PYSAI_3000_{uuid.uuid4().hex.upper()}"
+def _assert_db_error(exc_info, expected_code):
+    assert isinstance(exc_info.value, oracledb.DatabaseError)
+    (error,) = exc_info.value.args
+    assert error.code == expected_code
+    return error
+
+
+PROFILE_NAME = f"PYSAI_4000_{uuid.uuid4().hex.upper()}"
 PROFILE_DESCRIPTION = "OCI Gen AI Test Profile"
 
 # -----------------------------------------------------------------------------
@@ -81,7 +89,7 @@ def profile(oci_credential, oci_compartment_id, test_env, cursor):
 
 
 ############################################### NEGATIVE FEEDBACK TESTS
-def test_add_negative_feedback_valid_input_showsql(profile):
+def test_4001(profile):
     """Valid input: Test with valid prompt_spec, sql_id, response, and feedback_content."""
     prompt = 'Total points of each gymnasts'
     action = Action.SHOWSQL
@@ -103,8 +111,10 @@ def test_add_negative_feedback_valid_input_showsql(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action),
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_negative_feedback_valid_input_explainsql(profile):
+def test_4002(profile):
     """Valid input: Test with valid prompt_spec, sql_id, response, and feedback_content."""
     prompt = 'Total points of each gymnasts'
     action = Action.EXPLAINSQL
@@ -126,8 +136,10 @@ def test_add_negative_feedback_valid_input_explainsql(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_negative_feedback_valid_input_runsql(profile):
+def test_4003(profile):
     """Valid input: Test with valid prompt_spec, sql_id, response, and feedback_content."""
     prompt = 'Total points of each gymnasts'
     action = Action.RUNSQL
@@ -149,8 +161,10 @@ def test_add_negative_feedback_valid_input_runsql(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_negative_feedback_with_sql_id(profile):
+def test_4004(profile):
     prompt = "Total points of each gymnasts"
     sql_id = "ahgttusrvh9x5"
     response = 'SELECT p4.name, g4.total_points FROM people p4 JOIN gymnast g4 ON p4.id = g4.id ORDER BY p4.name DESC'  # Valid SQL on your tables
@@ -170,8 +184,10 @@ def test_add_negative_feedback_with_sql_id(profile):
     profile.delete_feedback(
         sql_id=sql_id
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_negative_feedback_with_sql_text(profile):
+def test_4005(profile):
     
     prompt = "Total points of each gymnasts"
     action = Action.SHOWSQL
@@ -192,22 +208,24 @@ def test_add_negative_feedback_with_sql_text(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_negative_feedback_missing_response(profile):
+def test_4006(profile):
     """Missing required parameters: Test with missing response (for negative feedback)."""
     prompt = "Total points of each gymnasts"
     action = Action.SHOWSQL
     sql_id = "ahgttusrvh9x5"
     feedback_content = "print in ascending order of name"
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(AttributeError) as exc_info:
         profile.add_negative_feedback(
             prompt_spec=(prompt, action),
             feedback_content=feedback_content
         )
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
-def test_add_negative_feedback_missing_feedback_content(profile):
+def test_4007(profile):
     """Missing required parameters: Test with missing feedback_content (for negative feedback)."""
     prompt = "Total points of each gymnasts"
     action = Action.SHOWSQL
@@ -226,8 +244,10 @@ def test_add_negative_feedback_missing_feedback_content(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_negative_feedback_with_sql_id_and_sql_text(profile):
+def test_4008(profile):
 
     """CASE : SQL_ID AND SQL_TEXT EXISTS AND BOTH ARE GIVEN AS ARGUMENTS"""
 
@@ -237,16 +257,17 @@ def test_add_negative_feedback_with_sql_id_and_sql_text(profile):
     response = "SELECT p1.name, g1.total_points FROM people p1 JOIN gymnast g1 ON p1.id = g1.id ORDER BY g1.total_points DESC"  # Valid SQL on your tables
     feedback_content = "print in descending order of total_points"
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.add_negative_feedback(
             prompt_spec=(prompt, action),
             sql_id=sql_id,
             response=response,
             feedback_content=feedback_content
         )
+    _assert_db_error(exc_info, 6550)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
-def test_add_negative_feedback_with_non_existent_sql_text(profile):
+def test_4009(profile):
 
     """CASE : SQL_TEXT DOES NOT MATCH ANY EXISTING FEEDBACK SQL_TEXT"""
 
@@ -268,8 +289,10 @@ def test_add_negative_feedback_with_non_existent_sql_text(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_negative_feedback_with_sql_id_mismatch(profile):
+def test_4010(profile):
 
     """CASE : SQL_ID DOES NOT MATCH ANY EXISTING FEEDBACK SQL_ID"""
 
@@ -277,17 +300,18 @@ def test_add_negative_feedback_with_sql_id_mismatch(profile):
     response = "SELECT p1.name, g1.total_points FROM people p1 JOIN gymnast g1 ON p1.id = g1.id ORDER BY g1.total_points DESC"  # Valid SQL on your tables
     feedback_content = "print in descending order of total_points"
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.add_negative_feedback(
             sql_id=sql_id,
             response=response,
             feedback_content=feedback_content
         )
+    _assert_db_error(exc_info, 20000)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
 
 ############################################################## POSITIVE FEEDBACK TESTS 
-def test_add_positive_feedback_valid_input_showsql(profile):
+def test_4011(profile):
     """Valid input: Test with valid prompt_spec and sql_id."""
     prompt = 'Total points of each gymnasts'
     action = Action.SHOWSQL
@@ -307,8 +331,10 @@ def test_add_positive_feedback_valid_input_showsql(profile):
     profile.delete_feedback(
             prompt_spec=(prompt, action)
         )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_positive_feedback_valid_input_action_runsql(profile):
+def test_4012(profile):
     """Valid input: Test with valid prompt_spec and sql_id for RUNSQL action."""
     prompt = 'Total points of each gymnasts'
     action = Action.RUNSQL
@@ -329,8 +355,10 @@ def test_add_positive_feedback_valid_input_action_runsql(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_positive_feedback_valid_input_action_explainsql(profile):
+def test_4013(profile):
     """Valid input: Test with valid prompt_spec and sql_id for EXPLAINSQL action."""
     prompt = 'Total points of each gymnasts'
     action = Action.EXPLAINSQL
@@ -350,8 +378,10 @@ def test_add_positive_feedback_valid_input_action_explainsql(profile):
     profile.delete_feedback(
             prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_positive_feedback_with_sql_id(profile):
+def test_4014(profile):
 
     sql_id = "ahgttusrvh9x5"
     prompt = 'Total points of each gymnasts'
@@ -372,8 +402,10 @@ def test_add_positive_feedback_with_sql_id(profile):
     profile.delete_feedback(
         sql_id=sql_id
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_positive_feedback_with_sql_text(profile):
+def test_4015(profile):
 
     prompt = "Total points of each gymnasts"
     action = Action.SHOWSQL
@@ -393,8 +425,10 @@ def test_add_positive_feedback_with_sql_text(profile):
     profile.delete_feedback(
         prompt_spec=(prompt, action)
     )
+    show_prompt = profile.show_prompt(prompt)
+    assert "sql_query" not in show_prompt
 
-def test_add_positive_feedback_with_sql_text_and_sql_id(profile):
+def test_4016(profile):
 
     """CASE : SQL_ID AND SQL_TEXT EXISTS AND BOTH ARE GIVEN AS ARGUMENT"""
 
@@ -403,14 +437,15 @@ def test_add_positive_feedback_with_sql_text_and_sql_id(profile):
     action = Action.SHOWSQL
 
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.add_positive_feedback(
             prompt_spec=(prompt, action),
             sql_id=sql_id
         )
+    _assert_db_error(exc_info, 6550)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
-def test_add_positive_feedback_with_sql_text_mismatch(profile):
+def test_4017(profile):
 
     """CASE : SQL_TEXT DOES NOT MATCH ANY EXISTING FEEDBACK SQL_TEXT"""
 
@@ -418,27 +453,29 @@ def test_add_positive_feedback_with_sql_text_mismatch(profile):
     action = Action.SHOWSQL
 
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.add_positive_feedback(
             prompt_spec=(prompt, action)
         )
+    _assert_db_error(exc_info, 20000)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
-def test_add_positive_feedback_with_sql_id_mismatch(profile):
+def test_4018(profile):
 
     """CASE : SQL_ID DOES NOT MATCH ANY EXISTING FEEDBACK SQL_ID"""
 
     sql_id = "sql_id_mismatch"
 
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.add_positive_feedback(
             sql_id=sql_id
         )
+    _assert_db_error(exc_info, 20000)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
 ############################################################## DELETE FEEDBACK TESTS
-def test_delete_feedback_valid_input_showsql(profile):
+def test_4019(profile):
     """Valid input: Test with valid prompt_spec and sql_id."""
     prompt = 'Total points of each gymnasts'
     action = Action.SHOWSQL
@@ -457,7 +494,7 @@ def test_delete_feedback_valid_input_showsql(profile):
     show_prompt = profile.show_prompt(prompt)
     assert show_prompt.count('Total points of each gymnasts') == 1
 
-def test_delete_feedback_valid_input_runsql(profile):
+def test_4020(profile):
     """Valid input: Test with valid prompt_spec and sql_id."""
     prompt = "Total points of each gymnasts"
     action = Action.RUNSQL
@@ -479,7 +516,7 @@ def test_delete_feedback_valid_input_runsql(profile):
     show_prompt = profile.show_prompt(prompt)
     assert show_prompt.count('Total points of each gymnasts') == 1
 
-def test_delete_feedback_valid_input_explainsql(profile):
+def test_4021(profile):
     """Valid input: Test with valid prompt_spec and sql_id."""
     prompt = 'Total points of each gymnasts'
     action = Action.EXPLAINSQL
@@ -498,7 +535,7 @@ def test_delete_feedback_valid_input_explainsql(profile):
     show_prompt = profile.show_prompt(prompt)
     assert show_prompt.count('Total points of each gymnasts') == 1
 
-def test_delete_feedback_valid_input_with_negative_feedback(profile):
+def test_4022(profile):
     """Valid input: Test with valid prompt_spec and sql_id for negative feedback."""
     prompt = "Total points of each gymnasts"
     action = Action.SHOWSQL
@@ -520,7 +557,7 @@ def test_delete_feedback_valid_input_with_negative_feedback(profile):
     show_prompt = profile.show_prompt(prompt)
     assert show_prompt.count('Total points of each gymnasts') == 1
 
-def test_delete_feedback_with_sql_id(profile):
+def test_4023(profile):
 
     prompt = 'Total points of each gymnasts'
     action = Action.SHOWSQL
@@ -540,7 +577,7 @@ def test_delete_feedback_with_sql_id(profile):
     show_prompt = profile.show_prompt(prompt)
     assert show_prompt.count('Total points of each gymnasts') == 1
 
-def test_delete_feedback_with_sql_text(profile):
+def test_4024(profile):
 
     prompt = 'Total points of each gymnasts'
     action = Action.SHOWSQL
@@ -560,7 +597,7 @@ def test_delete_feedback_with_sql_text(profile):
     show_prompt = profile.show_prompt(prompt)
     assert show_prompt.count('Total points of each gymnasts') == 1
 
-def test_add_delete_feedback_with_sql_id_and_sql_text(profile):
+def test_4025(profile):
 
     """CASE : SQL_ID AND SQL_TEXT EXISTS AND BOTH ARE GIVEN AS ARGUMENT"""
 
@@ -574,14 +611,15 @@ def test_add_delete_feedback_with_sql_id_and_sql_text(profile):
 
     logger.info("Attempting delete feedback with SQL_ID AND SQL_TEXT")
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.delete_feedback(
             prompt_spec=(prompt, action),
             sql_id=sql_id
         )
+    _assert_db_error(exc_info, 6550)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
-def test_add_delete_feedback_with_sql_text_mismatch(profile):
+def test_4026(profile):
 
     """CASE : SQL_TEXT DOES NOT MATCH ANY EXISTING FEEDBACK SQL_TEXT"""
 
@@ -596,13 +634,14 @@ def test_add_delete_feedback_with_sql_text_mismatch(profile):
 
     logger.info("Attempting delete feedback with mismatched SQL Text")
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.delete_feedback(
             prompt_spec=(prompt, action)
         )
+    _assert_db_error(exc_info, 20000)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
-def test_add_delete_feedback_with_sql_id_mismatch(profile):
+def test_4027(profile):
 
     """CASE : SQL_ID DOES NOT MATCH ANY EXISTING FEEDBACK SQL_ID"""
 
@@ -618,8 +657,9 @@ def test_add_delete_feedback_with_sql_id_mismatch(profile):
 
     logger.info("Attempting delete feedback with mismatched SQL ID")
     logger.info("Expecting exception when invoking feedback API")
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(oracledb.DatabaseError) as exc_info:
         profile.delete_feedback(
             sql_id=sql_id
         )
+    _assert_db_error(exc_info, 20000)
     logger.error("%s", str(exc_info.value).splitlines()[0])
