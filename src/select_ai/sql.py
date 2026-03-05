@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -114,4 +114,27 @@ SELECT conversation_title,
        retention_days
 from USER_CLOUD_AI_CONVERSATIONS
 WHERE conversation_id = :conversation_id
+"""
+
+CHECK_USER_PRIVILEGES = """
+WITH direct_privs AS (
+         SELECT table_name
+         FROM all_tab_privs
+         WHERE grantee = USER
+           AND privilege = 'EXECUTE'
+           AND table_name IN ({placeholders})
+     ),
+     role_privs AS (
+         SELECT rtp.table_name
+         FROM session_roles sr
+         JOIN role_tab_privs rtp
+           ON rtp.role = sr.role
+         WHERE rtp.privilege = 'EXECUTE'
+           AND rtp.table_name IN ({placeholders})
+     )
+     SELECT DISTINCT table_name
+     FROM direct_privs
+     UNION
+     SELECT DISTINCT table_name
+     FROM role_privs
 """

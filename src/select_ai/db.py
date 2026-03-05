@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -126,28 +126,21 @@ async def async_connect(user: str, password: str, dsn: str, *args, **kwargs):
 
 def is_connected() -> bool:
     """Checks if database connection is open and healthy"""
-    global __conn__
-    key = (os.getpid(), get_ident())
-    conn = __conn__.get(key)
-    if conn is None:
-        return False
     try:
-        return conn.ping() is None
-    except (oracledb.DatabaseError, oracledb.InterfaceError):
+        with ConnectionManager().get_connection() as conn:
+            pass
+        return True
+    except DatabaseNotConnectedError:
         return False
 
 
 async def async_is_connected() -> bool:
     """Asynchronously checks if database connection is open and healthy"""
-
-    global __async_conn__
-    key = (os.getpid(), get_ident())
-    conn = __async_conn__.get(key)
-    if conn is None:
-        return False
     try:
-        return await conn.ping() is None
-    except (oracledb.DatabaseError, oracledb.InterfaceError):
+        async with AsyncConnectionManager().get_connection() as conn:
+            pass
+        return True
+    except DatabaseNotConnectedError:
         return False
 
 
@@ -181,7 +174,7 @@ def _set_connection_pool(
 
     :return: None
     """
-    key = (os.getpid(), get_ident())
+    key = os.getpid()
     if pool:
         global __pool__
         __pool__[key] = pool
@@ -262,9 +255,10 @@ class ConnectionManager:
 
     def __init__(self):
         global __conn__, __pool__
-        self.key = (os.getpid(), get_ident())
-        self.conn = __conn__.get(self.key)
-        self.pool = __pool__.get(self.key)
+        self.conn_key = (os.getpid(), get_ident())
+        self.pool_key = os.getpid()
+        self.conn = __conn__.get(self.conn_key)
+        self.pool = __pool__.get(self.pool_key)
         if self.conn and self.pool:
             raise ValueError(
                 "Use either a standalone connection " "or a connection pool"
@@ -316,10 +310,10 @@ class ConnectionManager:
         global __pool__, __conn__
         if self.is_pool:
             self.pool.close(force=force)
-            __pool__.pop(self.key, None)
+            __pool__.pop(self.pool_key, None)
         elif self.is_standalone:
             self.conn.close()
-            __conn__.pop(self.key, None)
+            __conn__.pop(self.conn_key, None)
 
 
 class AsyncConnectionManager:
@@ -329,9 +323,10 @@ class AsyncConnectionManager:
 
     def __init__(self):
         global __async_conn__, __async_pool__
-        self.key = (os.getpid(), get_ident())
-        self.conn = __async_conn__.get(self.key)
-        self.pool = __async_pool__.get(self.key)
+        self.conn_key = (os.getpid(), get_ident())
+        self.pool_key = os.getpid()
+        self.conn = __async_conn__.get(self.conn_key)
+        self.pool = __async_pool__.get(self.pool_key)
         if self.conn and self.pool:
             raise ValueError(
                 "Use either a standalone connection " "or a connection pool"
@@ -383,7 +378,7 @@ class AsyncConnectionManager:
         global __async_conn__, __async_pool__
         if self.is_pool:
             await self.pool.close(force=force)
-            __async_pool__.pop(self.key, None)
+            __async_pool__.pop(self.pool_key, None)
         elif self.is_standalone:
             await self.conn.close()
-            __async_conn__.pop(self.key, None)
+            __async_conn__.pop(self.conn_key, None)
