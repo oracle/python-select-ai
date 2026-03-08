@@ -86,7 +86,7 @@ def create_pool_async(
     password: str,
     dsn: str,
     min_size: Optional[int] = 1,
-    max_size: Optional[int] = 1,
+    max_size: Optional[int] = 2,
     increment: Optional[int] = 1,
     *args,
     **kwargs,
@@ -99,6 +99,7 @@ def create_pool_async(
         max=max_size,
         increment=increment,
         connection_id_prefix="async-python-select-ai",
+        getmode=oracledb.POOL_GETMODE_NOWAIT,
         *args,
         **kwargs,
     )
@@ -193,7 +194,7 @@ def get_connection() -> Generator[Connection, Any, None]:
 @contextlib.asynccontextmanager
 async def async_get_connection() -> AsyncGenerator[Any, Any]:
     """Returns the AsyncConnection object if connection is healthy"""
-    async with ConnectionManager().get_connection() as conn:
+    async with AsyncConnectionManager().get_connection() as conn:
         yield conn
 
 

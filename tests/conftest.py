@@ -153,14 +153,14 @@ def setup_test_user(test_env):
     select_ai.disconnect()
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def connect(setup_test_user, test_env):
     select_ai.create_pool(**test_env.connect_params(use_pool=True))
     yield
     select_ai.disconnect()
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 async def async_connect(setup_test_user, test_env, anyio_backend):
     select_ai.create_pool_async(**test_env.connect_params(use_pool=True))
     yield
@@ -191,7 +191,7 @@ async def async_cursor():
         yield cr
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def oci_credential(connect, test_env):
     credential = {
         "credential_name": PYSAI_OCI_CREDENTIAL_NAME,

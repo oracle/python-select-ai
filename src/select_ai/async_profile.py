@@ -28,7 +28,11 @@ from select_ai.base_profile import (
     validate_params_for_summary,
 )
 from select_ai.conversation import AsyncConversation
-from select_ai.db import async_cursor, async_get_connection
+from select_ai.db import (
+    AsyncConnectionManager,
+    async_cursor,
+    async_get_connection,
+)
 from select_ai.errors import (
     ProfileAttributesEmptyError,
     ProfileNotFoundError,
@@ -406,8 +410,12 @@ class AsyncProfile(BaseProfile):
                     raise_error_on_empty_attributes=False,
                 )
 
-    async def generate(
-        self, prompt: str, action=Action.SHOWSQL, params: Mapping = None
+    async def _generate_with_cursor(
+        self,
+        cr,
+        prompt: str,
+        action=Action.SHOWSQL,
+        params: Mapping = None,
     ) -> Union[pandas.DataFrame, str, None]:
         """Asynchronously perform AI translation using this profile
 
@@ -429,12 +437,11 @@ class AsyncProfile(BaseProfile):
         if params:
             parameters["params"] = json.dumps(params)
 
-        async with async_cursor() as cr:
-            data = await cr.callfunc(
-                "DBMS_CLOUD_AI.GENERATE",
-                oracledb.DB_TYPE_CLOB,
-                keyword_parameters=parameters,
-            )
+        data = await cr.callfunc(
+            "DBMS_CLOUD_AI.GENERATE",
+            oracledb.DB_TYPE_CLOB,
+            keyword_parameters=parameters,
+        )
         if data is not None:
             result = await data.read()
         else:
@@ -443,6 +450,22 @@ class AsyncProfile(BaseProfile):
             return convert_json_rows_to_df(result)
         else:
             return result
+
+    async def generate(
+        self, prompt: str, action=Action.SHOWSQL, params: Mapping = None
+    ) -> Union[pandas.DataFrame, str, None]:
+        """Asynchronously perform AI translation using this profile
+
+        :param str prompt: Natural language prompt to translate
+        :param select_ai.profile.Action action:
+        :param params: Parameters to include in the LLM request. For e.g.
+         conversation_id for context-aware chats
+        :return: Union[pandas.DataFrame, str]
+        """
+        async with async_cursor() as cr:
+            return await self._generate_with_cursor(
+                cr, prompt=prompt, action=action, params=params
+            )
 
     async def chat(self, prompt, params: Mapping = None) -> str:
         """Asynchronously chat with the LLM
@@ -471,8 +494,10 @@ class AsyncProfile(BaseProfile):
             ):
                 await conversation.create()
             params = {"conversation_id": conversation.conversation_id}
-            async_session = AsyncSession(async_profile=self, params=params)
-            yield async_session
+            async with AsyncSession(
+                async_profile=self, params=params
+            ) as async_session:
+                yield async_session
         finally:
             if delete:
                 await conversation.delete()
@@ -623,10 +648,10 @@ class AsyncProfile(BaseProfile):
                 return_type=oracledb.DB_TYPE_CLOB,
                 keyword_parameters=parameters,
             )
-        async_connection = await async_get_connection()
-        pipeline_results = await async_connection.run_pipeline(
-            pipeline, continue_on_error=continue_on_error
-        )
+        async with async_get_connection() as async_connection:
+            pipeline_results = await async_connection.run_pipeline(
+                pipeline, continue_on_error=continue_on_error
+            )
         responses = []
         for result in pipeline_results:
             if not result.error:
@@ -679,12 +704,76 @@ class AsyncSession:
         """
         self.params = params
         self.async_profile = async_profile
+        self._conn = None
+        self._conn_cm = None
+        self._cursor = None
 
     async def chat(self, prompt: str):
-        return await self.async_profile.chat(prompt=prompt, params=self.params)
+        return await self.async_profile._generate_with_cursor(
+            self._cursor, prompt=prompt, action=Action.CHAT, params=self.params
+        )
+
+    async def narrate(self, prompt) -> str:
+        """Narrate the result of the SQL
+
+        :param str prompt: Natural language prompt
+        :return: str
+        """
+        return await self.async_profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.NARRATE, params=self.params
+        )
+
+    async def explain_sql(self, prompt: str) -> str:
+        """Explain the generated SQL
+
+        :param str prompt: Natural language prompt
+        :return: str
+        """
+        return await self.async_profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.EXPLAINSQL, params=self.params
+        )
+
+    async def run_sql(self, prompt: str) -> pandas.DataFrame:
+        """Explain the generated SQL
+
+        :param str prompt: Natural language prompt
+        :return: pandas.DataFrame
+        """
+        return await self.async_profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.RUNSQL, params=self.params
+        )
+
+    async def show_sql(self, prompt) -> str:
+        """Show the generated SQL
+
+        :param str prompt: Natural language prompt
+        :return: str
+        """
+        return await self.async_profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.SHOWSQL, params=self.params
+        )
+
+    async def show_prompt(self, prompt: str) -> str:
+        """Show the prompt sent to LLM
+
+        :param str prompt: Natural language prompt
+        :return: str
+        """
+        return await self.async_profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.SHOWPROMPT, params=self.params
+        )
 
     async def __aenter__(self):
+        self._conn_cm = AsyncConnectionManager().get_connection()
+        self._conn = await self._conn_cm.__aenter__()
+        self._cursor = self._conn.cursor()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        pass
+        if self._cursor is not None:
+            self._cursor.close()
+        if self._conn_cm is not None:
+            await self._conn_cm.__aexit__(exc_type, exc_val, exc_tb)
+        self._conn = None
+        self._conn_cm = None
+        self._cursor = None

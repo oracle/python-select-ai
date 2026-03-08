@@ -21,7 +21,7 @@ from select_ai.base_profile import (
     validate_params_for_feedback,
     validate_params_for_summary,
 )
-from select_ai.db import cursor
+from select_ai.db import ConnectionManager, cursor
 from select_ai.errors import (
     ProfileAttributesEmptyError,
     ProfileNotFoundError,
@@ -379,8 +379,9 @@ class Profile(BaseProfile):
                     raise_error_on_empty_attributes=False,
                 )
 
-    def generate(
+    def _generate_with_cursor(
         self,
+        cr,
         prompt: str,
         action: Optional[Action] = Action.RUNSQL,
         params: Mapping = None,
@@ -403,12 +404,11 @@ class Profile(BaseProfile):
         }
         if params:
             parameters["params"] = json.dumps(params)
-        with cursor() as cr:
-            data = cr.callfunc(
-                "DBMS_CLOUD_AI.GENERATE",
-                oracledb.DB_TYPE_CLOB,
-                keyword_parameters=parameters,
-            )
+        data = cr.callfunc(
+            "DBMS_CLOUD_AI.GENERATE",
+            oracledb.DB_TYPE_CLOB,
+            keyword_parameters=parameters,
+        )
         if data is not None:
             result = data.read()
         else:
@@ -417,6 +417,25 @@ class Profile(BaseProfile):
             return convert_json_rows_to_df(result)
         else:
             return result
+
+    def generate(
+        self,
+        prompt: str,
+        action: Optional[Action] = Action.RUNSQL,
+        params: Mapping = None,
+    ) -> Union[pandas.DataFrame, str, None]:
+        """Perform AI translation using this profile
+
+        :param str prompt: Natural language prompt to translate
+        :param select_ai.profile.Action action:
+        :param params: Parameters to include in the LLM request. For e.g.
+         conversation_id for context-aware chats
+        :return: Union[pandas.DataFrame, str]
+        """
+        with cursor() as cr:
+            return self._generate_with_cursor(
+                cr, prompt=prompt, action=action, params=params
+            )
 
     def chat(self, prompt: str, params: Mapping = None) -> str:
         """Chat with the LLM
@@ -444,8 +463,8 @@ class Profile(BaseProfile):
             ):
                 conversation.create()
             params = {"conversation_id": conversation.conversation_id}
-            session = Session(profile=self, params=params)
-            yield session
+            with Session(profile=self, params=params) as session:
+                yield session
         finally:
             if delete:
                 conversation.delete()
@@ -604,13 +623,79 @@ class Session:
         """
         self.params = params
         self.profile = profile
+        self._conn = None
+        self._conn_cm = None
+        self._cursor = None
 
     def chat(self, prompt: str):
-        # params = {"conversation_id": self.conversation_id}
-        return self.profile.chat(prompt=prompt, params=self.params)
+        return self.profile._generate_with_cursor(
+            self._cursor, prompt=prompt, action=Action.CHAT, params=self.params
+        )
+
+    def narrate(self, prompt: str) -> str:
+        """Narrate the result of the SQL
+
+        :param str prompt: Natural language prompt
+        :return: str
+        """
+        return self.profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.NARRATE, params=self.params
+        )
+
+    def explain_sql(self, prompt: str) -> str:
+        """Explain the generated SQL
+
+        :param str prompt: Natural language prompt
+        :return: str
+        """
+        return self.profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.EXPLAINSQL, params=self.params
+        )
+
+    def run_sql(self, prompt: str) -> pandas.DataFrame:
+        """Run the generate SQL statement and return a pandas Dataframe built
+        using the result set
+
+        :param str prompt: Natural language prompt
+        :return: pandas.DataFrame
+        """
+        return self.profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.RUNSQL, params=self.params
+        )
+
+    def show_sql(self, prompt: str) -> str:
+        """Show the generated SQL
+
+        :param str prompt: Natural language prompt
+        :param params: Parameters to include in the LLM request
+        :return: str
+        """
+        return self.profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.SHOWSQL, params=self.params
+        )
+
+    def show_prompt(self, prompt: str) -> str:
+        """Show the prompt sent to LLM
+
+        :param str prompt: Natural language prompt
+        :param params: Parameters to include in the LLM request
+        :return: str
+        """
+        return self.profile._generate_with_cursor(
+            self._cursor, prompt, action=Action.SHOWPROMPT, params=self.params
+        )
 
     def __enter__(self):
+        self._conn_cm = ConnectionManager().get_connection()
+        self._conn = self._conn_cm.__enter__()
+        self._cursor = self._conn.cursor()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+        if self._cursor is not None:
+            self._cursor.close()
+        if self._conn_cm is not None:
+            self._conn_cm.__exit__(exc_type, exc_val, exc_tb)
+        self._conn = None
+        self._conn_cm = None
+        self._cursor = None
