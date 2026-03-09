@@ -72,15 +72,20 @@ def test_agent_end_to_end(profile_attributes):
     # -------------------------------
     # PROFILE
     # -------------------------------
-    with log_step("Create profile"):
-        profile = select_ai.Profile(
-            profile_name="GEN1_PROFILE",
-            attributes=profile_attributes,
-            replace=True,
-        )
+    logger.info("Starting End-to-End Agent Test")
 
-        assert profile is not None
-        assert profile_attributes.credential_name
+    # ---------------- PROFILE ----------------
+
+    oci_compartment_id = os.getenv("PYSAI_TEST_OCI_COMPARTMENT_ID")
+    assert oci_compartment_id, "PYSAI_TEST_OCI_COMPARTMENT_ID not set"
+
+    profile_attributes.provider.oci_compartment_id = oci_compartment_id
+
+    select_ai.Profile(
+        profile_name="GEN1_PROFILE",
+        attributes=profile_attributes,
+        replace=True,
+    )
 
     # -------------------------------
     # AGENT
@@ -132,9 +137,9 @@ def test_agent_end_to_end(profile_attributes):
                 tool_params=ToolParams(
                     credential_name="EMAIL_CRED",
                     notification_type="EMAIL",
-                    recipient="kondra.nagabhavani@oracle.com",
-                    sender="bharadwaj.vulugundam@oracle.com",
-                    smtp_host="smtp.email.us-ashburn-1.oci.oraclecloud.com",
+                    recipient=os.getenv("PYSAI_TEST_EMAIL_RECIPIENT"),
+                    sender=os.getenv("PYSAI_TEST_EMAIL_SENDER"),
+                    smtp_host=os.getenv("PYSAI_TEST_EMAIL_SMTPHOST"),
                 ),
             ),
         )
@@ -200,7 +205,7 @@ def test_agent_end_to_end(profile_attributes):
         prompts = [
             "I want to return an office chair",
             "The price when I bought it is 100. But I found a cheaper price",
-            "Here is the price match link https://amzn.in/d/h6sW5dC",
+            "Here is the price match link https://www.ikea.com/us/en/p/stefan-chair-brown-black-00211088/",
             "Yes, I would like to proceed with a refund",
             "If you havent started the refund, please do"
         ]

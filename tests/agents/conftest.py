@@ -10,11 +10,10 @@ import select_ai
 
 
 @pytest.fixture(scope="module")
-def provider(oci_compartment_id):
+def provider():
     return select_ai.OCIGenAIProvider(
         region="us-chicago-1",
         oci_apiformat="GENERIC",
-        oci_compartment_id=oci_compartment_id,
         model="meta.llama-4-maverick-17b-128e-instruct-fp8",
     )
 
