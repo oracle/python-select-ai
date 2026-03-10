@@ -48,6 +48,8 @@ class VectorIndexAttributes(SelectAIDataClass):
     :param int chunk_size: Text size of chunking the input data.
     :param int chunk_overlap: Specifies the amount of overlapping
      characters between adjacent chunks of text.
+    :param enable_sources: Provides document source links and filenames in RAG
+     output
     :param str location: Location of the object store.
     :param int match_limit: Specifies the maximum number of results to return
      in a vector search query
@@ -74,6 +76,7 @@ class VectorIndexAttributes(SelectAIDataClass):
 
     chunk_size: Optional[int] = None
     chunk_overlap: Optional[int] = None
+    enable_sources: Optional[bool] = None
     location: Optional[str] = None
     match_limit: Optional[int] = None
     object_storage_credential_name: Optional[str] = None
@@ -193,11 +196,16 @@ class VectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    def create(self, replace: Optional[bool] = False):
+    def create(
+        self,
+        replace: Optional[bool] = False,
+        wait_for_completion: bool = False,
+    ):
         """Create a vector index in the database and populates the index
          with data from an object store bucket using an async scheduler job
 
         :param bool replace: Replace vector index if it exists
+        :param bool wait_for_completion: True to wait for index creation
         :return: None
         """
 
@@ -207,6 +215,7 @@ class VectorIndex(_BaseVectorIndex):
         parameters = {
             "index_name": self.index_name,
             "attributes": self.attributes.json(),
+            "wait_for_completion": wait_for_completion,
         }
 
         if self.description:
@@ -493,11 +502,16 @@ class AsyncVectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    async def create(self, replace: Optional[bool] = False) -> None:
+    async def create(
+        self,
+        replace: Optional[bool] = False,
+        wait_for_completion: Optional[bool] = False,
+    ) -> None:
         """Create a vector index in the database and populates it with data
         from an object store bucket using an async scheduler job
 
         :param bool replace: True to replace existing vector index
+        :param bool wait_for_completion: True to wait for index creation
 
         """
 
@@ -506,6 +520,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         parameters = {
             "index_name": self.index_name,
             "attributes": self.attributes.json(),
+            "wait_for_completion": wait_for_completion,
         }
         if self.description:
             parameters["description"] = self.description

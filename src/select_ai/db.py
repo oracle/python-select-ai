@@ -63,6 +63,8 @@ def create_pool(
     min_size: Optional[int] = 1,
     max_size: Optional[int] = 2,
     increment: Optional[int] = 1,
+    getmode=None,
+    wait_timeout: Optional[int] = None,
     *args,
     **kwargs,
 ):
@@ -74,7 +76,8 @@ def create_pool(
         max=max_size,
         increment=increment,
         connection_id_prefix="python-select-ai",
-        getmode=oracledb.POOL_GETMODE_NOWAIT,
+        getmode=getmode,
+        wait_timeout=wait_timeout,
         *args,
         **kwargs,
     )
@@ -88,6 +91,8 @@ def create_pool_async(
     min_size: Optional[int] = 1,
     max_size: Optional[int] = 2,
     increment: Optional[int] = 1,
+    getmode=None,
+    wait_timeout: Optional[int] = None,
     *args,
     **kwargs,
 ):
@@ -99,7 +104,8 @@ def create_pool_async(
         max=max_size,
         increment=increment,
         connection_id_prefix="async-python-select-ai",
-        getmode=oracledb.POOL_GETMODE_NOWAIT,
+        getmode=getmode,
+        wait_timeout=wait_timeout,
         *args,
         **kwargs,
     )
