@@ -28,6 +28,7 @@ async def main():
     )
     print(async_vector_index.attributes)
     print(async_vector_index.profile)
+    print(await async_vector_index.get_next_refresh_timestamp())
 
 
 asyncio.run(main())

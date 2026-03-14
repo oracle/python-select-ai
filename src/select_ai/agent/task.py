@@ -5,7 +5,6 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-import json
 from abc import ABC
 from dataclasses import dataclass
 from typing import (
@@ -13,25 +12,23 @@ from typing import (
     AsyncGenerator,
     Iterator,
     List,
-    Mapping,
     Optional,
     Union,
 )
 
 import oracledb
 
-from select_ai import BaseProfile
 from select_ai._abc import SelectAIDataClass
-from select_ai._enums import StrEnum
 from select_ai.agent.sql import (
     GET_USER_AI_AGENT_TASK,
     GET_USER_AI_AGENT_TASK_ATTRIBUTES,
     LIST_USER_AI_AGENT_TASKS,
 )
-from select_ai.async_profile import AsyncProfile
 from select_ai.db import async_cursor, cursor
-from select_ai.errors import AgentTaskNotFoundError
-from select_ai.profile import Profile
+from select_ai.errors import (
+    AgentTaskAttributesEmptyError,
+    AgentTaskNotFoundError,
+)
 
 
 @dataclass
@@ -111,7 +108,7 @@ class Task(BaseTask):
                         post_processed_attributes[k] = v
                 return TaskAttributes(**post_processed_attributes)
             else:
-                raise AgentTaskNotFoundError(task_name=task_name)
+                raise AgentTaskAttributesEmptyError(task_name=task_name)
 
     @staticmethod
     def _get_description(task_name: str) -> Union[str, None]:
@@ -244,7 +241,10 @@ class Task(BaseTask):
                     description = row[1].read()  # Oracle.LOB
                 else:
                     description = None
-                attributes = cls._get_attributes(task_name=task_name)
+                try:
+                    attributes = cls._get_attributes(task_name=task_name)
+                except AgentTaskAttributesEmptyError:
+                    attributes = None
                 yield cls(
                     task_name=task_name,
                     description=description,
@@ -264,7 +264,10 @@ class Task(BaseTask):
         :raises select_ai.errors.AgentTaskNotFoundError:
          If the AI Task is not found
         """
-        attributes = cls._get_attributes(task_name=task_name)
+        try:
+            attributes = cls._get_attributes(task_name=task_name)
+        except AgentTaskAttributesEmptyError:
+            attributes = None
         description = cls._get_description(task_name=task_name)
         return cls(
             task_name=task_name,
@@ -338,7 +341,7 @@ class AsyncTask(BaseTask):
                         post_processed_attributes[k] = v
                 return TaskAttributes(**post_processed_attributes)
             else:
-                raise AgentTaskNotFoundError(task_name=task_name)
+                raise AgentTaskAttributesEmptyError(task_name=task_name)
 
     @staticmethod
     async def _get_description(task_name: str) -> Union[str, None]:
@@ -476,7 +479,10 @@ class AsyncTask(BaseTask):
                     description = await row[1].read()  # Oracle.AsyncLOB
                 else:
                     description = None
-                attributes = await cls._get_attributes(task_name=task_name)
+                try:
+                    attributes = await cls._get_attributes(task_name=task_name)
+                except AgentTaskAttributesEmptyError:
+                    attributes = None
                 yield cls(
                     task_name=task_name,
                     description=description,
@@ -496,7 +502,10 @@ class AsyncTask(BaseTask):
         :raises select_ai.errors.AgentTaskNotFoundError:
          If the AI Task is not found
         """
-        attributes = await cls._get_attributes(task_name=task_name)
+        try:
+            attributes = await cls._get_attributes(task_name=task_name)
+        except AgentTaskAttributesEmptyError:
+            attributes = None
         description = await cls._get_description(task_name=task_name)
         return cls(
             task_name=task_name,

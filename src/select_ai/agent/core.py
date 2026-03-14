@@ -24,7 +24,7 @@ from select_ai.agent.sql import (
     LIST_USER_AI_AGENTS,
 )
 from select_ai.db import async_cursor, cursor
-from select_ai.errors import AgentNotFoundError
+from select_ai.errors import AgentAttributesEmptyError, AgentNotFoundError
 
 
 @dataclass
@@ -97,7 +97,7 @@ class Agent(BaseAgent):
                         post_processed_attributes[k] = v
                 return AgentAttributes(**post_processed_attributes)
             else:
-                raise AgentNotFoundError(agent_name=agent_name)
+                raise AgentAttributesEmptyError(agent_name=agent_name)
 
     @staticmethod
     def _get_description(agent_name: str) -> Union[str, None]:
@@ -223,7 +223,10 @@ class Agent(BaseAgent):
          If the AI Agent is not found
 
         """
-        attributes = cls._get_attributes(agent_name=agent_name)
+        try:
+            attributes = cls._get_attributes(agent_name=agent_name)
+        except AgentAttributesEmptyError:
+            attributes = None
         description = cls._get_description(agent_name=agent_name)
         return cls(
             agent_name=agent_name,
@@ -251,16 +254,7 @@ class Agent(BaseAgent):
             )
             for row in cr.fetchall():
                 agent_name = row[0]
-                if row[1]:
-                    description = row[1].read()  # Oracle.LOB
-                else:
-                    description = None
-                attributes = cls._get_attributes(agent_name=agent_name)
-                yield cls(
-                    agent_name=agent_name,
-                    description=description,
-                    attributes=attributes,
-                )
+                yield cls.fetch(agent_name=agent_name)
 
     def set_attributes(self, attributes: AgentAttributes) -> None:
         """
@@ -326,7 +320,7 @@ class AsyncAgent(BaseAgent):
                         post_processed_attributes[k] = v
                 return AgentAttributes(**post_processed_attributes)
             else:
-                raise AgentNotFoundError(agent_name=agent_name)
+                raise AgentAttributesEmptyError(agent_name=agent_name)
 
     @staticmethod
     async def _get_description(agent_name: str) -> Union[str, None]:
@@ -454,7 +448,10 @@ class AsyncAgent(BaseAgent):
          If the AI Agent is not found
 
         """
-        attributes = await cls._get_attributes(agent_name=agent_name)
+        try:
+            attributes = await cls._get_attributes(agent_name=agent_name)
+        except AgentAttributesEmptyError:
+            attributes = None
         description = await cls._get_description(agent_name=agent_name)
         return cls(
             agent_name=agent_name,
@@ -483,16 +480,8 @@ class AsyncAgent(BaseAgent):
             rows = await cr.fetchall()
             for row in rows:
                 agent_name = row[0]
-                if row[1]:
-                    description = await row[1].read()  # Oracle.AsyncLOB
-                else:
-                    description = None
-                attributes = await cls._get_attributes(agent_name=agent_name)
-                yield cls(
-                    agent_name=agent_name,
-                    description=description,
-                    attributes=attributes,
-                )
+                agent = await cls.fetch(agent_name=agent_name)
+                yield agent
 
     async def set_attributes(self, attributes: AgentAttributes) -> None:
         """

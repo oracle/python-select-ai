@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -30,7 +30,10 @@ from select_ai.agent.sql import (
 )
 from select_ai.async_profile import AsyncProfile
 from select_ai.db import async_cursor, cursor
-from select_ai.errors import AgentToolNotFoundError
+from select_ai.errors import (
+    AgentToolAttributesEmptyError,
+    AgentToolNotFoundError,
+)
 from select_ai.profile import Profile
 
 
@@ -73,9 +76,11 @@ class ToolParams(SelectAIDataClass):
 
     :param str sender: Sender used for EMAIL notification
 
-    :param str slack_channel: Slack channel to use
+    :param str channel: Slack channel to use
 
     :param str smtp_host: SMTP host to use for EMAIL notification
+
+    :param str subject: Email subject to use
 
     """
 
@@ -87,8 +92,9 @@ class ToolParams(SelectAIDataClass):
     profile_name: Optional[str] = None
     recipient: Optional[str] = None
     sender: Optional[str] = None
-    slack_channel: Optional[str] = None
+    channel: Optional[str] = None
     smtp_host: Optional[str] = None
+    subject: Optional[str] = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -119,8 +125,9 @@ class ToolParams(SelectAIDataClass):
             "profile_name",
             "recipient",
             "sender",
-            "slack_channel",
+            "channel",
             "smtp_host",
+            "subject",
         }
 
 
@@ -145,7 +152,7 @@ class NotificationToolParams(ToolParams):
 @dataclass
 class SlackNotificationToolParams(NotificationToolParams):
 
-    _REQUIRED_FIELDS = ["credential_name", "slack_channel"]
+    _REQUIRED_FIELDS = ["credential_name", "channel"]
     notification_type: NotificationType = NotificationType.SLACK
 
 
@@ -291,7 +298,7 @@ class Tool(_BaseTool):
                         post_processed_attributes[k] = v
                 return ToolAttributes.create(**post_processed_attributes)
             else:
-                raise AgentToolNotFoundError(tool_name=tool_name)
+                raise AgentToolAttributesEmptyError(tool_name=tool_name)
 
     @staticmethod
     def _get_description(tool_name: str) -> Union[str, None]:
@@ -349,6 +356,7 @@ class Tool(_BaseTool):
         tool_type: ToolType,
         description: Optional[str] = None,
         replace: Optional[bool] = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         """
         Register a built-in tool
@@ -360,6 +368,9 @@ class Tool(_BaseTool):
         :param str description: Description of the tool
         :param bool replace: Whether to replace the existing tool.
          Default value is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         :return: select_ai.agent.Tool
         """
@@ -369,7 +380,9 @@ class Tool(_BaseTool):
                 "type select_ai.agent.ToolParams"
             )
         attributes = ToolAttributes(
-            tool_params=tool_params, tool_type=tool_type
+            tool_params=tool_params,
+            tool_type=tool_type,
+            instruction=instruction,
         )
         tool = cls(
             tool_name=tool_name, attributes=attributes, description=description
@@ -386,7 +399,9 @@ class Tool(_BaseTool):
         sender: str,
         smtp_host: str,
         description: Optional[str],
+        subject: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         """
         Register an email notification tool
@@ -397,8 +412,12 @@ class Tool(_BaseTool):
         :param str sender: The sender of the email
         :param str smtp_host: The SMTP host of the email server
         :param str description: The description of the tool
+        :param str subject: Subject of the email.
         :param bool replace: Whether to replace the existing tool.
          Default value is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         :return: select_ai.agent.Tool
 
@@ -408,6 +427,7 @@ class Tool(_BaseTool):
             recipient=recipient,
             sender=sender,
             smtp_host=smtp_host,
+            subject=subject,
         )
         return cls.create_built_in_tool(
             tool_name=tool_name,
@@ -415,6 +435,7 @@ class Tool(_BaseTool):
             tool_params=email_notification_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -425,6 +446,7 @@ class Tool(_BaseTool):
         endpoint: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         http_tool_params = HTTPToolParams(
             credential_name=credential_name, endpoint=endpoint
@@ -435,6 +457,7 @@ class Tool(_BaseTool):
             tool_params=http_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -444,6 +467,7 @@ class Tool(_BaseTool):
         function: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         """
         Create a custom tool to invoke PL/SQL procedure or function
@@ -453,9 +477,14 @@ class Tool(_BaseTool):
         :param str description: The description of the tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         """
-        tool_attributes = ToolAttributes(function=function)
+        tool_attributes = ToolAttributes(
+            function=function, instruction=instruction
+        )
         tool = cls(
             tool_name=tool_name,
             attributes=tool_attributes,
@@ -471,6 +500,7 @@ class Tool(_BaseTool):
         profile_name: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         """
         Register a RAG tool, which will use a VectorIndex linked AI Profile
@@ -481,6 +511,9 @@ class Tool(_BaseTool):
         :param str description: The description of the tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
         """
         tool_params = RAGToolParams(profile_name=profile_name)
         return cls.create_built_in_tool(
@@ -489,6 +522,7 @@ class Tool(_BaseTool):
             tool_params=tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -498,6 +532,7 @@ class Tool(_BaseTool):
         profile_name: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         """
         Register a SQL tool to perform natural language to SQL translation
@@ -508,6 +543,9 @@ class Tool(_BaseTool):
         :param str description: The description of the tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
         """
         tool_params = SQLToolParams(profile_name=profile_name)
         return cls.create_built_in_tool(
@@ -516,6 +554,7 @@ class Tool(_BaseTool):
             tool_params=tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -523,24 +562,28 @@ class Tool(_BaseTool):
         cls,
         tool_name: str,
         credential_name: str,
-        slack_channel: str,
+        channel: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         """
         Register a Slack notification tool
 
         :param str tool_name: The name of the Slack notification tool
         :param str credential_name: The name of the Slack credential
-        :param str slack_channel: The name of the Slack channel
+        :param str channel: The name of the Slack channel
         :param str description: The description of the Slack notification tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         """
         slack_notification_tool_params = SlackNotificationToolParams(
             credential_name=credential_name,
-            slack_channel=slack_channel,
+            channel=channel,
         )
         return cls.create_built_in_tool(
             tool_name=tool_name,
@@ -548,6 +591,7 @@ class Tool(_BaseTool):
             tool_params=slack_notification_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -557,6 +601,7 @@ class Tool(_BaseTool):
         credential_name: str,
         description: Optional[str],
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "Tool":
         """
         Register a built-in websearch tool to search information
@@ -567,6 +612,9 @@ class Tool(_BaseTool):
          storing OpenAI credentials
         :param str description: The description of the tool
         :param bool replace: Whether to replace the existing tool
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         """
         web_search_tool_params = WebSearchToolParams(
@@ -578,6 +626,7 @@ class Tool(_BaseTool):
             tool_params=web_search_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     def delete(self, force: bool = False):
@@ -644,7 +693,10 @@ class Tool(_BaseTool):
          If the AI Tool is not found
 
         """
-        attributes = cls._get_attributes(tool_name)
+        try:
+            attributes = cls._get_attributes(tool_name)
+        except AgentToolAttributesEmptyError:
+            attributes = None
         description = cls._get_description(tool_name)
         return cls(
             tool_name=tool_name, attributes=attributes, description=description
@@ -667,16 +719,7 @@ class Tool(_BaseTool):
             )
             for row in cr.fetchall():
                 tool_name = row[0]
-                if row[1]:
-                    description = row[1].read()  # Oracle.LOB
-                else:
-                    description = None
-                attributes = cls._get_attributes(tool_name=tool_name)
-                yield cls(
-                    tool_name=tool_name,
-                    description=description,
-                    attributes=attributes,
-                )
+                yield cls.fetch(tool_name=tool_name)
 
     def set_attributes(self, attributes: ToolAttributes) -> None:
         """
@@ -754,6 +797,13 @@ class AsyncTool(_BaseTool):
     async def create(
         self, enabled: Optional[bool] = True, replace: Optional[bool] = False
     ):
+        """
+        Create an AI Tool in the database
+        :param Optional[bool] enabled: Whether the tool should be enabled.
+         Default: True
+        :param Optional[bool] replace: Whether the tool should be replaced.
+         Default: False
+        """
         if self.tool_name is None:
             raise AttributeError("Tool must have a name")
         if self.attributes is None:
@@ -794,6 +844,7 @@ class AsyncTool(_BaseTool):
         tool_type: ToolType,
         description: Optional[str] = None,
         replace: Optional[bool] = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         """
         Register a built-in tool
@@ -805,6 +856,9 @@ class AsyncTool(_BaseTool):
         :param str description: Description of the tool
         :param bool replace: Whether to replace the existing tool.
          Default value is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         :return: select_ai.agent.Tool
         """
@@ -814,7 +868,9 @@ class AsyncTool(_BaseTool):
                 "type select_ai.agent.ToolParams"
             )
         attributes = ToolAttributes(
-            tool_params=tool_params, tool_type=tool_type
+            tool_params=tool_params,
+            tool_type=tool_type,
+            instruction=instruction,
         )
         tool = cls(
             tool_name=tool_name, attributes=attributes, description=description
@@ -831,7 +887,9 @@ class AsyncTool(_BaseTool):
         sender: str,
         smtp_host: str,
         description: Optional[str],
+        subject: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         """
         Register an email notification tool
@@ -842,8 +900,12 @@ class AsyncTool(_BaseTool):
         :param str sender: The sender of the email
         :param str smtp_host: The SMTP host of the email server
         :param str description: The description of the tool
+        :param str subject: Subject of the email.
         :param bool replace: Whether to replace the existing tool.
          Default value is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         :return: select_ai.agent.Tool
 
@@ -853,6 +915,7 @@ class AsyncTool(_BaseTool):
             recipient=recipient,
             sender=sender,
             smtp_host=smtp_host,
+            subject=subject,
         )
         return await cls.create_built_in_tool(
             tool_name=tool_name,
@@ -860,6 +923,7 @@ class AsyncTool(_BaseTool):
             tool_params=email_notification_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -870,6 +934,7 @@ class AsyncTool(_BaseTool):
         endpoint: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         http_tool_params = HTTPToolParams(
             credential_name=credential_name, endpoint=endpoint
@@ -880,6 +945,7 @@ class AsyncTool(_BaseTool):
             tool_params=http_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -889,6 +955,7 @@ class AsyncTool(_BaseTool):
         function: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         """
         Create a custom tool to invoke PL/SQL procedure or function
@@ -898,9 +965,14 @@ class AsyncTool(_BaseTool):
         :param str description: The description of the tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         """
-        tool_attributes = ToolAttributes(function=function)
+        tool_attributes = ToolAttributes(
+            function=function, instruction=instruction
+        )
         tool = cls(
             tool_name=tool_name,
             attributes=tool_attributes,
@@ -916,6 +988,7 @@ class AsyncTool(_BaseTool):
         profile_name: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         """
         Register a RAG tool, which will use a VectorIndex linked AI Profile
@@ -926,6 +999,9 @@ class AsyncTool(_BaseTool):
         :param str description: The description of the tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
         """
         tool_params = RAGToolParams(profile_name=profile_name)
         return await cls.create_built_in_tool(
@@ -934,6 +1010,7 @@ class AsyncTool(_BaseTool):
             tool_params=tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -943,6 +1020,7 @@ class AsyncTool(_BaseTool):
         profile_name: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         """
         Register a SQL tool to perform natural language to SQL translation
@@ -953,6 +1031,9 @@ class AsyncTool(_BaseTool):
         :param str description: The description of the tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
         """
         tool_params = SQLToolParams(profile_name=profile_name)
         return await cls.create_built_in_tool(
@@ -961,6 +1042,7 @@ class AsyncTool(_BaseTool):
             tool_params=tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -968,24 +1050,28 @@ class AsyncTool(_BaseTool):
         cls,
         tool_name: str,
         credential_name: str,
-        slack_channel: str,
+        channel: str,
         description: Optional[str] = None,
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         """
         Register a Slack notification tool
 
         :param str tool_name: The name of the Slack notification tool
         :param str credential_name: The name of the Slack credential
-        :param str slack_channel: The name of the Slack channel
+        :param str channel: The name of the Slack channel
         :param str description: The description of the Slack notification tool
         :param bool replace: Whether to replace existing tool. Default value
          is False
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         """
         slack_notification_tool_params = SlackNotificationToolParams(
             credential_name=credential_name,
-            slack_channel=slack_channel,
+            channel=channel,
         )
         return await cls.create_built_in_tool(
             tool_name=tool_name,
@@ -993,6 +1079,7 @@ class AsyncTool(_BaseTool):
             tool_params=slack_notification_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     @classmethod
@@ -1002,6 +1089,7 @@ class AsyncTool(_BaseTool):
         credential_name: str,
         description: Optional[str],
         replace: bool = False,
+        instruction: Optional[str] = None,
     ) -> "AsyncTool":
         """
         Register a built-in websearch tool to search information
@@ -1012,6 +1100,9 @@ class AsyncTool(_BaseTool):
          storing OpenAI credentials
         :param str description: The description of the tool
         :param bool replace: Whether to replace the existing tool
+        :param str instruction: A clear, concise statement that describes
+         what the tool should accomplish and how to do it. This
+         text is included in the prompt sent to the LLM.
 
         """
         web_search_tool_params = WebSearchToolParams(
@@ -1023,6 +1114,7 @@ class AsyncTool(_BaseTool):
             tool_params=web_search_tool_params,
             description=description,
             replace=replace,
+            instruction=instruction,
         )
 
     async def delete(self, force: bool = False):

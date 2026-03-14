@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -8,6 +8,7 @@
 import json
 from abc import ABC
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator, Iterator, Optional, Union
 
 import oracledb
@@ -22,6 +23,7 @@ from select_ai.profile import Profile
 from select_ai.sql import (
     GET_USER_VECTOR_INDEX,
     GET_USER_VECTOR_INDEX_ATTRIBUTES,
+    GET_VECTOR_PIPELINE_LAST_EXECUTION,
     LIST_USER_VECTOR_INDEXES,
 )
 
@@ -48,6 +50,8 @@ class VectorIndexAttributes(SelectAIDataClass):
     :param int chunk_size: Text size of chunking the input data.
     :param int chunk_overlap: Specifies the amount of overlapping
      characters between adjacent chunks of text.
+    :param enable_sources: Provides document source links and filenames in RAG
+     output
     :param str location: Location of the object store.
     :param int match_limit: Specifies the maximum number of results to return
      in a vector search query
@@ -74,6 +78,7 @@ class VectorIndexAttributes(SelectAIDataClass):
 
     chunk_size: Optional[int] = None
     chunk_overlap: Optional[int] = None
+    enable_sources: Optional[bool] = None
     location: Optional[str] = None
     match_limit: Optional[int] = None
     object_storage_credential_name: Optional[str] = None
@@ -193,11 +198,16 @@ class VectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    def create(self, replace: Optional[bool] = False):
+    def create(
+        self,
+        replace: Optional[bool] = False,
+        wait_for_completion: bool = False,
+    ):
         """Create a vector index in the database and populates the index
          with data from an object store bucket using an async scheduler job
 
         :param bool replace: Replace vector index if it exists
+        :param bool wait_for_completion: True to wait for index creation
         :return: None
         """
 
@@ -207,6 +217,7 @@ class VectorIndex(_BaseVectorIndex):
         parameters = {
             "index_name": self.index_name,
             "attributes": self.attributes.json(),
+            "wait_for_completion": wait_for_completion,
         }
 
         if self.description:
@@ -402,6 +413,33 @@ class VectorIndex(_BaseVectorIndex):
         """
         return self._get_attributes(self.index_name)
 
+    def get_next_refresh_timestamp(self) -> Optional[datetime]:
+        """
+        Returns the UTC timestamp of the next scheduled refresh
+        """
+        if not self.index_name:
+            raise AttributeError("'index_name' is required")
+        attributes = self.attributes or self.get_attributes()
+        self.attributes = attributes
+        refresh_rate = attributes.refresh_rate
+        if refresh_rate is None:
+            return None
+        pipeline_name = (
+            attributes.pipeline_name
+            or f"{self.index_name.upper()}$VECPIPELINE"
+        )
+        with cursor() as cr:
+            cr.execute(
+                GET_VECTOR_PIPELINE_LAST_EXECUTION,
+                pipeline_name=pipeline_name,
+            )
+            row = cr.fetchone()
+        if not row or row[0] is None:
+            return None
+        last_execution = row[0]
+        naive_ts = last_execution + timedelta(minutes=int(refresh_rate))
+        return naive_ts.astimezone(timezone.utc)
+
     def get_profile(self) -> Profile:
         """Get Profile object linked to this vector index
 
@@ -493,11 +531,16 @@ class AsyncVectorIndex(_BaseVectorIndex):
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
-    async def create(self, replace: Optional[bool] = False) -> None:
+    async def create(
+        self,
+        replace: Optional[bool] = False,
+        wait_for_completion: Optional[bool] = False,
+    ) -> None:
         """Create a vector index in the database and populates it with data
         from an object store bucket using an async scheduler job
 
         :param bool replace: True to replace existing vector index
+        :param bool wait_for_completion: True to wait for index creation
 
         """
 
@@ -506,6 +549,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         parameters = {
             "index_name": self.index_name,
             "attributes": self.attributes.json(),
+            "wait_for_completion": wait_for_completion,
         }
         if self.description:
             parameters["description"] = self.description
@@ -694,6 +738,31 @@ class AsyncVectorIndex(_BaseVectorIndex):
         :raises: VectorIndexNotFoundError
         """
         return await self._get_attributes(index_name=self.index_name)
+
+    async def get_next_refresh_timestamp(self) -> Optional[datetime]:
+        """Return the UTC timestamp for the next scheduled refresh."""
+        if not self.index_name:
+            raise AttributeError("'index_name' is required")
+        attributes = self.attributes or await self.get_attributes()
+        self.attributes = attributes
+        refresh_rate = attributes.refresh_rate
+        if refresh_rate is None:
+            return None
+        pipeline_name = (
+            attributes.pipeline_name
+            or f"{self.index_name.upper()}$VECPIPELINE"
+        )
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_VECTOR_PIPELINE_LAST_EXECUTION,
+                pipeline_name=pipeline_name,
+            )
+            row = await cr.fetchone()
+        if not row or row[0] is None:
+            return None
+        last_execution = row[0]
+        naive_ts = last_execution + timedelta(minutes=int(refresh_rate))
+        return naive_ts.astimezone(timezone.utc)
 
     async def get_profile(self) -> AsyncProfile:
         """Get AsyncProfile object linked to this vector index

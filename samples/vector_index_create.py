@@ -56,5 +56,5 @@ vector_index = select_ai.VectorIndex(
     description="Test vector index",
     profile=profile,
 )
-vector_index.create(replace=True)
+vector_index.create(replace=True, wait_for_completion=True)
 print("Created vector index: test_vector_index")

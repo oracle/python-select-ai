@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -114,4 +114,11 @@ SELECT conversation_title,
        retention_days
 from USER_CLOUD_AI_CONVERSATIONS
 WHERE conversation_id = :conversation_id
+"""
+
+
+GET_VECTOR_PIPELINE_LAST_EXECUTION = """
+SELECT CAST(last_execution AT TIME ZONE 'UTC' AS TIMESTAMP)
+FROM USER_CLOUD_PIPELINES
+WHERE pipeline_name = :pipeline_name
 """

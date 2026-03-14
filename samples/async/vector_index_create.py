@@ -51,7 +51,7 @@ async def main():
         description="Vector index for conda environments",
         profile=async_profile,
     )
-    await async_vector_index.create(replace=True)
+    await async_vector_index.create(replace=True, wait_for_completion=True)
     print("Created vector index: test_vector_index")
 
 
