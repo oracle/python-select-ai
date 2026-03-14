@@ -116,25 +116,9 @@ from USER_CLOUD_AI_CONVERSATIONS
 WHERE conversation_id = :conversation_id
 """
 
-CHECK_USER_PRIVILEGES = """
-WITH direct_privs AS (
-         SELECT table_name
-         FROM all_tab_privs
-         WHERE grantee = USER
-           AND privilege = 'EXECUTE'
-           AND table_name IN ({placeholders})
-     ),
-     role_privs AS (
-         SELECT rtp.table_name
-         FROM session_roles sr
-         JOIN role_tab_privs rtp
-           ON rtp.role = sr.role
-         WHERE rtp.privilege = 'EXECUTE'
-           AND rtp.table_name IN ({placeholders})
-     )
-     SELECT DISTINCT table_name
-     FROM direct_privs
-     UNION
-     SELECT DISTINCT table_name
-     FROM role_privs
+
+GET_VECTOR_PIPELINE_LAST_EXECUTION = """
+SELECT CAST(last_execution AT TIME ZONE 'UTC' AS TIMESTAMP)
+FROM USER_CLOUD_PIPELINES
+WHERE pipeline_name = :pipeline_name
 """

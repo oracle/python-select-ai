@@ -8,6 +8,7 @@
 import json
 from abc import ABC
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator, Iterator, Optional, Union
 
 import oracledb
@@ -22,6 +23,7 @@ from select_ai.profile import Profile
 from select_ai.sql import (
     GET_USER_VECTOR_INDEX,
     GET_USER_VECTOR_INDEX_ATTRIBUTES,
+    GET_VECTOR_PIPELINE_LAST_EXECUTION,
     LIST_USER_VECTOR_INDEXES,
 )
 
@@ -411,6 +413,33 @@ class VectorIndex(_BaseVectorIndex):
         """
         return self._get_attributes(self.index_name)
 
+    def get_next_refresh_timestamp(self) -> Optional[datetime]:
+        """
+        Returns the UTC timestamp of the next scheduled refresh
+        """
+        if not self.index_name:
+            raise AttributeError("'index_name' is required")
+        attributes = self.attributes or self.get_attributes()
+        self.attributes = attributes
+        refresh_rate = attributes.refresh_rate
+        if refresh_rate is None:
+            return None
+        pipeline_name = (
+            attributes.pipeline_name
+            or f"{self.index_name.upper()}$VECPIPELINE"
+        )
+        with cursor() as cr:
+            cr.execute(
+                GET_VECTOR_PIPELINE_LAST_EXECUTION,
+                pipeline_name=pipeline_name,
+            )
+            row = cr.fetchone()
+        if not row or row[0] is None:
+            return None
+        last_execution = row[0]
+        naive_ts = last_execution + timedelta(minutes=int(refresh_rate))
+        return naive_ts.astimezone(timezone.utc)
+
     def get_profile(self) -> Profile:
         """Get Profile object linked to this vector index
 
@@ -709,6 +738,31 @@ class AsyncVectorIndex(_BaseVectorIndex):
         :raises: VectorIndexNotFoundError
         """
         return await self._get_attributes(index_name=self.index_name)
+
+    async def get_next_refresh_timestamp(self) -> Optional[datetime]:
+        """Return the UTC timestamp for the next scheduled refresh."""
+        if not self.index_name:
+            raise AttributeError("'index_name' is required")
+        attributes = self.attributes or await self.get_attributes()
+        self.attributes = attributes
+        refresh_rate = attributes.refresh_rate
+        if refresh_rate is None:
+            return None
+        pipeline_name = (
+            attributes.pipeline_name
+            or f"{self.index_name.upper()}$VECPIPELINE"
+        )
+        async with async_cursor() as cr:
+            await cr.execute(
+                GET_VECTOR_PIPELINE_LAST_EXECUTION,
+                pipeline_name=pipeline_name,
+            )
+            row = await cr.fetchone()
+        if not row or row[0] is None:
+            return None
+        last_execution = row[0]
+        naive_ts = last_execution + timedelta(minutes=int(refresh_rate))
+        return naive_ts.astimezone(timezone.utc)
 
     async def get_profile(self) -> AsyncProfile:
         """Get AsyncProfile object linked to this vector index
