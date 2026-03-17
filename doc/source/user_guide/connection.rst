@@ -42,6 +42,41 @@ with ``await`` keyword:
    await select_ai.async_connect(user=user, password=password, dsn=dsn)
 
 
+Connection Pool
+===============
+
+You can create a connection pool using the ``select_ai.create_pool``
+and ``select_ai.create_pool_async`` methods
+
+.. code-block:: python
+
+   import select_ai
+
+   user = "<your_db_user>"
+   password = "<your_db_password>"
+   dsn = "<your_db_dsn>"
+
+   # for sync pool
+   select_ai.create_pool(
+       user=user,
+       password=password,
+       dsn=dsn,
+       min_size=5,
+       max_size=10,
+       increment=5
+   )
+   # for async pool
+   select_ai.create_pool_async(
+       user=user,
+       password=password,
+       dsn=dsn,
+       min_size=5,
+       max_size=10,
+       increment=5
+   )
+
+Check this `blog <https://blogs.oracle.com/machinelearning/boosting-select-ai-for-python-concurrency-with-connection-pooling>`__ which shows the benefit of connection pooling along with FastAPI service
+
 .. note::
 
    For m-TLS (wallet) based connection, additional  parameters like

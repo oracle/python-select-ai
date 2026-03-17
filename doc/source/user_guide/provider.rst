@@ -87,8 +87,8 @@ for the supported providers
 Enable AI service provider
 **************************
 
-Sync API
-++++++++
+Enable using Sync API
++++++++++++++++++++++
 
 This method adds ACL allowing database users to invoke AI provider's
 HTTP endpoint
@@ -103,8 +103,8 @@ output::
 
 .. latex:clearpage::
 
-Async API
-+++++++++
+Enable using Async API
+++++++++++++++++++++++
 .. literalinclude:: ../../../samples/async/enable_ai_provider.py
    :language: python
    :lines: 14-
@@ -122,8 +122,8 @@ Disable AI service provider
 This method removes ACL blocking database users to invoke AI provider's
 HTTP endpoint
 
-Sync API
-++++++++
+Disable using Sync API
+++++++++++++++++++++++
 
 .. literalinclude:: ../../../samples/disable_ai_provider.py
    :language: python
@@ -135,8 +135,8 @@ output::
 
 .. latex:clearpage::
 
-Async API
-+++++++++
+Disable using Async API
++++++++++++++++++++++++
 
 .. literalinclude:: ../../../samples/async/disable_ai_provider.py
    :language: python
