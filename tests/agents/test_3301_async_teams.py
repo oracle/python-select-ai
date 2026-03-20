@@ -383,3 +383,11 @@ async def test_3320_fetch_after_delete(team_attributes):
     await t.create()
     await t.delete(force=True)
     await expect_async_error("NOT_FOUND", lambda: AsyncTeam.fetch(name))
+
+async def test_3321_double_delete(team_attributes):
+    name = f"TMP_{uuid.uuid4().hex.upper()}"
+    t = AsyncTeam(name, team_attributes, "TMP")
+    await t.create()
+    await t.delete(force=True)
+    await expect_async_error("ORA-20053", lambda: t.delete(force=False))
+

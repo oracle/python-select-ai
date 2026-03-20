@@ -61,11 +61,182 @@ def log_step(step):
         raise
 
 
+def _safe_dict(obj):
+    if obj is None:
+        return None
+    if hasattr(obj, "dict"):
+        try:
+            return obj.dict(exclude_null=False)
+        except TypeError:
+            return obj.dict()
+    return str(obj)
+
+
+def log_object_details(context: str, object_type: str, obj) -> None:
+    details = {"context": context, "object_type": object_type}
+
+    if object_type == "profile":
+        details.update(
+            {
+                "profile_name": getattr(obj, "profile_name", None),
+                "description": getattr(obj, "description", None),
+                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+            }
+        )
+    elif object_type == "agent":
+        details.update(
+            {
+                "agent_name": getattr(obj, "agent_name", None),
+                "description": getattr(obj, "description", None),
+                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+            }
+        )
+    elif object_type == "tool":
+        details.update(
+            {
+                "tool_name": getattr(obj, "tool_name", None),
+                "description": getattr(obj, "description", None),
+                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+            }
+        )
+    elif object_type == "task":
+        details.update(
+            {
+                "task_name": getattr(obj, "task_name", None),
+                "description": getattr(obj, "description", None),
+                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+            }
+        )
+    elif object_type == "team":
+        details.update(
+            {
+                "team_name": getattr(obj, "team_name", None),
+                "description": getattr(obj, "description", None),
+                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+            }
+        )
+    else:
+        details["repr"] = str(obj)
+
+    logger.info("OBJECT_DETAILS: %s", details)
+    print("OBJECT_DETAILS:", details)
+
+
+@pytest.fixture(scope="session")
+def setup_test_user(test_env):
+    try:
+        select_ai.disconnect()
+    except Exception:
+        pass
+
+    select_ai.connect(**test_env.connect_params(admin=True))
+    try:
+        try:
+            select_ai.grant_privileges(users=[test_env.test_user])
+        except Exception as exc:
+            msg = str(exc)
+            if (
+                "ORA-01749" not in msg
+                and "Cannot GRANT or REVOKE privileges to or from yourself" not in msg
+            ):
+                raise
+
+        select_ai.grant_http_access(
+            users=[test_env.test_user],
+            provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
+        )
+    finally:
+        select_ai.disconnect()
+        select_ai.connect(**test_env.connect_params())
+
+
+@pytest.fixture(scope="session")
+def openai_cred():
+    api_key = os.getenv("PYSAI_TEST_OPENAI_API_KEY")
+    assert api_key, "PYSAI_TEST_OPENAI_API_KEY not set"
+
+    select_ai.create_credential(
+        credential={
+            "credential_name": "OPENAI_CRED",
+            "username": "openai",
+            "password": api_key,
+        },
+        replace=True,
+    )
+
+    return "OPENAI_CRED"
+
+
+@pytest.fixture(scope="session")
+def email_cred():
+    smtp_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
+    smtp_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
+
+    assert smtp_username, "PYSAI_TEST_EMAIL_CRED_USERNAME not set"
+    assert smtp_password, "PYSAI_TEST_EMAIL_CRED_PASSWORD not set"
+
+    select_ai.create_credential(
+        credential={
+            "credential_name": "EMAIL_CRED",
+            "username": smtp_username,
+            "password": smtp_password,
+        },
+        replace=True,
+    )
+
+    return "EMAIL_CRED"
+
+
+@pytest.fixture(scope="session")
+def allow_network_acl():
+    with select_ai.cursor() as cur:
+        cur.execute("SELECT USER FROM dual")
+        db_user = cur.fetchone()[0]
+
+        def append_ace(host, privileges):
+            try:
+                cur.execute(
+                    f"""
+                    BEGIN
+                        DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
+                            host => '{host}',
+                            ace  => xs$ace_type(
+                                       privilege_list => xs$name_list({','.join([f"'{p}'" for p in privileges])}),
+                                       principal_name => '{db_user}',
+                                       principal_type => xs_acl.ptype_db
+                                   )
+                        );
+                    END;
+                    """
+                )
+            except Exception as exc:
+                msg = str(exc)
+                if (
+                    "ORA-46212" in msg
+                    or "ORA-46313" in msg
+                    or "already exists" in msg
+                ):
+                    return
+                raise
+
+        append_ace(
+            "smtp.email.us-ashburn-1.oci.oraclecloud.com",
+            ["connect", "smtp"],
+        )
+
+        for host in ["api.openai.com", "a.co","amazon.in"]:
+            append_ace(host, ["connect", "http"])
+
+    yield
+
+
 # ----------------------------------------------------------------------
 # MAIN TEST
 # ----------------------------------------------------------------------
 
-def test_agent_end_to_end(profile_attributes):
+def test_3800_agent_end_to_end(
+    profile_attributes, setup_test_user, openai_cred, email_cred, allow_network_acl
+):
     """
     End-to-end Select AI Agent integration test.
     
@@ -83,11 +254,12 @@ def test_agent_end_to_end(profile_attributes):
 
     profile_attributes.provider.oci_compartment_id = oci_compartment_id
 
-    select_ai.Profile(
+    profile = select_ai.Profile(
         profile_name="GEN1_PROFILE",
         attributes=profile_attributes,
         replace=True,
     )
+    log_object_details("create_profile", "profile", profile)
 
     # -------------------------------
     # AGENT
@@ -102,6 +274,7 @@ def test_agent_end_to_end(profile_attributes):
             ),
         )
         agent.create(replace=True)
+        log_object_details("create_agent", "agent", agent)
 
         assert agent.agent_name == "CustomerAgent"
 
@@ -130,8 +303,13 @@ def test_agent_end_to_end(profile_attributes):
             ),
         )
         websearch_tool.create(replace=True)
+        log_object_details("create_websearch_tool", "tool", websearch_tool)
 
         # Email notification tool
+        email_recipient = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
+        email_sender = os.getenv("PYSAI_TEST_EMAIL_SENDER")
+        assert email_recipient, "PYSAI_TEST_EMAIL_RECIPIENT not set"
+        assert email_sender, "PYSAI_TEST_EMAIL_SENDER not set"
         email_tool = Tool(
             tool_name="Email",
             attributes=ToolAttributes(
@@ -139,13 +317,14 @@ def test_agent_end_to_end(profile_attributes):
                 tool_params=ToolParams(
                     credential_name="EMAIL_CRED",
                     notification_type="EMAIL",
-                    recipient=os.getenv("PYSAI_TEST_EMAIL_RECIPIENT"),
-                    sender=os.getenv("PYSAI_TEST_EMAIL_SENDER"),
-                    smtp_host=os.getenv("PYSAI_TEST_EMAIL_SMTPHOST"),
+                    recipient=email_recipient,
+                    sender=email_sender,
+                    smtp_host="smtp.email.us-ashburn-1.oci.oraclecloud.com",
                 ),
             ),
         )
         email_tool.create(replace=True)
+        log_object_details("create_email_tool", "tool", email_tool)
 
         assert Tool("Human") is not None
         assert Tool("Email") is not None
@@ -172,6 +351,7 @@ def test_agent_end_to_end(profile_attributes):
             ),
         )
         task.create(replace=True)
+        log_object_details("create_task", "task", task)
 
         assert task.task_name == "Return_And_Price_Match"
         assert set(task.attributes.tools) == {"Human", "Websearch", "Email"}
@@ -195,6 +375,7 @@ def test_agent_end_to_end(profile_attributes):
             ),
         )
         team.create(enabled=True, replace=True)
+        log_object_details("create_team", "team", team)
 
         assert team.team_name == "ReturnAgency"
 
@@ -207,9 +388,8 @@ def test_agent_end_to_end(profile_attributes):
         prompts = [
             "I want to return an office chair",
             "The price when I bought it is 100. But I found a cheaper price",
-            "Here is the price match link https://www.ikea.com/us/en/p/stefan-chair-brown-black-00211088/",
+            "Here is the price match link 'https://www.ikea.com/us/en/p/stefan-chair-brown-black-00211088/'",
             "Yes, I would like to proceed with a refund",
-            "If you havent started the refund, please do"
         ]
 
         for idx, prompt in enumerate(prompts, start=1):
@@ -229,3 +409,28 @@ def test_agent_end_to_end(profile_attributes):
 
             if isinstance(response, dict):
                 assert response
+
+        with select_ai.cursor() as cur:
+            cur.execute(
+                """
+                SELECT * FROM user_ai_agent_tool_history
+                """
+            )
+            tool_history = cur.fetchall()
+
+        decoded_tool_history = []
+        for row in tool_history:
+            decoded_row = []
+            for value in row:
+                if hasattr(value, "read"):
+                    decoded_row.append(value.read())
+                else:
+                    decoded_row.append(value)
+            decoded_tool_history.append(tuple(decoded_row))
+
+        print(decoded_tool_history)
+        logger.info("Tool history rows fetched: %d", len(decoded_tool_history))
+        for row in decoded_tool_history:
+            logger.info("TOOL_HISTORY_ROW: %s", row)
+
+        assert decoded_tool_history

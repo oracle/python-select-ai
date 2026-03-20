@@ -75,6 +75,18 @@ RAG_TOOL_NAME = f"PYSAI_RAG_TOOL_{UUID}"
 PLSQL_TOOL_NAME = f"PYSAI_PLSQL_TOOL_{UUID}"
 WEB_SEARCH_TOOL_NAME = f"PYSAI_WEB_TOOL_{UUID}"
 PLSQL_FUNCTION_NAME = f"PYSAI_CALC_AGE_{UUID}"
+CUSTOM_ATTR_TOOL_NAME = f"PYSAI_3001_CUSTOM_ATTR_TOOL_{UUID}"
+CUSTOM_ATTR_TOOL_DESCRIPTION = "Custom attr tool for sync testing"
+CUSTOM_NO_TYPE_TOOL_NAME = f"PYSAI_3001_CUSTOM_NO_TYPE_TOOL_{UUID}"
+CUSTOM_WITH_TYPE_NO_INSTR_TOOL_NAME = (
+    f"PYSAI_3001_CUSTOM_WITH_TYPE_NO_INSTR_TOOL_{UUID}"
+)
+CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME = (
+    f"PYSAI_3001_CUSTOM_WITH_TYPE_AND_INSTR_TOOL_{UUID}"
+)
+DISABLED_TOOL_NAME = f"PYSAI_3001_DISABLED_TOOL_{UUID}"
+DEFAULT_STATUS_TOOL_NAME = f"PYSAI_3001_DEFAULT_STATUS_TOOL_{UUID}"
+DROP_FORCE_MISSING_TOOL = f"PYSAI_3001_DROP_MISSING_{UUID}"
 smtp_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
 smtp_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
 slack_username = os.getenv("PYSAI_TEST_SLACK_USERNAME")
@@ -430,37 +442,156 @@ def test_3009_slack_tool_created(slack_tool):
     else:
         assert slack_tool.tool_name == "SLACK_TOOL"
 
-def test_3010_sql_tool_with_invalid_profile_created(neg_sql_tool):
+def test_3010_custom_tool_attributes_roundtrip():
+    logger.info(
+        "Validating custom tool attribute roundtrip: instruction/tool_inputs/description"
+    )
+    tool = Tool(
+        tool_name=CUSTOM_ATTR_TOOL_NAME,
+        description=CUSTOM_ATTR_TOOL_DESCRIPTION,
+        attributes=select_ai.agent.ToolAttributes(
+            function=PLSQL_FUNCTION_NAME,
+            instruction="Return age in years for a birth date input",
+            tool_inputs=[
+                {
+                    "name": "p_birth_date",
+                    "description": "Input birth date in DATE format",
+                }
+            ],
+        ),
+    )
+    tool.create(replace=True)
+    try:
+        fetched = select_ai.agent.Tool.fetch(CUSTOM_ATTR_TOOL_NAME)
+        logger.info(
+            "Fetched custom tool | name=%s | description=%s | instruction=%s",
+            fetched.tool_name,
+            fetched.description,
+            fetched.attributes.instruction,
+        )
+        assert fetched.tool_name == CUSTOM_ATTR_TOOL_NAME
+        assert fetched.description == CUSTOM_ATTR_TOOL_DESCRIPTION
+        assert fetched.attributes.function == PLSQL_FUNCTION_NAME
+        assert (
+            fetched.attributes.instruction
+            == "Return age in years for a birth date input"
+        )
+        assert isinstance(fetched.attributes.tool_inputs, list)
+        assert fetched.attributes.tool_inputs[0]["name"] == "p_birth_date"
+        assert "birth date" in fetched.attributes.tool_inputs[0]["description"].lower()
+    finally:
+        tool.delete(force=True)
+
+
+def test_3011_custom_tool_without_tool_type():
+    logger.info("Validating custom tool creation with tool_type unset")
+    tool = Tool(
+        tool_name=CUSTOM_NO_TYPE_TOOL_NAME,
+        description="Custom tool without explicit tool_type",
+        attributes=select_ai.agent.ToolAttributes(
+            function=PLSQL_FUNCTION_NAME,
+        ),
+    )
+    tool.create(replace=True)
+    try:
+        fetched = select_ai.agent.Tool.fetch(CUSTOM_NO_TYPE_TOOL_NAME)
+        assert fetched.tool_name == CUSTOM_NO_TYPE_TOOL_NAME
+        assert fetched.attributes.function == PLSQL_FUNCTION_NAME
+        assert fetched.attributes.tool_type is None
+        assert fetched.description == "Custom tool without explicit tool_type"
+    finally:
+        tool.delete(force=True)
+
+
+def test_3012_custom_tool_with_tool_type_without_instruction(sql_profile):
+    logger.info("Validating custom tool with tool_type and no instruction")
+    tool = Tool(
+        tool_name=CUSTOM_WITH_TYPE_NO_INSTR_TOOL_NAME,
+        description="Custom tool with tool_type and no instruction",
+        attributes=select_ai.agent.ToolAttributes(
+            tool_type=select_ai.agent.ToolType.SQL,
+            tool_params=select_ai.agent.SQLToolParams(
+                profile_name=SQL_PROFILE_NAME
+            ),
+        ),
+    )
+    tool.create(replace=True)
+    try:
+        fetched = select_ai.agent.Tool.fetch(CUSTOM_WITH_TYPE_NO_INSTR_TOOL_NAME)
+        logger.info(
+            "Fetched custom tool | name=%s | type=%s | instruction=%s | profile=%s",
+            fetched.tool_name,
+            fetched.attributes.tool_type,
+            fetched.attributes.instruction,
+            fetched.attributes.tool_params.profile_name,
+        )
+        assert fetched.tool_name == CUSTOM_WITH_TYPE_NO_INSTR_TOOL_NAME
+        assert fetched.attributes.tool_type == select_ai.agent.ToolType.SQL
+        assert fetched.attributes.instruction is not None
+        assert "sql" in fetched.attributes.instruction.lower()
+        assert fetched.attributes.tool_params.profile_name == SQL_PROFILE_NAME
+    finally:
+        tool.delete(force=True)
+
+
+def test_3013_custom_tool_with_tool_type_and_instruction(sql_profile):
+    logger.info("Validating custom tool with tool_type and instruction")
+    tool = Tool(
+        tool_name=CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME,
+        description="Custom tool with tool_type and instruction",
+        attributes=select_ai.agent.ToolAttributes(
+            tool_type=select_ai.agent.ToolType.SQL,
+            tool_params=select_ai.agent.SQLToolParams(
+                profile_name=SQL_PROFILE_NAME
+            ),
+            instruction="Use SQL profile to answer query from relational data",
+        ),
+    )
+    tool.create(replace=True)
+    try:
+        fetched = select_ai.agent.Tool.fetch(CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME)
+        assert fetched.tool_name == CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME
+        assert fetched.attributes.tool_type == select_ai.agent.ToolType.SQL
+        assert fetched.attributes.instruction is not None
+        assert "sql" in fetched.attributes.instruction.lower()
+        assert fetched.attributes.tool_params.profile_name == SQL_PROFILE_NAME
+    finally:
+        tool.delete(force=True)
+
+
+def test_3014_sql_tool_with_invalid_profile_created(neg_sql_tool):
     logger.info("Validating SQL tool with invalid profile is stored")
     assert neg_sql_tool.tool_name == "NEG_SQL_TOOL"
     assert neg_sql_tool.attributes.tool_params.profile_name == "NON_EXISTENT_PROFILE"
 
 
-def test_3011_rag_tool_with_invalid_profile_created(neg_rag_tool):
+def test_3015_rag_tool_with_invalid_profile_created(neg_rag_tool):
     logger.info("Validating RAG tool with invalid profile is stored")
     assert neg_rag_tool.tool_name == "NEG_RAG_TOOL"
     assert neg_rag_tool.attributes.tool_params.profile_name == "NON_EXISTENT_RAG_PROFILE"
 
 
-def test_3012_plsql_tool_with_invalid_function_created(neg_plsql_tool):
+def test_3016_plsql_tool_with_invalid_function_created(neg_plsql_tool):
     logger.info("Validating PL/SQL tool with invalid function is stored")
     assert neg_plsql_tool.tool_name == "NEG_PLSQL_TOOL"
     assert neg_plsql_tool.attributes.function == "NON_EXISTENT_FUNCTION"
 
 
-def test_3013_fetch_non_existent_tool():
+def test_3017_fetch_non_existent_tool():
     logger.info("Fetching non-existent tool")
-    with pytest.raises(AgentToolNotFoundError)as exc:
+    with pytest.raises(AgentToolNotFoundError) as exc:
         select_ai.agent.Tool.fetch("TOOL_DOES_NOT_EXIST")
-    logger.error("%s", exc.value)   
+    logger.error("%s", exc.value)
 
-def test_3014_list_invalid_regex():
+
+def test_3018_list_invalid_regex():
     logger.info("Listing tools with invalid regex")
     with pytest.raises(Exception) as exc:
         list(select_ai.agent.Tool.list(tool_name_pattern="*["))
-    logger.error("%s", exc.value)  
+    logger.error("%s", exc.value)
 
-def test_3015_list_tools():
+
+def test_3019_list_tools():
     logger.info("Listing all tools")
     tool_names = {t.tool_name for t in select_ai.agent.Tool.list()}
     logger.info("Tools present: %s", tool_names)
@@ -468,3 +599,60 @@ def test_3015_list_tools():
     assert SQL_TOOL_NAME in tool_names
     assert RAG_TOOL_NAME in tool_names
     assert PLSQL_TOOL_NAME in tool_names
+
+
+def test_3020_create_tool_default_status_enabled(sql_profile):
+    logger.info("Creating tool to validate default ENABLED status")
+    tool = select_ai.agent.Tool.create_built_in_tool(
+        tool_name=DEFAULT_STATUS_TOOL_NAME,
+        tool_type=select_ai.agent.ToolType.SQL,
+        tool_params=select_ai.agent.SQLToolParams(profile_name=SQL_PROFILE_NAME),
+    )
+    try:
+        status = get_tool_status(DEFAULT_STATUS_TOOL_NAME)
+        logger.info("Tool status after create: %s", status)
+        assert status == "ENABLED"
+        fetched = select_ai.agent.Tool.fetch(DEFAULT_STATUS_TOOL_NAME)
+        assert fetched.attributes.tool_type == select_ai.agent.ToolType.SQL
+        assert fetched.attributes.tool_params.profile_name == SQL_PROFILE_NAME
+    finally:
+        tool.delete(force=True)
+
+
+def test_3021_create_tool_with_enabled_false_sets_disabled(sql_profile):
+    logger.info("Creating tool with enabled=False to validate DISABLED status")
+    tool = Tool(
+        tool_name=DISABLED_TOOL_NAME,
+        attributes=select_ai.agent.ToolAttributes(
+            tool_type=select_ai.agent.ToolType.SQL,
+            tool_params=select_ai.agent.SQLToolParams(
+                profile_name=SQL_PROFILE_NAME
+            ),
+        ),
+    )
+    tool.create(enabled=False, replace=True)
+    try:
+        status = get_tool_status(DISABLED_TOOL_NAME)
+        logger.info("Tool status after create(enabled=False): %s", status)
+        assert status == "DISABLED"
+        fetched = select_ai.agent.Tool.fetch(DISABLED_TOOL_NAME)
+        assert fetched.attributes.tool_type == select_ai.agent.ToolType.SQL
+    finally:
+        tool.delete(force=True)
+
+
+def test_3022_drop_tool_force_true_non_existent():
+    logger.info("Validating DROP_TOOL force=True for missing tool")
+    tool = Tool(tool_name=DROP_FORCE_MISSING_TOOL)
+    tool.delete(force=True)
+    status = get_tool_status(DROP_FORCE_MISSING_TOOL)
+    logger.info("Status after force delete on missing tool: %s", status)
+    assert status is None
+
+
+def test_3023_drop_tool_force_false_non_existent_raises():
+    logger.info("Validating DROP_TOOL force=False for missing tool raises")
+    tool = Tool(tool_name=DROP_FORCE_MISSING_TOOL)
+    with pytest.raises(oracledb.Error) as exc:
+        tool.delete(force=False)
+    logger.info("Received expected drop error: %s", exc.value)

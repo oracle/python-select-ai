@@ -69,6 +69,8 @@ def get_agent_status(agent_name):
 PYSAI_AGENT_NAME = f"PYSAI_3200_AGENT_{uuid.uuid4().hex.upper()}"
 PYSAI_AGENT_DESC = "PYSAI_3200_AGENT_DESCRIPTION"
 PYSAI_PROFILE_NAME = f"PYSAI_3200_PROFILE_{uuid.uuid4().hex.upper()}"
+PYSAI_DISABLED_AGENT_NAME = f"PYSAI_3200_DISABLED_AGENT_{uuid.uuid4().hex.upper()}"
+PYSAI_MISSING_AGENT_NAME = f"PYSAI_3200_MISSING_AGENT_{uuid.uuid4().hex.upper()}"
 
 # -----------------------------------------------------------------------------
 # Fixtures
@@ -175,7 +177,77 @@ def test_3203_fetch_non_existing():
     expect_oracle_error("NOT_FOUND", lambda: Agent.fetch(name))
 
 
-def test_3204_disable_enable(agent):
+def test_3204_create_agent_default_status_enabled(agent_attributes):
+    name = f"PYSAI_3200_STATUS_ENABLED_{uuid.uuid4().hex.upper()}"
+    logger.info("Creating agent with default enabled status: %s", name)
+    a = Agent(
+        agent_name=name,
+        description="Default enabled status",
+        attributes=agent_attributes,
+    )
+    a.create(replace=True)
+    try:
+        status = get_agent_status(name)
+        logger.info("Agent status after create: %s", status)
+        assert status == "ENABLED"
+
+        fetched = Agent.fetch(name)
+        logger.info("Fetched created agent: %s", fetched.agent_name)
+        assert fetched.description == "Default enabled status"
+    finally:
+        a.delete(force=True)
+
+
+def test_3205_create_agent_with_enabled_false_sets_disabled(agent_attributes):
+    logger.info("Creating disabled agent: %s", PYSAI_DISABLED_AGENT_NAME)
+    a = Agent(
+        agent_name=PYSAI_DISABLED_AGENT_NAME,
+        description="Initially disabled",
+        attributes=agent_attributes,
+    )
+    a.create(enabled=False, replace=True)
+    try:
+        status = get_agent_status(PYSAI_DISABLED_AGENT_NAME)
+        logger.info("Agent status after create(enabled=False): %s", status)
+        assert status == "DISABLED"
+
+        fetched = Agent.fetch(PYSAI_DISABLED_AGENT_NAME)
+        logger.info("Fetched disabled agent: %s", fetched.agent_name)
+        assert fetched.description == "Initially disabled"
+    finally:
+        a.delete(force=True)
+
+
+def test_3206_drop_agent_force_true_non_existent():
+    logger.info("Dropping missing agent with force=True: %s", PYSAI_MISSING_AGENT_NAME)
+    a = Agent(agent_name=PYSAI_MISSING_AGENT_NAME)
+    a.delete(force=True)
+    status = get_agent_status(PYSAI_MISSING_AGENT_NAME)
+    logger.info("Status after force delete on missing agent: %s", status)
+    assert status is None
+
+
+def test_3207_drop_agent_force_false_non_existent_raises():
+    logger.info("Dropping missing agent with force=False: %s", PYSAI_MISSING_AGENT_NAME)
+    a = Agent(agent_name=PYSAI_MISSING_AGENT_NAME)
+    expect_oracle_error("ORA-20050", lambda: a.delete(force=False))
+
+
+def test_3208_create_requires_agent_name(agent_attributes):
+    logger.info("Validating create() requires agent_name")
+    with pytest.raises(AttributeError) as exc:
+        Agent(attributes=agent_attributes).create()
+    logger.info("Received expected error: %s", exc.value)
+
+
+def test_3209_create_requires_attributes():
+    logger.info("Validating create() requires attributes")
+    with pytest.raises(AttributeError) as exc:
+        Agent(agent_name=f"PYSAI_3200_NO_ATTR_{uuid.uuid4().hex.upper()}").create()
+    logger.info("Received expected error: %s", exc.value)
+
+
+def test_3210_disable_enable(agent):
     logger.info("Disabling agent: %s", agent.agent_name)
     agent.disable()
 
@@ -191,7 +263,7 @@ def test_3204_disable_enable(agent):
     assert status == "ENABLED"
 
 
-def test_3205_set_attribute(agent):
+def test_3211_set_attribute(agent):
     logger.info("Setting role attribute on agent: %s", agent.agent_name)
     agent.set_attribute("role", "You are a DB assistant")
 
@@ -201,7 +273,7 @@ def test_3205_set_attribute(agent):
     assert "DB assistant" in a.attributes.role
 
 
-def test_3206_set_attributes(agent):
+def test_3212_set_attributes(agent):
     logger.info("Replacing agent attributes")
 
     new_attrs = AgentAttributes(
@@ -219,19 +291,19 @@ def test_3206_set_attributes(agent):
     assert a.attributes == new_attrs
 
 
-def test_3207_set_attribute_invalid_key(agent):
+def test_3213_set_attribute_invalid_key(agent):
     logger.info("Setting invalid attribute key on agent: %s", agent.agent_name)
     expect_oracle_error("ORA-20050", lambda: agent.set_attribute("no_such_key", 123))
 
-def test_3208_set_attribute_none(agent):
+def test_3214_set_attribute_none(agent):
     logger.info("Setting attribute 'role' to None on agent: %s", agent.agent_name)
     expect_oracle_error("ORA-20050", lambda: agent.set_attribute("role", None))
 
-def test_3209_set_attribute_empty(agent):
+def test_3215_set_attribute_empty(agent):
     logger.info("Setting attribute 'role' to empty string on agent: %s", agent.agent_name)
     expect_oracle_error("ORA-20050", lambda: agent.set_attribute("role", ""))
 
-def test_3210_create_existing_without_replace(agent_attributes):
+def test_3216_create_existing_without_replace(agent_attributes):
     logger.info("Create existing agent without replace should fail")
     a = Agent(
         agent_name=PYSAI_AGENT_NAME,
@@ -240,7 +312,7 @@ def test_3210_create_existing_without_replace(agent_attributes):
     )
     expect_oracle_error("ORA-20050", lambda: a.create(replace=False))
 
-def test_3211_delete_and_recreate(agent_attributes):
+def test_3217_delete_and_recreate(agent_attributes):
     name = f"PYSAI_RECREATE_{uuid.uuid4().hex}"
     logger.info("Create agent: %s", name)
     #Create agent
@@ -273,7 +345,7 @@ def test_3211_delete_and_recreate(agent_attributes):
     logger.info("Final cleanup successful for agent: %s", name)
 
 
-def test_3212_disable_after_delete(agent_attributes):
+def test_3218_disable_after_delete(agent_attributes):
     name = f"PYSAI_TMP_DEL_{uuid.uuid4().hex}"
     logger.info("Creating agent: %s", name)
     a = Agent(name, attributes=agent_attributes)
@@ -296,7 +368,7 @@ def test_3212_disable_after_delete(agent_attributes):
     logger.info("Disable after delete confirmed error for agent: %s", name)
 
 
-def test_3213_enable_after_delete(agent_attributes):
+def test_3219_enable_after_delete(agent_attributes):
     name = f"PYSAI_TMP_DEL_{uuid.uuid4().hex}"
     logger.info("Creating agent: %s", name)
     a = Agent(name, attributes=agent_attributes)
@@ -319,7 +391,7 @@ def test_3213_enable_after_delete(agent_attributes):
     logger.info("Enable after delete confirmed error for agent: %s", name)
 
 
-def test_3214_set_attribute_after_delete(agent_attributes):
+def test_3220_set_attribute_after_delete(agent_attributes):
     name = f"PYSAI_TMP_DEL_{uuid.uuid4().hex}"
     logger.info("Creating agent: %s", name)
     a = Agent(name, attributes=agent_attributes)
@@ -342,7 +414,7 @@ def test_3214_set_attribute_after_delete(agent_attributes):
     logger.info("Set attribute after delete confirmed error for agent: %s", name)
 
 
-def test_3215_double_delete(agent_attributes):
+def test_3221_double_delete_force_true(agent_attributes):
     name = f"PYSAI_TMP_DOUBLE_DEL_{uuid.uuid4().hex}"
     logger.info("Creating agent: %s", name)
     a = Agent(name, attributes=agent_attributes)
@@ -367,7 +439,29 @@ def test_3215_double_delete(agent_attributes):
     logger.info("Confirmed agent still does not exist after double delete: %s", name)
 
 
-def test_3216_fetch_after_delete(agent_attributes):
+def test_3222_double_delete_force_false_raises(agent_attributes):
+    name = f"PYSAI_TMP_DOUBLE_DEL_FALSE_{uuid.uuid4().hex}"
+    logger.info("Creating agent: %s", name)
+    a = Agent(name, attributes=agent_attributes)
+    a.create()
+    logger.info("Agent created successfully: %s", name)
+
+    logger.info("Fetching agent to verify creation: %s", name)
+    fetched = Agent.fetch(name)
+    logger.info("Fetched agent: %s", fetched.agent_name)
+
+    logger.info("Deleting agent first time with force=False: %s", name)
+    a.delete(force=False)
+    logger.info("First delete done, verifying deletion: %s", name)
+    expect_oracle_error("NOT_FOUND", lambda: Agent.fetch(name))
+    logger.info("Confirmed agent no longer exists: %s", name)
+
+    logger.info("Deleting agent second time with force=False: %s", name)
+    expect_oracle_error("ORA-20050", lambda: a.delete(force=False))
+    logger.info("Confirmed second delete with force=False raises error: %s", name)
+
+
+def test_3223_fetch_after_delete(agent_attributes):
     name = f"PYSAI_TMP_FETCH_DEL_{uuid.uuid4().hex}"
     logger.info("Creating agent: %s", name)
     a = Agent(name, attributes=agent_attributes)
@@ -386,7 +480,7 @@ def test_3216_fetch_after_delete(agent_attributes):
     logger.info("Confirmed agent no longer exists: %s", name)
 
 
-def test_3217_list_all_non_empty():
+def test_3224_list_all_non_empty():
     logger.info("Listing all agents")
     agents = list(Agent.list())
     names = sorted(a.agent_name for a in agents)

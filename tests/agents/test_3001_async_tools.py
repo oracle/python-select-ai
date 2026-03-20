@@ -494,7 +494,7 @@ async def test_3009_slack_tool_created(slack_tool):
         logger.info("SLACK tool not created due to expected backend-side error")
 
 
-async def test_3009_custom_tool_attributes_roundtrip():
+async def test_3010_custom_tool_attributes_roundtrip():
     logger.info(
         "Validating custom tool attribute roundtrip: instruction/tool_inputs/description"
     )
@@ -536,7 +536,7 @@ async def test_3009_custom_tool_attributes_roundtrip():
         await tool.delete(force=True)
 
 
-async def test_3009_custom_tool_without_tool_type():
+async def test_3011_custom_tool_without_tool_type():
     logger.info("Validating custom tool creation with tool_type unset")
     tool = AsyncTool(
         tool_name=CUSTOM_NO_TYPE_TOOL_NAME,
@@ -549,6 +549,13 @@ async def test_3009_custom_tool_without_tool_type():
     await tool.create(replace=True)
     try:
         fetched = await AsyncTool.fetch(CUSTOM_NO_TYPE_TOOL_NAME)
+        logger.info(
+            "Fetched custom tool | name=%s | type=%s | function=%s | instruction=%s",
+            fetched.tool_name,
+            fetched.attributes.tool_type,
+            fetched.attributes.function,
+            fetched.attributes.instruction,
+        )
         log_tool_details("test_3009_custom_tool_without_tool_type", fetched)
         assert fetched.tool_name == CUSTOM_NO_TYPE_TOOL_NAME
         assert fetched.attributes.tool_type is None
@@ -558,7 +565,7 @@ async def test_3009_custom_tool_without_tool_type():
         await tool.delete(force=True)
 
 
-async def test_3009_custom_tool_with_tool_type_without_instruction(sql_profile):
+async def test_3012_custom_tool_with_tool_type_without_instruction(sql_profile):
     logger.info(
         "Validating custom tool creation with tool_type set and instruction unset"
     )
@@ -587,7 +594,7 @@ async def test_3009_custom_tool_with_tool_type_without_instruction(sql_profile):
         await tool.delete(force=True)
 
 
-async def test_3009_custom_tool_with_tool_type_and_instruction(sql_profile):
+async def test_3013_custom_tool_with_tool_type_and_instruction(sql_profile):
     logger.info(
         "Validating custom tool creation with tool_type and instruction set"
     )
@@ -617,7 +624,7 @@ async def test_3009_custom_tool_with_tool_type_and_instruction(sql_profile):
         await tool.delete(force=True)
 
 
-async def test_3010_sql_tool_with_invalid_profile_created(neg_sql_tool):
+async def test_3014_sql_tool_with_invalid_profile_created(neg_sql_tool):
     logger.info("Validating SQL tool with invalid profile")
     log_tool_details("test_3010_sql_tool_with_invalid_profile_created", neg_sql_tool)
     assert neg_sql_tool.tool_name == NEG_SQL_TOOL_NAME
@@ -625,7 +632,7 @@ async def test_3010_sql_tool_with_invalid_profile_created(neg_sql_tool):
     assert neg_sql_tool.attributes.tool_params.profile_name == "NON_EXISTENT_PROFILE"
 
 
-async def test_3011_rag_tool_with_invalid_profile_created(neg_rag_tool):
+async def test_3015_rag_tool_with_invalid_profile_created(neg_rag_tool):
     logger.info("Validating RAG tool with invalid profile")
     log_tool_details("test_3011_rag_tool_with_invalid_profile_created", neg_rag_tool)
     assert neg_rag_tool.tool_name == NEG_RAG_TOOL_NAME
@@ -636,7 +643,7 @@ async def test_3011_rag_tool_with_invalid_profile_created(neg_rag_tool):
     )
 
 
-async def test_3012_plsql_tool_with_invalid_function_created(neg_plsql_tool):
+async def test_3016_plsql_tool_with_invalid_function_created(neg_plsql_tool):
     logger.info("Validating PL/SQL tool with invalid function")
     log_tool_details(
         "test_3012_plsql_tool_with_invalid_function_created", neg_plsql_tool
@@ -645,14 +652,14 @@ async def test_3012_plsql_tool_with_invalid_function_created(neg_plsql_tool):
     assert neg_plsql_tool.attributes.function == "NON_EXISTENT_FUNCTION"
 
 
-async def test_3013_fetch_non_existent_tool():
+async def test_3017_fetch_non_existent_tool():
     logger.info("Fetching non-existent tool")
     with pytest.raises(AgentToolNotFoundError) as exc:
         await AsyncTool.fetch("TOOL_DOES_NOT_EXIST")
     logger.info("Received expected error: %s", exc.value)
 
 
-async def test_3014_list_invalid_regex():
+async def test_3018_list_invalid_regex():
     logger.info("Listing tools with invalid regex")
     with pytest.raises(Exception) as exc:
         async for _ in AsyncTool.list(tool_name_pattern="*["):
@@ -660,7 +667,7 @@ async def test_3014_list_invalid_regex():
     logger.info("Received expected regex error: %s", exc.value)
 
 
-async def test_3015_list_tools():
+async def test_3019_list_tools():
     logger.info("Listing all tools")
     tools = [tool async for tool in AsyncTool.list()]
     for tool in tools:
@@ -674,7 +681,7 @@ async def test_3015_list_tools():
     assert PLSQL_TOOL_NAME in tool_names
 
 
-async def test_3016_create_tool_default_status_enabled(sql_profile):
+async def test_3020_create_tool_default_status_enabled(sql_profile):
     logger.info("Creating tool to validate default ENABLED status")
     tool = await AsyncTool.create_built_in_tool(
         tool_name=DEFAULT_STATUS_TOOL_NAME,
@@ -697,7 +704,7 @@ async def test_3016_create_tool_default_status_enabled(sql_profile):
         await tool.delete(force=True)
 
 
-async def test_3017_create_tool_with_enabled_false_sets_disabled(sql_profile):
+async def test_3021_create_tool_with_enabled_false_sets_disabled(sql_profile):
     logger.info("Creating tool with enabled=False to validate DISABLED status")
     tool = AsyncTool(
         tool_name=DISABLED_TOOL_NAME,
@@ -720,7 +727,7 @@ async def test_3017_create_tool_with_enabled_false_sets_disabled(sql_profile):
         await tool.delete(force=True)
 
 
-async def test_3018_drop_tool_force_true_non_existent():
+async def test_3022_drop_tool_force_true_non_existent():
     logger.info("Validating DROP_TOOL force=True for missing tool")
     tool = AsyncTool(tool_name=DROP_FORCE_MISSING_TOOL)
     await tool.delete(force=True)
@@ -729,7 +736,7 @@ async def test_3018_drop_tool_force_true_non_existent():
     assert status is None
 
 
-async def test_3019_drop_tool_force_false_non_existent_raises():
+async def test_3023_drop_tool_force_false_non_existent_raises():
     logger.info("Validating DROP_TOOL force=False for missing tool raises")
     tool = AsyncTool(tool_name=DROP_FORCE_MISSING_TOOL)
     with pytest.raises(oracledb.Error) as exc:

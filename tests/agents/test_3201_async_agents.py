@@ -77,6 +77,20 @@ def log_agent_details(context: str, agent) -> None:
     print("AGENT_DETAILS:", details)
 
 
+async def expect_async_error(expected_code, coro_fn):
+    try:
+        await coro_fn()
+    except AgentNotFoundError as exc:
+        logger.info("Expected failure (NOT_FOUND): %s", exc)
+        assert expected_code == "NOT_FOUND"
+    except oracledb.DatabaseError as exc:
+        msg = str(exc)
+        logger.info("Expected Oracle failure: %s", msg)
+        assert expected_code in msg, f"Expected {expected_code}, got: {msg}"
+    else:
+        pytest.fail(f"Expected error {expected_code} did not occur")
+
+
 async def get_agent_status(agent_name):
     logger.info("Fetching agent status for: %s", agent_name)
     async with select_ai.async_cursor() as cur:
@@ -282,3 +296,121 @@ async def test_3212_create_requires_attributes():
             agent_name=f"PYSAI_3200_NO_ATTR_{uuid.uuid4().hex.upper()}"
         ).create()
     logger.info("Received expected error: %s", exc.value)
+
+
+async def test_3213_disable_enable(agent):
+    logger.info("Disabling async agent: %s", agent.agent_name)
+    await agent.disable()
+    await assert_agent_status(agent.agent_name, "DISABLED")
+
+    logger.info("Enabling async agent: %s", agent.agent_name)
+    await agent.enable()
+    await assert_agent_status(agent.agent_name, "ENABLED")
+
+
+async def test_3214_set_attribute_none(agent):
+    logger.info("Setting role=None on async agent: %s", agent.agent_name)
+    await expect_async_error("ORA-20050", lambda: agent.set_attribute("role", None))
+
+
+async def test_3215_set_attribute_empty(agent):
+    logger.info("Setting role='' on async agent: %s", agent.agent_name)
+    await expect_async_error("ORA-20050", lambda: agent.set_attribute("role", ""))
+
+
+async def test_3216_create_existing_without_replace(agent_attributes):
+    logger.info("Creating duplicate async agent without replace")
+    dup = AsyncAgent(
+        agent_name=PYSAI_3200_AGENT_NAME,
+        description="Duplicate async agent",
+        attributes=agent_attributes,
+    )
+    await expect_async_error("ORA-20050", lambda: dup.create(replace=False))
+
+
+async def test_3217_delete_and_recreate(agent_attributes):
+    name = f"PYSAI_RECREATE_{uuid.uuid4().hex.upper()}"
+    logger.info("Creating async agent: %s", name)
+    a = AsyncAgent(name, attributes=agent_attributes)
+    await a.create()
+
+    fetched = await AsyncAgent.fetch(name)
+    log_agent_details("test_3217_created", fetched)
+    assert fetched.agent_name == name
+
+    logger.info("Deleting async agent: %s", name)
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+
+    logger.info("Recreating async agent: %s", name)
+    await a.create(replace=False)
+    recreated = await AsyncAgent.fetch(name)
+    log_agent_details("test_3217_recreated", recreated)
+    assert recreated.agent_name == name
+
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+
+
+async def test_3218_disable_after_delete(agent_attributes):
+    name = f"PYSAI_TMP_DEL_{uuid.uuid4().hex.upper()}"
+    a = AsyncAgent(name, attributes=agent_attributes)
+    await a.create()
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+    await expect_async_error("ORA-20050", lambda: a.disable())
+
+
+async def test_3219_enable_after_delete(agent_attributes):
+    name = f"PYSAI_TMP_DEL_{uuid.uuid4().hex.upper()}"
+    a = AsyncAgent(name, attributes=agent_attributes)
+    await a.create()
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+    await expect_async_error("ORA-20050", lambda: a.enable())
+
+
+async def test_3220_set_attribute_after_delete(agent_attributes):
+    name = f"PYSAI_TMP_DEL_{uuid.uuid4().hex.upper()}"
+    a = AsyncAgent(name, attributes=agent_attributes)
+    await a.create()
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+    await expect_async_error("ORA-20050", lambda: a.set_attribute("role", "X"))
+
+
+async def test_3221_double_delete_force_true(agent_attributes):
+    name = f"PYSAI_TMP_DOUBLE_DEL_{uuid.uuid4().hex.upper()}"
+    a = AsyncAgent(name, attributes=agent_attributes)
+    await a.create()
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+
+
+async def test_3222_double_delete_force_false_raises(agent_attributes):
+    name = f"PYSAI_TMP_DOUBLE_DEL_FALSE_{uuid.uuid4().hex.upper()}"
+    a = AsyncAgent(name, attributes=agent_attributes)
+    await a.create()
+    await a.delete(force=False)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+    await expect_async_error("ORA-20050", lambda: a.delete(force=False))
+
+
+async def test_3223_fetch_after_delete(agent_attributes):
+    name = f"PYSAI_TMP_FETCH_DEL_{uuid.uuid4().hex.upper()}"
+    a = AsyncAgent(name, attributes=agent_attributes)
+    await a.create()
+    await a.delete(force=True)
+    await expect_async_error("NOT_FOUND", lambda: AsyncAgent.fetch(name))
+
+
+async def test_3224_list_all_non_empty():
+    logger.info("Listing all async agents")
+    agents = [a async for a in AsyncAgent.list()]
+    names = sorted(a.agent_name for a in agents)
+    logger.info("Total async agents found: %d", len(names))
+    for name in names:
+        logger.info("  - %s", name)
+    assert len(names) > 0

@@ -279,3 +279,45 @@ def test_3118_delete_disabled_task_with_force_succeeds():
     logger.info("Task status after delete: %s", status)
     assert status is None
     expect_oracle_error("NOT_FOUND", lambda: Task.fetch(task_name))
+
+    logger.info("Attempting operational use of deleted task object: %s", task_name)
+    expect_oracle_error("ORA-20051", lambda: task.enable())
+
+
+def test_3119_double_delete_force_true_succeeds():
+    task_name = f"{BASE}_DOUBLE_DELETE_FORCE_TRUE"
+    logger.info("Creating task for double delete with force=True: %s", task_name)
+    attrs = TaskAttributes(instruction="Double delete force true", tools=None)
+    task = Task(task_name=task_name, attributes=attrs)
+    task.create(enabled=True)
+
+    task.delete(force=True)
+    status = get_task_status(task_name)
+    logger.info("Task status after first delete: %s", status)
+    assert status is None
+
+    logger.info("Deleting already deleted task with force=True: %s", task_name)
+    task.delete(force=True)
+    status = get_task_status(task_name)
+    logger.info("Task status after second delete with force=True: %s", status)
+    assert status is None
+    expect_oracle_error("NOT_FOUND", lambda: Task.fetch(task_name))
+
+
+def test_3120_double_delete_force_false_raises():
+    task_name = f"{BASE}_DOUBLE_DELETE_FORCE_FALSE"
+    logger.info("Creating task for double delete with force=False: %s", task_name)
+    attrs = TaskAttributes(instruction="Double delete force false", tools=None)
+    task = Task(task_name=task_name, attributes=attrs)
+    task.create(enabled=True)
+
+    task.delete(force=False)
+    status = get_task_status(task_name)
+    logger.info("Task status after first delete: %s", status)
+    assert status is None
+
+    logger.info("Deleting already deleted task with force=False: %s", task_name)
+    with pytest.raises(oracledb.DatabaseError) as exc:
+        task.delete(force=False)
+    logger.info("Received expected Oracle error on second delete: %s", exc.value)
+    expect_oracle_error("NOT_FOUND", lambda: Task.fetch(task_name))

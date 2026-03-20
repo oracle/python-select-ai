@@ -126,14 +126,18 @@ def log_object_details(context: str, object_type: str, obj) -> None:
 
 @pytest.fixture(scope="module", autouse=True)
 async def async_connect(test_env):
-    logger.info("Opening async database connection")
-    await select_ai.async_connect(**test_env.connect_params())
+    logger.info(
+        "Opening async admin database connection | user=%s | dsn=%s",
+        test_env.admin_user,
+        test_env.connect_string,
+    )
+    await select_ai.async_connect(**test_env.connect_params(admin=True))
     yield
-    logger.info("Closing async database connection")
+    logger.info("Closing async admin database connection")
     await select_ai.async_disconnect()
 
 
-async def test_agent_end_to_end_async(profile_attributes):
+async def test_3800_agent_end_to_end_async(profile_attributes):
     """End-to-end Select AI Agent integration test (async)."""
 
     run_id = uuid.uuid4().hex.upper()
@@ -220,6 +224,10 @@ async def test_agent_end_to_end_async(profile_attributes):
             created["tools"].append(websearch_tool)
             log_object_details("create_websearch_tool", "tool", websearch_tool)
 
+            email_recipient = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
+            email_sender = os.getenv("PYSAI_TEST_EMAIL_SENDER")
+            assert email_recipient, "PYSAI_TEST_EMAIL_RECIPIENT not set"
+            assert email_sender, "PYSAI_TEST_EMAIL_SENDER not set"
             email_tool = AsyncTool(
                 tool_name=email_tool_name,
                 attributes=ToolAttributes(
@@ -227,9 +235,9 @@ async def test_agent_end_to_end_async(profile_attributes):
                     tool_params=ToolParams(
                         credential_name="EMAIL_CRED",
                         notification_type="EMAIL",
-                        recipient=os.getenv("PYSAI_TEST_EMAIL_RECIPIENT"),
-                        sender=os.getenv("PYSAI_TEST_EMAIL_SENDER"),
-                        smtp_host=os.getenv("PYSAI_TEST_EMAIL_SMTPHOST"),
+                        recipient=email_recipient,
+                        sender=email_sender,
+                        smtp_host="smtp.email.us-ashburn-1.oci.oraclecloud.com",
                     ),
                 ),
             )

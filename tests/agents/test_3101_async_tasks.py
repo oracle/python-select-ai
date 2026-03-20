@@ -207,6 +207,10 @@ async def test_3104_create_task_with_enabled_false_sets_disabled():
         fetched = await AsyncTask.fetch(PYSAI_3100_DISABLED_TASK_NAME)
         log_task_details("test_3104", fetched)
         assert fetched.description == "Task created disabled"
+
+        logger.info("Enabling task created with enabled=False: %s", task.task_name)
+        await task.enable()
+        await assert_task_status(PYSAI_3100_DISABLED_TASK_NAME, "ENABLED")
     finally:
         await task.delete(force=True)
 
@@ -219,6 +223,36 @@ async def test_3105_disable_enable_task(task):
     logger.info("Enabling task: %s", task.task_name)
     await task.enable()
     await assert_task_status(PYSAI_3100_TASK_NAME, "ENABLED")
+
+
+async def test_3105b_set_single_attribute_invalid(task):
+    logger.info("Setting invalid single attribute for async task: %s", task.task_name)
+    with pytest.raises(oracledb.DatabaseError) as exc:
+        await task.set_attribute("description", "New Desc")
+    logger.info("Received expected Oracle error: %s", exc.value)
+    assert "ORA-20051" in str(exc.value)
+
+
+async def test_3105c_duplicate_task_creation_fails(task):
+    logger.info("Creating duplicate async task without replace: %s", task.task_name)
+    dup = AsyncTask(
+        task_name=task.task_name,
+        description="Duplicate task",
+        attributes=task.attributes,
+    )
+    with pytest.raises(oracledb.Error) as exc:
+        await dup.create(replace=False)
+    logger.info("Received expected duplicate create error: %s", exc.value)
+    assert "ORA-20051" in str(exc.value)
+
+
+async def test_3105d_invalid_regex_pattern():
+    logger.info("Listing async tasks with invalid regex")
+    with pytest.raises(oracledb.Error) as exc:
+        async for _ in AsyncTask.list("[INVALID_REGEX"):
+            pass
+    logger.info("Received expected invalid regex error: %s", exc.value)
+    assert "ORA-12726" in str(exc.value)
 
 
 async def test_3106_drop_task_force_true_non_existent():
@@ -310,3 +344,37 @@ async def test_3111_create_requires_attributes():
             task_name=f"PYSAI_3100_NO_ATTR_{uuid.uuid4().hex.upper()}"
         ).create()
     logger.info("Received expected error: %s", exc.value)
+
+
+async def test_3112_enable_deleted_task_object_raises():
+    logger.info("Creating task to validate object behavior after delete")
+    task_name = f"PYSAI_3100_DELETED_{uuid.uuid4().hex.upper()}"
+    attrs = TaskAttributes(
+        instruction="Validate task object after delete for: {query}",
+        tools=["MOVIE_SQL_TOOL"],
+        enable_human_tool=False,
+    )
+    task = AsyncTask(
+        task_name=task_name,
+        description="Task deleted before reuse",
+        attributes=attrs,
+    )
+
+    await task.create(replace=True)
+    await assert_task_status(task_name, "ENABLED")
+
+    await task.delete(force=True)
+    status = await get_task_status(task_name)
+    logger.info("Task status after delete: %s", status)
+    assert status is None
+
+    logger.info("Verifying in-memory task object is still populated")
+    assert task.task_name == task_name
+    assert task.description == "Task deleted before reuse"
+    assert task.attributes == attrs
+
+    logger.info("Attempting to enable deleted task using same object")
+    with pytest.raises(oracledb.DatabaseError) as exc:
+        await task.enable()
+    logger.info("Received expected error when enabling deleted task: %s", exc.value)
+    assert "ORA-20051" in str(exc.value)
