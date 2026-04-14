@@ -14,6 +14,9 @@
 #   PYSAI_TEST_CONNECT_STRING: connect string for test suite
 #   PYSAI_TEST_WALLET_LOCATION: location of wallet file (thin mode, mTLS)
 #   PYSAI_TEST_WALLET_PASSWORD: password for wallet file (thin mode, mTLS)
+#   PYSAI_TEST_MIN_POOL_SIZE: Minimum number of connections in the pool
+#   PYSAI_TEST_MAX_POOL_SIZE: Maximum number of connections in the pool
+#   PYSAI_TEST_POOL_INCREMENT
 #
 #           OCI Gen AI
 #   PYSAI_TEST_OCI_USER_OCID
@@ -53,7 +56,8 @@ def _ensure_test_user_exists(username: str, password: str):
         cr.execute(
             f'CREATE USER {username_upper} IDENTIFIED BY "{escaped_password}"'
         )
-    select_ai.db.get_connection().commit()
+    with select_ai.db.get_connection() as conn:
+        conn.commit()
 
 
 def _grant_basic_schema_privileges(username: str):
@@ -61,7 +65,8 @@ def _grant_basic_schema_privileges(username: str):
     with select_ai.cursor() as cr:
         for privilege in _BASIC_SCHEMA_PRIVILEGES:
             cr.execute(f"GRANT {privilege} TO {username_upper}")
-    select_ai.db.get_connection().commit()
+    with select_ai.db.get_connection() as conn:
+        conn.commit()
 
 
 def get_env_value(name, default_value=None, required=False):
@@ -90,8 +95,17 @@ class TestEnv:
         self.admin_password = get_env_value("ADMIN_PASSWORD")
         self.wallet_location = get_env_value("WALLET_LOCATION")
         self.wallet_password = get_env_value("WALLET_PASSWORD")
+        self.min_pool_size = int(
+            get_env_value("MIN_POOL_SIZE", default_value=2)
+        )
+        self.max_pool_size = int(
+            get_env_value("MAX_POOL_SIZE", default_value=4)
+        )
+        self.pool_increment = int(
+            get_env_value("POOL_INCREMENT", default_value=1)
+        )
 
-    def connect_params(self, admin: bool = False):
+    def connect_params(self, admin: bool = False, use_pool: bool = False):
         """
         Returns connect params
         """
@@ -105,6 +119,10 @@ class TestEnv:
             "wallet_password": self.wallet_password,
             "config_dir": self.wallet_location,
         }
+        if use_pool:
+            connect_params["min_size"] = self.min_pool_size
+            connect_params["max_size"] = self.max_pool_size
+            connect_params["increment"] = self.pool_increment
         return connect_params
 
 
@@ -135,28 +153,30 @@ def setup_test_user(test_env):
     select_ai.disconnect()
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def connect(setup_test_user, test_env):
-    select_ai.connect(**test_env.connect_params())
+    select_ai.create_pool(**test_env.connect_params(use_pool=True))
     yield
     select_ai.disconnect()
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 async def async_connect(setup_test_user, test_env, anyio_backend):
-    await select_ai.async_connect(**test_env.connect_params())
+    select_ai.create_pool_async(**test_env.connect_params(use_pool=True))
     yield
     await select_ai.async_disconnect()
 
 
 @pytest.fixture
 def connection():
-    return select_ai.db.get_connection()
+    with select_ai.db.get_connection() as conn:
+        yield conn
 
 
 @pytest.fixture
 def async_connection():
-    return select_ai.db.async_get_connection()
+    with select_ai.db.async_get_connection() as conn:
+        yield conn
 
 
 @pytest.fixture(scope="module")
@@ -171,7 +191,7 @@ async def async_cursor():
         yield cr
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="module")
 def oci_credential(connect, test_env):
     credential = {
         "credential_name": PYSAI_OCI_CREDENTIAL_NAME,

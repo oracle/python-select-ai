@@ -21,13 +21,19 @@ autodocs_default_options = {
 }
 
 project = "Select AI for Python"
-copyright = "2025, Oracle and/or its affiliates. All rights reserved."
+copyright = "2026, Oracle and/or its affiliates. All rights reserved."
 author = "Oracle"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinx_toolbox.latex"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx_toolbox.latex",
+    "sphinx.ext.autosectionlabel",
+]
+
+autosectionlabel_prefix_document = True
 
 # The suffix of source filenames.
 source_suffix = ".rst"

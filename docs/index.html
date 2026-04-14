@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>select_ai documentation &#8212; Select AI for Python 1.2.2 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>select_ai documentation &#8212; Select AI for Python 1.3.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="_static/pydoctheme.css?v=4eb63a40" />
+    <link rel="stylesheet" type="text/css" href="_static/pydoctheme.css?v=82640b3f" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="_static/documentation_options.js?v=fd7cadf9"></script>
+    <script src="_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
 
@@ -121,7 +121,7 @@
           </li>
           <li>
 
-              <a href="#">Select AI for Python 1.2.2 documentation</a> &#187;
+              <a href="#">Select AI for Python 1.3.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href="">select_ai documentation</a></li>
@@ -173,6 +173,7 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/connection.html">3. Connecting to Oracle Database</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#synchronous-connection">3.1. Synchronous connection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#asynchronous-connection">3.2. Asynchronous connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#connection-pool">3.3. Connection Pool</a></li>
 </ul>
 </li>
 </ul>
@@ -236,13 +237,13 @@ and Python’s rich ecosystem.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#enable-ai-service-provider">10. Enable AI service provider</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#sync-api">10.1. Sync API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#async-api">10.2. Async API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#enable-using-sync-api">10.1. Enable using Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#enable-using-async-api">10.2. Enable using Async API</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/provider.html#disable-ai-service-provider">11. Disable AI service provider</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#id2">11.1. Sync API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#id3">11.2. Async API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#disable-using-sync-api">11.1. Disable using Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#disable-using-async-api">11.2. Disable using Async API</a></li>
 </ul>
 </li>
 </ul>
@@ -275,12 +276,12 @@ and Python’s rich ecosystem.</p>
 <h1>Profile<a class="headerlink" href="#profile" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html">Profile Object Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#base-profile-api">Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html">1. Profile Object Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#base-profile-api">2. Base <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#select_ai.BaseProfile"><code class="docutils literal notranslate"><span class="pre">BaseProfile</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#profile-api"><code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#profile-api">3. <code class="docutils literal notranslate"><span class="pre">Profile</span></code> API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile"><code class="docutils literal notranslate"><span class="pre">Profile</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_negative_feedback()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#select_ai.Profile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">Profile.add_positive_feedback()</span></code></a></li>
@@ -308,15 +309,15 @@ and Python’s rich ecosystem.</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#create-profile">Create Profile</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#narrate">Narrate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#show-sql">Show SQL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#run-sql">Run SQL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#chat">Chat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#summarize">Summarize</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#translate">Translate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#list-profiles">List profiles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#async-profile">Async Profile</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#create-profile">4. Create Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#narrate">5. Narrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#show-sql">6. Show SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#run-sql">7. Run SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#chat">8. Chat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#summarize">9. Summarize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#translate">10. Translate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#list-profiles">11. List profiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/profile.html#async-profile">12. Async Profile</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_profile.html#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a></li>
 </ul>
@@ -400,6 +401,7 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">VectorIndex.enable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.fetch"><code class="docutils literal notranslate"><span class="pre">VectorIndex.fetch()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_next_refresh_timestamp"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_next_refresh_timestamp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_profile()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.list"><code class="docutils literal notranslate"><span class="pre">VectorIndex.list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attribute()</span></code></a></li>
@@ -423,6 +425,7 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.enable"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.enable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.fetch()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_next_refresh_timestamp"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_next_refresh_timestamp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_profile()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.list"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attribute()</span></code></a></li>
@@ -452,13 +455,13 @@ and Python’s rich ecosystem.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/synthetic_data.html#single-table-synthetic-data">3. Single table synthetic data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#sync-api">3.1. Sync API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#async-api">3.2. Async API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#single-table-sync-api">3.1. Single Table Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#singe-table-async-api">3.2. Singe Table Async API</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/synthetic_data.html#multi-table-synthetic-data">4. Multi table synthetic data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#id1">4.1. Sync API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#id2">4.2. Async API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#multi-table-sync-api">4.1. Multi table Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/synthetic_data.html#multi-table-async-api">4.2. Multi table Async API</a></li>
 </ul>
 </li>
 </ul>
@@ -560,32 +563,32 @@ and Python’s rich ecosystem.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#async-ai-agent">6. Async AI Agent</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html">6.1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html">1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool"><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#create-tool">6.1.1. Create Tool</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-tools">6.1.2. List Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#create-tool">1.1. Create Tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-tools">1.2. List Tools</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#asynctask">6.2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#asynctask">2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTask"><code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#create-task">6.2.1. Create Task</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-tasks">6.2.2. List Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#create-task">2.1. Create Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-tasks">2.2. List Tasks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#asyncagent">6.3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#asyncagent">3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncAgent"><code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#create-agent">6.3.1. Create Agent</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-agents">6.3.2. List Agents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#create-agent">3.1. Create Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-agents">3.2. List Agents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#asyncteam">6.4. AsyncTeam</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#asyncteam">4. AsyncTeam</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam"><code class="docutils literal notranslate"><span class="pre">AsyncTeam</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#run-team">6.4.1. Run Team</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-teams">6.4.2. List Teams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#run-team">4.1. Run Team</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#list-teams">4.2. List Teams</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#async-ai-agent-examples">6.5. Async AI agent examples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#web-search-agent-using-openai-s-gpt-model">6.5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#async-ai-agent-examples">5. Async AI agent examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
 </ul>
 </li>
 </ul>
@@ -663,7 +666,7 @@ and Python’s rich ecosystem.</p>
           </li>
           <li>
 
-              <a href="#">Select AI for Python 1.2.2 documentation</a> &#187;
+              <a href="#">Select AI for Python 1.3.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href="">select_ai documentation</a></li>
@@ -691,7 +694,7 @@ and Python’s rich ecosystem.</p>
       </ul>
     </div>
     <div class="footer">
-    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    &copy; Copyright 2026, Oracle and/or its affiliates. All rights reserved..
     <br>
     This page is licensed under the Python Software Foundation License Version 2.
     <br>

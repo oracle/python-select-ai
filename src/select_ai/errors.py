@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -95,6 +95,16 @@ class AgentNotFoundError(SelectAIError):
         return f"Agent {self.agent_name} not found"
 
 
+class AgentAttributesEmptyError(SelectAIError):
+    """Agent attributes not found in the database"""
+
+    def __init__(self, agent_name: str):
+        self.agent_name = agent_name
+
+    def __str__(self):
+        return f"Agent {self.agent_name} attributes empty in the database."
+
+
 class AgentTaskNotFoundError(SelectAIError):
     """Agent task not found in the database"""
 
@@ -103,6 +113,16 @@ class AgentTaskNotFoundError(SelectAIError):
 
     def __str__(self):
         return f"Agent Task {self.task_name} not found"
+
+
+class AgentTaskAttributesEmptyError(SelectAIError):
+    """Agent task attributes not found in the database"""
+
+    def __init__(self, task_name: str):
+        self.task_name = task_name
+
+    def __str__(self):
+        return f"Agent Task {self.task_name} attributes empty in the database."
 
 
 class AgentToolNotFoundError(SelectAIError):
@@ -115,6 +135,16 @@ class AgentToolNotFoundError(SelectAIError):
         return f"Agent Tool {self.tool_name} not found"
 
 
+class AgentToolAttributesEmptyError(SelectAIError):
+    """Agent team attributes empty in the database"""
+
+    def __init__(self, tool_name: str):
+        self.tool_name = tool_name
+
+    def __str__(self):
+        return f"Agent tool {self.tool_name} attributes empty in the database."
+
+
 class AgentTeamNotFoundError(SelectAIError):
     """Agent team not found in the database"""
 
@@ -123,6 +153,16 @@ class AgentTeamNotFoundError(SelectAIError):
 
     def __str__(self):
         return f"Agent Team {self.team_name} not found"
+
+
+class AgentTeamAttributesEmptyError(SelectAIError):
+    """Agent team attributes empty in the database"""
+
+    def __init__(self, team_name: str):
+        self.team_name = team_name
+
+    def __str__(self):
+        return f"Agent team {self.team_name} attributes empty in the database."
 
 
 class InvalidSQLError(SelectAIError):

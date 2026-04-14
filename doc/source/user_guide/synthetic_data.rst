@@ -27,8 +27,8 @@ Single table synthetic data
 
 The below example shows single table synthetic data generation
 
-Sync API
-++++++++
+Single Table Sync API
++++++++++++++++++++++
 
 .. literalinclude:: ../../../samples/profile_gen_single_table_synthetic_data.py
    :language: python
@@ -44,8 +44,8 @@ output::
 
 .. latex:clearpage::
 
-Async API
-+++++++++
+Singe Table Async API
++++++++++++++++++++++
 
 .. literalinclude:: ../../../samples/async/profile_gen_single_table_synthetic_data.py
    :language: python
@@ -68,8 +68,8 @@ Multi table synthetic data
 
 The below example shows multitable synthetic data generation
 
-Sync API
-++++++++
+Multi table Sync API
+++++++++++++++++++++
 
 .. literalinclude:: ../../../samples/profile_gen_multi_table_synthetic_data.py
    :language: python
@@ -97,8 +97,8 @@ output::
            300
 
 
-Async API
-+++++++++
+Multi table Async API
++++++++++++++++++++++
 
 
 .. literalinclude:: ../../../samples/async/profile_gen_multi_table_synthetic_data.py

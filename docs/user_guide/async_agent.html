@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>6.1. AsyncTool &#8212; Select AI for Python 1.2.2 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. AsyncTool &#8212; Select AI for Python 1.3.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4eb63a40" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=82640b3f" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=fd7cadf9"></script>
+    <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
@@ -62,8 +62,9 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">6.1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool"><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.AsyncTool.create"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.create_built_in_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_built_in_tool()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.create_email_notification_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_email_notification_tool()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.create_pl_sql_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_pl_sql_tool()</span></code></a></li>
@@ -81,11 +82,11 @@
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTool.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-tool">6.1.1. Create Tool</a></li>
-<li><a class="reference internal" href="#list-tools">6.1.2. List Tools</a></li>
+<li><a class="reference internal" href="#create-tool">1.1. Create Tool</a></li>
+<li><a class="reference internal" href="#list-tools">1.2. List Tools</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#asynctask">6.2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
+<li><a class="reference internal" href="#asynctask">2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask"><code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask.create"><code class="docutils literal notranslate"><span class="pre">AsyncTask.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTask.delete()</span></code></a></li>
@@ -98,11 +99,11 @@
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTask.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-task">6.2.1. Create Task</a></li>
-<li><a class="reference internal" href="#list-tasks">6.2.2. List Tasks</a></li>
+<li><a class="reference internal" href="#create-task">2.1. Create Task</a></li>
+<li><a class="reference internal" href="#list-tasks">2.2. List Tasks</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#asyncagent">6.3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
+<li><a class="reference internal" href="#asyncagent">3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent"><code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent.create"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent.delete"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.delete()</span></code></a></li>
@@ -115,11 +116,11 @@
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-agent">6.3.1. Create Agent</a></li>
-<li><a class="reference internal" href="#list-agents">6.3.2. List Agents</a></li>
+<li><a class="reference internal" href="#create-agent">3.1. Create Agent</a></li>
+<li><a class="reference internal" href="#list-agents">3.2. List Agents</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#asyncteam">6.4. AsyncTeam</a><ul>
+<li><a class="reference internal" href="#asyncteam">4. AsyncTeam</a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam"><code class="docutils literal notranslate"><span class="pre">AsyncTeam</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam.create"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.delete()</span></code></a></li>
@@ -133,12 +134,12 @@
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#run-team">6.4.1. Run Team</a></li>
-<li><a class="reference internal" href="#list-teams">6.4.2. List Teams</a></li>
+<li><a class="reference internal" href="#run-team">4.1. Run Team</a></li>
+<li><a class="reference internal" href="#list-teams">4.2. List Teams</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-ai-agent-examples">6.5. Async AI agent examples</a><ul>
-<li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">6.5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+<li><a class="reference internal" href="#async-ai-agent-examples">5. Async AI agent examples</a><ul>
+<li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
 </ul>
 </li>
 </ul>
@@ -187,11 +188,11 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.2 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
 
           </li>
           <li class="nav-item nav-item-1"><a href="agent.html" accesskey="U"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></li>
                 <li class="right">
 
 
@@ -301,13 +302,29 @@
 </tbody>
 </table>
 <section id="asynctool">
-<h1><span class="section-number">6.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code><a class="headerlink" href="#asynctool" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code><a class="headerlink" href="#asynctool" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">AsyncTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agent.html#select_ai.agent.ToolAttributes" title="select_ai.agent.tool.ToolAttributes"><span class="pre">ToolAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.AsyncTool" title="Link to this definition">¶</a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.AsyncTool.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create an AI Tool in the database
+:param Optional[bool] enabled: Whether the tool should be enabled.</p>
+<blockquote>
+<div><p>Default: True</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>replace</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – Whether the tool should be replaced.
+Default: False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create_built_in_tool">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_built_in_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agent.html#select_ai.agent.ToolParams" title="select_ai.agent.tool.ToolParams"><span class="pre">ToolParams</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ToolType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_built_in_tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_built_in_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agent.html#select_ai.agent.ToolParams" title="select_ai.agent.tool.ToolParams"><span class="pre">ToolParams</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ToolType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_built_in_tool" title="Link to this definition">¶</a></dt>
 <dd><p>Register a built-in tool</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -318,6 +335,9 @@
 <li><p><strong>description</strong> (<em>str</em>) – Description of the tool</p></li>
 <li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace the existing tool.
 Default value is False</p></li>
+<li><p><strong>instruction</strong> (<em>str</em>) – A clear, concise statement that describes
+what the tool should accomplish and how to do it. This
+text is included in the prompt sent to the LLM.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -328,7 +348,7 @@ Default value is False</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create_email_notification_tool">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_email_notification_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smtp_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_email_notification_tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_email_notification_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smtp_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_email_notification_tool" title="Link to this definition">¶</a></dt>
 <dd><p>Register an email notification tool</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -339,8 +359,12 @@ Default value is False</p></li>
 <li><p><strong>sender</strong> (<em>str</em>) – The sender of the email</p></li>
 <li><p><strong>smtp_host</strong> (<em>str</em>) – The SMTP host of the email server</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
+<li><p><strong>subject</strong> (<em>str</em>) – Subject of the email.</p></li>
 <li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace the existing tool.
 Default value is False</p></li>
+<li><p><strong>instruction</strong> (<em>str</em>) – A clear, concise statement that describes
+what the tool should accomplish and how to do it. This
+text is included in the prompt sent to the LLM.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -351,7 +375,7 @@ Default value is False</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create_pl_sql_tool">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_pl_sql_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_pl_sql_tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_pl_sql_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_pl_sql_tool" title="Link to this definition">¶</a></dt>
 <dd><p>Create a custom tool to invoke PL/SQL procedure or function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -361,6 +385,9 @@ Default value is False</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
 <li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
 is False</p></li>
+<li><p><strong>instruction</strong> (<em>str</em>) – A clear, concise statement that describes
+what the tool should accomplish and how to do it. This
+text is included in the prompt sent to the LLM.</p></li>
 </ul>
 </dd>
 </dl>
@@ -368,7 +395,7 @@ is False</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create_rag_tool">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_rag_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_rag_tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_rag_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_rag_tool" title="Link to this definition">¶</a></dt>
 <dd><p>Register a RAG tool, which will use a VectorIndex linked AI Profile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -379,6 +406,9 @@ use for Vector Index based RAG</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
 <li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
 is False</p></li>
+<li><p><strong>instruction</strong> (<em>str</em>) – A clear, concise statement that describes
+what the tool should accomplish and how to do it. This
+text is included in the prompt sent to the LLM.</p></li>
 </ul>
 </dd>
 </dl>
@@ -386,17 +416,20 @@ is False</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create_slack_notification_tool">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_slack_notification_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slack_channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_slack_notification_tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_slack_notification_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_slack_notification_tool" title="Link to this definition">¶</a></dt>
 <dd><p>Register a Slack notification tool</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tool_name</strong> (<em>str</em>) – The name of the Slack notification tool</p></li>
 <li><p><strong>credential_name</strong> (<em>str</em>) – The name of the Slack credential</p></li>
-<li><p><strong>slack_channel</strong> (<em>str</em>) – The name of the Slack channel</p></li>
+<li><p><strong>channel</strong> (<em>str</em>) – The name of the Slack channel</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – The description of the Slack notification tool</p></li>
 <li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
 is False</p></li>
+<li><p><strong>instruction</strong> (<em>str</em>) – A clear, concise statement that describes
+what the tool should accomplish and how to do it. This
+text is included in the prompt sent to the LLM.</p></li>
 </ul>
 </dd>
 </dl>
@@ -404,7 +437,7 @@ is False</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create_sql_tool">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_sql_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_sql_tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_sql_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_sql_tool" title="Link to this definition">¶</a></dt>
 <dd><p>Register a SQL tool to perform natural language to SQL translation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -415,6 +448,9 @@ translation</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
 <li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace existing tool. Default value
 is False</p></li>
+<li><p><strong>instruction</strong> (<em>str</em>) – A clear, concise statement that describes
+what the tool should accomplish and how to do it. This
+text is included in the prompt sent to the LLM.</p></li>
 </ul>
 </dd>
 </dl>
@@ -422,7 +458,7 @@ is False</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTool.create_websearch_tool">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_websearch_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_websearch_tool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_websearch_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#select_ai.agent.AsyncTool" title="select_ai.agent.tool.AsyncTool"><span class="pre">AsyncTool</span></a></span></span><a class="headerlink" href="#select_ai.agent.AsyncTool.create_websearch_tool" title="Link to this definition">¶</a></dt>
 <dd><p>Register a built-in websearch tool to search information
 on the web</p>
 <dl class="field-list simple">
@@ -433,6 +469,9 @@ on the web</p>
 storing OpenAI credentials</p></li>
 <li><p><strong>description</strong> (<em>str</em>) – The description of the tool</p></li>
 <li><p><strong>replace</strong> (<em>bool</em>) – Whether to replace the existing tool</p></li>
+<li><p><strong>instruction</strong> (<em>str</em>) – A clear, concise statement that describes
+what the tool should accomplish and how to do it. This
+text is included in the prompt sent to the LLM.</p></li>
 </ul>
 </dd>
 </dl>
@@ -525,7 +564,7 @@ match. Default value is “.*” i.e. match all tool name.</p>
 </dd></dl>
 
 <section id="create-tool">
-<h2><span class="section-number">6.1.1. </span>Create Tool<a class="headerlink" href="#create-tool" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">1.1. </span>Create Tool<a class="headerlink" href="#create-tool" title="Link to this heading">¶</a></h2>
 <p>The following example shows async creation of an AI agent tool to perform
 natural language translation to SQL using an OCI AI profile</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
@@ -600,7 +639,7 @@ natural language translation to SQL using an OCI AI profile</p>
 </div>
 </section>
 <section id="list-tools">
-<h2><span class="section-number">6.1.2. </span>List Tools<a class="headerlink" href="#list-tools" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">1.2. </span>List Tools<a class="headerlink" href="#list-tools" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -629,7 +668,7 @@ natural language translation to SQL using an OCI AI profile</p>
 </section>
 </section>
 <section id="asynctask">
-<h1><span class="section-number">6.2. </span><code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code><a class="headerlink" href="#asynctask" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code><a class="headerlink" href="#asynctask" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTask">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">AsyncTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agent.html#select_ai.agent.TaskAttributes" title="select_ai.agent.task.TaskAttributes"><span class="pre">TaskAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.AsyncTask" title="Link to this definition">¶</a></dt>
@@ -761,7 +800,7 @@ can be specified by passing a TaskAttributes object</p>
 </dd></dl>
 
 <section id="create-task">
-<h2><span class="section-number">6.2.1. </span>Create Task<a class="headerlink" href="#create-task" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">2.1. </span>Create Task<a class="headerlink" href="#create-task" title="Link to this heading">¶</a></h2>
 <p>In the following task, we use the <code class="docutils literal notranslate"><span class="pre">MOVIE_SQL_TOOL</span></code> created in the
 previous step</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
@@ -810,7 +849,7 @@ previous step</p>
 </div>
 </section>
 <section id="list-tasks">
-<h2><span class="section-number">6.2.2. </span>List Tasks<a class="headerlink" href="#list-tasks" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">2.2. </span>List Tasks<a class="headerlink" href="#list-tasks" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -839,7 +878,7 @@ previous step</p>
 </section>
 </section>
 <section id="asyncagent">
-<h1><span class="section-number">6.3. </span><code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code><a class="headerlink" href="#asyncagent" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">3. </span><code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code><a class="headerlink" href="#asyncagent" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncAgent">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">AsyncAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agent.html#select_ai.agent.AgentAttributes" title="select_ai.agent.core.AgentAttributes"><span class="pre">AgentAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.AsyncAgent" title="Link to this definition">¶</a></dt>
@@ -962,7 +1001,7 @@ can be specified by passing an AgentAttributes object</p>
 </dd></dl>
 
 <section id="create-agent">
-<h2><span class="section-number">6.3.1. </span>Create Agent<a class="headerlink" href="#create-agent" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">3.1. </span>Create Agent<a class="headerlink" href="#create-agent" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1005,7 +1044,7 @@ can be specified by passing an AgentAttributes object</p>
 </div>
 </section>
 <section id="list-agents">
-<h2><span class="section-number">6.3.2. </span>List Agents<a class="headerlink" href="#list-agents" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">3.2. </span>List Agents<a class="headerlink" href="#list-agents" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1033,7 +1072,7 @@ can be specified by passing an AgentAttributes object</p>
 </section>
 </section>
 <section id="asyncteam">
-<h1><span class="section-number">6.4. </span>AsyncTeam<a class="headerlink" href="#asyncteam" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">4. </span>AsyncTeam<a class="headerlink" href="#asyncteam" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.agent.AsyncTeam">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.agent.</span></span><span class="sig-name descname"><span class="pre">AsyncTeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agent.html#select_ai.agent.TeamAttributes" title="select_ai.agent.team.TeamAttributes"><span class="pre">TeamAttributes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.agent.AsyncTeam" title="Link to this definition">¶</a></dt>
@@ -1182,7 +1221,7 @@ Currently, the following parameters are supported:</p>
 </dd></dl>
 
 <section id="run-team">
-<h2><span class="section-number">6.4.1. </span>Run Team<a class="headerlink" href="#run-team" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">4.1. </span>Run Team<a class="headerlink" href="#run-team" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
@@ -1242,7 +1281,7 @@ Currently, the following parameters are supported:</p>
 </div>
 </section>
 <section id="list-teams">
-<h2><span class="section-number">6.4.2. </span>List Teams<a class="headerlink" href="#list-teams" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">4.2. </span>List Teams<a class="headerlink" href="#list-teams" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1271,9 +1310,9 @@ Currently, the following parameters are supported:</p>
 </section>
 </section>
 <section id="async-ai-agent-examples">
-<h1><span class="section-number">6.5. </span>Async AI agent examples<a class="headerlink" href="#async-ai-agent-examples" title="Link to this heading">¶</a></h1>
+<h1><span class="section-number">5. </span>Async AI agent examples<a class="headerlink" href="#async-ai-agent-examples" title="Link to this heading">¶</a></h1>
 <section id="web-search-agent-using-openai-s-gpt-model">
-<h2><span class="section-number">6.5.1. </span>Web Search Agent using OpenAI’s GPT model<a class="headerlink" href="#web-search-agent-using-openai-s-gpt-model" title="Link to this heading">¶</a></h2>
+<h2><span class="section-number">5.1. </span>Web Search Agent using OpenAI’s GPT model<a class="headerlink" href="#web-search-agent-using-openai-s-gpt-model" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1444,8 +1483,9 @@ intelligence research and development. OpenAI focuses on creating and
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">6.1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool"><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.agent.AsyncTool.create"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.create_built_in_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_built_in_tool()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.create_email_notification_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_email_notification_tool()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.create_pl_sql_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_pl_sql_tool()</span></code></a></li>
@@ -1463,11 +1503,11 @@ intelligence research and development. OpenAI focuses on creating and
 <li><a class="reference internal" href="#select_ai.agent.AsyncTool.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTool.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-tool">6.1.1. Create Tool</a></li>
-<li><a class="reference internal" href="#list-tools">6.1.2. List Tools</a></li>
+<li><a class="reference internal" href="#create-tool">1.1. Create Tool</a></li>
+<li><a class="reference internal" href="#list-tools">1.2. List Tools</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#asynctask">6.2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
+<li><a class="reference internal" href="#asynctask">2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask"><code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask.create"><code class="docutils literal notranslate"><span class="pre">AsyncTask.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTask.delete()</span></code></a></li>
@@ -1480,11 +1520,11 @@ intelligence research and development. OpenAI focuses on creating and
 <li><a class="reference internal" href="#select_ai.agent.AsyncTask.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTask.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-task">6.2.1. Create Task</a></li>
-<li><a class="reference internal" href="#list-tasks">6.2.2. List Tasks</a></li>
+<li><a class="reference internal" href="#create-task">2.1. Create Task</a></li>
+<li><a class="reference internal" href="#list-tasks">2.2. List Tasks</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#asyncagent">6.3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
+<li><a class="reference internal" href="#asyncagent">3. <code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent"><code class="docutils literal notranslate"><span class="pre">AsyncAgent</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent.create"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent.delete"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.delete()</span></code></a></li>
@@ -1497,11 +1537,11 @@ intelligence research and development. OpenAI focuses on creating and
 <li><a class="reference internal" href="#select_ai.agent.AsyncAgent.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncAgent.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-agent">6.3.1. Create Agent</a></li>
-<li><a class="reference internal" href="#list-agents">6.3.2. List Agents</a></li>
+<li><a class="reference internal" href="#create-agent">3.1. Create Agent</a></li>
+<li><a class="reference internal" href="#list-agents">3.2. List Agents</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#asyncteam">6.4. AsyncTeam</a><ul>
+<li><a class="reference internal" href="#asyncteam">4. AsyncTeam</a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam"><code class="docutils literal notranslate"><span class="pre">AsyncTeam</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam.create"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.create()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.delete()</span></code></a></li>
@@ -1515,12 +1555,12 @@ intelligence research and development. OpenAI focuses on creating and
 <li><a class="reference internal" href="#select_ai.agent.AsyncTeam.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#run-team">6.4.1. Run Team</a></li>
-<li><a class="reference internal" href="#list-teams">6.4.2. List Teams</a></li>
+<li><a class="reference internal" href="#run-team">4.1. Run Team</a></li>
+<li><a class="reference internal" href="#list-teams">4.2. List Teams</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-ai-agent-examples">6.5. Async AI agent examples</a><ul>
-<li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">6.5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+<li><a class="reference internal" href="#async-ai-agent-examples">5. Async AI agent examples</a><ul>
+<li><a class="reference internal" href="#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
 </ul>
 </li>
 </ul>
@@ -1569,11 +1609,11 @@ intelligence research and development. OpenAI focuses on creating and
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.2.2 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
 
           </li>
           <li class="nav-item nav-item-1"><a href="agent.html" ><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Tool</span></code></a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></li>
                 <li class="right">
 
 
@@ -1598,7 +1638,7 @@ intelligence research and development. OpenAI focuses on creating and
       </ul>
     </div>
     <div class="footer">
-    &copy; Copyright 2025, Oracle and/or its affiliates. All rights reserved..
+    &copy; Copyright 2026, Oracle and/or its affiliates. All rights reserved..
     <br>
     This page is licensed under the Python Software Foundation License Version 2.
     <br>
