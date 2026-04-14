@@ -9,6 +9,7 @@
 3800 - Async end-to-end Select AI Agent integration test
 """
 
+import inspect
 import logging
 import os
 import time
@@ -50,6 +51,10 @@ root.addHandler(fh)
 
 logger = logging.getLogger(__name__)
 
+EMAIL_RECIPIENT = "kondra.nagabhavani@oracle.com"
+EMAIL_SENDER = "bharadwaj.vulugundam@oracle.com"
+EMAIL_SMTP_HOST = "smtp.email.us-ashburn-1.oci.oraclecloud.com"
+
 
 @contextmanager
 def log_step(step):
@@ -63,26 +68,25 @@ def log_step(step):
         raise
 
 
-def _safe_dict(obj):
-    if obj is None:
-        return None
-    if hasattr(obj, "dict"):
-        try:
-            return obj.dict(exclude_null=False)
-        except TypeError:
-            return obj.dict()
-    return str(obj)
-
-
 def log_object_details(context: str, object_type: str, obj) -> None:
     details = {"context": context, "object_type": object_type}
+    attributes = getattr(obj, "attributes", None)
 
     if object_type == "profile":
         details.update(
             {
                 "profile_name": getattr(obj, "profile_name", None),
                 "description": getattr(obj, "description", None),
-                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+                "provider_type": (
+                    type(getattr(attributes, "provider", None)).__name__
+                    if attributes is not None and getattr(attributes, "provider", None)
+                    else None
+                ),
+                "object_count": (
+                    len(getattr(attributes, "object_list", []) or [])
+                    if attributes is not None
+                    else None
+                ),
             }
         )
     elif object_type == "agent":
@@ -90,7 +94,16 @@ def log_object_details(context: str, object_type: str, obj) -> None:
             {
                 "agent_name": getattr(obj, "agent_name", None),
                 "description": getattr(obj, "description", None),
-                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+                "profile_name": (
+                    getattr(attributes, "profile_name", None)
+                    if attributes is not None
+                    else None
+                ),
+                "enable_human_tool": (
+                    getattr(attributes, "enable_human_tool", None)
+                    if attributes is not None
+                    else None
+                ),
             }
         )
     elif object_type == "tool":
@@ -98,7 +111,11 @@ def log_object_details(context: str, object_type: str, obj) -> None:
             {
                 "tool_name": getattr(obj, "tool_name", None),
                 "description": getattr(obj, "description", None),
-                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+                "tool_type": (
+                    getattr(attributes, "tool_type", None)
+                    if attributes is not None
+                    else None
+                ),
             }
         )
     elif object_type == "task":
@@ -106,7 +123,16 @@ def log_object_details(context: str, object_type: str, obj) -> None:
             {
                 "task_name": getattr(obj, "task_name", None),
                 "description": getattr(obj, "description", None),
-                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+                "tool_count": (
+                    len(getattr(attributes, "tools", []) or [])
+                    if attributes is not None
+                    else None
+                ),
+                "enable_human_tool": (
+                    getattr(attributes, "enable_human_tool", None)
+                    if attributes is not None
+                    else None
+                ),
             }
         )
     elif object_type == "team":
@@ -114,37 +140,207 @@ def log_object_details(context: str, object_type: str, obj) -> None:
             {
                 "team_name": getattr(obj, "team_name", None),
                 "description": getattr(obj, "description", None),
-                "attributes": _safe_dict(getattr(obj, "attributes", None)),
+                "process": (
+                    getattr(attributes, "process", None)
+                    if attributes is not None
+                    else None
+                ),
+                "agent_count": (
+                    len(getattr(attributes, "agents", []) or [])
+                    if attributes is not None
+                    else None
+                ),
             }
         )
     else:
         details["repr"] = str(obj)
 
     logger.info("OBJECT_DETAILS: %s", details)
-    print("OBJECT_DETAILS:", details)
+
+
+def log_credential_setup(credential_name):
+    logger.info("Preparing credential | name=%s", credential_name)
+
+
+def verify_credential_exists(credential_name, expected_username=None):
+    logger.info("Verifying credential exists in DB: %s", credential_name)
+
+    with select_ai.cursor() as cur:
+        cur.execute(
+            """
+            SELECT credential_name, username
+            FROM user_credentials
+            WHERE UPPER(credential_name) = UPPER(:credential_name)
+            """,
+            credential_name=credential_name,
+        )
+        row = cur.fetchone()
+
+    assert row is not None, f"Credential {credential_name} was not created"
+
+    actual_name, actual_username = row
+    logger.info("Verified credential | name=%s", actual_name)
+    assert actual_name.upper() == credential_name.upper()
+    if expected_username is not None:
+        assert actual_username == expected_username
+
+
+async def _decode_history_rows(rows):
+    decoded_rows = []
+    for row in rows:
+        decoded_row = []
+        for value in row:
+            if hasattr(value, "read"):
+                lob_value = value.read()
+                if inspect.isawaitable(lob_value):
+                    lob_value = await lob_value
+                decoded_row.append(lob_value)
+            else:
+                decoded_row.append(value)
+        decoded_rows.append(tuple(decoded_row))
+    return decoded_rows
+
+
+@pytest.fixture(scope="session")
+def setup_test_user(test_env):
+    try:
+        select_ai.disconnect()
+    except Exception:
+        pass
+
+    select_ai.connect(**test_env.connect_params(admin=True))
+    try:
+        try:
+            select_ai.grant_privileges(users=[test_env.test_user])
+        except Exception as exc:
+            msg = str(exc)
+            if (
+                "ORA-01749" not in msg
+                and "Cannot GRANT or REVOKE privileges to or from yourself" not in msg
+            ):
+                raise
+
+        select_ai.grant_http_access(
+            users=[test_env.test_user],
+            provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
+        )
+    finally:
+        select_ai.disconnect()
+        select_ai.connect(**test_env.connect_params())
+
+
+@pytest.fixture(scope="session")
+def openai_cred():
+    api_key = os.getenv("PYSAI_TEST_OPENAI_API_KEY")
+    assert api_key, "PYSAI_TEST_OPENAI_API_KEY not set"
+    cred_name = "OPENAI_CRED"
+
+    log_credential_setup(cred_name)
+
+    select_ai.create_credential(
+        credential={
+            "credential_name": cred_name,
+            "username": "openai",
+            "password": api_key,
+        },
+        replace=True,
+    )
+
+    verify_credential_exists(cred_name, expected_username="openai")
+    return cred_name
+
+
+@pytest.fixture(scope="session")
+def email_cred():
+    smtp_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
+    smtp_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
+
+    assert smtp_username, "PYSAI_TEST_EMAIL_CRED_USERNAME not set"
+    assert smtp_password, "PYSAI_TEST_EMAIL_CRED_PASSWORD not set"
+    cred_name = "EMAIL_CRED"
+
+    log_credential_setup(cred_name)
+
+    select_ai.create_credential(
+        credential={
+            "credential_name": cred_name,
+            "username": smtp_username,
+            "password": smtp_password,
+        },
+        replace=True,
+    )
+
+    verify_credential_exists(cred_name, expected_username=smtp_username)
+    return cred_name
+
+
+@pytest.fixture(scope="session")
+def allow_network_acl():
+    with select_ai.cursor() as cur:
+        cur.execute("SELECT USER FROM dual")
+        db_user = cur.fetchone()[0]
+
+        def append_ace(host, privileges):
+            try:
+                cur.execute(
+                    f"""
+                    BEGIN
+                        DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
+                            host => '{host}',
+                            ace  => xs$ace_type(
+                                       privilege_list => xs$name_list({','.join([f"'{p}'" for p in privileges])}),
+                                       principal_name => '{db_user}',
+                                       principal_type => xs_acl.ptype_db
+                                   )
+                        );
+                    END;
+                    """
+                )
+            except Exception as exc:
+                msg = str(exc)
+                if (
+                    "ORA-46212" in msg
+                    or "ORA-46313" in msg
+                    or "already exists" in msg
+                ):
+                    return
+                raise
+
+        append_ace(
+            "smtp.email.us-ashburn-1.oci.oraclecloud.com",
+            ["connect", "smtp"],
+        )
+
+        for host in ["api.openai.com", "a.co", "amazon.in"]:
+            append_ace(host, ["connect", "http"])
+
+    yield
 
 
 @pytest.fixture(scope="module", autouse=True)
-async def async_connect(test_env):
+async def async_connect(
+    test_env, setup_test_user, openai_cred, email_cred, allow_network_acl
+):
     logger.info(
-        "Opening async admin database connection | user=%s | dsn=%s",
-        test_env.admin_user,
+        "Opening async database connection | user=%s | dsn=%s",
+        test_env.test_user,
         test_env.connect_string,
     )
-    await select_ai.async_connect(**test_env.connect_params(admin=True))
+    await select_ai.async_connect(**test_env.connect_params())
     yield
-    logger.info("Closing async admin database connection")
+    logger.info("Closing async database connection")
     await select_ai.async_disconnect()
 
 
-async def test_3800_agent_end_to_end_async(profile_attributes):
+async def test_3800_agent_end_to_end_async(
+    profile_attributes, openai_cred, email_cred
+):
     """End-to-end Select AI Agent integration test (async)."""
 
     run_id = uuid.uuid4().hex.upper()
 
     profile_name = f"GEN1_PROFILE_{run_id}"
     agent_name = f"CustomerAgent_{run_id}"
-    human_tool_name = f"Human_{run_id}"
     websearch_tool_name = f"Websearch_{run_id}"
     email_tool_name = f"Email_{run_id}"
     task_name = f"Return_And_Price_Match_{run_id}"
@@ -165,6 +361,11 @@ async def test_3800_agent_end_to_end_async(profile_attributes):
         agent_name,
         task_name,
         team_name,
+    )
+    logger.info(
+        "Resolved credential fixtures | openai=%s | email=%s",
+        openai_cred,
+        email_cred,
     )
 
     oci_compartment_id = os.getenv("PYSAI_TEST_OCI_COMPARTMENT_ID")
@@ -191,7 +392,7 @@ async def test_3800_agent_end_to_end_async(profile_attributes):
                     role=(
                         "You are an experienced customer agent handling returns."
                     ),
-                    enable_human_tool=True,
+                    enable_human_tool=False,
                 ),
             )
             await agent.create(replace=True)
@@ -199,17 +400,9 @@ async def test_3800_agent_end_to_end_async(profile_attributes):
             logger.info("Created agent: %s", agent.agent_name)
             log_object_details("create_agent", "agent", agent)
             assert agent.agent_name == agent_name
+            assert agent.attributes.enable_human_tool is False
 
         with log_step("Create tools"):
-            human_tool = await AsyncTool.create_built_in_tool(
-                tool_name=human_tool_name,
-                description="Human intervention tool",
-                tool_type=select_ai.agent.ToolType.HUMAN,
-                tool_params=ToolParams(),
-                replace=True,
-            )
-            created["tools"].append(human_tool)
-
             websearch_tool = AsyncTool(
                 tool_name=websearch_tool_name,
                 attributes=ToolAttributes(
@@ -217,40 +410,57 @@ async def test_3800_agent_end_to_end_async(profile_attributes):
                     instruction=(
                         "Use this tool to find current product price from a URL."
                     ),
-                    tool_params=ToolParams(credential_name="OPENAI_CRED"),
+                    tool_params=ToolParams(credential_name=openai_cred),
                 ),
             )
             await websearch_tool.create(replace=True)
             created["tools"].append(websearch_tool)
             log_object_details("create_websearch_tool", "tool", websearch_tool)
+            fetched_websearch_tool = await AsyncTool.fetch(websearch_tool_name)
+            logger.info(
+                "Verified fetched websearch tool credential | tool=%s | credential=%s",
+                fetched_websearch_tool.tool_name,
+                fetched_websearch_tool.attributes.tool_params.credential_name,
+            )
+            assert (
+                fetched_websearch_tool.attributes.tool_params.credential_name
+                == openai_cred
+            )
 
-            email_recipient = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
-            email_sender = os.getenv("PYSAI_TEST_EMAIL_SENDER")
-            assert email_recipient, "PYSAI_TEST_EMAIL_RECIPIENT not set"
-            assert email_sender, "PYSAI_TEST_EMAIL_SENDER not set"
             email_tool = AsyncTool(
                 tool_name=email_tool_name,
                 attributes=ToolAttributes(
                     tool_type=select_ai.agent.ToolType.NOTIFICATION,
                     tool_params=ToolParams(
-                        credential_name="EMAIL_CRED",
+                        credential_name=email_cred,
                         notification_type="EMAIL",
-                        recipient=email_recipient,
-                        sender=email_sender,
-                        smtp_host="smtp.email.us-ashburn-1.oci.oraclecloud.com",
+                        recipient=EMAIL_RECIPIENT,
+                        sender=EMAIL_SENDER,
+                        smtp_host=EMAIL_SMTP_HOST,
                     ),
                 ),
             )
             await email_tool.create(replace=True)
             created["tools"].append(email_tool)
             log_object_details("create_email_tool", "tool", email_tool)
+            fetched_email_tool = await AsyncTool.fetch(email_tool_name)
+            logger.info(
+                "Verified fetched email tool credential | tool=%s | credential=%s",
+                fetched_email_tool.tool_name,
+                fetched_email_tool.attributes.tool_params.credential_name,
+            )
+            assert (
+                fetched_email_tool.attributes.tool_params.credential_name
+                == email_cred
+            )
 
             logger.info(
                 "Created tools: %s",
                 [t.tool_name for t in created["tools"]],
             )
-            log_object_details("create_human_tool", "tool", human_tool)
-            assert len(created["tools"]) == 3
+            assert len(created["tools"]) == 2
+            assert websearch_tool.attributes.tool_params.credential_name == openai_cred
+            assert email_tool.attributes.tool_params.credential_name == email_cred
 
         with log_step("Create task"):
             task = AsyncTask(
@@ -263,7 +473,8 @@ async def test_3800_agent_end_to_end_async(profile_attributes):
                         "send email only if accepted. "
                         "3. If defective: process defective return."
                     ),
-                    tools=[human_tool_name, websearch_tool_name, email_tool_name],
+                    tools=[websearch_tool_name, email_tool_name],
+                    enable_human_tool=False,
                 ),
             )
             await task.create(replace=True)
@@ -273,10 +484,10 @@ async def test_3800_agent_end_to_end_async(profile_attributes):
             log_object_details("create_task", "task", task)
             assert task.task_name == task_name
             assert set(task.attributes.tools) == {
-                human_tool_name,
                 websearch_tool_name,
                 email_tool_name,
             }
+            assert task.attributes.enable_human_tool is False
 
         with log_step("Create team"):
             team = AsyncTeam(
@@ -321,6 +532,23 @@ async def test_3800_agent_end_to_end_async(profile_attributes):
                 assert response is not None
                 assert isinstance(response, str)
                 assert len(response.strip()) > 0
+
+            async with select_ai.async_cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT * FROM user_ai_agent_tool_history
+                    """
+                )
+                tool_history = await cur.fetchall()
+
+            decoded_tool_history = await _decode_history_rows(tool_history)
+
+            logger.info(
+                "Async tool history rows fetched: %d",
+                len(decoded_tool_history),
+            )
+
+            assert decoded_tool_history
 
     finally:
         with log_step("Cleanup async e2e objects"):

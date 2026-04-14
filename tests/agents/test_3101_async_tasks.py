@@ -21,7 +21,7 @@ from select_ai.agent import AsyncTask, TaskAttributes
 pytestmark = pytest.mark.anyio
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3100_async_tasks.log")
+LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3101_async_tasks.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 root = logging.getLogger()

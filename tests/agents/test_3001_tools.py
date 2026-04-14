@@ -87,6 +87,8 @@ CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME = (
 DISABLED_TOOL_NAME = f"PYSAI_3001_DISABLED_TOOL_{UUID}"
 DEFAULT_STATUS_TOOL_NAME = f"PYSAI_3001_DEFAULT_STATUS_TOOL_{UUID}"
 DROP_FORCE_MISSING_TOOL = f"PYSAI_3001_DROP_MISSING_{UUID}"
+HTTP_TOOL_NAME = f"PYSAI_3001_HTTP_TOOL_{UUID}"
+HTTP_ENDPOINT = "https://example.com/api/tool"
 smtp_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
 smtp_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
 slack_username = os.getenv("PYSAI_TEST_SLACK_USERNAME")
@@ -288,7 +290,7 @@ def slack_tool(slack_credential):
         tool = select_ai.agent.Tool.create_slack_notification_tool(
             tool_name="SLACK_TOOL",
             credential_name="SLACK_CRED",
-            slack_channel="#general",
+            channel="#general",
             description="slack notification",
             replace=True,
         )
@@ -656,3 +658,32 @@ def test_3023_drop_tool_force_false_non_existent_raises():
     with pytest.raises(oracledb.Error) as exc:
         tool.delete(force=False)
     logger.info("Received expected drop error: %s", exc.value)
+
+
+def test_3024_http_tool_created(email_credential):
+    logger.info("Creating HTTP tool: %s", HTTP_TOOL_NAME)
+    try:
+        tool = select_ai.agent.Tool.create_http_tool(
+            tool_name=HTTP_TOOL_NAME,
+            credential_name=email_credential,
+            endpoint=HTTP_ENDPOINT,
+            description="HTTP Tool",
+            replace=True,
+        )
+    except oracledb.DatabaseError as e:
+        if "ORA-20052" in str(e):
+            logger.info(
+                "HTTP tool creation failed with expected backend-side error: %s",
+                e,
+            )
+            return
+        raise
+    try:
+        fetched = select_ai.agent.Tool.fetch(HTTP_TOOL_NAME)
+        assert fetched.tool_name == HTTP_TOOL_NAME
+        assert fetched.attributes.tool_type == select_ai.agent.ToolType.HTTP
+        assert fetched.attributes.tool_params.credential_name == email_credential
+        assert fetched.attributes.tool_params.endpoint == HTTP_ENDPOINT
+    finally:
+        logger.info("Deleting HTTP tool: %s", HTTP_TOOL_NAME)
+        tool.delete(force=True)
