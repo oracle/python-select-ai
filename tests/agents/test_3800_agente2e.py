@@ -48,9 +48,9 @@ root.addHandler(fh)
 
 logger = logging.getLogger()
 
-EMAIL_RECIPIENT = "kondra.nagabhavani@oracle.com"
-EMAIL_SENDER = "bharadwaj.vulugundam@oracle.com"
-EMAIL_SMTP_HOST = "smtp.email.us-ashburn-1.oci.oraclecloud.com"
+EMAIL_RECIPIENT = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
+EMAIL_SENDER = os.getenv("PYSAI_TEST_EMAIL_SENDER")
+EMAIL_SMTP_HOST = os.getenv("PYSAI_TEST_EMAIL_SMTPHOST")
 
 
 @contextmanager
@@ -300,10 +300,7 @@ def allow_network_acl():
                     return
                 raise
 
-        append_ace(
-            "smtp.email.us-ashburn-1.oci.oraclecloud.com",
-            ["connect", "smtp"],
-        )
+        append_ace(EMAIL_SMTP_HOST, ["connect", "smtp"])
 
         for host in ["api.openai.com", "a.co","amazon.in"]:
             append_ace(host, ["connect", "http"])

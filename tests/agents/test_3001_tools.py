@@ -89,6 +89,9 @@ DEFAULT_STATUS_TOOL_NAME = f"PYSAI_3001_DEFAULT_STATUS_TOOL_{UUID}"
 DROP_FORCE_MISSING_TOOL = f"PYSAI_3001_DROP_MISSING_{UUID}"
 HTTP_TOOL_NAME = f"PYSAI_3001_HTTP_TOOL_{UUID}"
 HTTP_ENDPOINT = "https://example.com/api/tool"
+EMAIL_RECIPIENT = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
+EMAIL_SENDER = os.getenv("PYSAI_TEST_EMAIL_SENDER")
+EMAIL_SMTP_HOST = os.getenv("PYSAI_TEST_EMAIL_SMTPHOST")
 smtp_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
 smtp_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
 slack_username = os.getenv("PYSAI_TEST_SLACK_USERNAME")
@@ -272,9 +275,9 @@ def email_tool(email_credential):
     tool = select_ai.agent.Tool.create_email_notification_tool(
         tool_name="EMAIL_TOOL",
         credential_name="EMAIL_CRED",
-        recipient="kondra.nagabhavani@oracle.com",
-        sender="bharadwaj.vulugundam@oracle.com",
-        smtp_host="smtp.email.us-ashburn-1.oci.oraclecloud.com",
+        recipient=EMAIL_RECIPIENT,
+        sender=EMAIL_SENDER,
+        smtp_host=EMAIL_SMTP_HOST,
         description="Send email",
         replace=True,
     )

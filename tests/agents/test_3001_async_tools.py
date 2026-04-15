@@ -71,6 +71,9 @@ NEG_PLSQL_TOOL_NAME = f"PYSAI_3001_NEG_PLSQL_TOOL_{UUID}"
 EMAIL_CRED_NAME = f"PYSAI_3001_EMAIL_CRED_{UUID}"
 SLACK_CRED_NAME = f"PYSAI_3001_SLACK_CRED_{UUID}"
 
+EMAIL_RECIPIENT = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
+EMAIL_SENDER = os.getenv("PYSAI_TEST_EMAIL_SENDER")
+EMAIL_SMTP_HOST = os.getenv("PYSAI_TEST_EMAIL_SMTPHOST")
 SMTP_USERNAME = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
 SMTP_PASSWORD = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
 SLACK_USERNAME = os.getenv("PYSAI_TEST_SLACK_USERNAME")
@@ -303,9 +306,9 @@ async def email_tool(email_credential):
     tool = await AsyncTool.create_email_notification_tool(
         tool_name=EMAIL_TOOL_NAME,
         credential_name=EMAIL_CRED_NAME,
-        recipient="kondra.nagabhavani@oracle.com",
-        sender="bharadwaj.vulugundam@oracle.com",
-        smtp_host="smtp.email.us-ashburn-1.oci.oraclecloud.com",
+        recipient=EMAIL_RECIPIENT,
+        sender=EMAIL_SENDER,
+        smtp_host=EMAIL_SMTP_HOST,
         description="Send email",
         replace=True,
     )

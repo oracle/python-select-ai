@@ -22,9 +22,9 @@ root_logger.addHandler(file_handler)
 
 logger = logging.getLogger(__name__)
 
-EMAIL_RECIPIENT = "kondra.nagabhavani@oracle.com"
-EMAIL_SENDER = "bharadwaj.vulugundam@oracle.com"
-EMAIL_SMTP_HOST = "smtp.email.us-ashburn-1.oci.oraclecloud.com"
+EMAIL_RECIPIENT = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
+EMAIL_SENDER = os.getenv("PYSAI_TEST_EMAIL_SENDER")
+EMAIL_SMTP_HOST = os.getenv("PYSAI_TEST_EMAIL_SMTPHOST")
 
 
 @pytest.fixture(autouse=True)
@@ -274,12 +274,9 @@ def create_sql_team():
         oci_private_key = os.getenv("PYSAI_TEST_OCI_PRIVATE_KEY")
         oci_fingerprint = os.getenv("PYSAI_TEST_OCI_FINGERPRINT")
         oci_compartment_id = os.getenv("PYSAI_TEST_OCI_COMPARTMENT_ID")
-        oci_region = os.getenv("PYSAI_TEST_OCI_REGION", "us-chicago-1")
-        oci_apiformat = os.getenv("PYSAI_TEST_OCI_APIFORMAT", "GENERIC")
-        oci_model = os.getenv(
-            "PYSAI_TEST_OCI_MODEL",
-            "meta.llama-4-maverick-17b-128e-instruct-fp8",
-        )
+        oci_region = "us-chicago-1"
+        oci_apiformat = "GENERIC"
+        oci_model = "meta.llama-4-maverick-17b-128e-instruct-fp8"
 
         assert oci_user_ocid, "PYSAI_TEST_OCI_USER_OCID not set"
         assert oci_tenancy_ocid, "PYSAI_TEST_OCI_TENANCY_OCID not set"
