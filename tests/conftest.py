@@ -149,12 +149,14 @@ def connect(test_env):
 
 @pytest.fixture
 def connection():
-    return select_ai.db.get_connection()
+    with select_ai.db.get_connection() as conn:
+        yield conn
 
 
 @pytest.fixture
-def async_connection():
-    return select_ai.db.async_get_connection()
+async def async_connection():
+    async with select_ai.db.async_get_connection() as conn:
+        yield conn
 
 
 @pytest.fixture(scope="module")
