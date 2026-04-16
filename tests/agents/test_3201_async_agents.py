@@ -22,7 +22,7 @@ from select_ai.errors import AgentNotFoundError
 pytestmark = pytest.mark.anyio
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3200_async_agents.log")
+LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3201_async_agents.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 root = logging.getLogger()
