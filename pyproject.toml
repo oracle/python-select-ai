@@ -77,3 +77,7 @@ minversion = "8.3.0"
 testpaths = [
     "tests"
 ]
+markers = [
+    "unit: fast offline unit tests",
+    "provider: manual live provider smoke tests",
+]

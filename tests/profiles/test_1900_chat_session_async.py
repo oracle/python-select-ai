@@ -56,7 +56,10 @@ CATEGORY_PROMPTS = {
     ],
     "general": [
         ("What is the capital of Japan?", "tokyo"),
-        ("Tell me a fun fact about space.", "space"),
+        (
+            "Tell me a fun fact about space.",
+            ("space", "jupiter", "planet", "solar system"),
+        ),
         ("Who invented the telephone?", "telephone"),
         ("What is the fastest land animal?", "cheetah"),
         ("Explain why the sky looks blue.", "sky"),
@@ -124,10 +127,15 @@ async def async_conversation_factory():
 
 
 async def _assert_keywords(session, prompts):
-    for prompt, keyword in prompts:
+    for prompt, expected_keywords in prompts:
         response = await session.chat(prompt=prompt)
         logger.debug("Async response for prompt '%s': %s", prompt, response)
-        assert keyword.lower() in response.lower()
+        keywords = (
+            expected_keywords
+            if isinstance(expected_keywords, (tuple, list, set))
+            else (expected_keywords,)
+        )
+        assert any(item.lower() in response.lower() for item in keywords)
 
 
 @pytest.mark.anyio

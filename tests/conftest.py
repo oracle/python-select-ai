@@ -33,6 +33,38 @@ import select_ai
 
 PYSAI_TEST_USER = "PYSAI_TEST_USER"
 PYSAI_OCI_CREDENTIAL_NAME = f"PYSAI_OCI_CREDENTIAL_{uuid.uuid4().hex.upper()}"
+_BASIC_SCHEMA_PRIVILEGES = (
+    "CREATE SESSION",
+    "CREATE TABLE",
+    "CREATE PROCEDURE",
+    "UNLIMITED TABLESPACE",
+)
+
+
+def _ensure_test_user_exists(username: str, password: str):
+    username_upper = username.upper()
+    with select_ai.cursor() as cr:
+        cr.execute(
+            "SELECT 1 FROM dba_users WHERE username = :username",
+            username=username_upper,
+        )
+        if cr.fetchone():
+            return
+        escaped_password = password.replace('"', '""')
+        cr.execute(
+            f'CREATE USER {username_upper} IDENTIFIED BY "{escaped_password}"'
+        )
+    with select_ai.db.get_connection() as conn:
+        conn.commit()
+
+
+def _grant_basic_schema_privileges(username: str):
+    username_upper = username.upper()
+    with select_ai.cursor() as cr:
+        for privilege in _BASIC_SCHEMA_PRIVILEGES:
+            cr.execute(f"GRANT {privilege} TO {username_upper}")
+    with select_ai.db.get_connection() as conn:
+        conn.commit()
 
 
 def get_env_value(name, default_value=None, required=False):

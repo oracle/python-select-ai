@@ -57,9 +57,11 @@ def log_test_case(request, configure_module_logging):
 
 
 @pytest.fixture(scope="module")
-def provider():
+def provider(oci_compartment_id):
     return select_ai.OCIGenAIProvider(
-        region="us-phoenix-1", oci_apiformat="GENERIC"
+        region="us-phoenix-1",
+        oci_apiformat="GENERIC",
+        oci_compartment_id=oci_compartment_id,
     )
 
 
@@ -76,5 +78,7 @@ def profile_attributes(provider, oci_credential):
 def min_profile_attributes(provider, oci_credential):
     return select_ai.ProfileAttributes(
         credential_name=oci_credential["credential_name"],
-        provider=select_ai.OCIGenAIProvider(),
+        provider=select_ai.OCIGenAIProvider(
+            oci_compartment_id=provider.oci_compartment_id
+        ),
     )
