@@ -34,6 +34,10 @@ import uuid
 import oracledb
 import pytest
 import select_ai
+from select_ai.sql import (
+    ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
+    GRANT_PRIVILEGES_TO_USER,
+)
 
 PYSAI_TEST_USER = "PYSAI_TEST_USER"
 PYSAI_OCI_CREDENTIAL_NAME = f"PYSAI_OCI_CREDENTIAL_{uuid.uuid4().hex.upper()}"
@@ -44,30 +48,45 @@ _BASIC_SCHEMA_PRIVILEGES = (
 )
 
 
-def _ensure_test_user_exists(username: str, password: str):
+def _ensure_test_user_exists(cur, username: str, password: str):
     username_upper = username.upper()
-    with select_ai.cursor() as cr:
-        cr.execute(
-            "SELECT 1 FROM dba_users WHERE username = :username",
-            username=username_upper,
-        )
-        if cr.fetchone():
-            return
-        escaped_password = password.replace('"', '""')
-        cr.execute(
-            f'CREATE USER {username_upper} IDENTIFIED BY "{escaped_password}"'
-        )
-    with select_ai.db.get_connection() as conn:
-        conn.commit()
+    cur.execute(
+        "SELECT 1 FROM dba_users WHERE username = :username",
+        username=username_upper,
+    )
+    if cur.fetchone():
+        return
+    escaped_password = password.replace('"', '""')
+    cur.execute(
+        f'CREATE USER {username_upper} IDENTIFIED BY "{escaped_password}"'
+    )
 
 
-def _grant_basic_schema_privileges(username: str):
+def _grant_basic_schema_privileges(cur, username: str):
     username_upper = username.upper()
-    with select_ai.cursor() as cr:
-        for privilege in _BASIC_SCHEMA_PRIVILEGES:
-            cr.execute(f"GRANT {privilege} TO {username_upper}")
-    with select_ai.db.get_connection() as conn:
-        conn.commit()
+    for privilege in _BASIC_SCHEMA_PRIVILEGES:
+        cur.execute(f"GRANT {privilege} TO {username_upper}")
+
+
+def _grant_select_ai_privileges(cur, username: str):
+    try:
+        cur.execute(GRANT_PRIVILEGES_TO_USER.format(username.strip()))
+    except Exception as exc:
+        msg = str(exc)
+        if (
+            "ORA-01749" not in msg
+            and "Cannot GRANT or REVOKE privileges to or from yourself"
+            not in msg
+        ):
+            raise
+
+
+def _grant_http_access(cur, username: str, provider_endpoint: str):
+    cur.execute(
+        ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
+        user=username,
+        host=provider_endpoint,
+    )
 
 
 def _append_host_ace(cur, host: str, privileges, username: str):
@@ -158,18 +177,24 @@ def test_env(pytestconfig):
 
 @pytest.fixture(autouse=True, scope="session")
 def setup_test_user(test_env):
-    select_ai.connect(**test_env.connect_params(admin=True))
-    _ensure_test_user_exists(
-        username=test_env.test_user,
-        password=test_env.test_user_password,
-    )
-    _grant_basic_schema_privileges(username=test_env.test_user)
-    select_ai.grant_privileges(users=[test_env.test_user])
-    select_ai.grant_http_access(
-        users=[test_env.test_user],
-        provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
-    )
-    select_ai.disconnect()
+    with oracledb.connect(**test_env.connect_params(admin=True)) as conn:
+        cur = conn.cursor()
+        try:
+            _ensure_test_user_exists(
+                cur,
+                username=test_env.test_user,
+                password=test_env.test_user_password,
+            )
+            _grant_basic_schema_privileges(cur, username=test_env.test_user)
+            _grant_select_ai_privileges(cur, username=test_env.test_user)
+            _grant_http_access(
+                cur,
+                username=test_env.test_user,
+                provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
+            )
+            conn.commit()
+        finally:
+            cur.close()
 
 
 @pytest.fixture(autouse=True, scope="module")

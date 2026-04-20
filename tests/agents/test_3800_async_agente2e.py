@@ -206,34 +206,6 @@ async def _decode_history_rows(rows):
     return decoded_rows
 
 
-@pytest.fixture(scope="session")
-def setup_test_user(test_env):
-    try:
-        select_ai.disconnect()
-    except Exception:
-        pass
-
-    select_ai.connect(**test_env.connect_params(admin=True))
-    try:
-        try:
-            select_ai.grant_privileges(users=[test_env.test_user])
-        except Exception as exc:
-            msg = str(exc)
-            if (
-                "ORA-01749" not in msg
-                and "Cannot GRANT or REVOKE privileges to or from yourself"
-                not in msg
-            ):
-                raise
-
-        select_ai.grant_http_access(
-            users=[test_env.test_user],
-            provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
-        )
-    finally:
-        select_ai.disconnect()
-
-
 @pytest.fixture(scope="module")
 def openai_cred(connect):
     api_key = os.getenv("PYSAI_TEST_OPENAI_API_KEY")
