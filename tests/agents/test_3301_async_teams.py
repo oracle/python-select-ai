@@ -32,7 +32,9 @@ pytestmark = pytest.mark.anyio
 # Logging
 # -----------------------------------------------------------------------------
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_DIR = os.path.join(PROJECT_ROOT, "log")
 os.makedirs(LOG_DIR, exist_ok=True)
 LOG_FILE = os.path.join(LOG_DIR, "tkex_test_3301_async_teams.log")
@@ -54,6 +56,7 @@ logger.setLevel(logging.INFO)
 # Per-test logging + async connection
 # -----------------------------------------------------------------------------
 
+
 @pytest.fixture(autouse=True)
 def log_test_name(request):
     logger.info("--- Starting test: %s ---", request.function.__name__)
@@ -61,18 +64,10 @@ def log_test_name(request):
     logger.info("--- Finished test: %s ---", request.function.__name__)
 
 
-@pytest.fixture(scope="module", autouse=True)
-async def async_connect(test_env):
-    logger.info("Opening async database connection")
-    await select_ai.async_connect(**test_env.connect_params())
-    yield
-    logger.info("Closing async database connection")
-    await select_ai.async_disconnect()
-
-
 # -----------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------
+
 
 async def expect_async_error(expected_code, coro_fn):
     """
@@ -151,6 +146,7 @@ PYSAI_TEAM_DESC = "PYSAI ASYNC TEAM FINAL CONTRACT TEST"
 # -----------------------------------------------------------------------------
 # Fixtures
 # -----------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="module")
 async def python_gen_ai_profile(profile_attributes):
@@ -238,6 +234,7 @@ async def team(team_attributes):
 # Tests
 # -----------------------------------------------------------------------------
 
+
 async def test_3300_create_and_identity(team, team_attributes):
     log_team_details("test_3300_create_and_identity", team)
     assert team.team_name == PYSAI_TEAM_NAME
@@ -248,7 +245,11 @@ async def test_3300_create_and_identity(team, team_attributes):
 @pytest.mark.parametrize("pattern", [None, ".*", "^PYSAI_TEAM_"])
 async def test_3301_list(pattern):
     logger.info("Listing teams using pattern: %s", pattern)
-    teams = [t async for t in AsyncTeam.list(pattern)] if pattern else [t async for t in AsyncTeam.list()]
+    teams = (
+        [t async for t in AsyncTeam.list(pattern)]
+        if pattern
+        else [t async for t in AsyncTeam.list()]
+    )
     for t in teams:
         if t.team_name == PYSAI_TEAM_NAME:
             log_team_details("test_3301_list", t)
@@ -316,15 +317,21 @@ async def test_3308_fetch_non_existing():
 
 
 async def test_3311_set_attribute_invalid_key(team):
-    await expect_async_error("ORA-20053", lambda: team.set_attribute("no_such_attr", "x"))
+    await expect_async_error(
+        "ORA-20053", lambda: team.set_attribute("no_such_attr", "x")
+    )
 
 
 async def test_3312_set_attribute_none(team):
-    await expect_async_error("ORA-20053", lambda: team.set_attribute("process", None))
+    await expect_async_error(
+        "ORA-20053", lambda: team.set_attribute("process", None)
+    )
 
 
 async def test_3313_set_attribute_empty(team):
-    await expect_async_error("ORA-20053", lambda: team.set_attribute("process", ""))
+    await expect_async_error(
+        "ORA-20053", lambda: team.set_attribute("process", "")
+    )
 
 
 async def test_3314_set_attribute_invalid_value(team):
@@ -355,7 +362,9 @@ async def test_3317_set_attribute_after_delete(team_attributes):
     t = AsyncTeam(name, team_attributes, "TMP")
     await t.create()
     await t.delete(force=True)
-    await expect_async_error("ORA-20053", lambda: t.set_attribute("process", "sequential"))
+    await expect_async_error(
+        "ORA-20053", lambda: t.set_attribute("process", "sequential")
+    )
 
 
 async def test_3318_double_delete(team_attributes):
@@ -384,10 +393,10 @@ async def test_3320_fetch_after_delete(team_attributes):
     await t.delete(force=True)
     await expect_async_error("NOT_FOUND", lambda: AsyncTeam.fetch(name))
 
+
 async def test_3321_double_delete(team_attributes):
     name = f"TMP_{uuid.uuid4().hex.upper()}"
     t = AsyncTeam(name, team_attributes, "TMP")
     await t.create()
     await t.delete(force=True)
     await expect_async_error("ORA-20053", lambda: t.delete(force=False))
-

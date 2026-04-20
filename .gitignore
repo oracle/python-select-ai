@@ -1,5 +1,6 @@
 my_examples
 logs/
+log/
 .idea
 .env
 .venv

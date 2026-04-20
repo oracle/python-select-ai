@@ -21,7 +21,9 @@ from select_ai.errors import AgentNotFoundError
 
 pytestmark = pytest.mark.anyio
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3201_async_agents.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
@@ -52,22 +54,15 @@ def log_test_name(request):
     logger.info("--- Finished test: %s ---", request.function.__name__)
 
 
-@pytest.fixture(scope="module", autouse=True)
-async def async_connect(test_env):
-    logger.info("Opening async database connection")
-    await select_ai.async_connect(**test_env.connect_params())
-    yield
-    logger.info("Closing async database connection")
-    await select_ai.async_disconnect()
-
-
 def log_agent_details(context: str, agent) -> None:
     attrs = getattr(agent, "attributes", None)
     details = {
         "context": context,
         "agent_name": getattr(agent, "agent_name", None),
         "description": getattr(agent, "description", None),
-        "profile_name": getattr(attrs, "profile_name", None) if attrs else None,
+        "profile_name": (
+            getattr(attrs, "profile_name", None) if attrs else None
+        ),
         "role": getattr(attrs, "role", None) if attrs else None,
         "enable_human_tool": (
             getattr(attrs, "enable_human_tool", None) if attrs else None
@@ -164,12 +159,15 @@ async def test_3200_identity(agent, agent_attributes):
     assert agent.attributes.enable_human_tool is False
 
 
-@pytest.mark.parametrize("agent_name_pattern", [None, ".*", "^PYSAI_3200_AGENT_"])
+@pytest.mark.parametrize(
+    "agent_name_pattern", [None, ".*", "^PYSAI_3200_AGENT_"]
+)
 async def test_3201_list(agent_name_pattern):
     logger.info("Listing agents with pattern=%s", agent_name_pattern)
     if agent_name_pattern:
         agents = [
-            a async for a in select_ai.agent.AsyncAgent.list(agent_name_pattern)
+            a
+            async for a in select_ai.agent.AsyncAgent.list(agent_name_pattern)
         ]
     else:
         agents = [a async for a in select_ai.agent.AsyncAgent.list()]
@@ -212,13 +210,17 @@ async def test_3204_create_agent_default_status_enabled(agent_attributes):
     try:
         await assert_agent_status(name, "ENABLED")
         fetched = await AsyncAgent.fetch(name)
-        log_agent_details("test_3204_create_agent_default_status_enabled", fetched)
+        log_agent_details(
+            "test_3204_create_agent_default_status_enabled", fetched
+        )
         assert fetched.description == "Default enabled status"
     finally:
         await a.delete(force=True)
 
 
-async def test_3205_create_agent_with_enabled_false_sets_disabled(agent_attributes):
+async def test_3205_create_agent_with_enabled_false_sets_disabled(
+    agent_attributes,
+):
     a = AsyncAgent(
         agent_name=PYSAI_3200_DISABLED_AGENT_NAME,
         description="Initially disabled",
@@ -310,12 +312,16 @@ async def test_3213_disable_enable(agent):
 
 async def test_3214_set_attribute_none(agent):
     logger.info("Setting role=None on async agent: %s", agent.agent_name)
-    await expect_async_error("ORA-20050", lambda: agent.set_attribute("role", None))
+    await expect_async_error(
+        "ORA-20050", lambda: agent.set_attribute("role", None)
+    )
 
 
 async def test_3215_set_attribute_empty(agent):
     logger.info("Setting role='' on async agent: %s", agent.agent_name)
-    await expect_async_error("ORA-20050", lambda: agent.set_attribute("role", ""))
+    await expect_async_error(
+        "ORA-20050", lambda: agent.set_attribute("role", "")
+    )
 
 
 async def test_3216_create_existing_without_replace(agent_attributes):

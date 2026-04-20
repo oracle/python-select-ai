@@ -1,14 +1,16 @@
-import os
 import logging
+import os
 import uuid
 from contextlib import contextmanager
 
-import select_ai
 import pytest
+import select_ai
 import select_ai.agent
 
 # Configure file-based logging for this script run.
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_FILE = os.path.join(PROJECT_ROOT, "log", "test_3900_sql_team.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
@@ -56,7 +58,8 @@ def log_object_details(context: str, object_type: str, obj) -> None:
                 "description": getattr(obj, "description", None),
                 "provider_type": (
                     type(getattr(attributes, "provider", None)).__name__
-                    if attributes is not None and getattr(attributes, "provider", None)
+                    if attributes is not None
+                    and getattr(attributes, "provider", None)
                     else None
                 ),
                 "object_count": (
@@ -161,18 +164,6 @@ def verify_credential_exists(credential_name, expected_username=None):
         assert actual_username == expected_username
 
 
-def connect_to_db():
-    # Connect the Python client to the test database.
-    user = os.getenv("PYSAI_TEST_USER")
-    password = os.getenv("PYSAI_TEST_USER_PASSWORD")
-    dsn = os.getenv("PYSAI_TEST_CONNECT_STRING")
-    assert user, "PYSAI_TEST_USER not set"
-    assert password, "PYSAI_TEST_USER_PASSWORD not set"
-    assert dsn, "PYSAI_TEST_CONNECT_STRING not set"
-    logger.info("Connecting to database using configured test credentials")
-    select_ai.connect(user=user, password=password, dsn=dsn)
-
-
 def _cleanup_sql_team_objects(created) -> None:
     with log_step("Cleanup SQL team objects"):
         if created["team"] is not None:
@@ -180,14 +171,18 @@ def _cleanup_sql_team_objects(created) -> None:
                 logger.info("Deleting team: %s", created["team"].team_name)
                 created["team"].delete(force=True)
             except Exception:
-                logger.exception("Failed to delete team: %s", created["team"].team_name)
+                logger.exception(
+                    "Failed to delete team: %s", created["team"].team_name
+                )
 
         if created["task"] is not None:
             try:
                 logger.info("Deleting task: %s", created["task"].task_name)
                 created["task"].delete(force=True)
             except Exception:
-                logger.exception("Failed to delete task: %s", created["task"].task_name)
+                logger.exception(
+                    "Failed to delete task: %s", created["task"].task_name
+                )
 
         for tool in reversed(created["tools"]):
             try:
@@ -207,11 +202,14 @@ def _cleanup_sql_team_objects(created) -> None:
 
         if created["profile"] is not None:
             try:
-                logger.info("Deleting profile: %s", created["profile"].profile_name)
+                logger.info(
+                    "Deleting profile: %s", created["profile"].profile_name
+                )
                 created["profile"].delete(force=True)
             except Exception:
                 logger.exception(
-                    "Failed to delete profile: %s", created["profile"].profile_name
+                    "Failed to delete profile: %s",
+                    created["profile"].profile_name,
                 )
 
         for credential_name in reversed(created["credentials"]):
@@ -219,39 +217,12 @@ def _cleanup_sql_team_objects(created) -> None:
                 logger.info("Deleting credential: %s", credential_name)
                 select_ai.delete_credential(credential_name, force=True)
             except Exception:
-                logger.exception("Failed to delete credential: %s", credential_name)
+                logger.exception(
+                    "Failed to delete credential: %s", credential_name
+                )
 
 
-def allow_network_acl():
-    # Grant the database user SMTP access required by the email notification tool.
-    with select_ai.cursor() as cur:
-        try:
-            cur.execute(
-                """
-                BEGIN
-                    DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
-                        host => :host,
-                        ace  => xs$ace_type(
-                                   privilege_list => xs$name_list('connect', 'smtp'),
-                                   principal_name => SYS_CONTEXT('USERENV', 'CURRENT_USER'),
-                                   principal_type => xs_acl.ptype_db
-                               )
-                    );
-                END;
-                """,
-                host=EMAIL_SMTP_HOST,
-            )
-        except Exception as exc:
-            msg = str(exc)
-            if (
-                "ORA-46212" not in msg
-                and "ORA-46313" not in msg
-                and "already exists" not in msg
-            ):
-                raise
-
-
-def create_sql_team():
+def create_sql_team(test_env):
     created = {
         "team": None,
         "task": None,
@@ -264,8 +235,7 @@ def create_sql_team():
     # Initialize database access required by the team and tools.
     try:
         with log_step("Initialize database and network access"):
-            connect_to_db()
-            allow_network_acl()
+            logger.info("Using global database pool from tests/conftest.py")
 
         # Load OCI model and credential settings from the environment.
         oci_credential_name = "SQL_TEAM_OCI_CRED"
@@ -339,7 +309,10 @@ def create_sql_team():
             log_object_details("create_sql_tool", "tool", sql_tool)
             fetched_sql_tool = select_ai.agent.Tool.fetch("SQL_QUERY_TOOL")
             assert fetched_sql_tool.tool_name == "SQL_QUERY_TOOL"
-            assert fetched_sql_tool.attributes.tool_params.profile_name == "SQL_PROFILE"
+            assert (
+                fetched_sql_tool.attributes.tool_params.profile_name
+                == "SQL_PROFILE"
+            )
 
         # Load SMTP settings for the email notification tool.
         email_credential_name = (
@@ -380,7 +353,9 @@ def create_sql_team():
             )
             created["tools"].append(email_tool)
             log_object_details("create_email_tool", "tool", email_tool)
-            fetched_email_tool = select_ai.agent.Tool.fetch("EMAIL_NOTIFICATION_TOOL")
+            fetched_email_tool = select_ai.agent.Tool.fetch(
+                "EMAIL_NOTIFICATION_TOOL"
+            )
             assert fetched_email_tool.tool_name == "EMAIL_NOTIFICATION_TOOL"
             assert (
                 fetched_email_tool.attributes.tool_params.credential_name
@@ -434,9 +409,14 @@ def create_sql_team():
             team = select_ai.agent.Team(
                 team_name="SQL_DATA_TEAM",
                 attributes=select_ai.agent.TeamAttributes(
-                    agents=[{"name": "SQL_ANALYST_AGENT", "task": "SQL_ANALYSIS_TASK"}],
+                    agents=[
+                        {
+                            "name": "SQL_ANALYST_AGENT",
+                            "task": "SQL_ANALYSIS_TASK",
+                        }
+                    ],
                     process="sequential",
-                )
+                ),
             )
             team.create(replace=True, enabled=True)
             created["team"] = team
@@ -453,8 +433,8 @@ def create_sql_team():
 
 
 @pytest.fixture(scope="module")
-def sql_team():
-    yield from create_sql_team()
+def sql_team(connect, test_env, allow_network_acl):
+    yield from create_sql_team(test_env)
 
 
 def test_sql_team_runs(sql_team):
