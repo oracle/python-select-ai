@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 import uuid
 from contextlib import contextmanager
 
@@ -11,7 +11,9 @@ from select_ai.agent import AsyncAgent, AsyncTask, AsyncTeam, AsyncTool
 pytestmark = pytest.mark.anyio
 
 # Configure file-based logging for this script run.
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_FILE = os.path.join(PROJECT_ROOT, "log", "test_3900_async_sql_team.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
@@ -67,7 +69,8 @@ def log_object_details(context: str, object_type: str, obj) -> None:
                 "description": getattr(obj, "description", None),
                 "provider_type": (
                     type(getattr(attributes, "provider", None)).__name__
-                    if attributes is not None and getattr(attributes, "provider", None)
+                    if attributes is not None
+                    and getattr(attributes, "provider", None)
                     else None
                 ),
                 "object_count": (
@@ -172,18 +175,6 @@ async def verify_credential_exists(credential_name, expected_username=None):
         assert actual_username == expected_username
 
 
-async def connect_to_db():
-    # Connect the Python client to the test database.
-    user = os.getenv("PYSAI_TEST_USER")
-    password = os.getenv("PYSAI_TEST_USER_PASSWORD")
-    dsn = os.getenv("PYSAI_TEST_CONNECT_STRING")
-    assert user, "PYSAI_TEST_USER not set"
-    assert password, "PYSAI_TEST_USER_PASSWORD not set"
-    assert dsn, "PYSAI_TEST_CONNECT_STRING not set"
-    logger.info("Connecting to database using configured test credentials")
-    await select_ai.async_connect(user=user, password=password, dsn=dsn)
-
-
 async def _cleanup_async_sql_team_objects(created) -> None:
     with log_step("Cleanup async SQL team objects"):
         if created["team"] is not None:
@@ -191,14 +182,18 @@ async def _cleanup_async_sql_team_objects(created) -> None:
                 logger.info("Deleting team: %s", created["team"].team_name)
                 await created["team"].delete(force=True)
             except Exception:
-                logger.exception("Failed to delete team: %s", created["team"].team_name)
+                logger.exception(
+                    "Failed to delete team: %s", created["team"].team_name
+                )
 
         if created["task"] is not None:
             try:
                 logger.info("Deleting task: %s", created["task"].task_name)
                 await created["task"].delete(force=True)
             except Exception:
-                logger.exception("Failed to delete task: %s", created["task"].task_name)
+                logger.exception(
+                    "Failed to delete task: %s", created["task"].task_name
+                )
 
         for tool in reversed(created["tools"]):
             try:
@@ -218,51 +213,29 @@ async def _cleanup_async_sql_team_objects(created) -> None:
 
         if created["profile"] is not None:
             try:
-                logger.info("Deleting profile: %s", created["profile"].profile_name)
+                logger.info(
+                    "Deleting profile: %s", created["profile"].profile_name
+                )
                 await created["profile"].delete(force=True)
             except Exception:
                 logger.exception(
-                    "Failed to delete profile: %s", created["profile"].profile_name
+                    "Failed to delete profile: %s",
+                    created["profile"].profile_name,
                 )
 
         for credential_name in reversed(created["credentials"]):
             try:
                 logger.info("Deleting credential: %s", credential_name)
-                await select_ai.async_delete_credential(credential_name, force=True)
+                await select_ai.async_delete_credential(
+                    credential_name, force=True
+                )
             except Exception:
-                logger.exception("Failed to delete credential: %s", credential_name)
+                logger.exception(
+                    "Failed to delete credential: %s", credential_name
+                )
 
 
-async def allow_network_acl():
-    # Grant the database user SMTP access required by the email notification tool.
-    async with select_ai.async_cursor() as cur:
-        try:
-            await cur.execute(
-                """
-                BEGIN
-                    DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
-                        host => :host,
-                        ace  => xs$ace_type(
-                                   privilege_list => xs$name_list('connect', 'smtp'),
-                                   principal_name => SYS_CONTEXT('USERENV', 'CURRENT_USER'),
-                                   principal_type => xs_acl.ptype_db
-                               )
-                    );
-                END;
-                """,
-                host=EMAIL_SMTP_HOST,
-            )
-        except Exception as exc:
-            msg = str(exc)
-            if (
-                "ORA-46212" not in msg
-                and "ORA-46313" not in msg
-                and "already exists" not in msg
-            ):
-                raise
-
-
-async def create_async_sql_team():
+async def create_async_sql_team(test_env):
     created = {
         "team": None,
         "task": None,
@@ -275,8 +248,9 @@ async def create_async_sql_team():
     # Initialize database access required by the team and tools.
     try:
         with log_step("Initialize database and network access"):
-            await connect_to_db()
-            await allow_network_acl()
+            logger.info(
+                "Using global async database pool from tests/conftest.py"
+            )
 
         # Load OCI model and credential settings from the environment.
         oci_user_ocid = os.getenv("PYSAI_TEST_OCI_USER_OCID")
@@ -350,11 +324,15 @@ async def create_async_sql_team():
             log_object_details("create_sql_tool", "tool", sql_tool)
             fetched_sql_tool = await AsyncTool.fetch(SQL_TOOL_NAME)
             assert fetched_sql_tool.tool_name == SQL_TOOL_NAME
-            assert fetched_sql_tool.attributes.tool_params.profile_name == SQL_PROFILE_NAME
+            assert (
+                fetched_sql_tool.attributes.tool_params.profile_name
+                == SQL_PROFILE_NAME
+            )
 
         # Load SMTP settings for the email notification tool.
         email_credential_name = (
-            os.getenv("PYSAI_TEST_EMAIL_CREDENTIAL_NAME") or f"EMAIL_CRED_{RUN_ID}"
+            os.getenv("PYSAI_TEST_EMAIL_CREDENTIAL_NAME")
+            or f"EMAIL_CRED_{RUN_ID}"
         )
         email_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
         email_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
@@ -466,8 +444,8 @@ async def create_async_sql_team():
 
 
 @pytest.fixture(scope="module")
-async def async_sql_team():
-    async for team in create_async_sql_team():
+async def async_sql_team(async_connect, test_env, allow_network_acl):
+    async for team in create_async_sql_team(test_env):
         yield team
 
 

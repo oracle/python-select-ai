@@ -9,9 +9,9 @@
 3101 - Module for testing select_ai agent async tasks
 """
 
-import uuid
 import logging
 import os
+import uuid
 
 import oracledb
 import pytest
@@ -20,7 +20,9 @@ from select_ai.agent import AsyncTask, TaskAttributes
 
 pytestmark = pytest.mark.anyio
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3101_async_tasks.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
@@ -35,7 +37,9 @@ logger = logging.getLogger()
 
 PYSAI_3100_TASK_NAME = f"PYSAI_3100_{uuid.uuid4().hex.upper()}"
 PYSAI_3100_SQL_TASK_DESCRIPTION = "PYSAI_3100_SQL_TASK_DESCRIPTION"
-PYSAI_3100_DISABLED_TASK_NAME = f"PYSAI_3100_DISABLED_{uuid.uuid4().hex.upper()}"
+PYSAI_3100_DISABLED_TASK_NAME = (
+    f"PYSAI_3100_DISABLED_{uuid.uuid4().hex.upper()}"
+)
 PYSAI_3100_DEFAULT_STATUS_TASK_NAME = (
     f"PYSAI_3100_DEFAULT_STATUS_{uuid.uuid4().hex.upper()}"
 )
@@ -52,15 +56,6 @@ def log_test_name(request):
     logger.info("--- Starting test: %s ---", request.function.__name__)
     yield
     logger.info("--- Finished test: %s ---", request.function.__name__)
-
-
-@pytest.fixture(scope="module", autouse=True)
-async def async_connect(test_env):
-    logger.info("Opening async database connection")
-    await select_ai.async_connect(**test_env.connect_params())
-    yield
-    logger.info("Closing async database connection")
-    await select_ai.async_disconnect()
 
 
 async def get_task_status(task_name):
@@ -145,7 +140,10 @@ async def test_3100(task, task_attributes):
 async def test_3101(task_name_pattern):
     """task list"""
     if task_name_pattern:
-        tasks = [task async for task in select_ai.agent.AsyncTask.list(task_name_pattern)]
+        tasks = [
+            task
+            async for task in select_ai.agent.AsyncTask.list(task_name_pattern)
+        ]
     else:
         tasks = [task async for task in select_ai.agent.AsyncTask.list()]
     for task in tasks:
@@ -182,7 +180,9 @@ async def test_3103_create_task_default_status_enabled():
     )
     await task.create(replace=True)
     try:
-        await assert_task_status(PYSAI_3100_DEFAULT_STATUS_TASK_NAME, "ENABLED")
+        await assert_task_status(
+            PYSAI_3100_DEFAULT_STATUS_TASK_NAME, "ENABLED"
+        )
         fetched = await AsyncTask.fetch(PYSAI_3100_DEFAULT_STATUS_TASK_NAME)
         log_task_details("test_3103", fetched)
         assert fetched.description == "Default status should be enabled"
@@ -208,7 +208,9 @@ async def test_3104_create_task_with_enabled_false_sets_disabled():
         log_task_details("test_3104", fetched)
         assert fetched.description == "Task created disabled"
 
-        logger.info("Enabling task created with enabled=False: %s", task.task_name)
+        logger.info(
+            "Enabling task created with enabled=False: %s", task.task_name
+        )
         await task.enable()
         await assert_task_status(PYSAI_3100_DISABLED_TASK_NAME, "ENABLED")
     finally:
@@ -226,7 +228,9 @@ async def test_3105_disable_enable_task(task):
 
 
 async def test_3105b_set_single_attribute_invalid(task):
-    logger.info("Setting invalid single attribute for async task: %s", task.task_name)
+    logger.info(
+        "Setting invalid single attribute for async task: %s", task.task_name
+    )
     with pytest.raises(oracledb.DatabaseError) as exc:
         await task.set_attribute("description", "New Desc")
     logger.info("Received expected Oracle error: %s", exc.value)
@@ -234,7 +238,9 @@ async def test_3105b_set_single_attribute_invalid(task):
 
 
 async def test_3105c_duplicate_task_creation_fails(task):
-    logger.info("Creating duplicate async task without replace: %s", task.task_name)
+    logger.info(
+        "Creating duplicate async task without replace: %s", task.task_name
+    )
     dup = AsyncTask(
         task_name=task.task_name,
         description="Duplicate task",
@@ -256,7 +262,10 @@ async def test_3105d_invalid_regex_pattern():
 
 
 async def test_3106_drop_task_force_true_non_existent():
-    logger.info("Dropping missing task with force=True: %s", PYSAI_3100_MISSING_TASK_NAME)
+    logger.info(
+        "Dropping missing task with force=True: %s",
+        PYSAI_3100_MISSING_TASK_NAME,
+    )
     task = AsyncTask(task_name=PYSAI_3100_MISSING_TASK_NAME)
     await task.delete(force=True)
     status = await get_task_status(PYSAI_3100_MISSING_TASK_NAME)
@@ -265,7 +274,10 @@ async def test_3106_drop_task_force_true_non_existent():
 
 
 async def test_3107_drop_task_force_false_non_existent_raises():
-    logger.info("Dropping missing task with force=False: %s", PYSAI_3100_MISSING_TASK_NAME)
+    logger.info(
+        "Dropping missing task with force=False: %s",
+        PYSAI_3100_MISSING_TASK_NAME,
+    )
     task = AsyncTask(task_name=PYSAI_3100_MISSING_TASK_NAME)
     with pytest.raises(oracledb.Error) as exc:
         await task.delete(force=False)
@@ -376,5 +388,7 @@ async def test_3112_enable_deleted_task_object_raises():
     logger.info("Attempting to enable deleted task using same object")
     with pytest.raises(oracledb.DatabaseError) as exc:
         await task.enable()
-    logger.info("Received expected error when enabling deleted task: %s", exc.value)
+    logger.info(
+        "Received expected error when enabling deleted task: %s", exc.value
+    )
     assert "ORA-20051" in str(exc.value)

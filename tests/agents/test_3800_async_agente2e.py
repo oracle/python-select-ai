@@ -36,8 +36,12 @@ pytestmark = pytest.mark.anyio
 # LOGGING
 # ----------------------------------------------------------------------
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3800_async_agente2e.log")
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+LOG_FILE = os.path.join(
+    PROJECT_ROOT, "log", "tkex_test_3800_async_agente2e.log"
+)
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 root = logging.getLogger()
@@ -79,7 +83,8 @@ def log_object_details(context: str, object_type: str, obj) -> None:
                 "description": getattr(obj, "description", None),
                 "provider_type": (
                     type(getattr(attributes, "provider", None)).__name__
-                    if attributes is not None and getattr(attributes, "provider", None)
+                    if attributes is not None
+                    and getattr(attributes, "provider", None)
                     else None
                 ),
                 "object_count": (
@@ -201,36 +206,8 @@ async def _decode_history_rows(rows):
     return decoded_rows
 
 
-@pytest.fixture(scope="session")
-def setup_test_user(test_env):
-    try:
-        select_ai.disconnect()
-    except Exception:
-        pass
-
-    select_ai.connect(**test_env.connect_params(admin=True))
-    try:
-        try:
-            select_ai.grant_privileges(users=[test_env.test_user])
-        except Exception as exc:
-            msg = str(exc)
-            if (
-                "ORA-01749" not in msg
-                and "Cannot GRANT or REVOKE privileges to or from yourself" not in msg
-            ):
-                raise
-
-        select_ai.grant_http_access(
-            users=[test_env.test_user],
-            provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
-        )
-    finally:
-        select_ai.disconnect()
-        select_ai.connect(**test_env.connect_params())
-
-
-@pytest.fixture(scope="session")
-def openai_cred():
+@pytest.fixture(scope="module")
+def openai_cred(connect):
     api_key = os.getenv("PYSAI_TEST_OPENAI_API_KEY")
     assert api_key, "PYSAI_TEST_OPENAI_API_KEY not set"
     cred_name = "OPENAI_CRED"
@@ -250,8 +227,8 @@ def openai_cred():
     return cred_name
 
 
-@pytest.fixture(scope="session")
-def email_cred():
+@pytest.fixture(scope="module")
+def email_cred(connect):
     smtp_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
     smtp_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
 
@@ -274,63 +251,12 @@ def email_cred():
     return cred_name
 
 
-@pytest.fixture(scope="session")
-def allow_network_acl():
-    with select_ai.cursor() as cur:
-        cur.execute("SELECT USER FROM dual")
-        db_user = cur.fetchone()[0]
-
-        def append_ace(host, privileges):
-            try:
-                cur.execute(
-                    f"""
-                    BEGIN
-                        DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
-                            host => '{host}',
-                            ace  => xs$ace_type(
-                                       privilege_list => xs$name_list({','.join([f"'{p}'" for p in privileges])}),
-                                       principal_name => '{db_user}',
-                                       principal_type => xs_acl.ptype_db
-                                   )
-                        );
-                    END;
-                    """
-                )
-            except Exception as exc:
-                msg = str(exc)
-                if (
-                    "ORA-46212" in msg
-                    or "ORA-46313" in msg
-                    or "already exists" in msg
-                ):
-                    return
-                raise
-
-        append_ace(EMAIL_SMTP_HOST, ["connect", "smtp"])
-
-        for host in ["api.openai.com", "a.co", "amazon.in"]:
-            append_ace(host, ["connect", "http"])
-
-    yield
-
-
-@pytest.fixture(scope="module", autouse=True)
-async def async_connect(
-    test_env, setup_test_user, openai_cred, email_cred, allow_network_acl
-):
-    logger.info(
-        "Opening async database connection | user=%s | dsn=%s",
-        test_env.test_user,
-        test_env.connect_string,
-    )
-    await select_ai.async_connect(**test_env.connect_params())
-    yield
-    logger.info("Closing async database connection")
-    await select_ai.async_disconnect()
-
-
 async def test_3800_agent_end_to_end_async(
-    profile_attributes, openai_cred, email_cred
+    async_connect,
+    profile_attributes,
+    openai_cred,
+    email_cred,
+    allow_network_acl,
 ):
     """End-to-end Select AI Agent integration test (async)."""
 
@@ -456,8 +382,13 @@ async def test_3800_agent_end_to_end_async(
                 [t.tool_name for t in created["tools"]],
             )
             assert len(created["tools"]) == 2
-            assert websearch_tool.attributes.tool_params.credential_name == openai_cred
-            assert email_tool.attributes.tool_params.credential_name == email_cred
+            assert (
+                websearch_tool.attributes.tool_params.credential_name
+                == openai_cred
+            )
+            assert (
+                email_tool.attributes.tool_params.credential_name == email_cred
+            )
 
         with log_step("Create task"):
             task = AsyncTask(
@@ -566,5 +497,7 @@ async def test_3800_agent_end_to_end_async(
                 await created["agent"].delete(force=True)
 
             if created["profile"] is not None:
-                logger.info("Deleting profile: %s", created["profile"].profile_name)
+                logger.info(
+                    "Deleting profile: %s", created["profile"].profile_name
+                )
                 await created["profile"].delete(force=True)
