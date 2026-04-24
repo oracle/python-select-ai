@@ -9,7 +9,12 @@ GRANT_PRIVILEGES_TO_USER = """
 DECLARE
     TYPE array_t IS VARRAY(4) OF VARCHAR2(60);
     v_packages array_t;
+    v_user VARCHAR2(261);
 BEGIN
+    v_user := DBMS_ASSERT.ENQUOTE_NAME(
+        DBMS_ASSERT.SCHEMA_NAME(:user),
+        FALSE
+    );
     v_packages := array_t(
         'DBMS_CLOUD',
         'DBMS_CLOUD_AI',
@@ -18,7 +23,7 @@ BEGIN
     );
     FOR i in 1..v_packages.count LOOP
         EXECUTE IMMEDIATE
-            'GRANT EXECUTE ON ' || v_packages(i) || ' TO {0}';
+            'GRANT EXECUTE ON ' || v_packages(i) || ' TO ' || v_user;
     END LOOP;
 END;
 """
@@ -27,7 +32,12 @@ REVOKE_PRIVILEGES_FROM_USER = """
 DECLARE
     TYPE array_t IS VARRAY(4) OF VARCHAR2(60);
     v_packages array_t;
+    v_user VARCHAR2(261);
 BEGIN
+    v_user := DBMS_ASSERT.ENQUOTE_NAME(
+        DBMS_ASSERT.SCHEMA_NAME(:user),
+        FALSE
+    );
     v_packages := array_t(
         'DBMS_CLOUD',
         'DBMS_CLOUD_AI',
@@ -36,7 +46,7 @@ BEGIN
     );
     FOR i in 1..v_packages.count LOOP
         EXECUTE IMMEDIATE
-            'REVOKE EXECUTE ON ' || v_packages(i) || ' FROM {0}';
+            'REVOKE EXECUTE ON ' || v_packages(i) || ' FROM ' || v_user;
     END LOOP;
 END;
 """

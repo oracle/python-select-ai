@@ -15,6 +15,13 @@ from .sql import (
 )
 
 
+def _normalize_schema_user(user: str) -> str:
+    user = user.strip()
+    if len(user) >= 2 and user[0] == '"' and user[-1] == '"':
+        return user
+    return user.upper()
+
+
 async def async_grant_privileges(users: Union[str, List[str]]):
     """
     This method grants execute privilege on the packages DBMS_CLOUD,
@@ -26,7 +33,8 @@ async def async_grant_privileges(users: Union[str, List[str]]):
 
     async with async_cursor() as cr:
         for user in users:
-            await cr.execute(GRANT_PRIVILEGES_TO_USER.format(user.strip()))
+            cr_user = _normalize_schema_user(user)
+            await cr.execute(GRANT_PRIVILEGES_TO_USER, user=cr_user)
 
 
 async def async_revoke_privileges(users: Union[str, List[str]]):
@@ -40,7 +48,8 @@ async def async_revoke_privileges(users: Union[str, List[str]]):
 
     async with async_cursor() as cr:
         for user in users:
-            await cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user.strip()))
+            cr_user = _normalize_schema_user(user)
+            await cr.execute(REVOKE_PRIVILEGES_FROM_USER, user=cr_user)
 
 
 async def async_grant_http_access(
@@ -90,7 +99,8 @@ def grant_privileges(users: Union[str, List[str]]):
         users = [users]
     with cursor() as cr:
         for user in users:
-            cr.execute(GRANT_PRIVILEGES_TO_USER.format(user.strip()))
+            cr_user = _normalize_schema_user(user)
+            cr.execute(GRANT_PRIVILEGES_TO_USER, user=cr_user)
 
 
 def revoke_privileges(users: Union[str, List[str]]):
@@ -102,7 +112,8 @@ def revoke_privileges(users: Union[str, List[str]]):
         users = [users]
     with cursor() as cr:
         for user in users:
-            cr.execute(REVOKE_PRIVILEGES_FROM_USER.format(user.strip()))
+            cr_user = _normalize_schema_user(user)
+            cr.execute(REVOKE_PRIVILEGES_FROM_USER, user=cr_user)
 
 
 def grant_http_access(users: Union[str, List[str]], provider_endpoint: str):

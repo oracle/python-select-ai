@@ -32,9 +32,7 @@ def _validate_credential(credential: Mapping[str, str]):
     }
     for k in credential.keys():
         if k.lower() not in valid_keys:
-            raise ValueError(
-                f"Invalid value {k}: {credential[k]} for credential object"
-            )
+            raise ValueError(f"Invalid key {k} for credential object")
 
 
 async def async_create_credential(credential: Mapping, replace: bool = False):
