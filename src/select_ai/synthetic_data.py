@@ -61,6 +61,14 @@ class SyntheticDataAttributes(SelectAIDataClass):
     user_prompt: Optional[str] = None
 
     def __post_init__(self):
+        super().__post_init__()
+
+        if isinstance(self.params, str):
+            self.params = json.loads(self.params)
+
+        if isinstance(self.params, Mapping):
+            self.params = SyntheticDataParams(**self.params)
+
         if self.params and not isinstance(self.params, SyntheticDataParams):
             raise TypeError(
                 "'params' must be an object of" " type SyntheticDataParams'"
