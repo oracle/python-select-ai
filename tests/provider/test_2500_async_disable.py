@@ -39,10 +39,8 @@ def disable_params(request, test_env):
 
 
 @pytest.fixture(scope="class", autouse=True)
-async def setup_and_teardown(request, async_connect, disable_params, test_env):
+async def setup_and_teardown(request, async_connect, disable_params):
     logger.info("=== Setting up TestAsyncDisableProvider class ===")
-    await select_ai.async_disconnect()
-    await select_ai.async_connect(**test_env.connect_params(admin=True))
     assert await select_ai.async_is_connected(), "Connection to DB failed"
 
     db_users = []
@@ -54,8 +52,6 @@ async def setup_and_teardown(request, async_connect, disable_params, test_env):
         request.cls.db_users = db_users
         await request.cls.create_local_user("DB_USER6")
     except Exception:
-        await select_ai.async_disconnect()
-        await select_ai.async_connect(**test_env.connect_params())
         raise
 
     yield
@@ -68,11 +64,6 @@ async def setup_and_teardown(request, async_connect, disable_params, test_env):
                 await admin_cursor.execute(f"DROP USER {user} CASCADE")
             except oracledb.DatabaseError as exc:
                 logger.warning("Drop user failed for %s: %s", user, exc)
-    try:
-        await select_ai.async_disconnect()
-    except Exception as exc:
-        logger.warning("Warning: disconnect failed (%s)", exc)
-    await select_ai.async_connect(**test_env.connect_params())
 
 
 @pytest.fixture(autouse=True)

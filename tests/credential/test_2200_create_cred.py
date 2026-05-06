@@ -6,9 +6,9 @@
 # -----------------------------------------------------------------------------
 
 import logging
+import oracledb
 import pytest
 import select_ai
-import oracledb
 from select_ai.errors import DatabaseNotConnectedError
 
 logger = logging.getLogger("TestCreateCredential")
@@ -29,11 +29,11 @@ def setup_and_teardown_cred(
     request,
     connect,
     credential_params,
-    credential_connect_as,
+    test_env,
 ):
     logger.info("=== Setting up TestCreateCredential class  ===")
     assert select_ai.is_connected(), "Connection to DB failed"
-    request.cls.credential_connect_as = staticmethod(credential_connect_as)
+    request.cls.test_env = test_env
     logger.info("Initial connection successful")
     yield
     logger.info("=== Tearing down TestCreateCredential class ===")
@@ -75,6 +75,44 @@ class TestCreateCredential:
             },
         )
         logger.info(f"Dropped credential: {cred_name}")
+
+    @classmethod
+    def create_local_user(cls, test_username="TEST_USER1"):
+        test_password = cls.credential_params["password"]
+        escaped_password = test_password.replace('"', '""')
+        with oracledb.connect(**cls.test_env.connect_params(admin=True)) as conn:
+            with conn.cursor() as admin_cursor:
+                try:
+                    admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+                except oracledb.DatabaseError:
+                    logger.info(
+                        "User '%s' did not exist, continuing...",
+                        test_username,
+                    )
+                admin_cursor.execute(
+                    f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
+                )
+                admin_cursor.execute(
+                    "grant create session, create table, unlimited tablespace "
+                    f"to {test_username}"
+                )
+                admin_cursor.execute(
+                    f"grant execute on dbms_cloud to {test_username}"
+                )
+            conn.commit()
+
+    @classmethod
+    def drop_local_user(cls, test_username="TEST_USER1"):
+        with oracledb.connect(**cls.test_env.connect_params(admin=True)) as conn:
+            with conn.cursor() as admin_cursor:
+                admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+            conn.commit()
+
+    @classmethod
+    def local_user_connect_params(cls, test_username, test_password):
+        connect_params = cls.test_env.connect_params()
+        connect_params.update(user=test_username, password=test_password)
+        return connect_params
 
     def test_2201(self):
         """Testing basic credential creation"""
@@ -268,59 +306,36 @@ class TestCreateCredential:
         """Testing credential creation when DB is disconnected"""
         select_ai.disconnect()
         credential = self.get_cred_param(self.credential_params, 'GENAI_CRED')
-        with pytest.raises(DatabaseNotConnectedError):
-            select_ai.create_credential(credential=credential, replace=False)
-        self.logger.info("Expected DatabaseNotConnectedError raised.")
-        self.credential_connect_as()
+        try:
+            with pytest.raises(DatabaseNotConnectedError):
+                select_ai.create_credential(credential=credential, replace=False)
+            self.logger.info("Expected DatabaseNotConnectedError raised.")
+        finally:
+            select_ai.create_pool(**self.test_env.connect_params(use_pool=True))
 
     def test_2217(self):
         """Test Credential creation for a local test user"""
-        self.logger.info("Connecting as admin user...")
-        self.credential_connect_as(admin=True)
-        self.logger.info("Admin connection established.")
         test_username = "TEST_USER1"
         test_password = self.credential_params["password"]
-        escaped_password = test_password.replace('"', '""')
-        self.logger.info(f"Ensuring test user '{test_username}' does not exist...")
-        with select_ai.cursor() as admin_cursor:
-            try:
-                admin_cursor.execute(f"DROP USER {test_username} CASCADE")
-                self.logger.info(f"Existing user '{test_username}' dropped.")
-            except oracledb.DatabaseError:
-                self.logger.info(f"User '{test_username}' did not exist, continuing...")
-            self.logger.info(f"Creating test user '{test_username}'...")
-            admin_cursor.execute(
-                f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
-            )
-            admin_cursor.execute(f"grant create session, create table, unlimited tablespace to {test_username}")
-            admin_cursor.execute(f"grant execute on dbms_cloud to {test_username}")
-            self.logger.info(f"User '{test_username}' created and granted privileges.")
-        self.logger.info(f"Connecting as test user '{test_username}'...")
-        self.credential_connect_as(
-            user=test_username,
-            password=test_password,
-        )
-        self.logger.info("Test user connection established.")
         credential = self.get_cred_param(self.credential_params, 'GENAI_CRED_USER1')
-        self.logger.info(f"Creating credential '{credential['credential_name']}' for test user...")
+        self.create_local_user(test_username)
         try:
-            select_ai.create_credential(credential=credential, replace=False)
-            self.logger.info("Credential created successfully.")
+            with oracledb.connect(
+                **self.local_user_connect_params(test_username, test_password)
+            ) as conn:
+                with conn.cursor() as cursor:
+                    cursor.callproc(
+                        "DBMS_CLOUD.CREATE_CREDENTIAL",
+                        keyword_parameters=credential,
+                    )
+                    self.logger.info("Credential created successfully.")
+                    self.drop_credential_cursor(cursor, 'GENAI_CRED_USER1')
+                conn.commit()
         except Exception as e:
             pytest.fail(f"create_credential() raised {e} unexpectedly.")
-        self.logger.info(f"Dropping credential '{credential['credential_name']}'...")
-        with select_ai.cursor() as cursor:
-            self.drop_credential_cursor(cursor, 'GENAI_CRED_USER1')
-        self.logger.info("Credential dropped.")
-        self.logger.info("Disconnecting test user...")
-        select_ai.disconnect()
-        self.logger.info("Disconnected test user.")
-        self.logger.info(f"Reconnecting as admin to drop test user '{test_username}'...")
-        self.credential_connect_as(admin=True)
-        with select_ai.cursor() as admin_cursor:
-            admin_cursor.execute(f"DROP USER {test_username} CASCADE")
-        self.logger.info(f"Test user '{test_username}' dropped successfully.")
-        self.credential_connect_as()
+        finally:
+            self.drop_local_user(test_username)
+            self.logger.info(f"Test user '{test_username}' dropped successfully.")
 
     def test_2218(self):
         """Testing credential name with special characters"""

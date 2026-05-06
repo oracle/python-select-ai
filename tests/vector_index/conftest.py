@@ -5,13 +5,18 @@ from pathlib import Path
 import pytest
 
 LOG_FORMAT = "%(levelname)s: [%(name)s] %(message)s"
+_VCIDX_ENV_NAMES = {
+    "EMBEDDING_LOCATION": "PYTEST_TEST_OBJSTORE_EMBEDDING_LOC",
+    "CRED_USERNAME": "PYTEST_TEST_OBJSTORE_USERNAME",
+    "CRED_PASSWORD": "PYTEST_TEST_OBJSTORE_PASSWORD",
+}
 
 
 def get_vcidx_env_value(name, default_value=None, required=False):
     """
     Reads vector-index-specific environment variables.
     """
-    env_name = f"PYSAI_TEST_{name}"
+    env_name = _VCIDX_ENV_NAMES[name]
     value = os.environ.get(env_name)
     if value is None:
         if required:
@@ -57,7 +62,7 @@ def embedding_location():
     # Fail fast with a clear message if the wrong value is being used
     if "inference.generativeai" in value or "/actions/embedText" in value:
         pytest.exit(
-            "PYSAI_TEST_EMBEDDING_LOCATION is set to a GenAI inference endpoint. "
+            "PYTEST_TEST_OBJSTORE_EMBEDDING_LOC is set to a GenAI inference endpoint. "
             "It must be an Object Storage URI/URL (objectstorage.../n/<ns>/b/<bucket>/o/<prefix>). "
             f"Got: {value}",
             1,
@@ -65,7 +70,7 @@ def embedding_location():
 
     if "objectstorage." not in value:
         pytest.exit(
-            "PYSAI_TEST_EMBEDDING_LOCATION does not look like an Object Storage URL/URI. "
+            "PYTEST_TEST_OBJSTORE_EMBEDDING_LOC does not look like an Object Storage URL/URI. "
             f"Got: {value}",
             1,
         )

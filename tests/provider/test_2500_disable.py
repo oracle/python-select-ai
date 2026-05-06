@@ -34,10 +34,8 @@ def disable_params(request, test_env):
     request.cls.disable_params = params
 
 @pytest.fixture(scope="class", autouse=True)
-def setup_and_teardown(request, connect, disable_params, test_env):
+def setup_and_teardown(request, connect, disable_params):
     logger.info("\n=== Setting up TestDisableProvider class ===")
-    select_ai.disconnect()
-    select_ai.connect(**test_env.connect_params(admin=True))
     assert select_ai.is_connected(), "Connection to DB failed"
     db_users = []
     try:
@@ -49,8 +47,6 @@ def setup_and_teardown(request, connect, disable_params, test_env):
         # Create Additional user
         request.cls.create_local_user("DB_USER6")
     except Exception:
-        select_ai.disconnect()
-        select_ai.connect(**test_env.connect_params())
         raise
     logger.info("Setup complete.\n")
     yield
@@ -64,11 +60,6 @@ def setup_and_teardown(request, connect, disable_params, test_env):
                 logger.info(f"Dropped user {user}")
             except oracledb.DatabaseError as e:
                 logger.warning(f"Disconnect failed: {e}")
-    try:
-        select_ai.disconnect()
-    except Exception as e:
-        logger.warning(f"Warning: disconnect failed ({e})")
-    select_ai.connect(**test_env.connect_params())
 
 @pytest.fixture(autouse=True)
 def log_test_name(request):

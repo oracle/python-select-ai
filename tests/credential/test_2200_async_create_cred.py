@@ -27,13 +27,11 @@ async def setup_and_teardown_cred(
     request,
     async_connect,
     credential_params,
-    credential_async_connect_as,
+    test_env,
 ):
     logger.info("=== Setting up TestAsyncCreateCredential class ===")
     assert await select_ai.async_is_connected(), "Connection to DB failed"
-    request.cls.credential_async_connect_as = staticmethod(
-        credential_async_connect_as
-    )
+    request.cls.test_env = test_env
     logger.info("Initial connection successful")
     yield
     logger.info("=== Tearing down TestAsyncCreateCredential class ===")
@@ -72,6 +70,54 @@ class TestAsyncCreateCredential:
         logger.info("Dropping credential: %s", cred_name)
         await select_ai.async_delete_credential(cred_name, force=True)
         logger.info("Dropped credential: %s", cred_name)
+
+    @classmethod
+    async def create_local_user(cls, test_username="TEST_USER1"):
+        test_password = cls.credential_params["password"]
+        escaped_password = test_password.replace('"', '""')
+        admin_conn = await oracledb.connect_async(
+            **cls.test_env.connect_params(admin=True)
+        )
+        try:
+            async with admin_conn.cursor() as admin_cursor:
+                try:
+                    await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+                except oracledb.DatabaseError:
+                    logger.info(
+                        "User '%s' did not exist, continuing...",
+                        test_username,
+                    )
+                await admin_cursor.execute(
+                    f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
+                )
+                await admin_cursor.execute(
+                    "grant create session, create table, unlimited tablespace "
+                    f"to {test_username}"
+                )
+                await admin_cursor.execute(
+                    f"grant execute on dbms_cloud to {test_username}"
+                )
+            await admin_conn.commit()
+        finally:
+            await admin_conn.close()
+
+    @classmethod
+    async def drop_local_user(cls, test_username="TEST_USER1"):
+        admin_conn = await oracledb.connect_async(
+            **cls.test_env.connect_params(admin=True)
+        )
+        try:
+            async with admin_conn.cursor() as admin_cursor:
+                await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+            await admin_conn.commit()
+        finally:
+            await admin_conn.close()
+
+    @classmethod
+    def local_user_connect_params(cls, test_username, test_password):
+        connect_params = cls.test_env.connect_params()
+        connect_params.update(user=test_username, password=test_password)
+        return connect_params
 
     async def test_2201(self):
         """Testing basic credential creation."""
@@ -290,76 +336,50 @@ class TestAsyncCreateCredential:
         """Testing credential creation when DB is disconnected."""
         await select_ai.async_disconnect()
         credential = self.get_cred_param(self.credential_params, "GENAI_CRED")
-        with pytest.raises(DatabaseNotConnectedError):
-            await select_ai.async_create_credential(
-                credential=credential,
-                replace=False,
-            )
-        logger.info("Expected DatabaseNotConnectedError raised.")
-        await self.credential_async_connect_as()
+        try:
+            with pytest.raises(DatabaseNotConnectedError):
+                await select_ai.async_create_credential(
+                    credential=credential,
+                    replace=False,
+                )
+            logger.info("Expected DatabaseNotConnectedError raised.")
+        finally:
+            select_ai.create_pool_async(**self.test_env.connect_params(use_pool=True))
 
     async def test_2217(self):
         """Test Credential creation for a local test user."""
         test_username = "TEST_USER1"
         test_password = self.credential_params["password"]
-        escaped_password = test_password.replace('"', '""')
-
-        logger.info("Connecting as admin user...")
-        await self.credential_async_connect_as(admin=True)
-        logger.info("Admin connection established.")
-
-        async with select_ai.async_cursor() as admin_cursor:
-            try:
-                await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
-                logger.info("Existing user '%s' dropped.", test_username)
-            except oracledb.DatabaseError:
-                logger.info(
-                    "User '%s' did not exist, continuing...",
-                    test_username,
-                )
-            await admin_cursor.execute(
-                f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
-            )
-            await admin_cursor.execute(
-                "grant create session, create table, unlimited tablespace "
-                f"to {test_username}"
-            )
-            await admin_cursor.execute(
-                f"grant execute on dbms_cloud to {test_username}"
-            )
-            logger.info(
-                "User '%s' created and granted privileges.",
-                test_username,
-            )
-
-        logger.info("Connecting as test user '%s'...", test_username)
-        await self.credential_async_connect_as(
-            user=test_username,
-            password=test_password,
-        )
-        logger.info("Test user connection established.")
-
         credential = self.get_cred_param(
             self.credential_params,
             "GENAI_CRED_USER1",
         )
         try:
-            await select_ai.async_create_credential(
-                credential=credential,
-                replace=False,
+            await self.create_local_user(test_username)
+            user_conn = await oracledb.connect_async(
+                **self.local_user_connect_params(test_username, test_password)
             )
-            logger.info("Credential created successfully.")
+            try:
+                async with user_conn.cursor() as cursor:
+                    await cursor.callproc(
+                        "DBMS_CLOUD.CREATE_CREDENTIAL",
+                        keyword_parameters=credential,
+                    )
+                    logger.info("Credential created successfully.")
+                    await cursor.callproc(
+                        "DBMS_CLOUD.DROP_CREDENTIAL",
+                        keyword_parameters={
+                            "credential_name": "GENAI_CRED_USER1"
+                        },
+                    )
+                await user_conn.commit()
+            finally:
+                await user_conn.close()
         except Exception as exc:
             pytest.fail(f"async_create_credential() raised {exc} unexpectedly.")
-
-        await self.drop_credential("GENAI_CRED_USER1")
-
-        logger.info("Reconnecting as admin to drop test user '%s'...", test_username)
-        await self.credential_async_connect_as(admin=True)
-        async with select_ai.async_cursor() as admin_cursor:
-            await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
-        logger.info("Test user '%s' dropped successfully.", test_username)
-        await self.credential_async_connect_as()
+        finally:
+            await self.drop_local_user(test_username)
+            logger.info("Test user '%s' dropped successfully.", test_username)
 
     async def test_2218(self):
         """Testing credential name with special characters."""
