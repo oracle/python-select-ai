@@ -26,13 +26,11 @@ async def setup_and_teardown(
     request,
     async_connect,
     drop_params,
-    credential_async_connect_as,
+    test_env,
 ):
     logger.info("=== Setting up TestAsyncDropCredential class ===")
     assert await select_ai.async_is_connected(), "Connection to DB failed"
-    request.cls.credential_async_connect_as = staticmethod(
-        credential_async_connect_as
-    )
+    request.cls.test_env = test_env
     logger.info("Initial connection successful")
     yield
     logger.info("=== Tearing down TestAsyncDropCredential class ===")
@@ -77,22 +75,47 @@ class TestAsyncDropCredential:
         logger.info("Creating local user: %s", test_username)
         test_password = cls.drop_params["password"]
         escaped_password = test_password.replace('"', '""')
-        async with select_ai.async_cursor() as admin_cursor:
-            try:
-                await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
-            except oracledb.DatabaseError:
-                pass
-            await admin_cursor.execute(
-                f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
-            )
-            await admin_cursor.execute(
-                "grant create session, create table, unlimited tablespace "
-                f"to {test_username}"
-            )
-            await admin_cursor.execute(
-                f"grant execute on dbms_cloud to {test_username}"
-            )
+        admin_conn = await oracledb.connect_async(
+            **cls.test_env.connect_params(admin=True)
+        )
+        try:
+            async with admin_conn.cursor() as admin_cursor:
+                try:
+                    await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+                except oracledb.DatabaseError:
+                    pass
+                await admin_cursor.execute(
+                    f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
+                )
+                await admin_cursor.execute(
+                    "grant create session, create table, unlimited tablespace "
+                    f"to {test_username}"
+                )
+                await admin_cursor.execute(
+                    f"grant execute on dbms_cloud to {test_username}"
+                )
+            await admin_conn.commit()
+        finally:
+            await admin_conn.close()
         logger.info("Local user '%s' ready.", test_username)
+
+    @classmethod
+    async def drop_local_user(cls, test_username="TEST_USER1"):
+        admin_conn = await oracledb.connect_async(
+            **cls.test_env.connect_params(admin=True)
+        )
+        try:
+            async with admin_conn.cursor() as admin_cursor:
+                await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+            await admin_conn.commit()
+        finally:
+            await admin_conn.close()
+
+    @classmethod
+    def local_user_connect_params(cls, test_username, test_password):
+        connect_params = cls.test_env.connect_params()
+        connect_params.update(user=test_username, password=test_password)
+        return connect_params
 
     async def test_2301(self):
         """Deleting existing credential (force=True)."""
@@ -158,34 +181,36 @@ class TestAsyncDropCredential:
     async def test_2307(self):
         """Deleting credential as local user."""
         test_username = "TEST_USER1"
-        await self.credential_async_connect_as(admin=True)
         await self.create_local_user(test_username)
-
-        await self.credential_async_connect_as(
-            user=test_username,
-            password=self.drop_params["password"],
-        )
-
         credential = self.get_cred_param(self.drop_params, "GENAI_CRED_USER1")
-        await select_ai.async_create_credential(
-            credential=credential,
-            replace=False,
-        )
-
         try:
-            await select_ai.async_delete_credential(
-                "GENAI_CRED_USER1",
-                force=True,
+            user_conn = await oracledb.connect_async(
+                **self.local_user_connect_params(
+                    test_username,
+                    self.drop_params["password"],
+                )
             )
+            try:
+                async with user_conn.cursor() as cursor:
+                    await cursor.callproc(
+                        "DBMS_CLOUD.CREATE_CREDENTIAL",
+                        keyword_parameters=credential,
+                    )
+                    await cursor.callproc(
+                        "DBMS_CLOUD.DROP_CREDENTIAL",
+                        keyword_parameters={
+                            "credential_name": "GENAI_CRED_USER1"
+                        },
+                    )
+                await user_conn.commit()
+            finally:
+                await user_conn.close()
             logger.info("Local user credential deleted successfully.")
         except Exception as exc:
             pytest.fail(f"async_delete_credential() raised {exc} unexpectedly.")
         finally:
-            await self.credential_async_connect_as(admin=True)
-            async with select_ai.async_cursor() as admin_cursor:
-                await admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+            await self.drop_local_user(test_username)
             logger.info("Local user cleanup complete.")
-            await self.credential_async_connect_as()
 
     async def test_2308(self):
         """Deleting credential with invalid name."""
@@ -199,13 +224,15 @@ class TestAsyncDropCredential:
     async def test_2309(self):
         """Deleting credential without active connection."""
         await select_ai.async_disconnect()
-        with pytest.raises(select_ai.errors.DatabaseNotConnectedError) as exc_info:
-            await select_ai.async_delete_credential("GENAI_CRED", force=True)
-        logger.info(
-            "Expected DatabaseNotConnectedError raised: %s",
-            exc_info.value,
-        )
-        await self.credential_async_connect_as()
+        try:
+            with pytest.raises(select_ai.errors.DatabaseNotConnectedError) as exc_info:
+                await select_ai.async_delete_credential("GENAI_CRED", force=True)
+            logger.info(
+                "Expected DatabaseNotConnectedError raised: %s",
+                exc_info.value,
+            )
+        finally:
+            select_ai.create_pool_async(**self.test_env.connect_params(use_pool=True))
 
     async def test_2310(self):
         """Deleting credential with name exceeding max length."""

@@ -5,6 +5,9 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
+import importlib.util
+from pathlib import Path
+
 import pytest
 import select_ai
 
@@ -13,6 +16,18 @@ _BASIC_SCHEMA_PRIVILEGES = (
     "CREATE TABLE",
     "UNLIMITED TABLESPACE",
 )
+_ROOT_CONFTEST_PATH = Path(__file__).resolve().parents[1] / "conftest.py"
+
+
+def _load_root_test_env_class():
+    spec = importlib.util.spec_from_file_location(
+        "tests_root_conftest",
+        _ROOT_CONFTEST_PATH,
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module.TestEnv
 
 
 def get_supported_provider_endpoints():
@@ -38,11 +53,17 @@ def get_supported_provider_endpoints():
 @pytest.fixture(scope="session")
 def oci_credential():
     """
-    Provider tests do not need the shared OCI credential fixture and they
-    temporarily switch connections to admin. Override it locally to avoid
-    unrelated teardown failures in the session fixture stack.
+    Provider tests do not need the shared OCI credential fixture.
     """
     return None
+
+
+@pytest.fixture(scope="session")
+def test_env(pytestconfig):
+    env = _load_root_test_env_class()()
+    env.test_user = env.admin_user
+    env.test_user_password = env.admin_password
+    return env
 
 
 def ensure_provider_test_user_exists(username: str, password: str):

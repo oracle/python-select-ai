@@ -8,7 +8,6 @@
 import os
 
 import pytest
-import select_ai
 
 
 def get_credential_env_value(name, default_value=None):
@@ -50,25 +49,3 @@ def credential_test_params(test_env):
             "CRED_PASSWORD", default_value="OCI credential password"
         ),
     }
-
-
-@pytest.fixture(scope="session")
-def credential_connect_as(test_env):
-    def _connect_as(admin=False, **overrides):
-        select_ai.disconnect()
-        connect_params = test_env.connect_params(admin=admin)
-        connect_params.update(overrides)
-        select_ai.connect(**connect_params)
-
-    return _connect_as
-
-
-@pytest.fixture(scope="session")
-def credential_async_connect_as(test_env):
-    async def _connect_as(admin=False, **overrides):
-        await select_ai.async_disconnect()
-        connect_params = test_env.connect_params(admin=admin)
-        connect_params.update(overrides)
-        await select_ai.async_connect(**connect_params)
-
-    return _connect_as

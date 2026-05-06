@@ -6,9 +6,9 @@
 # -----------------------------------------------------------------------------
 
 import logging
+import oracledb
 import pytest
 import select_ai
-import oracledb
 
 from select_ai.errors import DatabaseNotConnectedError
 
@@ -26,10 +26,10 @@ def drop_params(request, credential_test_params):
     request.cls.drop_params = credential_test_params
 
 @pytest.fixture(scope="class", autouse=True)
-def setup_and_teardown(request, connect, drop_params, credential_connect_as):
+def setup_and_teardown(request, connect, drop_params, test_env):
     logger.info("=== Setting up TestDropCredential class ===")
     assert select_ai.is_connected(), "Connection to DB failed"
-    request.cls.credential_connect_as = staticmethod(credential_connect_as)
+    request.cls.test_env = test_env
     logger.info("Initial connection successful")
     yield
     logger.info("=== Tearing down TestDropCredential class ===")
@@ -65,17 +65,37 @@ class TestDropCredential:
         logger.info(f"Creating local user: {test_username}")
         test_password = cls.drop_params["password"]
         escaped_password = test_password.replace('"', '""')
-        with select_ai.cursor() as admin_cursor:
-            try:
-                admin_cursor.execute(f"DROP USER {test_username} CASCADE")
-            except oracledb.DatabaseError:
-                pass  # Ignore if user doesn't exist
-            admin_cursor.execute(
-                f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
-            )
-            admin_cursor.execute(f"grant create session, create table, unlimited tablespace to {test_username}")
-            admin_cursor.execute(f"grant execute on dbms_cloud to {test_username}")
+        with oracledb.connect(**cls.test_env.connect_params(admin=True)) as conn:
+            with conn.cursor() as admin_cursor:
+                try:
+                    admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+                except oracledb.DatabaseError:
+                    pass  # Ignore if user doesn't exist
+                admin_cursor.execute(
+                    f'CREATE USER {test_username} IDENTIFIED BY "{escaped_password}"'
+                )
+                admin_cursor.execute(
+                    "grant create session, create table, unlimited tablespace "
+                    f"to {test_username}"
+                )
+                admin_cursor.execute(
+                    f"grant execute on dbms_cloud to {test_username}"
+                )
+            conn.commit()
         logger.info(f"Local user '{test_username}' ready.")
+
+    @classmethod
+    def drop_local_user(cls, test_username="TEST_USER1"):
+        with oracledb.connect(**cls.test_env.connect_params(admin=True)) as conn:
+            with conn.cursor() as admin_cursor:
+                admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+            conn.commit()
+
+    @classmethod
+    def local_user_connect_params(cls, test_username, test_password):
+        connect_params = cls.test_env.connect_params()
+        connect_params.update(user=test_username, password=test_password)
+        return connect_params
 
     def test_2301(self):
         """Deleting existing credential (force=True)"""
@@ -131,25 +151,33 @@ class TestDropCredential:
         """Deleting credential as local user"""
         logger.info("Deleting credential as local user")
         test_username = "TEST_USER1"
-        self.credential_connect_as(admin=True)
         self.create_local_user(test_username)
-        self.credential_connect_as(
-            user=test_username,
-            password=self.drop_params["password"],
-        )
         credential = self.get_cred_param(self.drop_params, "GENAI_CRED_USER1")
         try:
-            select_ai.delete_credential("GENAI_CRED_USER1", force=True)
+            with oracledb.connect(
+                **self.local_user_connect_params(
+                    test_username,
+                    self.drop_params["password"],
+                )
+            ) as conn:
+                with conn.cursor() as cursor:
+                    cursor.callproc(
+                        "DBMS_CLOUD.CREATE_CREDENTIAL",
+                        keyword_parameters=credential,
+                    )
+                    cursor.callproc(
+                        "DBMS_CLOUD.DROP_CREDENTIAL",
+                        keyword_parameters={
+                            "credential_name": "GENAI_CRED_USER1"
+                        },
+                    )
+                conn.commit()
             logger.info("Local user credential deleted successfully.")
         except Exception as e:
             pytest.fail(f"delete_credential() raised {e} unexpectedly.")
         finally:
-            select_ai.disconnect()
-            self.credential_connect_as(admin=True)
-            with select_ai.cursor() as admin_cursor:
-                admin_cursor.execute(f"DROP USER {test_username} CASCADE")
+            self.drop_local_user(test_username)
             logger.info("Local user cleanup complete.")
-            self.credential_connect_as()
 
     def test_2308(self):
         """Deleting credential with invalid name"""
@@ -162,10 +190,12 @@ class TestDropCredential:
         """Deleting credential without active connection"""
         logger.info("Deleting credential without active connection")
         select_ai.disconnect()
-        with pytest.raises(select_ai.errors.DatabaseNotConnectedError) as cm:
-            select_ai.delete_credential("GENAI_CRED", force=True)
-        logger.info(f"Expected DatabaseNotConnectedError raised: {cm.value}")
-        self.credential_connect_as()
+        try:
+            with pytest.raises(select_ai.errors.DatabaseNotConnectedError) as cm:
+                select_ai.delete_credential("GENAI_CRED", force=True)
+            logger.info(f"Expected DatabaseNotConnectedError raised: {cm.value}")
+        finally:
+            select_ai.create_pool(**self.test_env.connect_params(use_pool=True))
 
     def test_2310(self):
         """Deleting credential with name exceeding max length"""

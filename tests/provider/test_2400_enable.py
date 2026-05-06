@@ -34,10 +34,8 @@ def provider_params(request, test_env):
     request.cls.provider_params = params
 
 @pytest.fixture(scope="class", autouse=True)
-def setup_and_teardown(request, connect, provider_params, test_env):
+def setup_and_teardown(request, connect, provider_params):
     logger.info("=== Setting up TestEnableProvider class ===")
-    select_ai.disconnect()
-    select_ai.connect(**test_env.connect_params(admin=True))
     assert select_ai.is_connected(), "Connection to DB failed"
     cls = request.cls
     cls.user = cls.provider_params["user"]
@@ -51,8 +49,6 @@ def setup_and_teardown(request, connect, provider_params, test_env):
             cls.create_local_user(user)
             cls.db_users.append(user)
     except Exception:
-        select_ai.disconnect()
-        select_ai.connect(**test_env.connect_params())
         raise
     yield
     logger.info("=== Tearing down TestEnableProvider class ===")
@@ -63,11 +59,6 @@ def setup_and_teardown(request, connect, provider_params, test_env):
                 admin_cursor.execute(f"DROP USER {user} CASCADE")
             except oracledb.DatabaseError:
                 pass  # Ignore if already dropped
-    try:
-        select_ai.disconnect()
-    except Exception as e:
-        logger.warning(f"Warning: disconnect failed ({e})")
-    select_ai.connect(**test_env.connect_params())
 
 @pytest.fixture(autouse=True)
 def log_test_name(request):
