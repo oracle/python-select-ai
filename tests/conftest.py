@@ -71,7 +71,7 @@ def _grant_basic_schema_privileges(cur, username: str):
 
 def _grant_select_ai_privileges(cur, username: str):
     try:
-        cur.execute(GRANT_PRIVILEGES_TO_USER.format(username.strip()))
+        cur.execute(GRANT_PRIVILEGES_TO_USER, user=username)
     except Exception as exc:
         msg = str(exc)
         if (

@@ -189,3 +189,15 @@ def test_2008_generate_with_none_attributes(synthetic_profile):
         ValueError, match="'synthetic_data_attributes' cannot be None"
     ):
         synthetic_profile.generate_synthetic_data(None)
+
+
+def test_2009_params_json_string_is_coerced():
+    """JSON-string params are coerced into SyntheticDataParams"""
+    attributes = SyntheticDataAttributes(
+        object_name="people",
+        params='{"sample_rows": 1, "table_statistics": "true"}',
+    )
+
+    assert isinstance(attributes.params, SyntheticDataParams)
+    assert attributes.params.sample_rows == 1
+    assert attributes.params.table_statistics is True
