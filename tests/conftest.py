@@ -30,6 +30,7 @@
 
 import os
 import uuid
+from urllib.parse import urlparse
 
 import oracledb
 import pytest
@@ -71,7 +72,7 @@ def _grant_basic_schema_privileges(cur, username: str):
 
 def _grant_select_ai_privileges(cur, username: str):
     try:
-        cur.execute(GRANT_PRIVILEGES_TO_USER, user=username)
+        cur.execute(GRANT_PRIVILEGES_TO_USER.format(username.strip()))
     except Exception as exc:
         msg = str(exc)
         if (
@@ -89,7 +90,31 @@ def _grant_http_access(cur, username: str, provider_endpoint: str):
         host=provider_endpoint,
     )
 
+def _grant_vector_index_http_access(cur, username: str):
+    location = os.environ.get("PYTEST_TEST_OBJSTORE_EMBEDDING_LOC")
+    if not location:
+        return
+    host = urlparse(location.strip()).hostname
+    if host:
+        _grant_http_access(cur, username=username, provider_endpoint=host)
 
+
+def _append_host_ace(cur, host: str, privileges, username: str):
+    privilege_list = ",".join([f"'{p}'" for p in privileges])
+    cur.execute(
+        f"""
+        BEGIN
+            DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
+                host => '{host}',
+                ace  => xs$ace_type(
+                           privilege_list => xs$name_list({privilege_list}),
+                           principal_name => '{username}',
+                           principal_type => xs_acl.ptype_db
+                       )
+            );
+        END;
+        """
+    )
 def get_env_value(name, default_value=None, required=False):
     """
     Returns the value of the environment variable if it is present and the
@@ -174,6 +199,10 @@ def setup_test_user(test_env):
                 cur,
                 username=test_env.test_user,
                 provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
+            )
+            _grant_vector_index_http_access(
+                cur,
+                username=test_env.test_user,
             )
             conn.commit()
         finally:
