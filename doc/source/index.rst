@@ -21,6 +21,7 @@ Getting Started
     user_guide/introduction.rst
     user_guide/installation.rst
     user_guide/connection.rst
+    user_guide/web_frameworks.rst
 
 
 Actions

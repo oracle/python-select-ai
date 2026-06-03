@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -73,6 +73,27 @@ class BaseTeam(ABC):
             f"{self.__class__.__name__}("
             f"team_name={self.team_name}, "
             f"attributes={self.attributes}, description={self.description})"
+        )
+
+
+def _json_or_none(value: Optional[Union[str, Mapping]]) -> Optional[str]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value
+    if isinstance(value, Mapping):
+        return json.dumps(value)
+    raise TypeError("value must be a JSON string or mapping")
+
+
+def _validate_object_storage_location(
+    object_storage_credential_name: Optional[str],
+    location: Optional[str],
+) -> None:
+    if bool(object_storage_credential_name) != bool(location):
+        raise ValueError(
+            "object_storage_credential_name and location must be specified "
+            "together"
         )
 
 
@@ -312,6 +333,177 @@ class Team(BaseTeam):
             else:
                 result = None
             return result
+
+    @classmethod
+    def export_team(
+        cls,
+        team_name: str,
+        object_storage_credential_name: Optional[str] = None,
+        location: Optional[str] = None,
+        params: Optional[Union[str, Mapping]] = None,
+    ) -> Optional[str]:
+        """
+        Export an AI agent team specification.
+
+        If object storage details are provided, the specification is written to
+        the given location and None is returned. Otherwise, the specification is
+        returned as a string.
+
+        :param str team_name: Name of the AI agent team to export.
+
+        :param str object_storage_credential_name: Optional credential name
+         used to write the exported specification to object storage. Must be
+         specified together with ``location``.
+
+        :param str location: Optional object storage URI where the exported
+         specification should be written. Must be specified together with
+         ``object_storage_credential_name``.
+
+        :param params: Optional export parameters. May be a JSON string or a
+         Python mapping.
+        :type params: str or Mapping
+
+        :return: Exported team specification as a JSON string when exporting
+         inline, or None when exporting to object storage.
+        :rtype: str or None
+        """
+        _validate_object_storage_location(
+            object_storage_credential_name, location
+        )
+        parameters = {
+            "team_name": team_name,
+        }
+        params_json = _json_or_none(params) if params is not None else "{}"
+        if params_json is not None:
+            parameters["params"] = params_json
+
+        with cursor() as cr:
+            if object_storage_credential_name:
+                parameters["object_storage_credential_name"] = (
+                    object_storage_credential_name
+                )
+                parameters["location"] = location
+                cr.callproc(
+                    "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                    keyword_parameters=parameters,
+                )
+                return None
+
+            data = cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters=parameters,
+            )
+            return data.read() if data is not None else None
+
+    @classmethod
+    def import_team(
+        cls,
+        profile_name: str,
+        team_name: Optional[str] = None,
+        specification: Optional[Union[str, Mapping]] = None,
+        object_storage_credential_name: Optional[str] = None,
+        location: Optional[str] = None,
+        force: Optional[bool] = False,
+        params: Optional[Union[str, Mapping]] = None,
+    ) -> None:
+        """
+        Import an AI agent team specification and create the associated team,
+        agents, tasks, and tools in the database.
+
+        :param str profile_name: Name of the Select AI profile to use for the
+         imported team and agents in the target database.
+
+        :param str team_name: Optional name for the imported team. If omitted,
+         the team name from the specification is used.
+
+        :param specification: Team specification to import. May be a JSON
+         string or a Python mapping. Omit this when importing from object
+         storage.
+        :type specification: str or Mapping
+
+        :param str object_storage_credential_name: Optional credential name
+         used to read the specification from object storage. Must be specified
+         together with ``location``.
+
+        :param str location: Optional object storage URI of the specification
+         to import. Must be specified together with
+         ``object_storage_credential_name``.
+
+        :param bool force: Whether to replace conflicting database objects
+         during import. Default value is False.
+
+        :param params: Optional import parameters. May be a JSON string or a
+         Python mapping.
+        :type params: str or Mapping
+        """
+        _validate_object_storage_location(
+            object_storage_credential_name, location
+        )
+        if specification is None and object_storage_credential_name is None:
+            raise ValueError(
+                "specification or object storage location must be specified"
+            )
+
+        parameters = {
+            "profile_name": profile_name,
+            "force": force,
+        }
+        if team_name is not None:
+            parameters["team_name"] = team_name
+        specification_json = _json_or_none(specification)
+        if specification_json is not None:
+            parameters["specification"] = specification_json
+        if object_storage_credential_name is not None:
+            parameters["object_storage_credential_name"] = (
+                object_storage_credential_name
+            )
+            parameters["location"] = location
+        params_json = _json_or_none(params)
+        if params_json is not None:
+            parameters["params"] = params_json
+
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.IMPORT_TEAM",
+                keyword_parameters=parameters,
+            )
+
+    def export(
+        self,
+        object_storage_credential_name: Optional[str] = None,
+        location: Optional[str] = None,
+        params: Optional[Union[str, Mapping]] = None,
+    ) -> Optional[str]:
+        """
+        Export this AI agent team specification.
+
+        If object storage details are provided, the specification is written to
+        the given location and None is returned. Otherwise, the specification is
+        returned as a string.
+
+        :param str object_storage_credential_name: Optional credential name
+         used to write the exported specification to object storage. Must be
+         specified together with ``location``.
+
+        :param str location: Optional object storage URI where the exported
+         specification should be written. Must be specified together with
+         ``object_storage_credential_name``.
+
+        :param params: Optional export parameters. May be a JSON string or a
+         Python mapping.
+        :type params: str or Mapping
+
+        :return: Exported team specification as a JSON string when exporting
+         inline, or None when exporting to object storage.
+        :rtype: str or None
+        """
+        return self.export_team(
+            team_name=self.team_name,
+            object_storage_credential_name=object_storage_credential_name,
+            location=location,
+            params=params,
+        )
 
     def set_attributes(self, attributes: TeamAttributes) -> None:
         """
@@ -587,6 +779,177 @@ class AsyncTeam(BaseTeam):
             else:
                 result = None
             return result
+
+    @classmethod
+    async def export_team(
+        cls,
+        team_name: str,
+        object_storage_credential_name: Optional[str] = None,
+        location: Optional[str] = None,
+        params: Optional[Union[str, Mapping]] = None,
+    ) -> Optional[str]:
+        """
+        Export an AI agent team specification.
+
+        If object storage details are provided, the specification is written to
+        the given location and None is returned. Otherwise, the specification is
+        returned as a string.
+
+        :param str team_name: Name of the AI agent team to export.
+
+        :param str object_storage_credential_name: Optional credential name
+         used to write the exported specification to object storage. Must be
+         specified together with ``location``.
+
+        :param str location: Optional object storage URI where the exported
+         specification should be written. Must be specified together with
+         ``object_storage_credential_name``.
+
+        :param params: Optional export parameters. May be a JSON string or a
+         Python mapping.
+        :type params: str or Mapping
+
+        :return: Exported team specification as a JSON string when exporting
+         inline, or None when exporting to object storage.
+        :rtype: str or None
+        """
+        _validate_object_storage_location(
+            object_storage_credential_name, location
+        )
+        parameters = {
+            "team_name": team_name,
+        }
+        params_json = _json_or_none(params) if params is not None else "{}"
+        if params_json is not None:
+            parameters["params"] = params_json
+
+        async with async_cursor() as cr:
+            if object_storage_credential_name:
+                parameters["object_storage_credential_name"] = (
+                    object_storage_credential_name
+                )
+                parameters["location"] = location
+                await cr.callproc(
+                    "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                    keyword_parameters=parameters,
+                )
+                return None
+
+            data = await cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters=parameters,
+            )
+            return await data.read() if data is not None else None
+
+    @classmethod
+    async def import_team(
+        cls,
+        profile_name: str,
+        team_name: Optional[str] = None,
+        specification: Optional[Union[str, Mapping]] = None,
+        object_storage_credential_name: Optional[str] = None,
+        location: Optional[str] = None,
+        force: Optional[bool] = False,
+        params: Optional[Union[str, Mapping]] = None,
+    ) -> None:
+        """
+        Import an AI agent team specification and create the associated team,
+        agents, tasks, and tools in the database.
+
+        :param str profile_name: Name of the Select AI profile to use for the
+         imported team and agents in the target database.
+
+        :param str team_name: Optional name for the imported team. If omitted,
+         the team name from the specification is used.
+
+        :param specification: Team specification to import. May be a JSON
+         string or a Python mapping. Omit this when importing from object
+         storage.
+        :type specification: str or Mapping
+
+        :param str object_storage_credential_name: Optional credential name
+         used to read the specification from object storage. Must be specified
+         together with ``location``.
+
+        :param str location: Optional object storage URI of the specification
+         to import. Must be specified together with
+         ``object_storage_credential_name``.
+
+        :param bool force: Whether to replace conflicting database objects
+         during import. Default value is False.
+
+        :param params: Optional import parameters. May be a JSON string or a
+         Python mapping.
+        :type params: str or Mapping
+        """
+        _validate_object_storage_location(
+            object_storage_credential_name, location
+        )
+        if specification is None and object_storage_credential_name is None:
+            raise ValueError(
+                "specification or object storage location must be specified"
+            )
+
+        parameters = {
+            "profile_name": profile_name,
+            "force": force,
+        }
+        if team_name is not None:
+            parameters["team_name"] = team_name
+        specification_json = _json_or_none(specification)
+        if specification_json is not None:
+            parameters["specification"] = specification_json
+        if object_storage_credential_name is not None:
+            parameters["object_storage_credential_name"] = (
+                object_storage_credential_name
+            )
+            parameters["location"] = location
+        params_json = _json_or_none(params)
+        if params_json is not None:
+            parameters["params"] = params_json
+
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.IMPORT_TEAM",
+                keyword_parameters=parameters,
+            )
+
+    async def export(
+        self,
+        object_storage_credential_name: Optional[str] = None,
+        location: Optional[str] = None,
+        params: Optional[Union[str, Mapping]] = None,
+    ) -> Optional[str]:
+        """
+        Export this AI agent team specification.
+
+        If object storage details are provided, the specification is written to
+        the given location and None is returned. Otherwise, the specification is
+        returned as a string.
+
+        :param str object_storage_credential_name: Optional credential name
+         used to write the exported specification to object storage. Must be
+         specified together with ``location``.
+
+        :param str location: Optional object storage URI where the exported
+         specification should be written. Must be specified together with
+         ``object_storage_credential_name``.
+
+        :param params: Optional export parameters. May be a JSON string or a
+         Python mapping.
+        :type params: str or Mapping
+
+        :return: Exported team specification as a JSON string when exporting
+         inline, or None when exporting to object storage.
+        :rtype: str or None
+        """
+        return await self.export_team(
+            team_name=self.team_name,
+            object_storage_credential_name=object_storage_credential_name,
+            location=location,
+            params=params,
+        )
 
     async def set_attributes(self, attributes: TeamAttributes) -> None:
         """

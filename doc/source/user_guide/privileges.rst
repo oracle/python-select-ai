@@ -37,6 +37,32 @@ output::
 
     Granted privileges to: <select_ai_db_user>
 
+.. latex:clearpage::
+
+***************************
+Grant network access
+***************************
+
+Connect as admin and run
+``select_ai.grant_network_access(...)`` to add a network ACL entry for
+host access. This wraps ``DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE`` and can be
+used for hosts that require privileges such as ``connect``, ``http``, or
+``smtp``.
+
+.. literalinclude:: ../../../samples/grant_network_access.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    Granted network access to: <select_ai_db_user>
+
+The async API is ``select_ai.async_grant_network_access(...)``.
+
+.. literalinclude:: ../../../samples/async/grant_network_access.py
+   :language: python
+   :lines: 14-
+
 
 ****************
 Revoke privilege

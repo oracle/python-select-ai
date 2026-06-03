@@ -149,7 +149,13 @@ Streaming chat
 
 ``stream=True`` lets callers consume generated CLOB responses chunk by chunk,
 reducing memory pressure and making it easier to progressively forward output
-to files, services, or user interfaces.
+to files, services, or user interfaces. Streaming text APIs return an iterator
+of ``str`` chunks. The ``chunk_size`` parameter controls the number of CLOB
+characters read per chunk; it is not a byte count.
+
+Streaming is supported by ``generate()``, ``chat()``, ``narrate()``,
+``explain_sql()``, ``show_sql()``, and ``show_prompt()``. It is not supported
+for ``run_sql()``, which returns a ``pandas.DataFrame``.
 
 .. latex:clearpage::
 

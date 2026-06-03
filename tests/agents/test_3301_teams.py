@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -9,13 +9,14 @@
 3301 - Final contract, regression and corner-case tests for select_ai.agent.Team
 """
 
-import uuid
+import json
 import logging
 import os
+import uuid
+
+import oracledb
 import pytest
 import select_ai
-import oracledb
-
 from select_ai.agent import (
     Agent,
     AgentAttributes,
@@ -24,14 +25,15 @@ from select_ai.agent import (
     Team,
     TeamAttributes,
 )
-
 from select_ai.errors import AgentTeamNotFoundError
 
 # -----------------------------------------------------------------------------
 # Logging
 # -----------------------------------------------------------------------------
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_DIR = os.path.join(PROJECT_ROOT, "log")
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -50,17 +52,22 @@ root.addHandler(fh)
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
+
 def log_step(msg):
     LOGGER.info("%s", msg)
 
+
 def log_ok(msg):
     LOGGER.info("%s", msg)
+
+
 logger = LOGGER
 
 
 # -----------------------------------------------------------------------------
 # Per-test logging
 # -----------------------------------------------------------------------------
+
 
 @pytest.fixture(autouse=True)
 def log_test_name(request):
@@ -72,6 +79,7 @@ def log_test_name(request):
 # -----------------------------------------------------------------------------
 # Strict error checker (LIKE 3101 / 3201)
 # -----------------------------------------------------------------------------
+
 
 def expect_error(expected_code, fn):
     """
@@ -94,6 +102,16 @@ def expect_error(expected_code, fn):
         assert expected_code in str(e), f"Expected {expected_code}, got: {e}"
     else:
         pytest.fail(f"Expected error {expected_code} did not occur")
+
+
+def ignore_missing(fn):
+    try:
+        fn()
+    except (AgentTeamNotFoundError, oracledb.DatabaseError) as exc:
+        msg = str(exc)
+        if "ORA-20053" not in msg and "ORA-20051" not in msg:
+            raise
+
 
 # -----------------------------------------------------------------------------
 # Test constants
@@ -122,6 +140,7 @@ PYSAI_TEAM_DESC = "PYSAI TEAM FINAL CONTRACT TEST"
 #         "model": "cohere.command-r-plus"
 #     }
 
+
 @pytest.fixture(scope="module")
 def python_gen_ai_profile(profile_attributes):
     log_step(f"Creating profile: {PYSAI_TEAM_PROFILE_NAME}")
@@ -135,8 +154,7 @@ def python_gen_ai_profile(profile_attributes):
 
     # ---- STRICT TYPE CHECK ----
     assert isinstance(
-        profile_attributes,
-        select_ai.ProfileAttributes
+        profile_attributes, select_ai.ProfileAttributes
     ), "profile_attributes must be ProfileAttributes object"
 
     profile = select_ai.Profile(
@@ -157,8 +175,10 @@ def python_gen_ai_profile(profile_attributes):
 def task_attributes():
     return TaskAttributes(
         instruction="Help the user. Question: {query}",
+        tools=[],
         enable_human_tool=False,
     )
+
 
 @pytest.fixture(scope="module")
 def task(task_attributes):
@@ -172,6 +192,7 @@ def task(task_attributes):
     yield task
     log_step(f"Deleting task: {PYSAI_TEAM_TASK_NAME}")
     task.delete(force=True)
+
 
 @pytest.fixture(scope="module")
 def agent(python_gen_ai_profile):
@@ -190,12 +211,14 @@ def agent(python_gen_ai_profile):
     log_step(f"Deleting agent: {PYSAI_TEAM_AGENT_NAME}")
     agent.delete(force=True)
 
+
 @pytest.fixture(scope="module")
 def team_attributes(agent, task):
     return TeamAttributes(
         agents=[{"name": agent.agent_name, "task": task.task_name}],
         process="sequential",
     )
+
 
 @pytest.fixture(scope="module")
 def team(team_attributes):
@@ -210,6 +233,7 @@ def team(team_attributes):
     log_step(f"Deleting team: {PYSAI_TEAM_NAME}")
     team.delete(force=True)
 
+
 # -----------------------------------------------------------------------------
 # Tests
 # -----------------------------------------------------------------------------
@@ -217,6 +241,7 @@ def team(team_attributes):
 # -----------------------------------------------------------------------------
 # Logging-enhanced Team tests
 # -----------------------------------------------------------------------------
+
 
 def test_3300_create_and_identity(team, team_attributes):
     log_step("Validating team identity and attributes")
@@ -268,7 +293,9 @@ def test_3304_disable_enable_contract(team):
 
 
 def test_3305_set_attribute_process(team):
-    log_step(f"Setting team attribute 'process' to 'sequential': {team.team_name}")
+    log_step(
+        f"Setting team attribute 'process' to 'sequential': {team.team_name}"
+    )
     team.set_attribute("process", "sequential")
     fetched = Team.fetch(PYSAI_TEAM_NAME)
     log_step(f"Fetched attribute process: {fetched.attributes.process}")
@@ -307,6 +334,57 @@ def test_3308_fetch_non_existing():
     log_ok("Fetch non-existing confirmed error")
 
 
+def test_3309_export_team(team):
+    log_step(f"Exporting team: {team.team_name}")
+    specification = team.export()
+    log_step(f"Exported team specification: {specification}")
+    spec = json.loads(specification)
+    assert isinstance(specification, str)
+    assert len(specification) > 0
+    assert spec["name"] == PYSAI_TEAM_AGENT_NAME
+    assert spec["task"]["task_name"] == PYSAI_TEAM_TASK_NAME
+    log_ok("Export team OK")
+
+
+def test_3310_import_team(team, python_gen_ai_profile):
+    imported_team_name = f"PYSAI_IMPORTED_TEAM_{uuid.uuid4().hex.upper()}"
+    imported_agent_name = f"PYSAI_IMPORTED_AGENT_{uuid.uuid4().hex.upper()}"
+    imported_task_name = f"PYSAI_IMPORTED_TASK_{uuid.uuid4().hex.upper()}"
+
+    log_step(f"Exporting source team for import: {team.team_name}")
+    spec = json.loads(team.export())
+    spec["name"] = imported_agent_name
+    spec["task"]["task_name"] = imported_task_name
+
+    try:
+        log_step(f"Importing team: {imported_team_name}")
+        Team.import_team(
+            profile_name=PYSAI_TEAM_PROFILE_NAME,
+            team_name=imported_team_name,
+            specification=spec,
+            force=True,
+        )
+        imported = Team.fetch(imported_team_name)
+        log_step(f"Imported team attributes: {imported.attributes}")
+        assert imported.team_name == imported_team_name
+        assert imported.attributes.agents == [
+            {"name": imported_agent_name, "task": imported_task_name}
+        ]
+    finally:
+        log_step(f"Deleting imported team: {imported_team_name}")
+        ignore_missing(
+            lambda: Team.delete_team(imported_team_name, force=True)
+        )
+        log_step(f"Deleting imported task: {imported_task_name}")
+        ignore_missing(
+            lambda: Task.delete_task(imported_task_name, force=True)
+        )
+        log_step(f"Deleting imported agent: {imported_agent_name}")
+        ignore_missing(
+            lambda: Agent.delete_agent(imported_agent_name, force=True)
+        )
+
+
 def test_3311_set_attribute_invalid_key(team):
     log_step(f"Setting invalid attribute key on team: {team.team_name}")
     expect_error("ORA-20053", lambda: team.set_attribute("no_such_attr", "x"))
@@ -320,14 +398,21 @@ def test_3312_set_attribute_none(team):
 
 
 def test_3313_set_attribute_empty(team):
-    log_step(f"Setting team attribute 'process' to empty string: {team.team_name}")
+    log_step(
+        f"Setting team attribute 'process' to empty string: {team.team_name}"
+    )
     expect_error("ORA-20053", lambda: team.set_attribute("process", ""))
     log_ok("Set attribute empty confirmed error")
 
 
 def test_3314_set_attribute_invalid_value(team):
-    log_step(f"Setting team attribute 'process' to invalid value: {team.team_name}")
-    expect_error("ORA-20053", lambda: team.set_attribute("process", "not_a_real_process"))
+    log_step(
+        f"Setting team attribute 'process' to invalid value: {team.team_name}"
+    )
+    expect_error(
+        "ORA-20053",
+        lambda: team.set_attribute("process", "not_a_real_process"),
+    )
     log_ok("Set attribute invalid value confirmed error")
 
 
@@ -385,7 +470,10 @@ def test_3319_create_existing_without_replace(team_attributes):
     t1 = Team(name, team_attributes, "TMP1")
     t1.create(replace=False)
     log_step(f"Attempting to create existing team without replace: {name}")
-    expect_error("ORA-20053", lambda: Team(name, team_attributes, "TMP2").create(replace=False))
+    expect_error(
+        "ORA-20053",
+        lambda: Team(name, team_attributes, "TMP2").create(replace=False),
+    )
     t1.delete(force=True)
     log_ok("Create existing without replace confirmed error")
 
