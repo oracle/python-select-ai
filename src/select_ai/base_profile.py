@@ -132,7 +132,9 @@ class ProfileAttributes(SelectAIDataClass):
 
     def set_attribute(self, key, value):
         if key in Provider.keys() and not isinstance(value, Provider):
-            setattr(self.provider, key, value)
+            if self.provider is None:
+                self.provider = Provider()
+            setattr(self.provider, Provider.key_alias(key), value)
         else:
             setattr(self, key, value)
 

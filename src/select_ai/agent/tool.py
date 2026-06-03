@@ -439,28 +439,6 @@ class Tool(_BaseTool):
         )
 
     @classmethod
-    def create_http_tool(
-        cls,
-        tool_name: str,
-        credential_name: str,
-        endpoint: str,
-        description: Optional[str] = None,
-        replace: bool = False,
-        instruction: Optional[str] = None,
-    ) -> "Tool":
-        http_tool_params = HTTPToolParams(
-            credential_name=credential_name, endpoint=endpoint
-        )
-        return cls.create_built_in_tool(
-            tool_name=tool_name,
-            tool_type=ToolType.HTTP,
-            tool_params=http_tool_params,
-            description=description,
-            replace=replace,
-            instruction=instruction,
-        )
-
-    @classmethod
     def create_pl_sql_tool(
         cls,
         tool_name: str,
@@ -921,28 +899,6 @@ class AsyncTool(_BaseTool):
             tool_name=tool_name,
             tool_type=ToolType.NOTIFICATION,
             tool_params=email_notification_tool_params,
-            description=description,
-            replace=replace,
-            instruction=instruction,
-        )
-
-    @classmethod
-    async def create_http_tool(
-        cls,
-        tool_name: str,
-        credential_name: str,
-        endpoint: str,
-        description: Optional[str] = None,
-        replace: bool = False,
-        instruction: Optional[str] = None,
-    ) -> "AsyncTool":
-        http_tool_params = HTTPToolParams(
-            credential_name=credential_name, endpoint=endpoint
-        )
-        return await cls.create_built_in_tool(
-            tool_name=tool_name,
-            tool_type=ToolType.HTTP,
-            tool_params=http_tool_params,
             description=description,
             replace=replace,
             instruction=instruction,

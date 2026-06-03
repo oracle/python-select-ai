@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -299,6 +299,23 @@ async def test_1715_generate_explainsql(async_generate_profile):
         logger.debug("Response = %s", explain_sql)
         assert isinstance(explain_sql, str)
         assert len(explain_sql) > 0
+
+
+@pytest.mark.anyio
+async def test_1716_chat_stream(async_generate_profile):
+    """chat with stream=True returns text chunks"""
+    logger.info("Validating async chat with stream=True returns text chunks")
+    chunks = await async_generate_profile.chat(
+        prompt="What is OCI ?", stream=True, chunk_size=1024
+    )
+    response_chunks = []
+    async for chunk in chunks:
+        response_chunks.append(chunk)
+    response = "".join(response_chunks)
+    logger.debug("Response = %s", response)
+    assert isinstance(response, str)
+    assert len(response) > 0
+    assert "Oracle Cloud Infrastructure" in response
 
 
 @pytest.mark.anyio

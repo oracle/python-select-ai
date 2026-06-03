@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -269,6 +269,19 @@ def test_1615_generate_explainsql(generate_profile):
         logger.debug("Response = %s", explain_sql)
         assert isinstance(explain_sql, str)
         assert len(explain_sql) > 0
+
+
+def test_1616_chat_stream(generate_profile):
+    """chat with stream=True returns text chunks"""
+    logger.info("Validating chat with stream=True returns text chunks")
+    chunks = generate_profile.chat(
+        prompt="What is OCI ?", stream=True, chunk_size=1024
+    )
+    response = "".join(chunks)
+    logger.debug("Response = %s", response)
+    assert isinstance(response, str)
+    assert len(response) > 0
+    assert "Oracle Cloud Infrastructure" in response
 
 
 def test_1616_empty_prompt_raises_value_error(negative_profile):

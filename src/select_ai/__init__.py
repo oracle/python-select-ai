@@ -34,10 +34,12 @@ from .db import (
 from .errors import *
 from .privilege import (
     async_grant_http_access,
+    async_grant_network_access,
     async_grant_privileges,
     async_revoke_http_access,
     async_revoke_privileges,
     grant_http_access,
+    grant_network_access,
     grant_privileges,
     revoke_http_access,
     revoke_privileges,

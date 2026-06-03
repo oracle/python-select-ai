@@ -177,6 +177,20 @@ output::
 
 .. latex:clearpage::
 
+***********************
+Async streaming chat
+***********************
+
+.. literalinclude:: ../../../samples/async/profile_chat_stream.py
+   :language: python
+   :lines: 14-
+
+``stream=True`` lets callers consume generated CLOB responses chunk by chunk,
+reducing memory pressure and making it easier to progressively forward output
+to files, services, or user interfaces.
+
+.. latex:clearpage::
+
 **************************
 Summarize
 **************************

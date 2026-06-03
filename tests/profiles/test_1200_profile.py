@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -223,6 +223,14 @@ def test_1207():
         attribute_name="model", attribute_value="meta.llama-3.1-70b-instruct"
     )
     assert profile.attributes.provider.model == "meta.llama-3.1-70b-instruct"
+
+
+def test_1207_profile_attributes_set_provider_attribute_without_provider():
+    """Set a provider attribute when provider is not specified"""
+    attributes = ProfileAttributes()
+    attributes.set_attribute("model", "meta.llama-3.1-70b-instruct")
+
+    assert attributes.provider.model == "meta.llama-3.1-70b-instruct"
 
 
 def test_1208(oci_credential, oci_compartment_id):

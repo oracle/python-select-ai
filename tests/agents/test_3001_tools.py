@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -10,17 +10,20 @@
 (with logging for behavior visibility)
 """
 
-import uuid
 import logging
-import pytest
 import os
-import select_ai
+import uuid
+
 import oracledb
+import pytest
+import select_ai
 from select_ai.agent import Tool
 from select_ai.errors import AgentToolNotFoundError
 
 # Path
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3001_tools.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
@@ -41,6 +44,7 @@ logger = logging.getLogger()
 # Per-test logging
 # -----------------------------------------------------------------------------
 
+
 @pytest.fixture(autouse=True)
 def log_test_name(request):
     logger.info(f"--- Starting test: {request.function.__name__} ---")
@@ -52,15 +56,20 @@ def log_test_name(request):
 # Helper Functions
 # -----------------------------------------------------------------------------
 
+
 def get_tool_status(tool_name):
     with select_ai.cursor() as cur:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT status
             FROM USER_AI_AGENT_TOOLS
             WHERE tool_name = :tool_name
-        """, {"tool_name": tool_name})
+        """,
+            {"tool_name": tool_name},
+        )
         row = cur.fetchone()
         return row[0] if row else None
+
 
 # -----------------------------------------------------------------------------
 # Constants
@@ -87,8 +96,6 @@ CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME = (
 DISABLED_TOOL_NAME = f"PYSAI_3001_DISABLED_TOOL_{UUID}"
 DEFAULT_STATUS_TOOL_NAME = f"PYSAI_3001_DEFAULT_STATUS_TOOL_{UUID}"
 DROP_FORCE_MISSING_TOOL = f"PYSAI_3001_DROP_MISSING_{UUID}"
-HTTP_TOOL_NAME = f"PYSAI_3001_HTTP_TOOL_{UUID}"
-HTTP_ENDPOINT = "https://example.com/api/tool"
 EMAIL_RECIPIENT = os.getenv("PYSAI_TEST_EMAIL_RECIPIENT")
 EMAIL_SENDER = os.getenv("PYSAI_TEST_EMAIL_SENDER")
 EMAIL_SMTP_HOST = os.getenv("PYSAI_TEST_EMAIL_SMTPHOST")
@@ -96,6 +103,7 @@ smtp_username = os.getenv("PYSAI_TEST_EMAIL_CRED_USERNAME")
 smtp_password = os.getenv("PYSAI_TEST_EMAIL_CRED_PASSWORD")
 slack_username = os.getenv("PYSAI_TEST_SLACK_USERNAME")
 slack_password = os.getenv("PYSAI_TEST_SLACK_PASSWORD")
+
 
 @pytest.fixture(scope="module")
 def email_credential():
@@ -107,7 +115,9 @@ def email_credential():
         select_ai.delete_credential(cred_name)
         logger.info("Dropped existing EMAIL credential: %s", cred_name)
     except Exception as e:
-        logger.info("EMAIL credential did not exist or could not be dropped: %s", e)
+        logger.info(
+            "EMAIL credential did not exist or could not be dropped: %s", e
+        )
 
     # Create fresh credential
     credential = {
@@ -116,10 +126,7 @@ def email_credential():
         "password": smtp_password,
     }
 
-    select_ai.create_credential(
-        credential=credential,
-        replace=True
-    )
+    select_ai.create_credential(credential=credential, replace=True)
     logger.info("Created EMAIL credential: %s", cred_name)
 
     yield cred_name
@@ -128,7 +135,10 @@ def email_credential():
     try:
         select_ai.delete_credential(cred_name)
     except Exception as e:
-        logger.warning("Failed to delete EMAIL credential during teardown: %s", e)
+        logger.warning(
+            "Failed to delete EMAIL credential during teardown: %s", e
+        )
+
 
 @pytest.fixture(scope="module")
 def slack_credential():
@@ -140,7 +150,9 @@ def slack_credential():
         select_ai.delete_credential(cred_name)
         logger.info("Dropped existing SLACK credential: %s", cred_name)
     except Exception as e:
-        logger.info("SLACK credential did not exist or could not be dropped: %s", e)
+        logger.info(
+            "SLACK credential did not exist or could not be dropped: %s", e
+        )
 
     # Create fresh SLACK credential (backend-required fields)
     credential = {
@@ -149,10 +161,7 @@ def slack_credential():
         "password": slack_password,
     }
 
-    select_ai.create_credential(
-        credential=credential,
-        replace=True
-    )
+    select_ai.create_credential(credential=credential, replace=True)
     logger.info("Created SLACK credential: %s", cred_name)
 
     yield cred_name
@@ -161,7 +170,9 @@ def slack_credential():
     try:
         select_ai.delete_credential(cred_name)
     except Exception as e:
-        logger.warning("Failed to delete SLACK credential during teardown: %s", e)
+        logger.warning(
+            "Failed to delete SLACK credential during teardown: %s", e
+        )
 
 
 # -----------------------------------------------------------------------------
@@ -254,6 +265,7 @@ def plsql_tool(plsql_function):
     logger.info("Deleting PL/SQL tool")
     tool.delete(force=True)
 
+
 @pytest.fixture(scope="module")
 def web_search_tool():
     """Fixture for Web Search Tool positive case."""
@@ -264,10 +276,13 @@ def web_search_tool():
         credential_name="OPENAI_CRED",
         replace=True,
     )
-    logger.info("WEBSEARCH Tool created successfully: %s", WEB_SEARCH_TOOL_NAME)
+    logger.info(
+        "WEBSEARCH Tool created successfully: %s", WEB_SEARCH_TOOL_NAME
+    )
     yield tool
     logger.info("Deleting Web Search tool")
     tool.delete(force=True)
+
 
 @pytest.fixture(scope="module")
 def email_tool(email_credential):
@@ -285,6 +300,7 @@ def email_tool(email_credential):
     yield tool
     logger.info("Deleting EMAIL tool")
     tool.delete(force=True)
+
 
 @pytest.fixture(scope="module")
 def slack_tool(slack_credential):
@@ -306,9 +322,10 @@ def slack_tool(slack_credential):
         else:
             raise e
     finally:
-        if 'tool' in locals():
+        if "tool" in locals():
             logger.info("Deleting SLACK tool")
             tool.delete(force=True)
+
 
 @pytest.fixture(scope="module")
 def neg_sql_tool():
@@ -322,6 +339,7 @@ def neg_sql_tool():
     yield tool
     logger.info("Deleting NEG_SQL_TOOL")
     tool.delete(force=True)
+
 
 @pytest.fixture(scope="module")
 def neg_rag_tool():
@@ -350,9 +368,11 @@ def neg_plsql_tool():
     logger.info("Deleting NEG_PLSQL_TOOL")
     tool.delete(force=True)
 
+
 # -----------------------------------------------------------------------------
 # POSITIVE TESTS
 # -----------------------------------------------------------------------------
+
 
 def test_3000_sql_tool_created(sql_tool):
     logger.info("Validating SQL tool creation")
@@ -373,7 +393,9 @@ def test_3001_rag_tool_created(rag_tool):
 def test_3002_plsql_tool_created(plsql_tool):
     logger.info("Validating PL/SQL tool creation")
     logger.info("PL/SQL Tool created successfully: %s", PLSQL_TOOL_NAME)
-    logger.info("PL/SQL function created successfully: %s", PLSQL_FUNCTION_NAME)
+    logger.info(
+        "PL/SQL function created successfully: %s", PLSQL_FUNCTION_NAME
+    )
     assert plsql_tool.tool_name == PLSQL_TOOL_NAME
     assert plsql_tool.attributes.function == PLSQL_FUNCTION_NAME
 
@@ -443,9 +465,12 @@ def test_3009_slack_tool_created(slack_tool):
 
     # If the tool is None (because of expected ORA-20052 error), skip the assertion
     if slack_tool is None:
-        logger.info("SLACK tool creation failed with expected error ORA-20052, but continuing test.")
+        logger.info(
+            "SLACK tool creation failed with expected error ORA-20052, but continuing test."
+        )
     else:
         assert slack_tool.tool_name == "SLACK_TOOL"
+
 
 def test_3010_custom_tool_attributes_roundtrip():
     logger.info(
@@ -483,7 +508,10 @@ def test_3010_custom_tool_attributes_roundtrip():
         )
         assert isinstance(fetched.attributes.tool_inputs, list)
         assert fetched.attributes.tool_inputs[0]["name"] == "p_birth_date"
-        assert "birth date" in fetched.attributes.tool_inputs[0]["description"].lower()
+        assert (
+            "birth date"
+            in fetched.attributes.tool_inputs[0]["description"].lower()
+        )
     finally:
         tool.delete(force=True)
 
@@ -522,7 +550,9 @@ def test_3012_custom_tool_with_tool_type_without_instruction(sql_profile):
     )
     tool.create(replace=True)
     try:
-        fetched = select_ai.agent.Tool.fetch(CUSTOM_WITH_TYPE_NO_INSTR_TOOL_NAME)
+        fetched = select_ai.agent.Tool.fetch(
+            CUSTOM_WITH_TYPE_NO_INSTR_TOOL_NAME
+        )
         logger.info(
             "Fetched custom tool | name=%s | type=%s | instruction=%s | profile=%s",
             fetched.tool_name,
@@ -554,7 +584,9 @@ def test_3013_custom_tool_with_tool_type_and_instruction(sql_profile):
     )
     tool.create(replace=True)
     try:
-        fetched = select_ai.agent.Tool.fetch(CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME)
+        fetched = select_ai.agent.Tool.fetch(
+            CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME
+        )
         assert fetched.tool_name == CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME
         assert fetched.attributes.tool_type == select_ai.agent.ToolType.SQL
         assert fetched.attributes.instruction is not None
@@ -567,13 +599,19 @@ def test_3013_custom_tool_with_tool_type_and_instruction(sql_profile):
 def test_3014_sql_tool_with_invalid_profile_created(neg_sql_tool):
     logger.info("Validating SQL tool with invalid profile is stored")
     assert neg_sql_tool.tool_name == "NEG_SQL_TOOL"
-    assert neg_sql_tool.attributes.tool_params.profile_name == "NON_EXISTENT_PROFILE"
+    assert (
+        neg_sql_tool.attributes.tool_params.profile_name
+        == "NON_EXISTENT_PROFILE"
+    )
 
 
 def test_3015_rag_tool_with_invalid_profile_created(neg_rag_tool):
     logger.info("Validating RAG tool with invalid profile is stored")
     assert neg_rag_tool.tool_name == "NEG_RAG_TOOL"
-    assert neg_rag_tool.attributes.tool_params.profile_name == "NON_EXISTENT_RAG_PROFILE"
+    assert (
+        neg_rag_tool.attributes.tool_params.profile_name
+        == "NON_EXISTENT_RAG_PROFILE"
+    )
 
 
 def test_3016_plsql_tool_with_invalid_function_created(neg_plsql_tool):
@@ -611,7 +649,9 @@ def test_3020_create_tool_default_status_enabled(sql_profile):
     tool = select_ai.agent.Tool.create_built_in_tool(
         tool_name=DEFAULT_STATUS_TOOL_NAME,
         tool_type=select_ai.agent.ToolType.SQL,
-        tool_params=select_ai.agent.SQLToolParams(profile_name=SQL_PROFILE_NAME),
+        tool_params=select_ai.agent.SQLToolParams(
+            profile_name=SQL_PROFILE_NAME
+        ),
     )
     try:
         status = get_tool_status(DEFAULT_STATUS_TOOL_NAME)
@@ -661,32 +701,3 @@ def test_3023_drop_tool_force_false_non_existent_raises():
     with pytest.raises(oracledb.Error) as exc:
         tool.delete(force=False)
     logger.info("Received expected drop error: %s", exc.value)
-
-
-def test_3024_http_tool_created(email_credential):
-    logger.info("Creating HTTP tool: %s", HTTP_TOOL_NAME)
-    try:
-        tool = select_ai.agent.Tool.create_http_tool(
-            tool_name=HTTP_TOOL_NAME,
-            credential_name=email_credential,
-            endpoint=HTTP_ENDPOINT,
-            description="HTTP Tool",
-            replace=True,
-        )
-    except oracledb.DatabaseError as e:
-        if "ORA-20052" in str(e):
-            logger.info(
-                "HTTP tool creation failed with expected backend-side error: %s",
-                e,
-            )
-            return
-        raise
-    try:
-        fetched = select_ai.agent.Tool.fetch(HTTP_TOOL_NAME)
-        assert fetched.tool_name == HTTP_TOOL_NAME
-        assert fetched.attributes.tool_type == select_ai.agent.ToolType.HTTP
-        assert fetched.attributes.tool_params.credential_name == email_credential
-        assert fetched.attributes.tool_params.endpoint == HTTP_ENDPOINT
-    finally:
-        logger.info("Deleting HTTP tool: %s", HTTP_TOOL_NAME)
-        tool.delete(force=True)
