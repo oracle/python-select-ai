@@ -70,8 +70,32 @@ def test_1150_grant_network_access(admin_connect, test_env):
         assert _network_ace_exists(cursor, host, principal, "SMTP", 587)
 
 
+def test_1151_revoke_network_access(admin_connect, test_env):
+    host = f"pysai-{uuid.uuid4().hex}.example.com"
+    principal = test_env.test_user.upper()
+
+    select_ai.grant_network_access(
+        users=test_env.test_user,
+        host=host,
+        privileges=["connect", "smtp"],
+        lower_port=587,
+        upper_port=587,
+    )
+    select_ai.revoke_network_access(
+        users=test_env.test_user,
+        host=host,
+        privileges=["connect", "smtp"],
+        lower_port=587,
+        upper_port=587,
+    )
+
+    with select_ai.cursor() as cursor:
+        assert not _network_ace_exists(cursor, host, principal, "CONNECT", 587)
+        assert not _network_ace_exists(cursor, host, principal, "SMTP", 587)
+
+
 @pytest.mark.anyio
-async def test_1151_async_grant_network_access(async_admin_connect, test_env):
+async def test_1152_async_grant_network_access(async_admin_connect, test_env):
     host = f"pysai-{uuid.uuid4().hex}.example.com"
     principal = test_env.test_user.upper()
 
@@ -95,3 +119,35 @@ async def test_1151_async_grant_network_access(async_admin_connect, test_env):
         )
         count = await cursor.fetchone()
         assert count[0] > 0
+
+
+@pytest.mark.anyio
+async def test_1153_async_revoke_network_access(async_admin_connect, test_env):
+    host = f"pysai-{uuid.uuid4().hex}.example.com"
+    principal = test_env.test_user.upper()
+
+    await select_ai.async_grant_network_access(
+        users=test_env.test_user,
+        host=host,
+        privileges="connect",
+    )
+    await select_ai.async_revoke_network_access(
+        users=test_env.test_user,
+        host=host,
+        privileges="connect",
+    )
+
+    async with select_ai.async_cursor() as cursor:
+        await cursor.execute(
+            """
+            SELECT COUNT(*)
+            FROM DBA_HOST_ACES
+            WHERE host = :host
+            AND principal = :principal
+            AND privilege = 'CONNECT'
+            """,
+            host=host,
+            principal=principal,
+        )
+        count = await cursor.fetchone()
+        assert count[0] == 0

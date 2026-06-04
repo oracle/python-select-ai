@@ -39,6 +39,24 @@ output::
 
 .. latex:clearpage::
 
+****************
+Revoke privilege
+****************
+
+Similarly, to revoke use the method
+``select_ai.revoke_privileges(users=select_ai_user)``
+
+
+.. literalinclude:: ../../../samples/select_ai_revoke_privilege.py
+   :language: python
+   :lines: 15-
+
+output::
+
+    Revoked privileges from: <select_ai_db_user>
+
+.. latex:clearpage::
+
 ***************************
 Grant network access
 ***************************
@@ -63,19 +81,27 @@ The async API is ``select_ai.async_grant_network_access(...)``.
    :language: python
    :lines: 14-
 
+.. latex:clearpage::
 
-****************
-Revoke privilege
-****************
+***************************
+Revoke network access
+***************************
 
-Similarly, to revoke use the method
-``select_ai.revoke_privileges(users=select_ai_user)``
+Connect as admin and run
+``select_ai.revoke_network_access(...)`` to remove a network ACL entry for
+host access. This wraps ``DBMS_NETWORK_ACL_ADMIN.REMOVE_HOST_ACE`` and should
+use the same host, privileges, and port range that were used to grant access.
 
-
-.. literalinclude:: ../../../samples/select_ai_revoke_privilege.py
+.. literalinclude:: ../../../samples/revoke_network_access.py
    :language: python
-   :lines: 15-
+   :lines: 14-
 
 output::
 
-    Granted privileges to: <select_ai_db_user>
+    Revoked network access from: <select_ai_db_user>
+
+The async API is ``select_ai.async_revoke_network_access(...)``.
+
+.. literalinclude:: ../../../samples/async/revoke_network_access.py
+   :language: python
+   :lines: 14-

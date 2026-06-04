@@ -21,7 +21,6 @@ Getting Started
     user_guide/introduction.rst
     user_guide/installation.rst
     user_guide/connection.rst
-    user_guide/web_frameworks.rst
 
 
 Actions
@@ -79,6 +78,15 @@ Profile
 
     user_guide/profile.rst
 
+Command Line Interface
+======================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/cli.rst
+
 
 Conversation
 ============
@@ -126,3 +134,12 @@ AI Agent
     :maxdepth: 3
 
     user_guide/agent.rst
+
+Web Frameworks
+==============
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/web_frameworks.rst

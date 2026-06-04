@@ -51,6 +51,27 @@ def _append_host_ace_statement(privileges: List[str]) -> str:
     """
 
 
+def _remove_host_ace_statement(privileges: List[str]) -> str:
+    privilege_bind_names = [
+        f"privilege_{idx}" for idx, _ in enumerate(privileges)
+    ]
+    privilege_list = ", ".join(f":{name}" for name in privilege_bind_names)
+    return f"""
+    BEGIN
+        DBMS_NETWORK_ACL_ADMIN.REMOVE_HOST_ACE(
+            host => :host,
+            lower_port => :lower_port,
+            upper_port => :upper_port,
+            ace  => xs$ace_type(
+                        privilege_list => xs$name_list({privilege_list}),
+                        principal_name => :user,
+                        principal_type => xs_acl.ptype_db
+                    )
+        );
+    END;
+    """
+
+
 def _append_host_ace_parameters(
     user: str,
     host: str,
@@ -165,6 +186,34 @@ async def async_revoke_http_access(
             )
 
 
+async def async_revoke_network_access(
+    users: Union[str, List[str]],
+    host: str,
+    privileges: Union[str, List[str]],
+    lower_port: Optional[int] = None,
+    upper_port: Optional[int] = None,
+):
+    """
+    Async method to remove a network ACL entry for host access.
+    """
+    users = _as_list(users, "users")
+    privileges = _as_list(privileges, "privileges")
+    statement = _remove_host_ace_statement(privileges)
+
+    async with async_cursor() as cr:
+        for user in users:
+            await cr.execute(
+                statement,
+                **_append_host_ace_parameters(
+                    user=user,
+                    host=host,
+                    privileges=privileges,
+                    lower_port=lower_port,
+                    upper_port=upper_port,
+                ),
+            )
+
+
 def grant_privileges(users: Union[str, List[str]]):
     """
     This method grants execute privilege on the packages DBMS_CLOUD,
@@ -246,4 +295,32 @@ def revoke_http_access(users: Union[str, List[str]], provider_endpoint: str):
                 DISABLE_AI_PROFILE_DOMAIN_FOR_USER,
                 user=user,
                 host=provider_endpoint,
+            )
+
+
+def revoke_network_access(
+    users: Union[str, List[str]],
+    host: str,
+    privileges: Union[str, List[str]],
+    lower_port: Optional[int] = None,
+    upper_port: Optional[int] = None,
+):
+    """
+    Removes a network ACL entry for host access.
+    """
+    users = _as_list(users, "users")
+    privileges = _as_list(privileges, "privileges")
+    statement = _remove_host_ace_statement(privileges)
+
+    with cursor() as cr:
+        for user in users:
+            cr.execute(
+                statement,
+                **_append_host_ace_parameters(
+                    user=user,
+                    host=host,
+                    privileges=privileges,
+                    lower_port=lower_port,
+                    upper_port=upper_port,
+                ),
             )

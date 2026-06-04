@@ -45,6 +45,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+cli = [
+    "click",
+]
 test = [
     "anyio",
     "pytest",
@@ -55,6 +58,9 @@ Homepage = "https://github.com/oracle/python-select-ai"
 Repository = "https://github.com/oracle/python-select-ai"
 Issues = "https://github.com/oracle/python-select-ai/issues"
 Documentation = "https://oracle.github.io/python-select-ai/"
+
+[project.scripts]
+select-ai = "select_ai.cli.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["src"]
