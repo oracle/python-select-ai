@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. Command line interface &#8212; Select AI for Python 1.4.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=67589dc7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. Using select_ai with Python web frameworks" href="web_frameworks.html" />
+    <link rel="prev" title="1. AsyncTool" href="async_agent.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. Command line interface</a><ul>
+<li><a class="reference internal" href="#connection-options">1.1. Connection options</a></li>
+<li><a class="reference internal" href="#interactive-chat">1.2. Interactive chat</a></li>
+<li><a class="reference internal" href="#sql-commands">1.3. SQL commands</a></li>
+<li><a class="reference internal" href="#profile-commands">1.4. Profile commands</a></li>
+<li><a class="reference internal" href="#command-summary">1.5. Command summary</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="async_agent.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="web_frameworks.html"
+                          title="next chapter"><span class="section-number">1. </span>Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/cli.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="web_frameworks.html" title="1. Using select_ai with Python web frameworks"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="async_agent.html" title="1. AsyncTool"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Command line interface</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="command-line-interface">
+<span id="cli"></span><h1><span class="section-number">1. </span>Command line interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">select-ai</span></code> command line interface (CLI) provides a terminal workflow for
+using Select AI profiles without writing Python code. It is intended for quick
+exploration, profile validation, prompt testing, SQL generation,
+summarization, translation, and interactive chat against an existing profile.</p>
+<p>The CLI is useful for developers who want a fast shell workflow and for
+non-developers who are comfortable running terminal commands but do not want to
+write Python code. It can help users check whether a profile is configured
+correctly, inspect generated SQL, try prompts during development, or interact
+with a curated profile through a simple command.</p>
+<p>The CLI works with Select AI profiles. RAG is supported when the selected
+profile is already configured with a vector index. Additional CLI options and
+workflows will be added in upcoming releases as the CLI evolves.</p>
+<a class="reference internal image-reference" href="../_images/select_ai_cli_demo.gif"><img alt="Select AI CLI demo" src="../_images/select_ai_cli_demo.gif" style="width: 100%;" />
+</a>
+<p>The package provides an optional <code class="docutils literal notranslate"><span class="pre">select-ai</span></code> command line tool. Install the
+CLI extra to use it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;select_ai[cli]&#39;</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">--help</span></code> to view the available command groups and
+<code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">&lt;command&gt;</span> <span class="pre">--help</span></code> to view options for a specific command.</p>
+<p>Set the database connection details as environment variables, or pass them as
+command line options:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_USER</span><span class="o">=</span>&lt;db_user&gt;
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_PASSWORD</span><span class="o">=</span>&lt;db_password&gt;
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_DB_CONNECT_STRING</span><span class="o">=</span>&lt;db_connect_string&gt;
+</pre></div>
+</div>
+<section id="connection-options">
+<h2><span class="section-number">1.1. </span>Connection options<a class="headerlink" href="#connection-options" title="Link to this heading">¶</a></h2>
+<p>All CLI commands accept the same database connection options:</p>
+<table class="docutils align-left" id="id1">
+<caption><span class="caption-text">Connection options</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Environment variable</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--user</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT_AI_USER</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT_AI_PASSWORD</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dsn</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT_AI_DB_CONNECT_STRING</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--wallet-location</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT_AI_WALLET_LOCATION</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--wallet-password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT_AI_WALLET_PASSWORD</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>If <code class="docutils literal notranslate"><span class="pre">--password</span></code> and <code class="docutils literal notranslate"><span class="pre">SELECT_AI_PASSWORD</span></code> are not set, the CLI prompts for
+the database password. Wallet options are optional and are only needed for
+wallet-based database connections.</p>
+</section>
+<section id="interactive-chat">
+<h2><span class="section-number">1.2. </span>Interactive chat<a class="headerlink" href="#interactive-chat" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">chat</span></code> subcommand starts an interactive profile chat
+Read-Eval-Print Loop (REPL). A REPL is a terminal session that reads each
+prompt you type, evaluates it, prints the response, and then waits for the next
+prompt. Pass an existing Select AI profile with <code class="docutils literal notranslate"><span class="pre">--profile</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">select</span>-ai<span class="w"> </span>chat<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE
+</pre></div>
+</div>
+<p>The REPL uses <code class="docutils literal notranslate"><span class="pre">Profile.chat_session()</span></code> so prompts in the same terminal session
+share conversation context. Responses stream by default. Use <code class="docutils literal notranslate"><span class="pre">--no-stream</span></code> to
+print each response after it is fully generated.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Connected to Select AI profile: OCI_AI_PROFILE
+Type /help for commands. Type /exit to quit.
+select_ai&gt; What tables can I ask about?
+...
+select_ai&gt; /exit
+</pre></div>
+</div>
+<p>Useful options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--user</span></code>, <code class="docutils literal notranslate"><span class="pre">--password</span></code>, and <code class="docutils literal notranslate"><span class="pre">--dsn</span></code> override the environment values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--wallet-location</span></code> and <code class="docutils literal notranslate"><span class="pre">--wallet-password</span></code> configure wallet connections.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--chunk-size</span></code> controls the number of CLOB characters read per stream chunk.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--conversation-length</span></code> controls how many prompts are retained in context.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--keep-conversation</span></code> keeps the database conversation after the REPL exits.</p></li>
+</ul>
+<p>Inside the REPL, use these commands:</p>
+<table class="docutils align-left" id="id2">
+<caption><span class="caption-text">Chat REPL commands</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/help</span></code></p></td>
+<td><p>Show available REPL commands.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/clear</span></code></p></td>
+<td><p>Start a fresh database conversation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/exit</span></code></p></td>
+<td><p>Exit the chat session.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/quit</span></code></p></td>
+<td><p>Exit the chat session.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="sql-commands">
+<h2><span class="section-number">1.3. </span>SQL commands<a class="headerlink" href="#sql-commands" title="Link to this heading">¶</a></h2>
+<p>SQL operations are one-shot subcommands instead of a REPL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>show<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
+<span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>run<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
+<span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>explain<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
+<span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>narrate<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">explain</span></code>, and <code class="docutils literal notranslate"><span class="pre">narrate</span></code> stream text output by default. Use
+<code class="docutils literal notranslate"><span class="pre">--no-stream</span></code> to print the response after it is fully generated, and
+<code class="docutils literal notranslate"><span class="pre">--chunk-size</span></code> to control the number of CLOB characters read per stream
+chunk.</p>
+<p><code class="docutils literal notranslate"><span class="pre">run</span></code> executes the generated SQL and prints the returned result table. It
+does not support streaming.</p>
+</section>
+<section id="profile-commands">
+<h2><span class="section-number">1.4. </span>Profile commands<a class="headerlink" href="#profile-commands" title="Link to this heading">¶</a></h2>
+<p>Summarize and translate are available under the <code class="docutils literal notranslate"><span class="pre">profile</span></code> command group:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>list
+<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>list<span class="w"> </span>--pattern<span class="w"> </span><span class="s2">&quot;OCI.*&quot;</span>
+
+<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;Text to summarize&quot;</span>
+<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span>--file<span class="w"> </span>notes.txt
+<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--location-uri<span class="w"> </span>https://example.com/article.txt
+<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--location-uri<span class="w"> </span>https://objectstorage.example.com/n/namespace/b/bucket/o/file.txt<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--credential-name<span class="w"> </span>OBJECT_STORE_CRED
+
+<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>translate<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--source-language<span class="w"> </span>English<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--target-language<span class="w"> </span>German<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">&quot;Thank you&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">profile</span> <span class="pre">list</span></code> prints profile names visible to the connected database user.
+Use <code class="docutils literal notranslate"><span class="pre">--pattern</span></code> to filter names with a regular expression.</p>
+<p><code class="docutils literal notranslate"><span class="pre">profile</span> <span class="pre">summarize</span></code> accepts one content source at a time: inline text,
+<code class="docutils literal notranslate"><span class="pre">--file</span></code>, or <code class="docutils literal notranslate"><span class="pre">--location-uri</span></code>. Use <code class="docutils literal notranslate"><span class="pre">--prompt</span></code> to guide the summary and
+<code class="docutils literal notranslate"><span class="pre">--credential-name</span></code> when the location URI requires an object storage
+credential.</p>
+</section>
+<section id="command-summary">
+<h2><span class="section-number">1.5. </span>Command summary<a class="headerlink" href="#command-summary" title="Link to this heading">¶</a></h2>
+<table class="docutils align-left" id="id3">
+<caption><span class="caption-text">CLI command summary</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">chat</span></code></p></td>
+<td><p>Start an interactive context-aware chat session.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">sql</span> <span class="pre">show</span></code></p></td>
+<td><p>Generate SQL without executing it.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">sql</span> <span class="pre">run</span></code></p></td>
+<td><p>Generate SQL, execute it, and print the result table.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">sql</span> <span class="pre">explain</span></code></p></td>
+<td><p>Explain generated SQL.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">sql</span> <span class="pre">narrate</span></code></p></td>
+<td><p>Generate and execute SQL, then return a natural language answer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">profile</span> <span class="pre">list</span></code></p></td>
+<td><p>List saved profile names.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">profile</span> <span class="pre">summarize</span></code></p></td>
+<td><p>Summarize inline content, a file, or a URI.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">profile</span> <span class="pre">translate</span></code></p></td>
+<td><p>Translate text with a saved profile.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. Command line interface</a><ul>
+<li><a class="reference internal" href="#connection-options">1.1. Connection options</a></li>
+<li><a class="reference internal" href="#interactive-chat">1.2. Interactive chat</a></li>
+<li><a class="reference internal" href="#sql-commands">1.3. SQL commands</a></li>
+<li><a class="reference internal" href="#profile-commands">1.4. Profile commands</a></li>
+<li><a class="reference internal" href="#command-summary">1.5. Command summary</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="async_agent.html"
+                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="web_frameworks.html"
+                          title="next chapter"><span class="section-number">1. </span>Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/cli.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="web_frameworks.html" title="1. Using select_ai with Python web frameworks"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="async_agent.html" title="1. AsyncTool"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Command line interface</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2026, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>

@@ -2,7 +2,8 @@
 
 ``select_ai.agent`` adds a thin Python layer over Oracle Autonomous Database's
 ``DBMS_CLOUD_AI_AGENT`` package so you can define tools, compose tasks, wire up
-agents and run teams from Python using the existing select_ai connection objects
+agents and run teams from Python using the existing Select AI connection
+objects.
 
 - Keep agent state and orchestration in the database
 
@@ -10,6 +11,25 @@ agents and run teams from Python using the existing select_ai connection objects
   endpoints, Slack or Email notifications) and attach them to tasks
 
 - Group agents into teams and invoke them with a single API call
+
+Agent workflows build on the same setup used by profiles: connect to Oracle
+Database, create or reuse a Select AI profile, create credentials for any
+external service used by tools, and grant network access for external
+endpoints. See :ref:`Connection <conn>`, :ref:`Profile <profile>`,
+:ref:`Credential <credential>`, and :ref:`Privileges <privileges>`.
+
+The usual agent workflow is:
+
+* Create tools that an agent can use.
+* Create tasks that describe the work and list the tools available for that
+  task.
+* Create an agent with a role and an LLM profile.
+* Create a team that pairs agents with tasks.
+* Run the team with a user prompt.
+
+Tools, tasks, agents, and teams are database objects. Use ``replace=True`` when
+you want to recreate an existing object with the same name, and ``force=True``
+when cleanup should succeed even if the object does not exist.
 
 .. latex:clearpage::
 
@@ -20,6 +40,10 @@ agents and run teams from Python using the existing select_ai connection objects
 A callable which Select AI agent can invoke to accomplish a certain task.
 Users can either register built-in tools or create a custom tool using a PL/SQL
 stored procedure.
+
+Use focused tools with clear instructions. The task and agent prompts decide
+when tools are used, so tool names, descriptions, and instructions should be
+specific enough for the model to choose the right tool.
 
 Supported Tools
 +++++++++++++++
@@ -45,11 +69,6 @@ Python layer and persist the tool in the Database using
          - ``recipient``
          - ``sender``
          - ``smtp_host``
-    * - ``HTTP``
-      - ``select_ai.agent.Tool.create_http_tool``
-      - - ``tool_name``
-        - ``credential_name``
-        - ``endpoint``
     * - ``SQL``
       - ``select_ai.agent.Tool.create_sql_tool``
       - - ``tool_name``
@@ -58,7 +77,7 @@ Python layer and persist the tool in the Database using
       - ``select_ai.agent.Tool.create_slack_notification_tool``
       - - ``tool_name``
         - ``credential_name``
-        - ``slack_channel``
+        - ``channel``
     * - ``WEBSEARCH``
       - ``select_ai.agent.Tool.create_websearch_tool``
       - - ``tool_name``
@@ -72,6 +91,31 @@ Python layer and persist the tool in the Database using
       - - ``tool_name``
         - ``profile_name``
 
+Tool selection
+++++++++++++++
+
+.. list-table:: When to use each tool
+    :header-rows: 1
+    :widths: 25 75
+    :align: left
+
+    * - Tool type
+      - Use case
+    * - ``SQL``
+      - Ask questions over database objects using a Select AI profile.
+    * - ``RAG``
+      - Answer questions using content indexed by a vector index profile.
+    * - ``WEBSEARCH``
+      - Search public web content using a web search credential.
+    * - ``SLACK``
+      - Send a Slack notification from an agent workflow.
+    * - ``EMAIL``
+      - Send an email notification from an agent workflow.
+    * - ``PL/SQL custom tool``
+      - Call a database procedure or function for application-specific work.
+
+Notification and web search tools require credentials and network access for
+the external service. SQL and RAG tools require existing Select AI profiles.
 
 .. latex:clearpage::
 
@@ -113,7 +157,7 @@ output::
                                              profile_name='oci_ai_profile',
                                              recipient=None,
                                              sender=None,
-                                             slack_channel=None,
+                                             channel=None,
                                              smtp_host=None),
                    tool_inputs=None,
                    tool_type=<ToolType.SQL: 'SQL'>)
@@ -167,6 +211,10 @@ Create Task
 In the following task, we use the ``MOVIE_SQL_TOOL`` created in the
 previous step
 
+The ``instruction`` is the main task prompt. Use placeholders such as
+``{query}`` when the user prompt should be inserted into the task. The
+``tools`` list limits which tools the agent can use for the task.
+
 .. literalinclude:: ../../../samples/agent/task_create.py
    :language: python
    :lines: 14-
@@ -208,6 +256,10 @@ optional description. The attributes must include key agent properties such as
 ``profile_name`` which specifies the LLM profile used for prompt generation
 and ``role``, which outlines the agent’s intended role and behavioral context.
 
+The agent profile supplies the model used for planning and reasoning. The role
+should describe the agent's domain, boundaries, and expected behavior. Keep the
+role specific to the tasks assigned to the agent.
+
 .. autoclass:: select_ai.agent.AgentAttributes
    :members:
 
@@ -248,6 +300,22 @@ pairings, allowing users to assign specific tasks to designated agents. User
 can perform multiple tasks by assigning the same agent to different tasks.
 The ``process`` attribute defines how tasks should be executed.
 
+Currently, ``process="sequential"`` is used to execute task assignments in
+order. Reuse the same agent in multiple team entries when the agent should
+perform multiple tasks.
+
+For example:
+
+.. code-block:: python
+
+   attributes = TeamAttributes(
+       agents=[
+           {"name": "MOVIE_ANALYST", "task": "ANALYZE_MOVIE_TASK"},
+           {"name": "MOVIE_ANALYST", "task": "SUMMARIZE_MOVIE_TASK"},
+       ],
+       process="sequential",
+   )
+
 .. autoclass:: select_ai.agent.TeamAttributes
    :members:
 
@@ -260,6 +328,21 @@ The ``process`` attribute defines how tasks should be executed.
 
 Run Team
 ++++++++
+
+``Team.run(...)`` starts the team workflow. The ``prompt`` argument is passed to
+the task and can be referenced by task instructions using ``{query}``.
+``params`` can include ``conversation_id`` to associate multiple runs with the
+same conversation and ``variables`` to pass additional key-value inputs.
+
+.. code-block:: python
+
+   result = team.run(
+       prompt="Could you list the movies in the database?",
+       params={
+           "conversation_id": conversation_id,
+           "variables": {"audience": "analyst"},
+       },
+   )
 
 .. literalinclude:: ../../../samples/agent/team_create.py
    :language: python
@@ -285,6 +368,81 @@ output::
     9. Historical Epic (Historical, 2019-01-09)
     10. Biographical (Biography, 2019-01-10)
     ... (list continues up to 100 movies)
+
+.. latex:clearpage::
+
+Export and Import Team
+++++++++++++++++++++++
+
+Select AI agent teams can be exported into a portable specification and
+imported into the same database, a different database, or another Select AI
+service. The specification describes the team composition and the associated
+agent, task, and tool definitions that are needed to recreate the team.
+
+``Team.export_team()`` returns the specification as a JSON string by default.
+``Team.import_team()`` accepts either that JSON string or a Python mapping
+containing the same team definition structure. In most cases, pass a ``dict``,
+for example the result of ``json.loads(exported_spec)``. Other
+JSON-serializable `collections.abc.Mapping <https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping>`__
+objects, such as ``OrderedDict``, can also be used. On import,
+``profile_name`` identifies the Select AI profile to use in the target
+database. ``team_name`` can be provided to create the imported team under a new
+name; this is useful when importing into the same database as the source team.
+
+If imported object names conflict with existing agents, tasks, tools, or teams,
+set ``force=True`` to let the database replace the conflicting objects. Use this
+carefully when importing into a shared schema because conflicting components can
+be dropped and recreated.
+
+.. literalinclude:: ../../../samples/agent/team_export_import.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    Exported specification:
+    {
+      "name": "EXPORT_IMPORT_MOVIE_ANALYST",
+      "component_type": "Agent",
+      "task": {
+        "task_name": "EXPORT_IMPORT_MOVIE_TASK",
+        "instruction": "Help the user with movie questions. Question: {query}",
+        "task_attributes": {
+          "enable_human_tool": "false",
+          "tools": []
+        }
+      },
+      "llm_config": {
+        "name": "LLAMA_4_MAVERICK",
+        "component_type": "oci"
+      }
+    }
+    Imported team: Team(team_name=IMPORTED_MOVIE_AGENT_TEAM, ...)
+
+The same APIs can also read from or write to object storage by passing both
+``object_storage_credential_name`` and ``location``. When exporting to object
+storage, ``Team.export_team()`` writes the specification to the location and
+returns ``None``. When importing from object storage, pass the same credential
+and location instead of ``specification``.
+
+Lifecycle helpers
++++++++++++++++++
+
+All agent object types support list, fetch, enable, disable, and delete
+operations.
+
+.. code-block:: python
+
+   for tool in select_ai.agent.Tool.list():
+       print(tool.tool_name)
+
+   task = select_ai.agent.Task.fetch("ANALYZE_MOVIE_TASK")
+   agent = select_ai.agent.Agent.fetch("MOVIE_ANALYST")
+   team = select_ai.agent.Team.fetch("MOVIE_AGENT_TEAM")
+
+   team.disable()
+   team.enable()
+   team.delete(force=True)
 
 .. latex:clearpage::
 
@@ -341,14 +499,3 @@ output::
      promoting advanced AI technologies, including products like ChatGPT, and
      provides information about their research, products, and mission to ensure
      that artificial general intelligence benefits all of humanity.
-
-
-**************
-Async AI Agent
-**************
-
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    async_agent.rst

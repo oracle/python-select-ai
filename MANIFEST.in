@@ -1,2 +1,3 @@
 recursive-include tests *.py
 recursive-include samples *.py
+recursive-include recipes *.py

@@ -5,21 +5,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. SyntheticDataAttributes &#8212; Select AI for Python 1.3.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Generation modes &#8212; Select AI for Python 1.4.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=82640b3f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+    <script src="../_static/documentation_options.js?v=67589dc7"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. SummaryParams" href="summary.html" />
-    <link rel="prev" title="1. VectorIndex Object Model" href="vector_index.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="next" title="1. Inline content" href="summary.html" />
+    <link rel="prev" title="1. Vector Index" href="vector_index.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
             <script type="text/javascript" src="../_static/menu.js"></script>
@@ -63,22 +63,27 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#">1. Generation modes</a></li>
+<li><a class="reference internal" href="#generation-parameters">2. Generation parameters</a></li>
+<li><a class="reference internal" href="#sync-and-async-apis">3. Sync and async APIs</a><ul>
+<li><a class="reference internal" href="#syntheticdataattributes">3.1. <code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.SyntheticDataAttributes"><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#syntheticdataparams">2. <code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a><ul>
+<li><a class="reference internal" href="#syntheticdataparams">3.2. <code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.SyntheticDataParams"><code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#single-table-synthetic-data">3. Single table synthetic data</a><ul>
-<li><a class="reference internal" href="#single-table-sync-api">3.1. Single Table Sync API</a></li>
-<li><a class="reference internal" href="#singe-table-async-api">3.2. Singe Table Async API</a></li>
+<li><a class="reference internal" href="#single-table-synthetic-data">3.3. Single table synthetic data</a><ul>
+<li><a class="reference internal" href="#single-table-sync-api">3.3.1. Single Table Sync API</a></li>
+<li><a class="reference internal" href="#single-table-async-api">3.3.2. Single Table Async API</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#multi-table-synthetic-data">4. Multi table synthetic data</a><ul>
-<li><a class="reference internal" href="#multi-table-sync-api">4.1. Multi table Sync API</a></li>
-<li><a class="reference internal" href="#multi-table-async-api">4.2. Multi table Async API</a></li>
+<li><a class="reference internal" href="#multi-table-synthetic-data">3.4. Multi table synthetic data</a><ul>
+<li><a class="reference internal" href="#multi-table-sync-api">3.4.1. Multi table Sync API</a></li>
+<li><a class="reference internal" href="#multi-table-async-api">3.4.2. Multi table Async API</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -87,12 +92,12 @@
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="vector_index.html"
-                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Vector Index</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="summary.html"
-                          title="next chapter"><span class="section-number">1. </span>SummaryParams</a></p>
+                          title="next chapter"><span class="section-number">1. </span>Inline content</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -122,10 +127,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="summary.html" title="1. SummaryParams"
+          <a href="summary.html" title="1. Inline content"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="vector_index.html" title="1. VectorIndex Object Model"
+          <a href="vector_index.html" title="1. Vector Index"
              accesskey="P">previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -135,10 +140,10 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Generation modes</a></li>
                 <li class="right">
 
 
@@ -168,8 +173,92 @@
         <div class="bodywrapper">
           <div class="body" role="main">
 
-  <section id="syntheticdataattributes">
-<span id="synthetic-data"></span><h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code><a class="headerlink" href="#syntheticdataattributes" title="Link to this heading">¶</a></h1>
+  <p id="synthetic-data">Synthetic data generation uses a Select AI profile to populate database tables
+with generated rows. It is useful for demos, development, testing, and
+prototyping when representative data is needed but production data should not
+be copied.</p>
+<p>Synthetic data is inserted into the target tables in the connected database
+schema or in the schema identified by <code class="docutils literal notranslate"><span class="pre">owner_name</span></code> or <code class="docutils literal notranslate"><span class="pre">object_list</span></code>. Before
+running generation, make sure the connected user has privileges on the target
+tables and that the Select AI profile is configured with a provider and
+credential.</p>
+<p>Use synthetic data generation with care in shared schemas. The API writes rows
+to the target tables; use dedicated test tables or schemas when experimenting.</p>
+<section id="generation-modes">
+<h1><span class="section-number">1. </span>Generation modes<a class="headerlink" href="#generation-modes" title="Link to this heading">¶</a></h1>
+<p>Use <code class="docutils literal notranslate"><span class="pre">object_name</span></code> for a single target table:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
+    <span class="n">object_name</span><span class="o">=</span><span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
+    <span class="n">record_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">&quot;the release date for the movies should be in 2019&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">object_list</span></code> for multiple target tables in one request:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
+    <span class="n">object_list</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;user_prompt&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;the release date for the movies should be in 2019&quot;</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ACTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DIRECTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Exactly one of <code class="docutils literal notranslate"><span class="pre">object_name</span></code> or <code class="docutils literal notranslate"><span class="pre">object_list</span></code> must be set.</p>
+</section>
+<section id="generation-parameters">
+<h1><span class="section-number">2. </span>Generation parameters<a class="headerlink" href="#generation-parameters" title="Link to this heading">¶</a></h1>
+<p>Use <code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code> to control how generation is performed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataParams</span><span class="p">(</span>
+    <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">priority</span><span class="o">=</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span>
+    <span class="n">comments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
+    <span class="n">object_name</span><span class="o">=</span><span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
+    <span class="n">record_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">&quot;Generate movie data for releases in 2019.&quot;</span><span class="p">,</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">sample_rows</span></code> controls how many existing rows are used as examples for the
+model. <code class="docutils literal notranslate"><span class="pre">table_statistics</span></code> and <code class="docutils literal notranslate"><span class="pre">comments</span></code> include additional table metadata.
+<code class="docutils literal notranslate"><span class="pre">priority</span></code> controls resource priority for generation work; supported values
+are <code class="docutils literal notranslate"><span class="pre">HIGH</span></code>, <code class="docutils literal notranslate"><span class="pre">MEDIUM</span></code>, and <code class="docutils literal notranslate"><span class="pre">LOW</span></code>.</p>
+</section>
+<section id="sync-and-async-apis">
+<h1><span class="section-number">3. </span>Sync and async APIs<a class="headerlink" href="#sync-and-async-apis" title="Link to this heading">¶</a></h1>
+<p>Use <code class="docutils literal notranslate"><span class="pre">Profile.generate_synthetic_data(...)</span></code> for synchronous applications and
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">AsyncProfile.generate_synthetic_data(...)</span></code> for asynchronous
+applications:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">profile</span><span class="o">.</span><span class="n">generate_synthetic_data</span><span class="p">(</span>
+    <span class="n">synthetic_data_attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">generate_synthetic_data</span><span class="p">(</span>
+    <span class="n">synthetic_data_attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For additional database-side attribute details, see the
+<a class="reference external" href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/dbms-cloud-ai-package.html#GUID-818B6825-FBF4-4EE9-9CE5-D3C6A74462AA">generate_synthetic_data PL/SQL API</a>.</p>
+<section id="syntheticdataattributes">
+<h2><span class="section-number">3.1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code><a class="headerlink" href="#syntheticdataattributes" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.SyntheticDataAttributes">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">SyntheticDataAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.SyntheticDataParams" title="select_ai.synthetic_data.SyntheticDataParams"><span class="pre">SyntheticDataParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.SyntheticDataAttributes" title="Link to this definition">¶</a></dt>
@@ -192,7 +281,7 @@ For e.g. “the release date for the movies should be in 2019”</p></li>
 
 </section>
 <section id="syntheticdataparams">
-<h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code><a class="headerlink" href="#syntheticdataparams" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">3.2. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code><a class="headerlink" href="#syntheticdataparams" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.SyntheticDataParams">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">SyntheticDataParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_statistics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HIGH'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.SyntheticDataParams" title="Link to this definition">¶</a></dt>
@@ -215,14 +304,12 @@ guide data generation. Default value is False</p></li>
 </dl>
 </dd></dl>
 
-<p>Also, check the <a class="reference external" href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/dbms-cloud-ai-package.html#GUID-818B6825-FBF4-4EE9-9CE5-D3C6A74462AA">generate_synthetic_data PL/SQL API</a>
-for attribute details</p>
 </section>
 <section id="single-table-synthetic-data">
-<h1><span class="section-number">3. </span>Single table synthetic data<a class="headerlink" href="#single-table-synthetic-data" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">3.3. </span>Single table synthetic data<a class="headerlink" href="#single-table-synthetic-data" title="Link to this heading">¶</a></h2>
 <p>The below example shows single table synthetic data generation</p>
 <section id="single-table-sync-api">
-<h2><span class="section-number">3.1. </span>Single Table Sync API<a class="headerlink" href="#single-table-sync-api" title="Link to this heading">¶</a></h2>
+<h3><span class="section-number">3.3.1. </span>Single Table Sync API<a class="headerlink" href="#single-table-sync-api" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -256,8 +343,8 @@ for attribute details</p>
 </pre></div>
 </div>
 </section>
-<section id="singe-table-async-api">
-<h2><span class="section-number">3.2. </span>Singe Table Async API<a class="headerlink" href="#singe-table-async-api" title="Link to this heading">¶</a></h2>
+<section id="single-table-async-api">
+<h3><span class="section-number">3.3.2. </span>Single Table Async API<a class="headerlink" href="#single-table-async-api" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -301,10 +388,10 @@ for attribute details</p>
 </section>
 </section>
 <section id="multi-table-synthetic-data">
-<h1><span class="section-number">4. </span>Multi table synthetic data<a class="headerlink" href="#multi-table-synthetic-data" title="Link to this heading">¶</a></h1>
-<p>The below example shows multitable synthetic data generation</p>
+<h2><span class="section-number">3.4. </span>Multi table synthetic data<a class="headerlink" href="#multi-table-synthetic-data" title="Link to this heading">¶</a></h2>
+<p>The below example shows multi-table synthetic data generation</p>
 <section id="multi-table-sync-api">
-<h2><span class="section-number">4.1. </span>Multi table Sync API<a class="headerlink" href="#multi-table-sync-api" title="Link to this heading">¶</a></h2>
+<h3><span class="section-number">3.4.1. </span>Multi table Sync API<a class="headerlink" href="#multi-table-sync-api" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -358,7 +445,7 @@ for attribute details</p>
 </div>
 </section>
 <section id="multi-table-async-api">
-<h2><span class="section-number">4.2. </span>Multi table Async API<a class="headerlink" href="#multi-table-async-api" title="Link to this heading">¶</a></h2>
+<h3><span class="section-number">3.4.2. </span>Multi table Async API<a class="headerlink" href="#multi-table-async-api" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -420,6 +507,7 @@ for attribute details</p>
 </div>
 </section>
 </section>
+</section>
 
 
             <div class="clearer"></div>
@@ -431,22 +519,27 @@ for attribute details</p>
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#">1. Generation modes</a></li>
+<li><a class="reference internal" href="#generation-parameters">2. Generation parameters</a></li>
+<li><a class="reference internal" href="#sync-and-async-apis">3. Sync and async APIs</a><ul>
+<li><a class="reference internal" href="#syntheticdataattributes">3.1. <code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.SyntheticDataAttributes"><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#syntheticdataparams">2. <code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a><ul>
+<li><a class="reference internal" href="#syntheticdataparams">3.2. <code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.SyntheticDataParams"><code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#single-table-synthetic-data">3. Single table synthetic data</a><ul>
-<li><a class="reference internal" href="#single-table-sync-api">3.1. Single Table Sync API</a></li>
-<li><a class="reference internal" href="#singe-table-async-api">3.2. Singe Table Async API</a></li>
+<li><a class="reference internal" href="#single-table-synthetic-data">3.3. Single table synthetic data</a><ul>
+<li><a class="reference internal" href="#single-table-sync-api">3.3.1. Single Table Sync API</a></li>
+<li><a class="reference internal" href="#single-table-async-api">3.3.2. Single Table Async API</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#multi-table-synthetic-data">4. Multi table synthetic data</a><ul>
-<li><a class="reference internal" href="#multi-table-sync-api">4.1. Multi table Sync API</a></li>
-<li><a class="reference internal" href="#multi-table-async-api">4.2. Multi table Async API</a></li>
+<li><a class="reference internal" href="#multi-table-synthetic-data">3.4. Multi table synthetic data</a><ul>
+<li><a class="reference internal" href="#multi-table-sync-api">3.4.1. Multi table Sync API</a></li>
+<li><a class="reference internal" href="#multi-table-async-api">3.4.2. Multi table Async API</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -455,12 +548,12 @@ for attribute details</p>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="vector_index.html"
-                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Vector Index</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="summary.html"
-                          title="next chapter"><span class="section-number">1. </span>SummaryParams</a></p>
+                          title="next chapter"><span class="section-number">1. </span>Inline content</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -490,10 +583,10 @@ for attribute details</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="summary.html" title="1. SummaryParams"
+          <a href="summary.html" title="1. Inline content"
              >next</a> |</li>
         <li class="right" >
-          <a href="vector_index.html" title="1. VectorIndex Object Model"
+          <a href="vector_index.html" title="1. Vector Index"
              >previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -503,10 +596,10 @@ for attribute details</p>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code></a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Generation modes</a></li>
                 <li class="right">
 
 

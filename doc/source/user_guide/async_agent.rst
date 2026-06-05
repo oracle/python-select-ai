@@ -1,8 +1,41 @@
 .. _async_agent:
 
 ``select_ai.agent`` also provides async interfaces to be used with
-``async`` / ``await`` keywords
+``async`` / ``await`` keywords. Use these classes in applications that already
+use ``asyncio`` and ``select_ai.async_connect()`` or
+``select_ai.create_pool_async()``.
 
+The async agent object model mirrors the synchronous agent object model:
+
+.. list-table:: Sync and async agent APIs
+   :header-rows: 1
+   :widths: 50 50
+   :align: left
+
+   * - Sync class
+     - Async class
+   * - ``select_ai.agent.Tool``
+     - ``select_ai.agent.AsyncTool``
+   * - ``select_ai.agent.Task``
+     - ``select_ai.agent.AsyncTask``
+   * - ``select_ai.agent.Agent``
+     - ``select_ai.agent.AsyncAgent``
+   * - ``select_ai.agent.Team``
+     - ``select_ai.agent.AsyncTeam``
+
+Create or reuse the same database objects as the synchronous APIs. Async
+methods must be awaited, and async list methods return async iterators.
+
+.. code-block:: python
+
+   await select_ai.async_connect(user=user, password=password, dsn=dsn)
+
+   async for tool in select_ai.agent.AsyncTool.list():
+       print(tool.tool_name)
+
+Tools, tasks, agents, and teams are database objects. Use ``replace=True`` when
+you want to recreate an existing object with the same name, and ``force=True``
+when cleanup should succeed even if the object does not exist.
 
 .. list-table:: Select AI Async Agent Tools
     :header-rows: 1
@@ -27,7 +60,7 @@
       - ``select_ai.agent.AsyncTool.create_slack_notification_tool``
       - - ``tool_name``
         - ``credential_name``
-        - ``slack_channel``
+        - ``channel``
     * - ``WEBSEARCH``
       - ``select_ai.agent.AsyncTool.create_websearch_tool``
       - - ``tool_name``
@@ -40,6 +73,14 @@
       - ``select_ai.agent.AsyncTool.create_rag_tool``
       - - ``tool_name``
         - ``profile_name``
+
+Notification and web search tools require credentials and network access for
+the external service. SQL and RAG tools require existing Select AI profiles.
+
+Tool selection follows the same guidance as :ref:`Agent <agent>`: use SQL
+tools for database questions, RAG tools for vector-index-backed content,
+notification tools for Slack or email, web search tools for public web content,
+and PL/SQL tools for application-specific database logic.
 
 *************
 ``AsyncTool``
@@ -73,7 +114,7 @@ output::
                                              profile_name='oci_ai_profile',
                                              recipient=None,
                                              sender=None,
-                                             slack_channel=None,
+                                             channel=None,
                                              smtp_host=None),
                    tool_inputs=None,
                    tool_type=<ToolType.SQL: 'SQL'>)
@@ -110,6 +151,10 @@ Create Task
 
 In the following task, we use the ``MOVIE_SQL_TOOL`` created in the
 previous step
+
+The ``instruction`` is the main task prompt. Use placeholders such as
+``{query}`` when the user prompt should be inserted into the task. The
+``tools`` list limits which tools the agent can use for the task.
 
 .. literalinclude:: ../../../samples/agent/async/task_create.py
    :language: python
@@ -194,6 +239,22 @@ AsyncTeam
 Run Team
 ++++++++
 
+``AsyncTeam.run(...)`` starts the team workflow. The ``prompt`` argument is
+passed to the task and can be referenced by task instructions using
+``{query}``. ``params`` can include ``conversation_id`` to associate multiple
+runs with the same conversation and ``variables`` to pass additional key-value
+inputs.
+
+.. code-block:: python
+
+   result = await team.run(
+       prompt="Could you list the movies in the database?",
+       params={
+           "conversation_id": conversation_id,
+           "variables": {"audience": "analyst"},
+       },
+   )
+
 .. literalinclude:: ../../../samples/agent/async/team_create.py
    :language: python
    :lines: 14-
@@ -232,10 +293,13 @@ agent, task, and tool definitions that are needed to recreate the team.
 
 ``AsyncTeam.export_team()`` returns the specification as a JSON string by
 default. ``AsyncTeam.import_team()`` accepts either that JSON string or a Python
-mapping. On import, ``profile_name`` identifies the Select AI profile to use in
-the target database. ``team_name`` can be provided to create the imported team
-under a new name; this is useful when importing into the same database as the
-source team.
+mapping containing the same team definition structure. In most cases, pass a
+``dict``, for example the result of ``json.loads(exported_spec)``. Other
+JSON-serializable `collections.abc.Mapping <https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping>`__
+objects, such as ``OrderedDict``, can also be used. On import,
+``profile_name`` identifies the Select AI profile to use in the target
+database. ``team_name`` can be provided to create the imported team under a new
+name; this is useful when importing into the same database as the source team.
 
 If imported object names conflict with existing agents, tasks, tools, or teams,
 set ``force=True`` to let the database replace the conflicting objects. Use this
@@ -272,6 +336,27 @@ The same APIs can also read from or write to object storage by passing both
 storage, ``AsyncTeam.export_team()`` writes the specification to the location
 and returns ``None``. When importing from object storage, pass the same
 credential and location instead of ``specification``.
+
+.. latex:clearpage::
+
+Lifecycle helpers
++++++++++++++++++
+
+All async agent object types support list, fetch, enable, disable, and delete
+operations.
+
+.. code-block:: python
+
+   async for tool in select_ai.agent.AsyncTool.list():
+       print(tool.tool_name)
+
+   task = await select_ai.agent.AsyncTask.fetch("ANALYZE_MOVIE_TASK")
+   agent = await select_ai.agent.AsyncAgent.fetch("MOVIE_ANALYST")
+   team = await select_ai.agent.AsyncTeam.fetch("MOVIE_AGENT_TEAM")
+
+   await team.disable()
+   await team.enable()
+   await team.delete(force=True)
 
 .. latex:clearpage::
 

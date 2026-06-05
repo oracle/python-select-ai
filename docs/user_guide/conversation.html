@@ -5,21 +5,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Conversation Object model &#8212; Select AI for Python 1.3.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Conversation Object model &#8212; Select AI for Python 1.4.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=82640b3f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+    <script src="../_static/documentation_options.js?v=67589dc7"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. VectorIndex Object Model" href="vector_index.html" />
-    <link rel="prev" title="12.1. AsyncProfile API" href="async_profile.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="next" title="1. Vector Index" href="vector_index.html" />
+    <link rel="prev" title="1. Async profile lifecycle" href="async_profile.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
             <script type="text/javascript" src="../_static/menu.js"></script>
@@ -78,7 +78,7 @@
 <li><a class="reference internal" href="#select_ai.Conversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-conversion">3.1. Create conversion</a></li>
+<li><a class="reference internal" href="#create-conversation">3.1. Create conversation</a></li>
 <li><a class="reference internal" href="#chat-session">3.2. Chat session</a></li>
 <li><a class="reference internal" href="#list-conversations">3.3. List conversations</a></li>
 <li><a class="reference internal" href="#delete-conversation">3.4. Delete conversation</a></li>
@@ -104,12 +104,12 @@
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="async_profile.html"
-                          title="previous chapter"><span class="section-number">12.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Async profile lifecycle</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="vector_index.html"
-                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></p>
+                          title="next chapter"><span class="section-number">1. </span>Vector Index</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -139,10 +139,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="vector_index.html" title="1. VectorIndex Object Model"
+          <a href="vector_index.html" title="1. Vector Index"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="async_profile.html" title="12.1. AsyncProfile API"
+          <a href="async_profile.html" title="1. Async profile lifecycle"
              accesskey="P">previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -152,7 +152,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
@@ -188,6 +188,24 @@
   <p id="conversation">Conversations in Select AI represent an interactive exchange between the user
 and the system, enabling users to query or interact with the database through
 a series of natural language prompts.</p>
+<p>A conversation is stored in the database and identified by a
+<code class="docutils literal notranslate"><span class="pre">conversation_id</span></code>. Pass that conversation to <code class="docutils literal notranslate"><span class="pre">Profile.chat_session()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">AsyncProfile.chat_session()</span></code> when follow-up prompts should use prior prompts
+as context. This is useful for chat workflows where the user asks a question,
+then asks follow-up questions such as “explain that further” or “show another
+example”.</p>
+<p>Use conversations when you need context across multiple prompts. For one-off
+prompts, call profile methods such as <code class="docutils literal notranslate"><span class="pre">chat()</span></code>, <code class="docutils literal notranslate"><span class="pre">show_sql()</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">narrate()</span></code> directly without creating a conversation.</p>
+<p>The usual lifecycle is:</p>
+<ol class="arabic simple">
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code> with a title, optional description,
+retention period, and conversation length.</p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">Conversation</span></code> or <code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code> object.</p></li>
+<li><p>Use the conversation in <code class="docutils literal notranslate"><span class="pre">profile.chat_session(...)</span></code>.</p></li>
+<li><p>List, fetch, or update the conversation metadata when needed.</p></li>
+<li><p>Delete the conversation when the stored history is no longer needed.</p></li>
+</ol>
 <section id="conversation-object-model">
 <h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code><a class="headerlink" href="#conversation-object-model" title="Link to this heading">¶</a></h1>
 <figure class="align-default" id="conversationfig">
@@ -196,6 +214,45 @@ a series of natural language prompts.</p>
 </section>
 <section id="conversationattributes">
 <h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code><a class="headerlink" href="#conversationattributes" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code> controls the metadata and retention behavior for a
+conversation:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">title</span></code></p></td>
+<td><p>Human-readable conversation title. If omitted, the default is
+<code class="docutils literal notranslate"><span class="pre">&quot;New</span> <span class="pre">Conversation&quot;</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Optional description of the conversation topic.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">retention_days</span></code></p></td>
+<td><p>Number of days to keep the conversation in the database from its
+creation date. Use <code class="docutils literal notranslate"><span class="pre">datetime.timedelta(days=...)</span></code>. A value of
+<code class="docutils literal notranslate"><span class="pre">datetime.timedelta(days=0)</span></code> keeps the conversation until it is
+manually deleted.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">conversation_length</span></code></p></td>
+<td><p>Number of prompts retained in the conversation context. The default is
+<code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+
+<span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ConversationAttributes</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Sales analysis&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Follow-up questions about quarterly sales&quot;</span><span class="p">,</span>
+    <span class="n">retention_days</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">14</span><span class="p">),</span>
+    <span class="n">conversation_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.ConversationAttributes">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">ConversationAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'New</span> <span class="pre">Conversation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retention_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">datetime.timedelta(days=7)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conversation_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ConversationAttributes" title="Link to this definition">¶</a></dt>
@@ -277,7 +334,7 @@ and build a proxy object</p>
 <dd><p>List all conversations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Iterator[VectorIndex]</p>
+<dd class="field-odd"><p>Iterator[Conversation]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -290,8 +347,45 @@ and build a proxy object</p>
 
 </dd></dl>
 
-<section id="create-conversion">
-<h2><span class="section-number">3.1. </span>Create conversion<a class="headerlink" href="#create-conversion" title="Link to this heading">¶</a></h2>
+<p>The synchronous API is used with <code class="docutils literal notranslate"><span class="pre">select_ai.connect()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">select_ai.create_pool()</span></code>. Important methods:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create()</span></code></p></td>
+<td><p>Create a database conversation and return its <code class="docutils literal notranslate"><span class="pre">conversation_id</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fetch(conversation_id)</span></code></p></td>
+<td><p>Build a <code class="docutils literal notranslate"><span class="pre">Conversation</span></code> object from an existing database conversation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_attributes()</span></code></p></td>
+<td><p>Read conversation metadata from the database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">set_attributes(attributes)</span></code></p></td>
+<td><p>Update the title, description, retention period, or conversation
+length.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">list()</span></code></p></td>
+<td><p>Iterate over conversations visible to the current user.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">delete(force=False)</span></code></p></td>
+<td><p>Drop the conversation. Use <code class="docutils literal notranslate"><span class="pre">force=True</span></code> to ignore missing-conversation
+errors.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">Profile.chat_session(conversation=...,</span> <span class="pre">delete=False)</span></code> is a context manager.
+If the conversation has attributes but no <code class="docutils literal notranslate"><span class="pre">conversation_id</span></code>, the session
+creates it automatically. While the context manager is active, every
+<code class="docutils literal notranslate"><span class="pre">session.chat(...)</span></code> call passes the same <code class="docutils literal notranslate"><span class="pre">conversation_id</span></code> to Select AI, so
+follow-up prompts can use the conversation history. If <code class="docutils literal notranslate"><span class="pre">delete=True</span></code>, the
+conversation is deleted when the session exits.</p>
+<section id="create-conversation">
+<h2><span class="section-number">3.1. </span>Create conversation<a class="headerlink" href="#create-conversation" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -318,6 +412,9 @@ and build a proxy object</p>
 </section>
 <section id="chat-session">
 <h2><span class="section-number">3.2. </span>Chat session<a class="headerlink" href="#chat-session" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">chat_session()</span></code> to keep context across multiple chat prompts. The second
+prompt in this example can refer to the previous answer because both prompts use
+the same database conversation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -366,6 +463,8 @@ and build a proxy object</p>
 </section>
 <section id="list-conversations">
 <h2><span class="section-number">3.3. </span>List conversations<a class="headerlink" href="#list-conversations" title="Link to this heading">¶</a></h2>
+<p>Listing returns <code class="docutils literal notranslate"><span class="pre">Conversation</span></code> objects with their <code class="docutils literal notranslate"><span class="pre">conversation_id</span></code> and
+metadata. It does not replay the conversation transcript.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -391,6 +490,10 @@ and build a proxy object</p>
 </section>
 <section id="delete-conversation">
 <h2><span class="section-number">3.4. </span>Delete conversation<a class="headerlink" href="#delete-conversation" title="Link to this heading">¶</a></h2>
+<p>Delete conversations that are no longer needed, especially when
+<code class="docutils literal notranslate"><span class="pre">retention_days</span></code> is set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or when the content should not remain in the
+database after a session ends. For temporary sessions, prefer
+<code class="docutils literal notranslate"><span class="pre">profile.chat_session(conversation=conversation,</span> <span class="pre">delete=True)</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -469,7 +572,7 @@ to be used in context-aware conversations with LLMs</p>
 <dd><p>List all conversations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Iterator[VectorIndex]</p>
+<dd class="field-odd"><p>AsyncGenerator[AsyncConversation, None]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -482,8 +585,42 @@ to be used in context-aware conversations with LLMs</p>
 
 </dd></dl>
 
+<p>The async API mirrors the synchronous API and is used with
+<code class="docutils literal notranslate"><span class="pre">select_ai.async_connect()</span></code> or <code class="docutils literal notranslate"><span class="pre">select_ai.create_pool_async()</span></code>.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Synchronous API</p></th>
+<th class="head"><p>Async API</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Conversation.create()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">AsyncConversation.create()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Conversation.fetch(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">AsyncConversation.fetch(...)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Conversation.get_attributes()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">AsyncConversation.get_attributes()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Conversation.set_attributes(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">AsyncConversation.set_attributes(...)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">conversation</span> <span class="pre">in</span> <span class="pre">Conversation.list()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span> <span class="pre">conversation</span> <span class="pre">in</span> <span class="pre">AsyncConversation.list()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Conversation.delete(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">AsyncConversation.delete(...)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">profile.chat_session(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">async_profile.chat_session(...)</span></code></p></td>
+</tr>
+</tbody>
+</table>
 <section id="async-chat-session">
 <h2><span class="section-number">4.1. </span>Async chat session<a class="headerlink" href="#async-chat-session" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">AsyncProfile.chat_session()</span></code> in async applications. The conversation is
+created automatically when the object has attributes and no <code class="docutils literal notranslate"><span class="pre">conversation_id</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -541,6 +678,7 @@ to be used in context-aware conversations with LLMs</p>
 </section>
 <section id="async-list-conversations">
 <h2><span class="section-number">4.2. </span>Async list conversations<a class="headerlink" href="#async-list-conversations" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AsyncConversation.list()</span></code> is an async iterator.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -597,7 +735,7 @@ to be used in context-aware conversations with LLMs</p>
 <li><a class="reference internal" href="#select_ai.Conversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#create-conversion">3.1. Create conversion</a></li>
+<li><a class="reference internal" href="#create-conversation">3.1. Create conversation</a></li>
 <li><a class="reference internal" href="#chat-session">3.2. Chat session</a></li>
 <li><a class="reference internal" href="#list-conversations">3.3. List conversations</a></li>
 <li><a class="reference internal" href="#delete-conversation">3.4. Delete conversation</a></li>
@@ -623,12 +761,12 @@ to be used in context-aware conversations with LLMs</p>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="async_profile.html"
-                          title="previous chapter"><span class="section-number">12.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Async profile lifecycle</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="vector_index.html"
-                          title="next chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></p>
+                          title="next chapter"><span class="section-number">1. </span>Vector Index</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -658,10 +796,10 @@ to be used in context-aware conversations with LLMs</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="vector_index.html" title="1. VectorIndex Object Model"
+          <a href="vector_index.html" title="1. Vector Index"
              >next</a> |</li>
         <li class="right" >
-          <a href="async_profile.html" title="12.1. AsyncProfile API"
+          <a href="async_profile.html" title="1. Async profile lifecycle"
              >previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -671,7 +809,7 @@ to be used in context-aware conversations with LLMs</p>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
