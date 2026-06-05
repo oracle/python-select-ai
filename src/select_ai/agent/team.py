@@ -306,12 +306,10 @@ class Team(BaseTeam):
          WAITING_FOR_HUMAN state, the input serves as the human response.
 
         :param Mapping[str, str] params: Optional parameters for the task.
-         Currently, the following parameters are supported:
-
-         - conversation_id: Identifies the conversation session associated
-         with the agent team
-
-         - variables: key-value pairs that provide additional input to the agent team.
+         Supported keys include ``conversation_id``, which identifies the
+         conversation session associated with the agent team, and
+         ``variables``, which provides additional key-value input to the agent
+         team.
 
         """
         parameters = {
@@ -752,12 +750,10 @@ class AsyncTeam(BaseTeam):
          WAITING_FOR_HUMAN state, the input serves as the human response.
 
         :param Mapping[str, str] params: Optional parameters for the task.
-         Currently, the following parameters are supported:
-
-         - conversation_id: Identifies the conversation session associated
-         with the agent team
-
-         - variables: key-value pairs that provide additional input to the agent team.
+         Supported keys include ``conversation_id``, which identifies the
+         conversation session associated with the agent team, and
+         ``variables``, which provides additional key-value input to the agent
+         team.
 
         """
         parameters = {

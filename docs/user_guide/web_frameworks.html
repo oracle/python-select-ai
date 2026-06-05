@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. Using select_ai with Python web frameworks &#8212; Select AI for Python 1.4.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+
+    <script src="../_static/documentation_options.js?v=67589dc7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. Concurrent prompt processing" href="concurrent_prompt_processing.html" />
+    <link rel="prev" title="1. Command line interface" href="cli.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a><ul>
+<li><a class="reference internal" href="#framework-patterns">1.1. Framework patterns</a></li>
+<li><a class="reference internal" href="#install-dependencies">1.2. Install dependencies</a></li>
+<li><a class="reference internal" href="#fastapi-synchronous-endpoints">1.3. FastAPI synchronous endpoints</a></li>
+<li><a class="reference internal" href="#fastapi-asynchronous-endpoints">1.4. FastAPI asynchronous endpoints</a></li>
+<li><a class="reference internal" href="#flask-example">1.5. Flask example</a></li>
+<li><a class="reference internal" href="#django-example">1.6. Django example</a></li>
+<li><a class="reference internal" href="#pool-sizing">1.7. Pool sizing</a></li>
+<li><a class="reference internal" href="#pool-wait-behavior">1.8. Pool wait behavior</a></li>
+<li><a class="reference internal" href="#request-handling">1.9. Request handling</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="cli.html"
+                          title="previous chapter"><span class="section-number">1. </span>Command line interface</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="concurrent_prompt_processing.html"
+                          title="next chapter"><span class="section-number">1. </span>Concurrent prompt processing</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/web_frameworks.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="concurrent_prompt_processing.html" title="1. Concurrent prompt processing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cli.html" title="1. Command line interface"
+             accesskey="P">previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="using-select-ai-with-python-web-frameworks">
+<span id="web-frameworks"></span><h1><span class="section-number">1. </span>Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks<a class="headerlink" href="#using-select-ai-with-python-web-frameworks" title="Link to this heading">¶</a></h1>
+<p>Python web applications should create a Select AI connection pool when the
+application starts and close it when the application shuts down. A pool lets
+concurrent requests share a bounded set of database connections instead of
+creating standalone connections per request.</p>
+<p>This pattern works with Python Web Server Gateway Interface (WSGI) and
+Asynchronous Server Gateway Interface (ASGI) frameworks. FastAPI is used below
+as a concrete example, but the same approach applies to frameworks such as
+Flask, Django, Starlette, Sanic, and Quart: initialize the pool during
+application startup, use <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> APIs inside request handlers, and close
+the pool during application shutdown.</p>
+<p>Do not call <code class="docutils literal notranslate"><span class="pre">select_ai.connect()</span></code> or <code class="docutils literal notranslate"><span class="pre">select_ai.create_pool()</span></code> inside every
+request handler. Creating connections per request adds latency, increases
+database connection churn, and can exhaust the database connection limit under
+load. Create one pool per worker process and let <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> acquire and
+release connections from that pool for each API call.</p>
+<p>For background and concurrency measurements, see this
+<a class="reference external" href="https://blogs.oracle.com/machinelearning/boosting-select-ai-for-python-concurrency-with-connection-pooling">connection pooling blog</a>.</p>
+<section id="framework-patterns">
+<h2><span class="section-number">1.1. </span>Framework patterns<a class="headerlink" href="#framework-patterns" title="Link to this heading">¶</a></h2>
+<p>Use the framework lifecycle API that runs once per process:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://fastapi.tiangolo.com/advanced/events/">FastAPI</a> /
+<a class="reference external" href="https://starlette.dev/lifespan/">Starlette</a>: use a <code class="docutils literal notranslate"><span class="pre">lifespan</span></code> async
+context manager. Create the pool before <code class="docutils literal notranslate"><span class="pre">yield</span></code> and close it after
+<code class="docutils literal notranslate"><span class="pre">yield</span></code>.</p></li>
+<li><p><a class="reference external" href="https://flask.palletsprojects.com/page/patterns/appfactories/">Flask</a>:
+create the pool in <code class="docutils literal notranslate"><span class="pre">create_app()</span></code>. Close the pool from the shutdown hook
+provided by the process that runs Flask, such as a Gunicorn <code class="docutils literal notranslate"><span class="pre">worker_exit</span></code>
+hook. For simple local applications, <code class="docutils literal notranslate"><span class="pre">atexit.register()</span></code> can be used for
+normal interpreter shutdown.</p></li>
+<li><p><a class="reference external" href="https://docs.djangoproject.com/en/stable/ref/applications/#django.apps.AppConfig.ready">Django</a>:
+create the pool in <code class="docutils literal notranslate"><span class="pre">AppConfig.ready()</span></code>. Close the pool from the shutdown
+hook provided by the process that runs Django, such as a Gunicorn
+<code class="docutils literal notranslate"><span class="pre">worker_exit</span></code> hook. For simple local applications, <code class="docutils literal notranslate"><span class="pre">atexit.register()</span></code>
+can be used for normal interpreter shutdown.</p></li>
+<li><p><a class="reference external" href="https://quart.palletsprojects.com/en/latest/how_to_guides/startup_shutdown/">Quart</a>:
+use <code class="docutils literal notranslate"><span class="pre">&#64;app.before_serving</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;app.after_serving</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">&#64;app.while_serving</span></code> with cleanup after <code class="docutils literal notranslate"><span class="pre">yield</span></code>.</p></li>
+<li><p><a class="reference external" href="https://sanic.dev/en/guide/basics/listeners.html">Sanic</a>: use
+<code class="docutils literal notranslate"><span class="pre">&#64;app.before_server_start</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;app.after_server_stop</span></code>.</p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">select_ai.create_pool()</span></code> for synchronous request handlers and
+<code class="docutils literal notranslate"><span class="pre">select_ai.create_pool_async()</span></code> for asynchronous request handlers. In
+general, synchronous routes should call synchronous Select AI methods, and async
+routes should call async Select AI methods. Avoid mixing blocking synchronous
+database calls into async routes unless the framework runs them in a worker
+thread.</p>
+<p>For Flask and Django, be careful with hooks that run per request or per
+application context. A Select AI pool should live for the worker process, not
+for a single request. For example, Flask’s <code class="docutils literal notranslate"><span class="pre">teardown_appcontext</span></code> runs when an
+application context is popped, so it is not a good place to close a process-wide
+pool after every request.</p>
+</section>
+<section id="install-dependencies">
+<h2><span class="section-number">1.2. </span>Install dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading">¶</a></h2>
+<p>Install <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> and FastAPI server dependencies:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>select_ai<span class="w"> </span>fastapi<span class="w"> </span>uvicorn
+</pre></div>
+</div>
+<p>For local development, set the database connection details as environment
+variables:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_USER</span><span class="o">=</span>&lt;select_ai_db_user&gt;
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_PASSWORD</span><span class="o">=</span>&lt;select_ai_db_password&gt;
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_DB_CONNECT_STRING</span><span class="o">=</span>&lt;db_connect_string&gt;
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_POOL_MIN</span><span class="o">=</span><span class="m">5</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_POOL_MAX</span><span class="o">=</span><span class="m">10</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_POOL_INCREMENT</span><span class="o">=</span><span class="m">5</span>
+</pre></div>
+</div>
+<p>If you use an mTLS wallet, also set <code class="docutils literal notranslate"><span class="pre">TNS_ADMIN</span></code> or pass wallet parameters to
+<code class="docutils literal notranslate"><span class="pre">select_ai.create_pool()</span></code> / <code class="docutils literal notranslate"><span class="pre">select_ai.create_pool_async()</span></code>.</p>
+<p>For production deployments, store these values in your deployment platform’s
+secret manager or environment configuration. Do not hard-code database
+passwords, wallet passwords, or provider credentials in application source.</p>
+</section>
+<section id="fastapi-synchronous-endpoints">
+<h2><span class="section-number">1.3. </span>FastAPI synchronous endpoints<a class="headerlink" href="#fastapi-synchronous-endpoints" title="Link to this heading">¶</a></h2>
+<p>Create a file named <code class="docutils literal notranslate"><span class="pre">app.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+<span class="n">pool_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">))</span>
+<span class="n">pool_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MAX&quot;</span><span class="p">,</span> <span class="s2">&quot;10&quot;</span><span class="p">))</span>
+<span class="n">pool_increment</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_INCREMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">))</span>
+
+
+<span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+    <span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+        <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">,</span>
+        <span class="n">min_size</span><span class="o">=</span><span class="n">pool_min</span><span class="p">,</span>
+        <span class="n">max_size</span><span class="o">=</span><span class="n">pool_max</span><span class="p">,</span>
+        <span class="n">increment</span><span class="o">=</span><span class="n">pool_increment</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">yield</span>
+    <span class="n">select_ai</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/chat&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/show_sql&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>Start the server:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>uvicorn<span class="w"> </span>app:app<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
+</pre></div>
+</div>
+<p>Call the service:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8000/chat?prompt=What%20is%20OCI%3F&quot;</span>
+</pre></div>
+</div>
+<p>Stop the server by pressing <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> in the terminal where <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> is
+running. FastAPI runs the lifespan shutdown hook and <code class="docutils literal notranslate"><span class="pre">select_ai.disconnect()</span></code>
+closes the pool.</p>
+<p>This example creates the <code class="docutils literal notranslate"><span class="pre">Profile</span></code> proxy inside each handler. The proxy is
+lightweight; the database connection is acquired from the pool only when the
+profile method calls the database.</p>
+</section>
+<section id="fastapi-asynchronous-endpoints">
+<h2><span class="section-number">1.4. </span>FastAPI asynchronous endpoints<a class="headerlink" href="#fastapi-asynchronous-endpoints" title="Link to this heading">¶</a></h2>
+<p>For async endpoints, initialize the async pool with
+<code class="docutils literal notranslate"><span class="pre">select_ai.create_pool_async()</span></code> and close it with
+<code class="docutils literal notranslate"><span class="pre">select_ai.async_disconnect()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+    <span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool_async</span><span class="p">(</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+        <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">,</span>
+        <span class="n">min_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">max_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">increment</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">yield</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_disconnect</span><span class="p">()</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/chat&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>Start and stop the server the same way:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>uvicorn<span class="w"> </span>app:app<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
+</pre></div>
+</div>
+<p>Press <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> to stop it.</p>
+</section>
+<section id="flask-example">
+<h2><span class="section-number">1.5. </span>Flask example<a class="headerlink" href="#flask-example" title="Link to this heading">¶</a></h2>
+<p>Flask applications normally use synchronous request handlers, so initialize a
+synchronous Select AI pool when the application is created.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">():</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">),</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">),</span>
+        <span class="n">dsn</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">),</span>
+        <span class="n">min_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
+        <span class="n">max_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MAX&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">)),</span>
+        <span class="n">increment</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_INCREMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/show_sql&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_sql</span><span class="p">():</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span>
+        <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)})</span>
+
+    <span class="nd">@atexit</span><span class="o">.</span><span class="n">register</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close_select_ai_pool</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
+            <span class="n">select_ai</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">app</span>
+</pre></div>
+</div>
+</section>
+<section id="django-example">
+<h2><span class="section-number">1.6. </span>Django example<a class="headerlink" href="#django-example" title="Link to this heading">¶</a></h2>
+<p>Django has its own database connection management, but <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> uses the
+Oracle Database connection pool created by this package. Create the Select AI
+pool once per process, then call <code class="docutils literal notranslate"><span class="pre">Profile</span></code> APIs inside views.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># myapp/apps.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyAppConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;myapp&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
+            <span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
+                <span class="n">user</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">),</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">),</span>
+                <span class="n">dsn</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">),</span>
+                <span class="n">min_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
+                <span class="n">max_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MAX&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">)),</span>
+                <span class="n">increment</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_INCREMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># myapp/views.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonResponse</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">show_sql</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">sql</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>When using Django’s development autoreloader, startup hooks may run more than
+once. The <code class="docutils literal notranslate"><span class="pre">is_connected()</span></code> check prevents this example from creating a second
+pool in the same process.</p>
+</section>
+<section id="pool-sizing">
+<h2><span class="section-number">1.7. </span>Pool sizing<a class="headerlink" href="#pool-sizing" title="Link to this heading">¶</a></h2>
+<p>Use connection pooling for concurrent services such as API applications,
+workloads with mixed fast and slow requests, and applications with tail-latency
+requirements. Use standalone connections for simple scripts, command-line
+tools, or low-concurrency batch jobs.</p>
+<p>Set pool sizing based on expected request concurrency and database capacity.
+In multi-worker deployments, each worker process creates its own pool, so total
+possible database connections are approximately:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>workers * SELECT_AI_POOL_MAX
+</pre></div>
+</div>
+<p>Choose pool sizes that leave capacity for other database clients and avoid
+overwhelming small database deployments.</p>
+<p>For example, a service running four worker processes with
+<code class="docutils literal notranslate"><span class="pre">SELECT_AI_POOL_MAX=10</span></code> can open up to forty Select AI database connections.
+If the database can only spare twenty connections for the application, use fewer
+workers, reduce <code class="docutils literal notranslate"><span class="pre">SELECT_AI_POOL_MAX</span></code>, or both.</p>
+</section>
+<section id="pool-wait-behavior">
+<h2><span class="section-number">1.8. </span>Pool wait behavior<a class="headerlink" href="#pool-wait-behavior" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">select_ai.create_pool()</span></code> and <code class="docutils literal notranslate"><span class="pre">select_ai.create_pool_async()</span></code> pass pool
+options through to <code class="docutils literal notranslate"><span class="pre">python-oracledb</span></code>. Use <code class="docutils literal notranslate"><span class="pre">wait_timeout</span></code> and <code class="docutils literal notranslate"><span class="pre">getmode</span></code> to
+control what happens when all pooled connections are busy.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
+    <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+    <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">,</span>
+    <span class="n">min_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">max_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">increment</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">wait_timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Choose a timeout that matches your API latency budget. For public HTTP APIs,
+it is usually better to fail fast and return an application error than to let
+requests pile up until every worker is blocked.</p>
+</section>
+<section id="request-handling">
+<h2><span class="section-number">1.9. </span>Request handling<a class="headerlink" href="#request-handling" title="Link to this heading">¶</a></h2>
+<p>Validate prompts and profile names before calling Select AI methods. If clients
+can choose a profile, check the requested profile against an application
+allowlist instead of passing arbitrary user input directly into
+<code class="docutils literal notranslate"><span class="pre">Profile(profile_name=...)</span></code>.</p>
+<p>For long-running prompts, set HTTP server timeouts and client timeouts
+deliberately. Text generation and RAG calls can take longer than simple SQL
+metadata operations, especially when external AI providers or object storage
+are involved.</p>
+<p>For streaming responses, prefer async frameworks and async Select AI methods when
+the rest of the application is already async. For ordinary JSON responses,
+either synchronous or asynchronous routes are fine as long as the connection
+pool matches the route style.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1. Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a><ul>
+<li><a class="reference internal" href="#framework-patterns">1.1. Framework patterns</a></li>
+<li><a class="reference internal" href="#install-dependencies">1.2. Install dependencies</a></li>
+<li><a class="reference internal" href="#fastapi-synchronous-endpoints">1.3. FastAPI synchronous endpoints</a></li>
+<li><a class="reference internal" href="#fastapi-asynchronous-endpoints">1.4. FastAPI asynchronous endpoints</a></li>
+<li><a class="reference internal" href="#flask-example">1.5. Flask example</a></li>
+<li><a class="reference internal" href="#django-example">1.6. Django example</a></li>
+<li><a class="reference internal" href="#pool-sizing">1.7. Pool sizing</a></li>
+<li><a class="reference internal" href="#pool-wait-behavior">1.8. Pool wait behavior</a></li>
+<li><a class="reference internal" href="#request-handling">1.9. Request handling</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="cli.html"
+                          title="previous chapter"><span class="section-number">1. </span>Command line interface</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="concurrent_prompt_processing.html"
+                          title="next chapter"><span class="section-number">1. </span>Concurrent prompt processing</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/web_frameworks.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="concurrent_prompt_processing.html" title="1. Concurrent prompt processing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cli.html" title="1. Command line interface"
+             >previous</a> |</li>
+          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2026, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+
+  </body>
+</html>

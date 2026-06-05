@@ -193,13 +193,8 @@ class ToolAttributes(SelectAIDataClass):
     :param select_ai.agent.ToolParams tool_params: Tool parameters
      for built-in tools
     :param List[Mapping] tool_inputs: Describes input arguments.
-     Similar to column comments in a table. For example:
-     "tool_inputs": [
-       {
-         "name": "data_guard",
-         "description": "Only supported values are "Enabled" and "Disabled""
-       }
-     ]
+     Similar to column comments in a table. Each mapping can include keys such
+     as ``name`` and ``description``.
 
     """
 
@@ -777,6 +772,7 @@ class AsyncTool(_BaseTool):
     ):
         """
         Create an AI Tool in the database
+
         :param Optional[bool] enabled: Whether the tool should be enabled.
          Default: True
         :param Optional[bool] replace: Whether the tool should be replaced.

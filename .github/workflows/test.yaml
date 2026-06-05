@@ -1,5 +1,7 @@
 name: select_ai_py_tests
-on: push
+on:
+  push:
+  workflow_call:
 
 permissions:
   contents: read

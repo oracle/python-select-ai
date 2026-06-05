@@ -48,7 +48,7 @@ Provider
     :numbered:
     :maxdepth: 3
 
-    user_guide/provider.rst
+    Provider <user_guide/provider.rst>
 
 Credential
 ==========
@@ -78,15 +78,14 @@ Profile
 
     user_guide/profile.rst
 
-Command Line Interface
-======================
+Async Profile
+=============
 
 .. toctree::
     :numbered:
     :maxdepth: 3
 
-    user_guide/cli.rst
-
+    user_guide/async_profile.rst
 
 Conversation
 ============
@@ -135,6 +134,24 @@ AI Agent
 
     user_guide/agent.rst
 
+Async AI Agent
+==============
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/async_agent.rst
+
+Command Line Interface
+======================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/cli.rst
+
 Web Frameworks
 ==============
 
@@ -143,3 +160,12 @@ Web Frameworks
     :maxdepth: 3
 
     user_guide/web_frameworks.rst
+
+Concurrent Prompt Processing
+============================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/concurrent_prompt_processing.rst

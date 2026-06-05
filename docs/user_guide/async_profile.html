@@ -5,21 +5,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. AsyncProfile API &#8212; Select AI for Python 1.3.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Async profile lifecycle &#8212; Select AI for Python 1.4.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=82640b3f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+    <script src="../_static/documentation_options.js?v=67589dc7"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Conversation Object model" href="conversation.html" />
-    <link rel="prev" title="1. Profile Object Model" href="profile.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="prev" title="1. Profile lifecycle" href="profile.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
             <script type="text/javascript" src="../_static/menu.js"></script>
@@ -63,7 +63,9 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li><a class="reference internal" href="#">1. Async profile lifecycle</a></li>
+<li><a class="reference internal" href="#async-profile-actions">2. Async profile actions</a><ul>
+<li><a class="reference internal" href="#asyncprofile-api">2.1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
@@ -92,23 +94,30 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-profile-creation">2. Async Profile creation</a></li>
-<li><a class="reference internal" href="#async-explain-sql">3. Async explain SQL</a></li>
-<li><a class="reference internal" href="#async-run-sql">4. Async run SQL</a></li>
-<li><a class="reference internal" href="#async-show-sql">5. Async show SQL</a></li>
-<li><a class="reference internal" href="#async-concurrent-sql">6. Async concurrent SQL</a></li>
-<li><a class="reference internal" href="#async-chat">7. Async chat</a></li>
-<li><a class="reference internal" href="#summarize">8. Summarize</a></li>
-<li><a class="reference internal" href="#translate">9. Translate</a></li>
-<li><a class="reference internal" href="#async-pipeline">10. Async pipeline</a></li>
-<li><a class="reference internal" href="#list-profiles-asynchronously">11. List profiles asynchronously</a></li>
+<li><a class="reference internal" href="#async-profile-creation">2.2. Async Profile creation</a></li>
+<li><a class="reference internal" href="#reuse-async-profile">2.3. Reuse Async Profile</a></li>
+<li><a class="reference internal" href="#update-async-profile">2.4. Update Async Profile</a></li>
+<li><a class="reference internal" href="#delete-async-profile">2.5. Delete Async Profile</a></li>
+<li><a class="reference internal" href="#async-explain-sql">2.6. Async explain SQL</a></li>
+<li><a class="reference internal" href="#async-run-sql">2.7. Async run SQL</a></li>
+<li><a class="reference internal" href="#async-show-sql">2.8. Async show SQL</a></li>
+<li><a class="reference internal" href="#async-show-prompt">2.9. Async show prompt</a></li>
+<li><a class="reference internal" href="#async-concurrent-sql">2.10. Async concurrent SQL</a></li>
+<li><a class="reference internal" href="#async-chat">2.11. Async chat</a></li>
+<li><a class="reference internal" href="#async-streaming-chat">2.12. Async streaming chat</a></li>
+<li><a class="reference internal" href="#summarize">2.13. Summarize</a></li>
+<li><a class="reference internal" href="#translate">2.14. Translate</a></li>
+<li><a class="reference internal" href="#async-pipeline">2.15. Async pipeline</a></li>
+<li><a class="reference internal" href="#list-profiles-asynchronously">2.16. List profiles asynchronously</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="profile.html"
-                          title="previous chapter"><span class="section-number">1. </span>Profile Object Model</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Profile lifecycle</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -146,7 +155,7 @@
           <a href="conversation.html" title="1. Conversation Object model"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="profile.html" title="1. Profile Object Model"
+          <a href="profile.html" title="1. Profile lifecycle"
              accesskey="P">previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -156,11 +165,10 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
-          <li class="nav-item nav-item-1"><a href="profile.html" accesskey="U"><span class="section-number">1. </span>Profile Object Model</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Async profile lifecycle</a></li>
                 <li class="right">
 
 
@@ -190,12 +198,86 @@
         <div class="bodywrapper">
           <div class="body" role="main">
 
-  <p id="async-profile">An AsyncProfile object can be created with <code class="docutils literal notranslate"><span class="pre">select_ai.AsyncProfile()</span></code>
-<code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> support use of concurrent programming with <a class="reference external" href="https://docs.python.org/3/library/asyncio.html">asyncio</a>.
+  <p id="async-profile">An <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> object can be created with <code class="docutils literal notranslate"><span class="pre">select_ai.AsyncProfile()</span></code>.
+<code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> supports concurrent programming with <a class="reference external" href="https://docs.python.org/3/library/asyncio.html">asyncio</a>.
 Unless explicitly noted as synchronous, the <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> methods should be
 used with <code class="docutils literal notranslate"><span class="pre">await</span></code>.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> in applications that already use
+<code class="docutils literal notranslate"><span class="pre">select_ai.async_connect()</span></code> or <code class="docutils literal notranslate"><span class="pre">select_ai.create_pool_async()</span></code>. The async
+profile object uses the same database profile objects as <code class="docutils literal notranslate"><span class="pre">Profile</span></code>; only the
+Python API style changes.</p>
+<p>Because <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> initializes itself from the database, create or fetch
+instances with <code class="docutils literal notranslate"><span class="pre">await</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Before creating an async profile, make sure the database user has the required
+privileges, a credential for the AI provider, network access to the provider
+endpoint, and access to the database objects included in the profile. See
+<a class="reference internal" href="privileges.html#privileges"><span class="std std-ref">Privileges</span></a>, <a class="reference internal" href="credential.html#credential"><span class="std std-ref">Credential</span></a>,
+<a class="reference internal" href="provider.html#provider"><span class="std std-ref">Provider</span></a>, and
+<a class="reference internal" href="profile_attributes.html#profile-attributes"><span class="std std-ref">ProfileAttributes</span></a>.</p>
+<section id="async-profile-lifecycle">
+<h1><span class="section-number">1. </span>Async profile lifecycle<a class="headerlink" href="#async-profile-lifecycle" title="Link to this heading">¶</a></h1>
+<p>The usual async profile lifecycle is:</p>
+<ul class="simple">
+<li><p>Create or reuse an async database connection or async pool.</p></li>
+<li><p>Create a provider object.</p></li>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code> with the provider, credential name, and object
+list.</p></li>
+<li><p>Create the profile with <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">select_ai.AsyncProfile(...)</span></code>.</p></li>
+<li><p>Reuse the profile later by name.</p></li>
+<li><p>Update profile attributes when provider settings or object scope changes.</p></li>
+<li><p>Delete profiles that are no longer needed.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">replace=True</span></code> recreates a profile when a profile with the same name already
+exists. <code class="docutils literal notranslate"><span class="pre">merge=True</span></code> fetches the existing profile and updates it with the
+non-null attributes passed by the caller.</p>
+</section>
+<section id="async-profile-actions">
+<h1><span class="section-number">2. </span>Async profile actions<a class="headerlink" href="#async-profile-actions" title="Link to this heading">¶</a></h1>
+<table class="docutils align-left" id="id1">
+<caption><span class="caption-text">Common async profile actions</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">show_sql()</span></code></p></td>
+<td><p>Generates SQL for a natural language prompt without executing it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">run_sql()</span></code></p></td>
+<td><p>Generates SQL, executes it, and returns a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">narrate()</span></code></p></td>
+<td><p>Generates SQL, executes it, and returns a natural language answer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">explain_sql()</span></code></p></td>
+<td><p>Explains the generated SQL for a prompt.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">show_prompt()</span></code></p></td>
+<td><p>Shows the prompt sent to the model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">chat()</span></code></p></td>
+<td><p>Sends a general chat prompt to the model.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">summarize()</span></code></p></td>
+<td><p>Summarizes inline content or content referenced by a URI.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">translate()</span></code></p></td>
+<td><p>Translates text from one language to another.</p></td>
+</tr>
+</tbody>
+</table>
 <section id="asyncprofile-api">
-<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API<a class="headerlink" href="#asyncprofile-api" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API<a class="headerlink" href="#asyncprofile-api" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AsyncProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile" title="Link to this definition">¶</a></dt>
@@ -235,13 +317,15 @@ second is the corresponding action</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile.chat">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.chat" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8192</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.chat" title="Link to this definition">¶</a></dt>
 <dd><p>Asynchronously chat with the LLM</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
 <li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+<li><p><strong>stream</strong> (<em>bool</em>) – Return an async iterator of response chunks</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em>) – Number of characters to read per stream chunk</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -336,13 +420,15 @@ second is the corresponding action</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile.explain_sql">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">explain_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile.explain_sql" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">explain_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8192</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile.explain_sql" title="Link to this definition">¶</a></dt>
 <dd><p>Explain the generated SQL</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
 <li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+<li><p><strong>stream</strong> (<em>bool</em>) – Return an async iterator of response chunks</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em>) – Number of characters to read per stream chunk</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -371,7 +457,7 @@ saved in the database</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile.generate">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Action.SHOWSQL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.generate" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Action.SHOWSQL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8192</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.generate" title="Link to this definition">¶</a></dt>
 <dd><p>Asynchronously perform AI translation using this profile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -380,6 +466,8 @@ saved in the database</p>
 <li><p><strong>action</strong> (<em>select_ai.profile.Action</em>)</p></li>
 <li><p><strong>params</strong> – Parameters to include in the LLM request. For e.g.
 conversation_id for context-aware chats</p></li>
+<li><p><strong>stream</strong> (<em>bool</em>) – Return an async iterator of response chunks</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em>) – Number of characters to read per stream chunk</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -438,13 +526,15 @@ match. Default value is “.*” i.e. match all AI profiles.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile.narrate">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">narrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.narrate" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">narrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8192</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#select_ai.AsyncProfile.narrate" title="Link to this definition">¶</a></dt>
 <dd><p>Narrate the result of the SQL</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
 <li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+<li><p><strong>stream</strong> (<em>bool</em>) – Return an async iterator of response chunks</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em>) – Number of characters to read per stream chunk</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -526,13 +616,15 @@ attributes</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile.show_prompt">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile.show_prompt" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8192</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile.show_prompt" title="Link to this definition">¶</a></dt>
 <dd><p>Show the prompt sent to LLM</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
 <li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+<li><p><strong>stream</strong> (<em>bool</em>) – Return an async iterator of response chunks</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em>) – Number of characters to read per stream chunk</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -543,13 +635,15 @@ attributes</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="select_ai.AsyncProfile.show_sql">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile.show_sql" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8192</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AsyncProfile.show_sql" title="Link to this definition">¶</a></dt>
 <dd><p>Show the generated SQL</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> (<em>str</em>) – Natural language prompt</p></li>
 <li><p><strong>params</strong> – Parameters to include in the LLM request</p></li>
+<li><p><strong>stream</strong> (<em>bool</em>) – Return an async iterator of response chunks</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em>) – Number of characters to read per stream chunk</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -601,7 +695,9 @@ in the LLM request</p></li>
 
 </section>
 <section id="async-profile-creation">
-<h1><span class="section-number">2. </span>Async Profile creation<a class="headerlink" href="#async-profile-creation" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.2. </span>Async Profile creation<a class="headerlink" href="#async-profile-creation" title="Link to this heading">¶</a></h2>
+<p>The following example creates an OCI Gen AI profile that can generate SQL over
+objects in the <code class="docutils literal notranslate"><span class="pre">SH</span></code> schema.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pformat</span>
@@ -672,8 +768,62 @@ in the LLM request</p></li>
 </pre></div>
 </div>
 </section>
+<section id="reuse-async-profile">
+<h2><span class="section-number">2.3. </span>Reuse Async Profile<a class="headerlink" href="#reuse-async-profile" title="Link to this heading">¶</a></h2>
+<p>After a profile has been created, instantiate <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> with only the
+profile name to reuse the database profile:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">sql</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions?&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">AsyncProfile.fetch(...)</span></code> when you want to create a proxy object from a
+saved database profile and raise an error if the profile does not exist:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span>
+    <span class="s2">&quot;async_oci_ai_profile&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="update-async-profile">
+<h2><span class="section-number">2.4. </span>Update Async Profile<a class="headerlink" href="#update-async-profile" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">set_attribute(...)</span></code> to update one profile attribute or
+<code class="docutils literal notranslate"><span class="pre">set_attributes(...)</span></code> to update several attributes. Updates are saved to the
+database profile.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span>
+    <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+        <span class="n">max_tokens</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+        <span class="n">enforce_object_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="delete-async-profile">
+<h2><span class="section-number">2.5. </span>Delete Async Profile<a class="headerlink" href="#delete-async-profile" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">delete(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">AsyncProfile.delete_profile(...)</span></code> to remove a profile
+from the database. Pass <code class="docutils literal notranslate"><span class="pre">force=True</span></code> when cleanup should succeed even if the
+profile does not exist.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="o">.</span><span class="n">delete_profile</span><span class="p">(</span>
+    <span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+    <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="async-explain-sql">
-<h1><span class="section-number">3. </span>Async explain SQL<a class="headerlink" href="#async-explain-sql" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.6. </span>Async explain SQL<a class="headerlink" href="#async-explain-sql" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -718,7 +868,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-run-sql">
-<h1><span class="section-number">4. </span>Async run SQL<a class="headerlink" href="#async-run-sql" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.7. </span>Async run SQL<a class="headerlink" href="#async-run-sql" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -750,7 +900,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-show-sql">
-<h1><span class="section-number">5. </span>Async show SQL<a class="headerlink" href="#async-show-sql" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.8. </span>Async show SQL<a class="headerlink" href="#async-show-sql" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -778,8 +928,21 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </pre></div>
 </div>
 </section>
+<section id="async-show-prompt">
+<h2><span class="section-number">2.9. </span>Async show prompt<a class="headerlink" href="#async-show-prompt" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">show_prompt(...)</span></code> to inspect the prompt that Select AI sends to the
+model. This is useful when tuning profile attributes, object lists, comments,
+constraints, and provider settings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">show_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions?&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="async-concurrent-sql">
-<h1><span class="section-number">6. </span>Async concurrent SQL<a class="headerlink" href="#async-concurrent-sql" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.10. </span>Async concurrent SQL<a class="headerlink" href="#async-concurrent-sql" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -838,7 +1001,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-chat">
-<h1><span class="section-number">7. </span>Async chat<a class="headerlink" href="#async-chat" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.11. </span>Async chat<a class="headerlink" href="#async-chat" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -886,8 +1049,47 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </pre></div>
 </div>
 </section>
+<section id="async-streaming-chat">
+<h2><span class="section-number">2.12. </span>Async streaming chat<a class="headerlink" href="#async-streaming-chat" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
+    <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">chunks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+        <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;What is OCI ?&quot;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">4096</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">stream=True</span></code> lets callers consume generated CLOB responses chunk by chunk,
+reducing memory pressure and making it easier to progressively forward output
+to files, services, or user interfaces. Async streaming text APIs return an
+async iterator of <code class="docutils literal notranslate"><span class="pre">str</span></code> chunks after the awaited method call. The
+<code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> parameter controls the number of CLOB characters read per chunk;
+it is not a byte count.</p>
+<p>Streaming is supported by <code class="docutils literal notranslate"><span class="pre">generate()</span></code>, <code class="docutils literal notranslate"><span class="pre">chat()</span></code>, <code class="docutils literal notranslate"><span class="pre">narrate()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">explain_sql()</span></code>, <code class="docutils literal notranslate"><span class="pre">show_sql()</span></code>, and <code class="docutils literal notranslate"><span class="pre">show_prompt()</span></code>. It is not supported
+for <code class="docutils literal notranslate"><span class="pre">run_sql()</span></code>, which returns a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p>
+</section>
 <section id="summarize">
-<h1><span class="section-number">8. </span>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.13. </span>Summarize<a class="headerlink" href="#summarize" title="Link to this heading">¶</a></h2>
 <p>Summarize inline content</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -975,7 +1177,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="translate">
-<h1><span class="section-number">9. </span>Translate<a class="headerlink" href="#translate" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.14. </span>Translate<a class="headerlink" href="#translate" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1008,7 +1210,7 @@ This query will return the total number of promotions in the `&quot;PROMOTIONS&q
 </div>
 </section>
 <section id="async-pipeline">
-<h1><span class="section-number">10. </span>Async pipeline<a class="headerlink" href="#async-pipeline" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.15. </span>Async pipeline<a class="headerlink" href="#async-pipeline" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1077,7 +1279,9 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
 </div>
 </section>
 <section id="list-profiles-asynchronously">
-<h1><span class="section-number">11. </span>List profiles asynchronously<a class="headerlink" href="#list-profiles-asynchronously" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">2.16. </span>List profiles asynchronously<a class="headerlink" href="#list-profiles-asynchronously" title="Link to this heading">¶</a></h2>
+<p>Profile listing returns profiles visible to the connected database user. The
+async list API returns an async iterator.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -1107,6 +1311,7 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
 </pre></div>
 </div>
 </section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1118,7 +1323,9 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
+<li><a class="reference internal" href="#">1. Async profile lifecycle</a></li>
+<li><a class="reference internal" href="#async-profile-actions">2. Async profile actions</a><ul>
+<li><a class="reference internal" href="#asyncprofile-api">2.1. <code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile"><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_negative_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_negative_feedback()</span></code></a></li>
 <li><a class="reference internal" href="#select_ai.AsyncProfile.add_positive_feedback"><code class="docutils literal notranslate"><span class="pre">AsyncProfile.add_positive_feedback()</span></code></a></li>
@@ -1147,23 +1354,30 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#async-profile-creation">2. Async Profile creation</a></li>
-<li><a class="reference internal" href="#async-explain-sql">3. Async explain SQL</a></li>
-<li><a class="reference internal" href="#async-run-sql">4. Async run SQL</a></li>
-<li><a class="reference internal" href="#async-show-sql">5. Async show SQL</a></li>
-<li><a class="reference internal" href="#async-concurrent-sql">6. Async concurrent SQL</a></li>
-<li><a class="reference internal" href="#async-chat">7. Async chat</a></li>
-<li><a class="reference internal" href="#summarize">8. Summarize</a></li>
-<li><a class="reference internal" href="#translate">9. Translate</a></li>
-<li><a class="reference internal" href="#async-pipeline">10. Async pipeline</a></li>
-<li><a class="reference internal" href="#list-profiles-asynchronously">11. List profiles asynchronously</a></li>
+<li><a class="reference internal" href="#async-profile-creation">2.2. Async Profile creation</a></li>
+<li><a class="reference internal" href="#reuse-async-profile">2.3. Reuse Async Profile</a></li>
+<li><a class="reference internal" href="#update-async-profile">2.4. Update Async Profile</a></li>
+<li><a class="reference internal" href="#delete-async-profile">2.5. Delete Async Profile</a></li>
+<li><a class="reference internal" href="#async-explain-sql">2.6. Async explain SQL</a></li>
+<li><a class="reference internal" href="#async-run-sql">2.7. Async run SQL</a></li>
+<li><a class="reference internal" href="#async-show-sql">2.8. Async show SQL</a></li>
+<li><a class="reference internal" href="#async-show-prompt">2.9. Async show prompt</a></li>
+<li><a class="reference internal" href="#async-concurrent-sql">2.10. Async concurrent SQL</a></li>
+<li><a class="reference internal" href="#async-chat">2.11. Async chat</a></li>
+<li><a class="reference internal" href="#async-streaming-chat">2.12. Async streaming chat</a></li>
+<li><a class="reference internal" href="#summarize">2.13. Summarize</a></li>
+<li><a class="reference internal" href="#translate">2.14. Translate</a></li>
+<li><a class="reference internal" href="#async-pipeline">2.15. Async pipeline</a></li>
+<li><a class="reference internal" href="#list-profiles-asynchronously">2.16. List profiles asynchronously</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="profile.html"
-                          title="previous chapter"><span class="section-number">1. </span>Profile Object Model</a></p>
+                          title="previous chapter"><span class="section-number">1. </span>Profile lifecycle</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -1201,7 +1415,7 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
           <a href="conversation.html" title="1. Conversation Object model"
              >next</a> |</li>
         <li class="right" >
-          <a href="profile.html" title="1. Profile Object Model"
+          <a href="profile.html" title="1. Profile lifecycle"
              >previous</a> |</li>
           <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
@@ -1211,11 +1425,10 @@ Result 3 for prompt &#39;Explain the query: SELECT * FROM sh.products&#39; is: O
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
-          <li class="nav-item nav-item-1"><a href="profile.html" ><span class="section-number">1. </span>Profile Object Model</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncProfile</span></code> API</a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Async profile lifecycle</a></li>
                 <li class="right">
 
 

@@ -161,7 +161,7 @@ class Conversation(_BaseConversation):
     def list(cls) -> Iterator["Conversation"]:
         """List all conversations
 
-        :return: Iterator[VectorIndex]
+        :return: Iterator[Conversation]
         """
         with cursor() as cr:
             cr.execute(
@@ -270,7 +270,7 @@ class AsyncConversation(_BaseConversation):
     async def list(cls) -> AsyncGenerator["AsyncConversation", None]:
         """List all conversations
 
-        :return: Iterator[VectorIndex]
+        :return: AsyncGenerator[AsyncConversation, None]
         """
         async with async_cursor() as cr:
             await cr.execute(

@@ -1,14 +1,29 @@
 .. _privileges:
 
-Admin user should grant execute privilege to select ai database users
-on the packages ``DBMS_CLOUD``, ``DBMS_CLOUD_AI``, ``DBMS_CLOUD_AI_AGENT``
-and ``DBMS_CLOUD_PIPELINE``
+An admin user should grant execute privilege to Select AI database users
+on the packages ``DBMS_CLOUD``, ``DBMS_CLOUD_AI``, ``DBMS_CLOUD_AI_AGENT``,
+and ``DBMS_CLOUD_PIPELINE``.
+
+The privilege helper APIs are intended for database administrators who need to
+prepare one or more database schemas for Select AI workloads. These operations
+should be run from a connection that has permission to grant package execute
+privileges and manage database network ACLs.
+
+There are two separate setup steps:
+
+* Package privileges allow a Select AI database user to call the Oracle Database
+  PL/SQL packages used by this library.
+* Network access allows the database user to make outbound calls to specific
+  hosts, such as AI provider endpoints or SMTP servers.
+
+The ``users`` argument accepts either a single database user name or a list of
+database user names.
 
 .. note::
 
    All sample scripts in this documentation read Oracle database connection
    details from the environment. Create a dotenv file ``.env``, export the
-   the following environment variables and source it before running the
+   following environment variables and source it before running the
    scripts.
 
    .. code-block:: sh
@@ -24,9 +39,11 @@ and ``DBMS_CLOUD_PIPELINE``
 Grant privilege
 ***************
 
-Connect as admin and run the method
-``select_ai.grant_privileges(users=select_ai_user)`` to grant relevant select ai
-privileges to other users
+Connect as an admin user and run
+``select_ai.grant_privileges(users=select_ai_user)`` to grant the package
+execute privileges required by Select AI. This grants execute access on
+``DBMS_CLOUD``, ``DBMS_CLOUD_AI``, ``DBMS_CLOUD_AI_AGENT``, and
+``DBMS_CLOUD_PIPELINE``.
 
 
 .. literalinclude:: ../../../samples/select_ai_grant_privilege.py
@@ -66,6 +83,15 @@ Connect as admin and run
 host access. This wraps ``DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE`` and can be
 used for hosts that require privileges such as ``connect``, ``http``, or
 ``smtp``.
+
+Network ACLs are required when the database needs to reach an external host.
+For example, use ``http`` access for AI provider endpoints and ``smtp`` access
+for mail servers. Include ``connect`` with protocol-specific privileges when
+the host requires it.
+
+When granting access, specify the target host and, when applicable, the port
+range. When revoking access, use the same host, privileges, and port range that
+were used for the grant.
 
 .. literalinclude:: ../../../samples/grant_network_access.py
    :language: python

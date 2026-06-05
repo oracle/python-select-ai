@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Provider &#8212; Select AI for Python 1.3.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Provider &#8212; Select AI for Python 1.4.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=82640b3f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=1f29e9d3"></script>
+    <script src="../_static/documentation_options.js?v=67589dc7"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
@@ -63,50 +63,54 @@
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">Provider</span></code></a><ul>
+<li><a class="reference internal" href="#">1. Provider</a><ul>
+<li><a class="reference internal" href="#examples">1.1. Examples</a></li>
+<li><a class="reference internal" href="#id2">1.2. <code class="docutils literal notranslate"><span class="pre">Provider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.Provider"><code class="docutils literal notranslate"><span class="pre">Provider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#anthropicprovider">2. <code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a><ul>
+<li><a class="reference internal" href="#anthropicprovider">1.3. <code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AnthropicProvider"><code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#azureprovider">3. <code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a><ul>
+<li><a class="reference internal" href="#azureprovider">1.4. <code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AzureProvider"><code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#awsprovider">4. <code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a><ul>
+<li><a class="reference internal" href="#awsprovider">1.5. <code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AWSProvider"><code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#cohereprovider">5. <code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a><ul>
+<li><a class="reference internal" href="#cohereprovider">1.6. <code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.CohereProvider"><code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#openaiprovider">6. <code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a><ul>
+<li><a class="reference internal" href="#openaiprovider">1.7. <code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.OpenAIProvider"><code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocigenaiprovider">7. <code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a><ul>
+<li><a class="reference internal" href="#ocigenaiprovider">1.8. <code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.OCIGenAIProvider"><code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#googleprovider">8. <code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a><ul>
+<li><a class="reference internal" href="#googleprovider">1.9. <code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.GoogleProvider"><code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#huggingfaceprovider">9. <code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a><ul>
+<li><a class="reference internal" href="#huggingfaceprovider">1.10. <code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.HuggingFaceProvider"><code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#enable-ai-service-provider">10. Enable AI service provider</a><ul>
-<li><a class="reference internal" href="#enable-using-sync-api">10.1. Enable using Sync API</a></li>
-<li><a class="reference internal" href="#enable-using-async-api">10.2. Enable using Async API</a></li>
+<li><a class="reference internal" href="#enable-ai-service-provider">1.11. Enable AI service provider</a><ul>
+<li><a class="reference internal" href="#enable-using-sync-api">1.11.1. Enable using Sync API</a></li>
+<li><a class="reference internal" href="#enable-using-async-api">1.11.2. Enable using Async API</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#disable-ai-service-provider">11. Disable AI service provider</a><ul>
-<li><a class="reference internal" href="#disable-using-sync-api">11.1. Disable using Sync API</a></li>
-<li><a class="reference internal" href="#disable-using-async-api">11.2. Disable using Async API</a></li>
+<li><a class="reference internal" href="#disable-ai-service-provider">1.12. Disable AI service provider</a><ul>
+<li><a class="reference internal" href="#disable-using-sync-api">1.12.1. Disable using Sync API</a></li>
+<li><a class="reference internal" href="#disable-using-async-api">1.12.2. Disable using Async API</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -163,10 +167,10 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Provider</span></code></a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Provider</a></li>
                 <li class="right">
 
 
@@ -196,14 +200,139 @@
         <div class="bodywrapper">
           <div class="body" role="main">
 
-  <p id="provider">An AI Provider in Select AI refers to the service provider of the
+  <section id="provider">
+<span id="id1"></span><h1><span class="section-number">1. </span>Provider<a class="headerlink" href="#provider" title="Link to this heading">¶</a></h1>
+<p>An AI Provider in Select AI refers to the service provider of the
 LLM, transformer or both for processing and generating responses to natural
 language prompts. These providers offer models that can interpret and convert
 natural language for the use cases highlighted under the LLM concept.</p>
 <p>See <a class="reference external" href="https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/select-ai-about.html#GUID-FDAEF22A-5DDF-4BAE-A465-C1D568C75812">Select your AI Provider</a>
-for the supported providers</p>
-<section id="id1">
-<h1><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Provider</span></code><a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+for the supported providers.</p>
+<p>A provider object describes the AI service that a Select AI profile, vector
+index, or agent tool should call. The provider object is separate from the
+credential object: the provider selects the service, model, endpoint, region,
+and provider-specific options, while the credential stores authentication
+details.</p>
+<p>Most applications should instantiate one of the concrete provider classes
+instead of using <code class="docutils literal notranslate"><span class="pre">Provider</span></code> directly. Use the base <code class="docutils literal notranslate"><span class="pre">Provider</span></code> class when
+you need to call a compatible provider endpoint that does not have a dedicated
+class in this library.</p>
+<table class="docutils align-left" id="id3">
+<caption><span class="caption-text">Provider classes</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Provider class</p></th>
+<th class="head"><p>Provider name</p></th>
+<th class="head"><p>Default endpoint behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">anthropic</span></code></p></td>
+<td><p>Uses <code class="docutils literal notranslate"><span class="pre">api.anthropic.com</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">aws</span></code></p></td>
+<td><p>Builds <code class="docutils literal notranslate"><span class="pre">bedrock-runtime.&lt;region&gt;.amazonaws.com</span></code> from <code class="docutils literal notranslate"><span class="pre">region</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">azure</span></code></p></td>
+<td><p>Builds <code class="docutils literal notranslate"><span class="pre">&lt;azure_resource_name&gt;.openai.azure.com</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cohere</span></code></p></td>
+<td><p>Uses <code class="docutils literal notranslate"><span class="pre">api.cohere.ai</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">google</span></code></p></td>
+<td><p>Uses <code class="docutils literal notranslate"><span class="pre">generativelanguage.googleapis.com</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">huggingface</span></code></p></td>
+<td><p>Uses <code class="docutils literal notranslate"><span class="pre">api-inference.huggingface.co</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">oci</span></code></p></td>
+<td><p>Uses OCI region and OCI Gen AI attributes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openai</span></code></p></td>
+<td><p>Uses <code class="docutils literal notranslate"><span class="pre">api.openai.com</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="examples">
+<h2><span class="section-number">1.1. </span>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>OCI Gen AI provider:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">provider</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OCIGenAIProvider</span><span class="p">(</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-chicago-1&quot;</span><span class="p">,</span>
+    <span class="n">oci_apiformat</span><span class="o">=</span><span class="s2">&quot;GENERIC&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;cohere.command-r-plus&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>OpenAI provider:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">provider</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">OpenAIProvider</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4.1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Azure OpenAI provider:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">provider</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AzureProvider</span><span class="p">(</span>
+    <span class="n">azure_resource_name</span><span class="o">=</span><span class="s2">&quot;my-azure-openai-resource&quot;</span><span class="p">,</span>
+    <span class="n">azure_deployment_name</span><span class="o">=</span><span class="s2">&quot;gpt-4o-deployment&quot;</span><span class="p">,</span>
+    <span class="n">azure_embedding_deployment_name</span><span class="o">=</span><span class="s2">&quot;text-embedding-deployment&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>AWS Bedrock provider:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">provider</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AWSProvider</span><span class="p">(</span>
+    <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
+    <span class="n">aws_apiformat</span><span class="o">=</span><span class="s2">&quot;ANTHROPIC&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;anthropic.claude-3-5-sonnet-20240620-v1:0&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Custom provider endpoint:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">select_ai</span><span class="o">.</span><span class="n">create_credential</span><span class="p">(</span>
+    <span class="n">credential</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;credential_name&quot;</span><span class="p">:</span> <span class="s2">&quot;xai_credential&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;xai&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;xai_api_key&gt;&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">xai_profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;xai&quot;</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+        <span class="n">provider</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">Provider</span><span class="p">(</span>
+            <span class="n">provider_endpoint</span><span class="o">=</span><span class="s2">&quot;https://api.x.ai&quot;</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="s2">&quot;grok-4-1-fast-reasoning&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;xai_credential&quot;</span><span class="p">,</span>
+        <span class="n">object_list</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;CUSTOMERS&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SALES&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;PRODUCTS&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;COUNTRIES&quot;</span><span class="p">},</span>
+        <span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">sql</span> <span class="o">=</span> <span class="n">xai_profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many customers do I have?&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2><span class="section-number">1.2. </span><code class="docutils literal notranslate"><span class="pre">Provider</span></code><a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.Provider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">Provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.Provider" title="Link to this definition">¶</a></dt>
@@ -228,7 +357,7 @@ responses</p></li>
 
 </section>
 <section id="anthropicprovider">
-<h1><span class="section-number">2. </span><code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code><a class="headerlink" href="#anthropicprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.3. </span><code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code><a class="headerlink" href="#anthropicprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.AnthropicProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AnthropicProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'anthropic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AnthropicProvider" title="Link to this definition">¶</a></dt>
@@ -237,7 +366,7 @@ responses</p></li>
 
 </section>
 <section id="azureprovider">
-<h1><span class="section-number">3. </span><code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code><a class="headerlink" href="#azureprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.4. </span><code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code><a class="headerlink" href="#azureprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.AzureProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AzureProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'azure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azure_deployment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azure_embedding_deployment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azure_resource_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AzureProvider" title="Link to this definition">¶</a></dt>
@@ -257,7 +386,7 @@ deployed embedding model.</p></li>
 
 </section>
 <section id="awsprovider">
-<h1><span class="section-number">4. </span><code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code><a class="headerlink" href="#awsprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.5. </span><code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code><a class="headerlink" href="#awsprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.AWSProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">AWSProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'aws'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_apiformat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.AWSProvider" title="Link to this definition">¶</a></dt>
@@ -266,7 +395,7 @@ deployed embedding model.</p></li>
 
 </section>
 <section id="cohereprovider">
-<h1><span class="section-number">5. </span><code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code><a class="headerlink" href="#cohereprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.6. </span><code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code><a class="headerlink" href="#cohereprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.CohereProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">CohereProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cohere'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.CohereProvider" title="Link to this definition">¶</a></dt>
@@ -275,7 +404,7 @@ deployed embedding model.</p></li>
 
 </section>
 <section id="openaiprovider">
-<h1><span class="section-number">6. </span><code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code><a class="headerlink" href="#openaiprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.7. </span><code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code><a class="headerlink" href="#openaiprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.OpenAIProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">OpenAIProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'openai'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'api.openai.com'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.OpenAIProvider" title="Link to this definition">¶</a></dt>
@@ -284,7 +413,7 @@ deployed embedding model.</p></li>
 
 </section>
 <section id="ocigenaiprovider">
-<h1><span class="section-number">7. </span><code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code><a class="headerlink" href="#ocigenaiprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.8. </span><code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code><a class="headerlink" href="#ocigenaiprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.OCIGenAIProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">OCIGenAIProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'oci'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oci_apiformat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oci_compartment_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oci_endpoint_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oci_runtimetype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.OCIGenAIProvider" title="Link to this definition">¶</a></dt>
@@ -307,7 +436,7 @@ the provided model. The supported values are ‘COHERE’ and ‘LLAMA’</p></l
 
 </section>
 <section id="googleprovider">
-<h1><span class="section-number">8. </span><code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code><a class="headerlink" href="#googleprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.9. </span><code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code><a class="headerlink" href="#googleprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.GoogleProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">GoogleProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'google'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.GoogleProvider" title="Link to this definition">¶</a></dt>
@@ -316,7 +445,7 @@ the provided model. The supported values are ‘COHERE’ and ‘LLAMA’</p></l
 
 </section>
 <section id="huggingfaceprovider">
-<h1><span class="section-number">9. </span><code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code><a class="headerlink" href="#huggingfaceprovider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.10. </span><code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code><a class="headerlink" href="#huggingfaceprovider" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.HuggingFaceProvider">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">HuggingFaceProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'huggingface'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.HuggingFaceProvider" title="Link to this definition">¶</a></dt>
@@ -325,11 +454,12 @@ the provided model. The supported values are ‘COHERE’ and ‘LLAMA’</p></l
 
 </section>
 <section id="enable-ai-service-provider">
-<h1><span class="section-number">10. </span>Enable AI service provider<a class="headerlink" href="#enable-ai-service-provider" title="Link to this heading">¶</a></h1>
+<h2><span class="section-number">1.11. </span>Enable AI service provider<a class="headerlink" href="#enable-ai-service-provider" title="Link to this heading">¶</a></h2>
 <section id="enable-using-sync-api">
-<h2><span class="section-number">10.1. </span>Enable using Sync API<a class="headerlink" href="#enable-using-sync-api" title="Link to this heading">¶</a></h2>
+<h3><span class="section-number">1.11.1. </span>Enable using Sync API<a class="headerlink" href="#enable-using-sync-api" title="Link to this heading">¶</a></h3>
 <p>This method adds ACL allowing database users to invoke AI provider’s
-HTTP endpoint</p>
+HTTP endpoint. For non-HTTP or port-specific network access, use the network
+ACL helpers described in <a class="reference internal" href="privileges.html#privileges"><span class="std std-ref">Privileges</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -352,7 +482,7 @@ HTTP endpoint</p>
 </div>
 </section>
 <section id="enable-using-async-api">
-<h2><span class="section-number">10.2. </span>Enable using Async API<a class="headerlink" href="#enable-using-async-api" title="Link to this heading">¶</a></h2>
+<h3><span class="section-number">1.11.2. </span>Enable using Async API<a class="headerlink" href="#enable-using-async-api" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -382,11 +512,11 @@ HTTP endpoint</p>
 </section>
 </section>
 <section id="disable-ai-service-provider">
-<h1><span class="section-number">11. </span>Disable AI service provider<a class="headerlink" href="#disable-ai-service-provider" title="Link to this heading">¶</a></h1>
-<p>This method removes ACL blocking database users to invoke AI provider’s
-HTTP endpoint</p>
+<h2><span class="section-number">1.12. </span>Disable AI service provider<a class="headerlink" href="#disable-ai-service-provider" title="Link to this heading">¶</a></h2>
+<p>This method removes the ACL entry that allows database users to invoke an AI
+provider’s HTTP endpoint.</p>
 <section id="disable-using-sync-api">
-<h2><span class="section-number">11.1. </span>Disable using Sync API<a class="headerlink" href="#disable-using-sync-api" title="Link to this heading">¶</a></h2>
+<h3><span class="section-number">1.12.1. </span>Disable using Sync API<a class="headerlink" href="#disable-using-sync-api" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
@@ -409,7 +539,7 @@ HTTP endpoint</p>
 </div>
 </section>
 <section id="disable-using-async-api">
-<h2><span class="section-number">11.2. </span>Disable using Async API<a class="headerlink" href="#disable-using-async-api" title="Link to this heading">¶</a></h2>
+<h3><span class="section-number">1.12.2. </span>Disable using Async API<a class="headerlink" href="#disable-using-async-api" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -438,6 +568,7 @@ HTTP endpoint</p>
 </div>
 </section>
 </section>
+</section>
 
 
             <div class="clearer"></div>
@@ -449,50 +580,54 @@ HTTP endpoint</p>
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">1. <code class="docutils literal notranslate"><span class="pre">Provider</span></code></a><ul>
+<li><a class="reference internal" href="#">1. Provider</a><ul>
+<li><a class="reference internal" href="#examples">1.1. Examples</a></li>
+<li><a class="reference internal" href="#id2">1.2. <code class="docutils literal notranslate"><span class="pre">Provider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.Provider"><code class="docutils literal notranslate"><span class="pre">Provider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#anthropicprovider">2. <code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a><ul>
+<li><a class="reference internal" href="#anthropicprovider">1.3. <code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AnthropicProvider"><code class="docutils literal notranslate"><span class="pre">AnthropicProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#azureprovider">3. <code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a><ul>
+<li><a class="reference internal" href="#azureprovider">1.4. <code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AzureProvider"><code class="docutils literal notranslate"><span class="pre">AzureProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#awsprovider">4. <code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a><ul>
+<li><a class="reference internal" href="#awsprovider">1.5. <code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.AWSProvider"><code class="docutils literal notranslate"><span class="pre">AWSProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#cohereprovider">5. <code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a><ul>
+<li><a class="reference internal" href="#cohereprovider">1.6. <code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.CohereProvider"><code class="docutils literal notranslate"><span class="pre">CohereProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#openaiprovider">6. <code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a><ul>
+<li><a class="reference internal" href="#openaiprovider">1.7. <code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.OpenAIProvider"><code class="docutils literal notranslate"><span class="pre">OpenAIProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ocigenaiprovider">7. <code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a><ul>
+<li><a class="reference internal" href="#ocigenaiprovider">1.8. <code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.OCIGenAIProvider"><code class="docutils literal notranslate"><span class="pre">OCIGenAIProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#googleprovider">8. <code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a><ul>
+<li><a class="reference internal" href="#googleprovider">1.9. <code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.GoogleProvider"><code class="docutils literal notranslate"><span class="pre">GoogleProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#huggingfaceprovider">9. <code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a><ul>
+<li><a class="reference internal" href="#huggingfaceprovider">1.10. <code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a><ul>
 <li><a class="reference internal" href="#select_ai.HuggingFaceProvider"><code class="docutils literal notranslate"><span class="pre">HuggingFaceProvider</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#enable-ai-service-provider">10. Enable AI service provider</a><ul>
-<li><a class="reference internal" href="#enable-using-sync-api">10.1. Enable using Sync API</a></li>
-<li><a class="reference internal" href="#enable-using-async-api">10.2. Enable using Async API</a></li>
+<li><a class="reference internal" href="#enable-ai-service-provider">1.11. Enable AI service provider</a><ul>
+<li><a class="reference internal" href="#enable-using-sync-api">1.11.1. Enable using Sync API</a></li>
+<li><a class="reference internal" href="#enable-using-async-api">1.11.2. Enable using Async API</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#disable-ai-service-provider">11. Disable AI service provider</a><ul>
-<li><a class="reference internal" href="#disable-using-sync-api">11.1. Disable using Sync API</a></li>
-<li><a class="reference internal" href="#disable-using-async-api">11.2. Disable using Async API</a></li>
+<li><a class="reference internal" href="#disable-ai-service-provider">1.12. Disable AI service provider</a><ul>
+<li><a class="reference internal" href="#disable-using-sync-api">1.12.1. Disable using Sync API</a></li>
+<li><a class="reference internal" href="#disable-using-async-api">1.12.2. Disable using Async API</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -549,10 +684,10 @@ HTTP endpoint</p>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.3.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
 
           </li>
-        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">Provider</span></code></a></li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Provider</a></li>
                 <li class="right">
 
 

@@ -4,7 +4,61 @@ An AI profile is a specification that includes the AI provider to use and other
 details regarding metadata and database objects required for generating
 responses to natural language prompts.
 
-An AI profile object can be created using ``select_ai.Profile()``
+An AI profile object can be created using ``select_ai.Profile()``. Creating a
+profile stores the profile in Oracle Database. Later, you can instantiate
+``select_ai.Profile(profile_name="...")`` to reuse an existing database profile
+without passing all attributes again.
+
+Before creating a profile, make sure the database user has the required
+privileges, a credential for the AI provider, network access to the provider
+endpoint, and access to the database objects included in the profile. See
+:ref:`Privileges <privileges>`, :ref:`Credential <credential>`,
+:ref:`Provider <provider>`, and
+:ref:`ProfileAttributes <profile_attributes>`.
+
+Profile lifecycle
+=================
+
+The usual profile lifecycle is:
+
+* Create a provider object.
+* Create ``ProfileAttributes`` with the provider, credential name, and object
+  list.
+* Create the profile with ``select_ai.Profile(...)``.
+* Reuse the profile later by name.
+* Update profile attributes when provider settings or object scope changes.
+* Delete profiles that are no longer needed.
+
+``replace=True`` recreates a profile when a profile with the same name already
+exists. ``merge=True`` fetches the existing profile and updates it with the
+non-null attributes passed by the caller.
+
+Profile actions
+===============
+
+.. list-table:: Common profile actions
+   :header-rows: 1
+   :widths: 25 75
+   :align: left
+
+   * - Method
+     - Description
+   * - ``show_sql()``
+     - Generates SQL for a natural language prompt without executing it.
+   * - ``run_sql()``
+     - Generates SQL, executes it, and returns a ``pandas.DataFrame``.
+   * - ``narrate()``
+     - Generates SQL, executes it, and returns a natural language answer.
+   * - ``explain_sql()``
+     - Explains the generated SQL for a prompt.
+   * - ``show_prompt()``
+     - Shows the prompt sent to the model.
+   * - ``chat()``
+     - Sends a general chat prompt to the model.
+   * - ``summarize()``
+     - Summarizes inline content or content referenced by a URI.
+   * - ``translate()``
+     - Translates text from one language to another.
 
 ********************
 Profile Object Model
@@ -36,6 +90,9 @@ Base ``Profile`` API
 **************************
 Create Profile
 **************************
+
+The following example creates an OCI Gen AI profile that can generate SQL over
+objects in the ``SH`` schema.
 
 .. literalinclude:: ../../../samples/profile_create.py
    :language: python
@@ -75,6 +132,66 @@ output::
 .. latex:clearpage::
 
 **************************
+Reuse Profile
+**************************
+
+After a profile has been created, instantiate ``Profile`` with only the profile
+name to reuse the database profile:
+
+.. code-block:: python
+
+   profile = select_ai.Profile(profile_name="oci_ai_profile")
+   sql = profile.show_sql(prompt="How many promotions?")
+
+Use ``Profile.fetch(...)`` when you want to create a proxy object from a saved
+database profile and raise an error if the profile does not exist:
+
+.. code-block:: python
+
+   profile = select_ai.Profile.fetch("oci_ai_profile")
+
+.. latex:clearpage::
+
+**************************
+Update Profile
+**************************
+
+Use ``set_attribute(...)`` to update one profile attribute or
+``set_attributes(...)`` to update several attributes. Updates are saved to the
+database profile.
+
+.. code-block:: python
+
+   profile = select_ai.Profile(profile_name="oci_ai_profile")
+   profile.set_attribute("temperature", 0.1)
+
+   profile.set_attributes(
+       select_ai.ProfileAttributes(
+           max_tokens=2048,
+           enforce_object_list=True,
+       )
+   )
+
+.. latex:clearpage::
+
+**************************
+Delete Profile
+**************************
+
+Use ``delete(...)`` or ``Profile.delete_profile(...)`` to remove a profile from
+the database. Pass ``force=True`` when cleanup should succeed even if the
+profile does not exist.
+
+.. code-block:: python
+
+   profile = select_ai.Profile(profile_name="oci_ai_profile")
+   profile.delete(force=True)
+
+   select_ai.Profile.delete_profile("oci_ai_profile", force=True)
+
+.. latex:clearpage::
+
+**************************
 Narrate
 **************************
 
@@ -102,6 +219,37 @@ output::
     SELECT
     COUNT("p"."PROMO_ID") AS "Number of Promotions"
     FROM "SH"."PROMOTIONS" "p"
+
+.. latex:clearpage::
+
+**************************
+Explain SQL
+**************************
+
+Use ``explain_sql(...)`` to generate SQL and return a natural language
+explanation without executing the SQL.
+
+.. code-block:: python
+
+   profile = select_ai.Profile(profile_name="oci_ai_profile")
+   explanation = profile.explain_sql(prompt="How many promotions?")
+   print(explanation)
+
+.. latex:clearpage::
+
+**************************
+Show Prompt
+**************************
+
+Use ``show_prompt(...)`` to inspect the prompt that Select AI sends to the
+model. This is useful when tuning profile attributes, object lists, comments,
+constraints, and provider settings.
+
+.. code-block:: python
+
+   profile = select_ai.Profile(profile_name="oci_ai_profile")
+   prompt = profile.show_prompt(prompt="How many promotions?")
+   print(prompt)
 
 .. latex:clearpage::
 
@@ -224,6 +372,10 @@ output::
 List profiles
 **************************
 
+Profile listing returns profiles visible to the connected database user.
+Instantiate ``Profile`` with one of the returned names to reuse the saved
+profile.
+
 .. literalinclude:: ../../../samples/profiles_list.py
    :language: python
    :lines: 14-
@@ -235,15 +387,3 @@ output::
     OCI_VECTOR_AI_PROFILE
     ASYNC_OCI_VECTOR_AI_PROFILE
     OCI_AI_PROFILE
-
-.. latex:clearpage::
-
-*************
-Async Profile
-*************
-
-.. toctree::
-    :numbered:
-    :maxdepth: 3
-
-    async_profile.rst

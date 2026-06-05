@@ -1,9 +1,75 @@
 .. _async_profile:
 
-An AsyncProfile object can be created with ``select_ai.AsyncProfile()``
-``AsyncProfile`` support use of concurrent programming with `asyncio <https://docs.python.org/3/library/asyncio.html>`__.
+An ``AsyncProfile`` object can be created with ``select_ai.AsyncProfile()``.
+``AsyncProfile`` supports concurrent programming with `asyncio <https://docs.python.org/3/library/asyncio.html>`__.
 Unless explicitly noted as synchronous, the ``AsyncProfile`` methods should be
 used with ``await``.
+
+Use ``AsyncProfile`` in applications that already use
+``select_ai.async_connect()`` or ``select_ai.create_pool_async()``. The async
+profile object uses the same database profile objects as ``Profile``; only the
+Python API style changes.
+
+Because ``AsyncProfile`` initializes itself from the database, create or fetch
+instances with ``await``:
+
+.. code-block:: python
+
+   async_profile = await select_ai.AsyncProfile(
+       profile_name="async_oci_ai_profile",
+   )
+
+Before creating an async profile, make sure the database user has the required
+privileges, a credential for the AI provider, network access to the provider
+endpoint, and access to the database objects included in the profile. See
+:ref:`Privileges <privileges>`, :ref:`Credential <credential>`,
+:ref:`Provider <provider>`, and
+:ref:`ProfileAttributes <profile_attributes>`.
+
+Async profile lifecycle
+=======================
+
+The usual async profile lifecycle is:
+
+* Create or reuse an async database connection or async pool.
+* Create a provider object.
+* Create ``ProfileAttributes`` with the provider, credential name, and object
+  list.
+* Create the profile with ``await select_ai.AsyncProfile(...)``.
+* Reuse the profile later by name.
+* Update profile attributes when provider settings or object scope changes.
+* Delete profiles that are no longer needed.
+
+``replace=True`` recreates a profile when a profile with the same name already
+exists. ``merge=True`` fetches the existing profile and updates it with the
+non-null attributes passed by the caller.
+
+Async profile actions
+=====================
+
+.. list-table:: Common async profile actions
+   :header-rows: 1
+   :widths: 25 75
+   :align: left
+
+   * - Method
+     - Description
+   * - ``show_sql()``
+     - Generates SQL for a natural language prompt without executing it.
+   * - ``run_sql()``
+     - Generates SQL, executes it, and returns a ``pandas.DataFrame``.
+   * - ``narrate()``
+     - Generates SQL, executes it, and returns a natural language answer.
+   * - ``explain_sql()``
+     - Explains the generated SQL for a prompt.
+   * - ``show_prompt()``
+     - Shows the prompt sent to the model.
+   * - ``chat()``
+     - Sends a general chat prompt to the model.
+   * - ``summarize()``
+     - Summarizes inline content or content referenced by a URI.
+   * - ``translate()``
+     - Translates text from one language to another.
 
 ********************
 ``AsyncProfile`` API
@@ -17,6 +83,9 @@ used with ``await``.
 ***********************
 Async Profile creation
 ***********************
+
+The following example creates an OCI Gen AI profile that can generate SQL over
+objects in the ``SH`` schema.
 
 .. literalinclude:: ../../../samples/async/profile_create.py
    :language: python
@@ -52,6 +121,77 @@ output::
      'temperature': None,
      'vector_index_name': None}
 
+
+.. latex:clearpage::
+
+***********************
+Reuse Async Profile
+***********************
+
+After a profile has been created, instantiate ``AsyncProfile`` with only the
+profile name to reuse the database profile:
+
+.. code-block:: python
+
+   async_profile = await select_ai.AsyncProfile(
+       profile_name="async_oci_ai_profile",
+   )
+   sql = await async_profile.show_sql(prompt="How many promotions?")
+
+Use ``AsyncProfile.fetch(...)`` when you want to create a proxy object from a
+saved database profile and raise an error if the profile does not exist:
+
+.. code-block:: python
+
+   async_profile = await select_ai.AsyncProfile.fetch(
+       "async_oci_ai_profile"
+   )
+
+.. latex:clearpage::
+
+***********************
+Update Async Profile
+***********************
+
+Use ``set_attribute(...)`` to update one profile attribute or
+``set_attributes(...)`` to update several attributes. Updates are saved to the
+database profile.
+
+.. code-block:: python
+
+   async_profile = await select_ai.AsyncProfile(
+       profile_name="async_oci_ai_profile",
+   )
+   await async_profile.set_attribute("temperature", 0.1)
+
+   await async_profile.set_attributes(
+       select_ai.ProfileAttributes(
+           max_tokens=2048,
+           enforce_object_list=True,
+       )
+   )
+
+.. latex:clearpage::
+
+***********************
+Delete Async Profile
+***********************
+
+Use ``delete(...)`` or ``AsyncProfile.delete_profile(...)`` to remove a profile
+from the database. Pass ``force=True`` when cleanup should succeed even if the
+profile does not exist.
+
+.. code-block:: python
+
+   async_profile = await select_ai.AsyncProfile(
+       profile_name="async_oci_ai_profile",
+   )
+   await async_profile.delete(force=True)
+
+   await select_ai.AsyncProfile.delete_profile(
+       "async_oci_ai_profile",
+       force=True,
+   )
 
 .. latex:clearpage::
 
@@ -112,6 +252,24 @@ output::
 
     SELECT COUNT("p"."PROMO_ID") AS "PROMOTION_COUNT" FROM "SH"."PROMOTIONS" "p"
 
+
+.. latex:clearpage::
+
+***********************
+Async show prompt
+***********************
+
+Use ``show_prompt(...)`` to inspect the prompt that Select AI sends to the
+model. This is useful when tuning profile attributes, object lists, comments,
+constraints, and provider settings.
+
+.. code-block:: python
+
+   async_profile = await select_ai.AsyncProfile(
+       profile_name="async_oci_ai_profile",
+   )
+   prompt = await async_profile.show_prompt(prompt="How many promotions?")
+   print(prompt)
 
 .. latex:clearpage::
 
@@ -296,6 +454,9 @@ output::
 ****************************
 List profiles asynchronously
 ****************************
+
+Profile listing returns profiles visible to the connected database user. The
+async list API returns an async iterator.
 
 .. literalinclude:: ../../../samples/async/profiles_list.py
    :language: python
