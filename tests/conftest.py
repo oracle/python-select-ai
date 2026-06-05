@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -87,24 +87,6 @@ def _grant_http_access(cur, username: str, provider_endpoint: str):
         ENABLE_AI_PROFILE_DOMAIN_FOR_USER,
         user=username,
         host=provider_endpoint,
-    )
-
-
-def _append_host_ace(cur, host: str, privileges, username: str):
-    privilege_list = ",".join([f"'{p}'" for p in privileges])
-    cur.execute(
-        f"""
-        BEGIN
-            DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
-                host => '{host}',
-                ace  => xs$ace_type(
-                           privilege_list => xs$name_list({privilege_list}),
-                           principal_name => '{username}',
-                           principal_type => xs_acl.ptype_db
-                       )
-            );
-        END;
-        """
     )
 
 
@@ -261,35 +243,42 @@ def allow_network_acl(test_env):
     email_smtp_host = get_env_value("EMAIL_SMTPHOST")
     http_hosts = ["api.openai.com", "a.co", "amazon.in"]
 
-    with oracledb.connect(**test_env.connect_params(admin=True)) as conn:
-        cur = conn.cursor()
-        try:
-            if email_smtp_host:
-                try:
-                    _append_host_ace(
-                        cur, email_smtp_host, ["connect", "smtp"], username
-                    )
-                except Exception as exc:
-                    msg = str(exc)
-                    if (
-                        "ORA-46212" not in msg
-                        and "ORA-46313" not in msg
-                        and "already exists" not in msg
-                    ):
-                        raise
+    select_ai.disconnect()
+    select_ai.create_pool(**test_env.connect_params(admin=True, use_pool=True))
+    try:
+        if email_smtp_host:
+            try:
+                select_ai.grant_network_access(
+                    users=username,
+                    host=email_smtp_host,
+                    privileges=["connect", "smtp"],
+                )
+            except Exception as exc:
+                msg = str(exc)
+                if (
+                    "ORA-46212" not in msg
+                    and "ORA-46313" not in msg
+                    and "already exists" not in msg
+                ):
+                    raise
 
-            for host in http_hosts:
-                try:
-                    _append_host_ace(cur, host, ["connect", "http"], username)
-                except Exception as exc:
-                    msg = str(exc)
-                    if (
-                        "ORA-46212" not in msg
-                        and "ORA-46313" not in msg
-                        and "already exists" not in msg
-                    ):
-                        raise
-        finally:
-            cur.close()
+        for host in http_hosts:
+            try:
+                select_ai.grant_network_access(
+                    users=username,
+                    host=host,
+                    privileges=["connect", "http"],
+                )
+            except Exception as exc:
+                msg = str(exc)
+                if (
+                    "ORA-46212" not in msg
+                    and "ORA-46313" not in msg
+                    and "already exists" not in msg
+                ):
+                    raise
+    finally:
+        select_ai.disconnect()
+        select_ai.create_pool(**test_env.connect_params(use_pool=True))
 
     yield

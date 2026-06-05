@@ -45,11 +45,6 @@ Python layer and persist the tool in the Database using
          - ``recipient``
          - ``sender``
          - ``smtp_host``
-    * - ``HTTP``
-      - ``select_ai.agent.Tool.create_http_tool``
-      - - ``tool_name``
-        - ``credential_name``
-        - ``endpoint``
     * - ``SQL``
       - ``select_ai.agent.Tool.create_sql_tool``
       - - ``tool_name``
@@ -285,6 +280,58 @@ output::
     9. Historical Epic (Historical, 2019-01-09)
     10. Biographical (Biography, 2019-01-10)
     ... (list continues up to 100 movies)
+
+.. latex:clearpage::
+
+Export and Import Team
+++++++++++++++++++++++
+
+Select AI agent teams can be exported into a portable specification and
+imported into the same database, a different database, or another Select AI
+service. The specification describes the team composition and the associated
+agent, task, and tool definitions that are needed to recreate the team.
+
+``Team.export_team()`` returns the specification as a JSON string by default.
+``Team.import_team()`` accepts either that JSON string or a Python mapping. On
+import, ``profile_name`` identifies the Select AI profile to use in the target
+database. ``team_name`` can be provided to create the imported team under a new
+name; this is useful when importing into the same database as the source team.
+
+If imported object names conflict with existing agents, tasks, tools, or teams,
+set ``force=True`` to let the database replace the conflicting objects. Use this
+carefully when importing into a shared schema because conflicting components can
+be dropped and recreated.
+
+.. literalinclude:: ../../../samples/agent/team_export_import.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    Exported specification:
+    {
+      "name": "EXPORT_IMPORT_MOVIE_ANALYST",
+      "component_type": "Agent",
+      "task": {
+        "task_name": "EXPORT_IMPORT_MOVIE_TASK",
+        "instruction": "Help the user with movie questions. Question: {query}",
+        "task_attributes": {
+          "enable_human_tool": "false",
+          "tools": []
+        }
+      },
+      "llm_config": {
+        "name": "LLAMA_4_MAVERICK",
+        "component_type": "oci"
+      }
+    }
+    Imported team: Team(team_name=IMPORTED_MOVIE_AGENT_TEAM, ...)
+
+The same APIs can also read from or write to object storage by passing both
+``object_storage_credential_name`` and ``location``. When exporting to object
+storage, ``Team.export_team()`` writes the specification to the location and
+returns ``None``. When importing from object storage, pass the same credential
+and location instead of ``specification``.
 
 .. latex:clearpage::
 

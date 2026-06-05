@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -9,6 +9,7 @@
 3301 - Async contract, regression and corner-case tests for select_ai.agent.AsyncTeam
 """
 
+import json
 import logging
 import os
 import uuid
@@ -93,6 +94,15 @@ async def expect_async_error(expected_code, coro_fn):
         pytest.fail(f"Expected error {expected_code} did not occur")
 
 
+async def ignore_async_missing(coro_fn):
+    try:
+        await coro_fn()
+    except (AgentTeamNotFoundError, oracledb.DatabaseError) as exc:
+        msg = str(exc)
+        if "ORA-20053" not in msg and "ORA-20051" not in msg:
+            raise
+
+
 def log_team_details(context: str, team) -> None:
     attrs = getattr(team, "attributes", None)
     details = {
@@ -172,6 +182,7 @@ async def python_gen_ai_profile(profile_attributes):
 def task_attributes():
     return TaskAttributes(
         instruction="Help the user. Question: {query}",
+        tools=[],
         enable_human_tool=False,
     )
 
@@ -314,6 +325,53 @@ async def test_3307_replace_create(team_attributes):
 async def test_3308_fetch_non_existing():
     name = f"NO_SUCH_{uuid.uuid4().hex.upper()}"
     await expect_async_error("NOT_FOUND", lambda: AsyncTeam.fetch(name))
+
+
+async def test_3309_export_team(team):
+    logger.info("Exporting team: %s", team.team_name)
+    specification = await team.export()
+    logger.info("Exported team specification: %s", specification)
+    spec = json.loads(specification)
+    assert isinstance(specification, str)
+    assert len(specification) > 0
+    assert spec["name"] == PYSAI_TEAM_AGENT_NAME
+    assert spec["task"]["task_name"] == PYSAI_TEAM_TASK_NAME
+
+
+async def test_3310_import_team(team, python_gen_ai_profile):
+    imported_team_name = f"PYSAI_IMPORTED_TEAM_{uuid.uuid4().hex.upper()}"
+    imported_agent_name = f"PYSAI_IMPORTED_AGENT_{uuid.uuid4().hex.upper()}"
+    imported_task_name = f"PYSAI_IMPORTED_TASK_{uuid.uuid4().hex.upper()}"
+
+    logger.info("Exporting source team for import: %s", team.team_name)
+    spec = json.loads(await team.export())
+    spec["name"] = imported_agent_name
+    spec["task"]["task_name"] = imported_task_name
+
+    try:
+        logger.info("Importing team: %s", imported_team_name)
+        await AsyncTeam.import_team(
+            profile_name=PYSAI_TEAM_PROFILE_NAME,
+            team_name=imported_team_name,
+            specification=spec,
+            force=True,
+        )
+        imported = await AsyncTeam.fetch(imported_team_name)
+        log_team_details("test_3310_import_team", imported)
+        assert imported.team_name == imported_team_name
+        assert imported.attributes.agents == [
+            {"name": imported_agent_name, "task": imported_task_name}
+        ]
+    finally:
+        await ignore_async_missing(
+            lambda: AsyncTeam.delete_team(imported_team_name, force=True)
+        )
+        await ignore_async_missing(
+            lambda: AsyncTask.delete_task(imported_task_name, force=True)
+        )
+        await ignore_async_missing(
+            lambda: AsyncAgent.delete_agent(imported_agent_name, force=True)
+        )
 
 
 async def test_3311_set_attribute_invalid_key(team):

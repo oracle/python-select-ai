@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -60,8 +60,6 @@ CUSTOM_WITH_TYPE_AND_INSTR_TOOL_NAME = (
 DISABLED_TOOL_NAME = f"PYSAI_3001_DISABLED_TOOL_{UUID}"
 DEFAULT_STATUS_TOOL_NAME = f"PYSAI_3001_DEFAULT_STATUS_TOOL_{UUID}"
 DROP_FORCE_MISSING_TOOL = f"PYSAI_3001_DROP_MISSING_{UUID}"
-HTTP_TOOL_NAME = f"PYSAI_3001_HTTP_TOOL_{UUID}"
-HTTP_ENDPOINT = "https://example.com/api/tool"
 
 EMAIL_TOOL_NAME = f"PYSAI_3001_EMAIL_TOOL_{UUID}"
 SLACK_TOOL_NAME = f"PYSAI_3001_SLACK_TOOL_{UUID}"
@@ -796,34 +794,3 @@ async def test_3023_drop_tool_force_false_non_existent_raises():
     with pytest.raises(oracledb.Error) as exc:
         await tool.delete(force=False)
     logger.info("Received expected drop error: %s", exc.value)
-
-
-async def test_3024_http_tool_created(email_credential):
-    logger.info("Creating HTTP tool: %s", HTTP_TOOL_NAME)
-    try:
-        tool = await AsyncTool.create_http_tool(
-            tool_name=HTTP_TOOL_NAME,
-            credential_name=email_credential,
-            endpoint=HTTP_ENDPOINT,
-            description="HTTP Tool",
-            replace=True,
-        )
-    except oracledb.DatabaseError as e:
-        if "ORA-20052" in str(e):
-            logger.info(
-                "HTTP tool creation failed with expected backend-side error: %s",
-                e,
-            )
-            return
-        raise
-    try:
-        fetched = await AsyncTool.fetch(HTTP_TOOL_NAME)
-        assert fetched.tool_name == HTTP_TOOL_NAME
-        assert fetched.attributes.tool_type == select_ai.agent.ToolType.HTTP
-        assert (
-            fetched.attributes.tool_params.credential_name == email_credential
-        )
-        assert fetched.attributes.tool_params.endpoint == HTTP_ENDPOINT
-    finally:
-        logger.info("Deleting HTTP tool: %s", HTTP_TOOL_NAME)
-        await tool.delete(force=True)

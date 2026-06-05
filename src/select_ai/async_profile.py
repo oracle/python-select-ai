@@ -425,17 +425,7 @@ class AsyncProfile(BaseProfile):
          conversation_id for context-aware chats
         :return: Union[pandas.DataFrame, str]
         """
-        if not prompt:
-            raise ValueError("prompt cannot be empty or None")
-
-        parameters = {
-            "prompt": prompt,
-            "action": action,
-            "profile_name": self.profile_name,
-            # "attributes": self.attributes.json(),
-        }
-        if params:
-            parameters["params"] = json.dumps(params)
+        parameters = self._generate_parameters(prompt, action, params)
 
         data = await cr.callfunc(
             "DBMS_CLOUD_AI.GENERATE",
@@ -451,30 +441,119 @@ class AsyncProfile(BaseProfile):
         else:
             return result
 
+    def _generate_parameters(
+        self,
+        prompt: str,
+        action,
+        params: Mapping = None,
+    ) -> Mapping:
+        if not prompt:
+            raise ValueError("prompt cannot be empty or None")
+
+        parameters = {
+            "prompt": prompt,
+            "action": action,
+            "profile_name": self.profile_name,
+            # "attributes": self.attributes.json(),
+        }
+        if params:
+            parameters["params"] = json.dumps(params)
+        return parameters
+
+    async def _generate_stream(
+        self,
+        prompt: str,
+        action,
+        params: Mapping = None,
+        chunk_size: int = 8192,
+    ) -> AsyncGenerator[str, None]:
+        async with async_cursor() as cr:
+            async for chunk in self._generate_stream_with_cursor(
+                cr,
+                prompt=prompt,
+                action=action,
+                params=params,
+                chunk_size=chunk_size,
+            ):
+                yield chunk
+
+    async def _generate_stream_with_cursor(
+        self,
+        cr,
+        prompt: str,
+        action,
+        params: Mapping = None,
+        chunk_size: int = 8192,
+    ) -> AsyncGenerator[str, None]:
+        if action == Action.RUNSQL:
+            raise ValueError("stream=True is not supported for run_sql")
+        if chunk_size <= 0:
+            raise ValueError("chunk_size must be greater than 0")
+
+        parameters = self._generate_parameters(prompt, action, params)
+        data = await cr.callfunc(
+            "DBMS_CLOUD_AI.GENERATE",
+            oracledb.DB_TYPE_CLOB,
+            keyword_parameters=parameters,
+        )
+        if data is None:
+            return
+
+        offset = 1
+        while True:
+            chunk = await data.read(offset=offset, amount=chunk_size)
+            if not chunk:
+                break
+            yield chunk
+            offset += len(chunk)
+
     async def generate(
-        self, prompt: str, action=Action.SHOWSQL, params: Mapping = None
-    ) -> Union[pandas.DataFrame, str, None]:
+        self,
+        prompt: str,
+        action=Action.SHOWSQL,
+        params: Mapping = None,
+        stream: bool = False,
+        chunk_size: int = 8192,
+    ) -> Union[pandas.DataFrame, str, AsyncGenerator[str, None], None]:
         """Asynchronously perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
         :param select_ai.profile.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: Union[pandas.DataFrame, str]
         """
+        if stream:
+            return self._generate_stream(prompt, action, params, chunk_size)
         async with async_cursor() as cr:
             return await self._generate_with_cursor(
                 cr, prompt=prompt, action=action, params=params
             )
 
-    async def chat(self, prompt, params: Mapping = None) -> str:
+    async def chat(
+        self,
+        prompt,
+        params: Mapping = None,
+        stream: bool = False,
+        chunk_size: int = 8192,
+    ) -> Union[str, AsyncGenerator[str, None]]:
         """Asynchronously chat with the LLM
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
-        return await self.generate(prompt, action=Action.CHAT, params=params)
+        return await self.generate(
+            prompt,
+            action=Action.CHAT,
+            params=params,
+            stream=stream,
+            chunk_size=chunk_size,
+        )
 
     @asynccontextmanager
     async def chat_session(
@@ -502,26 +581,50 @@ class AsyncProfile(BaseProfile):
             if delete:
                 await conversation.delete()
 
-    async def narrate(self, prompt, params: Mapping = None) -> str:
+    async def narrate(
+        self,
+        prompt,
+        params: Mapping = None,
+        stream: bool = False,
+        chunk_size: int = 8192,
+    ) -> Union[str, AsyncGenerator[str, None]]:
         """Narrate the result of the SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
         return await self.generate(
-            prompt, action=Action.NARRATE, params=params
+            prompt,
+            action=Action.NARRATE,
+            params=params,
+            stream=stream,
+            chunk_size=chunk_size,
         )
 
-    async def explain_sql(self, prompt: str, params: Mapping = None):
+    async def explain_sql(
+        self,
+        prompt: str,
+        params: Mapping = None,
+        stream: bool = False,
+        chunk_size: int = 8192,
+    ):
         """Explain the generated SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
         return await self.generate(
-            prompt, action=Action.EXPLAINSQL, params=params
+            prompt,
+            action=Action.EXPLAINSQL,
+            params=params,
+            stream=stream,
+            chunk_size=chunk_size,
         )
 
     async def run_sql(
@@ -535,26 +638,50 @@ class AsyncProfile(BaseProfile):
         """
         return await self.generate(prompt, action=Action.RUNSQL, params=params)
 
-    async def show_sql(self, prompt, params: Mapping = None):
+    async def show_sql(
+        self,
+        prompt,
+        params: Mapping = None,
+        stream: bool = False,
+        chunk_size: int = 8192,
+    ):
         """Show the generated SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
         return await self.generate(
-            prompt, action=Action.SHOWSQL, params=params
+            prompt,
+            action=Action.SHOWSQL,
+            params=params,
+            stream=stream,
+            chunk_size=chunk_size,
         )
 
-    async def show_prompt(self, prompt: str, params: Mapping = None):
+    async def show_prompt(
+        self,
+        prompt: str,
+        params: Mapping = None,
+        stream: bool = False,
+        chunk_size: int = 8192,
+    ):
         """Show the prompt sent to LLM
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
         return await self.generate(
-            prompt, action=Action.SHOWPROMPT, params=params
+            prompt,
+            action=Action.SHOWPROMPT,
+            params=params,
+            stream=stream,
+            chunk_size=chunk_size,
         )
 
     async def summarize(
@@ -708,27 +835,61 @@ class AsyncSession:
         self._conn_cm = None
         self._cursor = None
 
-    async def chat(self, prompt: str):
+    async def chat(
+        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+    ) -> Union[str, AsyncGenerator[str, None]]:
+        if stream:
+            return self.async_profile._generate_stream_with_cursor(
+                self._cursor,
+                prompt=prompt,
+                action=Action.CHAT,
+                params=self.params,
+                chunk_size=chunk_size,
+            )
         return await self.async_profile._generate_with_cursor(
             self._cursor, prompt=prompt, action=Action.CHAT, params=self.params
         )
 
-    async def narrate(self, prompt) -> str:
+    async def narrate(
+        self, prompt, stream: bool = False, chunk_size: int = 8192
+    ) -> Union[str, AsyncGenerator[str, None]]:
         """Narrate the result of the SQL
 
         :param str prompt: Natural language prompt
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
+        if stream:
+            return self.async_profile._generate_stream_with_cursor(
+                self._cursor,
+                prompt=prompt,
+                action=Action.NARRATE,
+                params=self.params,
+                chunk_size=chunk_size,
+            )
         return await self.async_profile._generate_with_cursor(
             self._cursor, prompt, action=Action.NARRATE, params=self.params
         )
 
-    async def explain_sql(self, prompt: str) -> str:
+    async def explain_sql(
+        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+    ) -> Union[str, AsyncGenerator[str, None]]:
         """Explain the generated SQL
 
         :param str prompt: Natural language prompt
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
+        if stream:
+            return self.async_profile._generate_stream_with_cursor(
+                self._cursor,
+                prompt=prompt,
+                action=Action.EXPLAINSQL,
+                params=self.params,
+                chunk_size=chunk_size,
+            )
         return await self.async_profile._generate_with_cursor(
             self._cursor, prompt, action=Action.EXPLAINSQL, params=self.params
         )
@@ -743,22 +904,46 @@ class AsyncSession:
             self._cursor, prompt, action=Action.RUNSQL, params=self.params
         )
 
-    async def show_sql(self, prompt) -> str:
+    async def show_sql(
+        self, prompt, stream: bool = False, chunk_size: int = 8192
+    ) -> Union[str, AsyncGenerator[str, None]]:
         """Show the generated SQL
 
         :param str prompt: Natural language prompt
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
+        if stream:
+            return self.async_profile._generate_stream_with_cursor(
+                self._cursor,
+                prompt=prompt,
+                action=Action.SHOWSQL,
+                params=self.params,
+                chunk_size=chunk_size,
+            )
         return await self.async_profile._generate_with_cursor(
             self._cursor, prompt, action=Action.SHOWSQL, params=self.params
         )
 
-    async def show_prompt(self, prompt: str) -> str:
+    async def show_prompt(
+        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+    ) -> Union[str, AsyncGenerator[str, None]]:
         """Show the prompt sent to LLM
 
         :param str prompt: Natural language prompt
+        :param bool stream: Return an async iterator of response chunks
+        :param int chunk_size: Number of characters to read per stream chunk
         :return: str
         """
+        if stream:
+            return self.async_profile._generate_stream_with_cursor(
+                self._cursor,
+                prompt=prompt,
+                action=Action.SHOWPROMPT,
+                params=self.params,
+                chunk_size=chunk_size,
+            )
         return await self.async_profile._generate_with_cursor(
             self._cursor, prompt, action=Action.SHOWPROMPT, params=self.params
         )

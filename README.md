@@ -8,9 +8,16 @@ Select AI for Python enables you to leverage the broader Python ecosystem in com
 
 ## Installation
 
-Run
+Install the Python package:
+
 ```bash
 python3 -m pip install select_ai
+```
+
+Install the optional command line interface:
+
+```bash
+python3 -m pip install 'select_ai[cli]'
 ```
 
 ## Documentation
@@ -20,6 +27,17 @@ See [Select AI for Python documentation][documentation]
 ## Samples
 
 Examples can be found in the [/samples][samples] directory
+
+## Command Line Interface
+
+The optional `select-ai` command provides an interactive chat REPL for Select AI
+profiles:
+
+```bash
+select-ai chat --profile OCI_AI_PROFILE
+```
+
+![Select AI CLI demo](doc/source/image/select_ai_cli_demo.gif)
 
 ### Basic Example
 
