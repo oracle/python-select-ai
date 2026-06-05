@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Concurrent prompt processing &#8212; Select AI for Python 1.4.0rc1 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Concurrent prompt processing &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
     <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
     <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
 
-    <script src="../_static/documentation_options.js?v=67589dc7"></script>
+    <script src="../_static/documentation_options.js?v=9172181d"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 
@@ -121,7 +121,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Concurrent prompt processing</a></li>
@@ -238,8 +238,8 @@ that is the async profile name in your environment.</p>
 <span id="sync-thread-pool-recipe"></span><h2><span class="section-number">1.3. </span><code class="docutils literal notranslate"><span class="pre">sync_thread_pool.py</span></code><a class="headerlink" href="#sync-thread-pool-py" title="Link to this heading">¶</a></h2>
 <p>This recipe uses <code class="docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">as_completed()</span></code>. Results are
 printed in the order they finish.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
@@ -293,8 +293,8 @@ printed in the order they finish.</p>
 <span id="sync-ordered-results-recipe"></span><h2><span class="section-number">1.4. </span><code class="docutils literal notranslate"><span class="pre">sync_ordered_results.py</span></code><a class="headerlink" href="#sync-ordered-results-py" title="Link to this heading">¶</a></h2>
 <p>This recipe uses <code class="docutils literal notranslate"><span class="pre">ThreadPoolExecutor.map()</span></code>. Prompts run concurrently, but
 results are printed in the same order as the input list.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
@@ -401,7 +401,8 @@ producers and prompt processors are separate parts of an application.</p>
     <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">prompts</span><span class="p">)</span>
 
     <span class="n">workers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">worker_count</span><span class="p">)</span>
+        <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">worker_count</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -762,7 +763,7 @@ AI provider calls made by <code class="docutils literal notranslate"><span class
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0rc1 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Concurrent prompt processing</a></li>
