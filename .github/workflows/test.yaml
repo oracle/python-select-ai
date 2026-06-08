@@ -36,6 +36,49 @@ jobs:
           pip install pytest anyio
           pip install -e .
 
+      - name: Debug vector index secret wiring
+        run: |
+          python - <<'PY'
+          import hashlib
+          import os
+          from urllib.parse import urlparse
+
+          def log_env(name):
+              value = os.environ.get(name)
+              if value is None:
+                  print(f"{name}: missing")
+                  return
+              digest = hashlib.sha256(value.encode()).hexdigest()[:12]
+              print(
+                  f"{name}: set len={len(value)} stripped={value == value.strip()} "
+                  f"sha256_12={digest}"
+              )
+
+          for env_name in (
+              "PYSAI_TEST_USER",
+              "PYTEST_TEST_OBJSTORE_EMBEDDING_LOC",
+              "PYTEST_TEST_OBJSTORE_USERNAME",
+              "PYTEST_TEST_OBJSTORE_PASSWORD",
+          ):
+              log_env(env_name)
+
+          location = os.environ.get("PYTEST_TEST_OBJSTORE_EMBEDDING_LOC")
+          if location:
+              print(
+                  "PYTEST_TEST_OBJSTORE_EMBEDDING_LOC "
+                  f"host={urlparse(location.strip()).hostname}"
+              )
+
+          user = os.environ.get("PYSAI_TEST_USER")
+          if user:
+              print(f"PYSAI_TEST_USER uppercase={user == user.upper()}")
+          PY
+        env:
+          PYSAI_TEST_USER: ${{ secrets.PYSAI_TEST_USER }}_${{env.PYTHON_VERSION_WITHOUT_DOT}}
+          PYTEST_TEST_OBJSTORE_EMBEDDING_LOC: ${{ secrets.PYTEST_TEST_OBJSTORE_EMBEDDING_LOC }}
+          PYTEST_TEST_OBJSTORE_USERNAME: ${{ secrets.PYTEST_TEST_OBJSTORE_USERNAME }}
+          PYTEST_TEST_OBJSTORE_PASSWORD: ${{ secrets.PYTEST_TEST_OBJSTORE_PASSWORD }}
+
       - name: Run select_ai tests
         run: |
           python_version=${{matrix.python-version}}
@@ -60,3 +103,6 @@ jobs:
           PYSAI_TEST_EMAIL_SENDER: ${{secrets.PYSAI_TEST_EMAIL_SENDER}}
           PYSAI_TEST_EMAIL_SMTPHOST: ${{secrets.PYSAI_TEST_EMAIL_SMTPHOST}}
           PYSAI_TEST_OPENAI_API_KEY: ${{secrets.PYSAI_TEST_OPENAI_API_KEY}}
+          PYTEST_TEST_OBJSTORE_EMBEDDING_LOC: ${{ secrets.PYTEST_TEST_OBJSTORE_EMBEDDING_LOC }}
+          PYTEST_TEST_OBJSTORE_USERNAME: ${{ secrets.PYTEST_TEST_OBJSTORE_USERNAME }}
+          PYTEST_TEST_OBJSTORE_PASSWORD: ${{ secrets.PYTEST_TEST_OBJSTORE_PASSWORD }}
