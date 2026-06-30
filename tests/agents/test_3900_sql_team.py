@@ -440,7 +440,14 @@ def sql_team(connect, test_env, allow_network_acl):
 def test_sql_team_runs(sql_team):
     # Run the team with a sample prompt and verify a response is returned.
     with log_step("Run SQL team"):
-        conversation_id = str(uuid.uuid4())
+        conversation = select_ai.Conversation(
+            attributes=select_ai.ConversationAttributes(
+                title="SQL team test",
+                description="Conversation for SQL team test",
+            )
+        )
+        conversation.create()
+        conversation_id = conversation.conversation_id
         prompt = "List tables in the SH schema?"
         logger.info(
             "Running team | team=%s | conversation_id=%s | prompt=%s",
@@ -448,14 +455,17 @@ def test_sql_team_runs(sql_team):
             conversation_id,
             prompt,
         )
-        response = sql_team.run(
-            prompt=prompt,
-            params={"conversation_id": conversation_id},
-        )
-        logger.info("Agent Response: %s", response)
-        assert response is not None
-        assert isinstance(response, str)
-        assert len(response.strip()) > 0
+        try:
+            response = sql_team.run(
+                prompt=prompt,
+                params={"conversation_id": conversation_id},
+            )
+            logger.info("Agent Response: %s", response)
+            assert response is not None
+            assert isinstance(response, str)
+            assert len(response.strip()) > 0
+        finally:
+            conversation.delete(force=True)
 
 
 if __name__ == "__main__":

@@ -452,7 +452,14 @@ async def async_sql_team(async_connect, test_env, allow_network_acl):
 async def test_async_sql_team_runs(async_sql_team):
     # Run the team with a sample prompt and verify a response is returned.
     with log_step("Run async SQL team"):
-        conversation_id = str(uuid.uuid4())
+        conversation = select_ai.AsyncConversation(
+            attributes=select_ai.ConversationAttributes(
+                title="Async SQL team test",
+                description="Conversation for async SQL team test",
+            )
+        )
+        await conversation.create()
+        conversation_id = conversation.conversation_id
         prompt = "List tables in the SH schema?"
         logger.info(
             "Running team | team=%s | conversation_id=%s | prompt=%s",
@@ -460,14 +467,17 @@ async def test_async_sql_team_runs(async_sql_team):
             conversation_id,
             prompt,
         )
-        response = await async_sql_team.run(
-            prompt=prompt,
-            params={"conversation_id": conversation_id},
-        )
-        logger.info("Agent Response: %s", response)
-        assert response is not None
-        assert isinstance(response, str)
-        assert len(response.strip()) > 0
+        try:
+            response = await async_sql_team.run(
+                prompt=prompt,
+                params={"conversation_id": conversation_id},
+            )
+            logger.info("Agent Response: %s", response)
+            assert response is not None
+            assert isinstance(response, str)
+            assert len(response.strip()) > 0
+        finally:
+            await conversation.delete(force=True)
 
 
 if __name__ == "__main__":
