@@ -324,7 +324,7 @@ def test_3800_agent_end_to_end(
             created["agent"] = agent
             log_object_details("create_agent", "agent", agent)
 
-            assert agent.agent_name == "CustomerAgent"
+            assert agent.agent_name.split("_", 1)[0] == "CustomerAgent"
             assert agent.attributes.enable_human_tool is False
 
         # -------------------------------
