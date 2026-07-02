@@ -44,7 +44,7 @@ def setup_and_teardown(request, connect, vector_index_params):
     request.cls.genai_cred = p["genai_cred"]
     request.cls.objstore_cred = p["objstore_cred"]
     request.cls.profile_name = p["profile_name"]
-    request.cls.index_name = p["create_index_name"]
+    request.cls.base_index_name = p["create_index_name"]
     request.cls.create_credential()
     request.cls.profile = request.cls.create_profile()
     logger.info("Setup complete.\n")
@@ -174,6 +174,7 @@ class TestCreateVectorIndex:
 
     def setup_method(self, method):
         logger.info(f"\n--- Starting test: {method.__name__} ---")
+        self.index_name = f"{self.__class__.base_index_name}_{method.__name__}"
         self.objstore_cred = self.__class__.objstore_cred
         params = self.vector_index_params
         self.vector_index_attributes = OracleVectorIndexAttributes(

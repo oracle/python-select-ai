@@ -34,7 +34,7 @@ async def setup_and_teardown(request, async_connect, vector_index_params):
     request.cls.genai_cred = p["genai_cred"]
     request.cls.objstore_cred = p["objstore_cred"]
     request.cls.profile_name = p["profile_name"]
-    request.cls.index_name = p["create_index_name"]
+    request.cls.base_index_name = p["create_index_name"]
     await request.cls.create_credential()
     request.cls.profile = await request.cls.create_profile()
     logger.info("Setup complete.\n")
@@ -48,6 +48,9 @@ async def setup_and_teardown(request, async_connect, vector_index_params):
 @pytest.fixture(autouse=True)
 async def vector_index_test_state(request):
     logger.info("--- Starting test: %s ---", request.function.__name__)
+    request.cls.index_name = (
+        f"{request.cls.base_index_name}_{request.function.__name__}"
+    )
     params = request.cls.vector_index_params
     request.cls.vector_index_attributes = OracleVectorIndexAttributes(
         location=params["embedding_location"],
