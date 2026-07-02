@@ -358,7 +358,7 @@ class TestDeleteVectorIndex:
         self.vector_index.delete(include_data=True, force=True)
         time.sleep(1)
         self.assert_index_count(f"^{self.index_name}", 0)
-        table_name = "TEST_VECTOR_INDEX$VECTAB"
+        table_name = f"{self.index_name}$VECTAB".upper()
         with select_ai.cursor() as cursor:
             cursor.execute(
                 """

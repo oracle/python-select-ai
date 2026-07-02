@@ -341,7 +341,7 @@ class TestAsyncDeleteVectorIndex:
         await self.async_vector_index.delete(include_data=True, force=True)
         await asyncio.sleep(1)
         await self.assert_index_count(f"^{self.index_name}", 0)
-        table_name = "TEST_VECTOR_INDEX$VECTAB"
+        table_name = f"{self.index_name}$VECTAB".upper()
         async with select_ai.async_cursor() as cursor:
             await cursor.execute(
                 """

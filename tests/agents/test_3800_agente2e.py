@@ -408,7 +408,7 @@ def test_3800_agent_end_to_end(
                         "3. If defective: "
                         "   a. Process the defective return."
                     ),
-                    tools=["Websearch", "Email"],
+                    tools=[websearch_tool_name, email_tool_name],
                     enable_human_tool=False,
                 ),
             )
@@ -417,11 +417,16 @@ def test_3800_agent_end_to_end(
             log_object_details("create_task", "task", task)
 
             assert task.task_name == task_name
-            assert set(task.attributes.tools) == {"Websearch", "Email"}
+            assert {
+                tool.split("_", 1)[0] for tool in task.attributes.tools
+            } == {"Websearch", "Email"}
             assert task.attributes.enable_human_tool is False
 
         assert task.task_name == task_name
-        assert set(task.attributes.tools) == {"Websearch", "Email"}
+        assert {tool.split("_", 1)[0] for tool in task.attributes.tools} == {
+            "Websearch",
+            "Email",
+        }
 
         # -------------------------------
         # TEAM
