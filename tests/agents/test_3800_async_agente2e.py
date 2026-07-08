@@ -438,28 +438,38 @@ async def test_3800_agent_end_to_end_async(
             assert team.team_name == team_name
 
         with log_step("Run async agent conversation"):
-            conversation_id = str(uuid.uuid4())
+            conversation = select_ai.AsyncConversation(
+                attributes=select_ai.ConversationAttributes(
+                    title="Async agent end-to-end test",
+                    description="Conversation for async agent end-to-end test",
+                )
+            )
+            await conversation.create()
+            conversation_id = conversation.conversation_id
             prompts = [
                 "I want to return an office chair",
-                "The price when I bought it is 100. I found a cheaper price",
+                "The price when I bought it is 100. I found it for 80 now.",
                 "Price match link https://www.ikea.com/us/en/p/stefan-chair-brown-black-00211088/",
-                "Yes, I would like to proceed with a refund",
-                "If you have not started the refund, please do",
+                "The current lower price is 80, so the refund amount should be 20.",
+                "Yes, I would like to proceed with the refund.",
             ]
 
-            for idx, prompt in enumerate(prompts, start=1):
-                logger.info("USER %d: %s", idx, prompt)
-                response = await team.run(
-                    prompt=prompt,
-                    params={"conversation_id": conversation_id},
-                )
+            try:
+                for idx, prompt in enumerate(prompts, start=1):
+                    logger.info("USER %d: %s", idx, prompt)
+                    response = await team.run(
+                        prompt=prompt,
+                        params={"conversation_id": conversation_id},
+                    )
 
-                print(f"\nASYNC AGENT RESPONSE {idx}:\n{response}\n")
-                logger.info("ASYNC AGENT RESPONSE %d: %s", idx, response)
+                    print(f"\nASYNC AGENT RESPONSE {idx}:\n{response}\n")
+                    logger.info("ASYNC AGENT RESPONSE %d: %s", idx, response)
 
-                assert response is not None
-                assert isinstance(response, str)
-                assert len(response.strip()) > 0
+                    assert response is not None
+                    assert isinstance(response, str)
+                    assert len(response.strip()) > 0
+            finally:
+                await conversation.delete(force=True)
 
             async with select_ai.async_cursor() as cur:
                 await cur.execute(

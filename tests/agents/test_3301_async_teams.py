@@ -275,13 +275,23 @@ async def test_3302_fetch(team_attributes):
 
 
 async def test_3303_run(team):
-    response = await team.run(
-        prompt="What is 2+2?",
-        params={"conversation_id": str(uuid.uuid4())},
+    conversation = select_ai.AsyncConversation(
+        attributes=select_ai.ConversationAttributes(
+            title="Async agent team contract test",
+            description="Conversation for async team run contract test",
+        )
     )
-    logger.info("Team run response: %s", response)
-    assert isinstance(response, str)
-    assert len(response) > 0
+    await conversation.create()
+    try:
+        response = await team.run(
+            prompt="What is 2+2?",
+            params={"conversation_id": conversation.conversation_id},
+        )
+        logger.info("Team run response: %s", response)
+        assert isinstance(response, str)
+        assert len(response) > 0
+    finally:
+        await conversation.delete(force=True)
 
 
 async def test_3304_disable_enable_contract(team):

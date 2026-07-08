@@ -126,9 +126,19 @@ async def test_3302(team_attributes):
 
 
 async def test_3303(team):
-    response = await team.run(
-        prompt="In the movie Titanic, was there enough space for Jack ? ",
-        params={"conversation_id": str(uuid.uuid4())},
+    conversation = select_ai.AsyncConversation(
+        attributes=select_ai.ConversationAttributes(
+            title="Async agent team test",
+            description="Conversation for async team run test",
+        )
     )
-    assert isinstance(response, str)
-    assert len(response) > 0
+    await conversation.create()
+    try:
+        response = await team.run(
+            prompt="In the movie Titanic, was there enough space for Jack ? ",
+            params={"conversation_id": conversation.conversation_id},
+        )
+        assert isinstance(response, str)
+        assert len(response) > 0
+    finally:
+        await conversation.delete(force=True)

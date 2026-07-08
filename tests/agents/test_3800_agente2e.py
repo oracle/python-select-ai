@@ -260,10 +260,25 @@ def test_3800_agent_end_to_end(
 
     """
 
+    run_id = uuid.uuid4().hex.upper()
+    profile_name = f"GEN1_PROFILE_{run_id}"
+    agent_name = f"CustomerAgent_{run_id}"
+    websearch_tool_name = f"Websearch_{run_id}"
+    email_tool_name = f"Email_{run_id}"
+    task_name = f"Return_And_Price_Match_{run_id}"
+    team_name = f"ReturnAgency_{run_id}"
+
     # -------------------------------
     # PROFILE
     # -------------------------------
     logger.info("Starting End-to-End Agent Test")
+    logger.info(
+        "Run identifiers | profile=%s agent=%s task=%s team=%s",
+        profile_name,
+        agent_name,
+        task_name,
+        team_name,
+    )
     logger.info(
         "Resolved credential fixtures | openai=%s | email=%s",
         openai_cred,
@@ -286,7 +301,7 @@ def test_3800_agent_end_to_end(
 
     try:
         profile = select_ai.Profile(
-            profile_name="GEN1_PROFILE",
+            profile_name=profile_name,
             attributes=profile_attributes,
             replace=True,
         )
@@ -298,9 +313,9 @@ def test_3800_agent_end_to_end(
         # -------------------------------
         with log_step("Create agent"):
             agent = Agent(
-                agent_name="CustomerAgent",
+                agent_name=agent_name,
                 attributes=AgentAttributes(
-                    profile_name="GEN1_PROFILE",
+                    profile_name=profile_name,
                     role="You are an experienced customer agent handling returns.",
                     enable_human_tool=False,
                 ),
@@ -309,7 +324,7 @@ def test_3800_agent_end_to_end(
             created["agent"] = agent
             log_object_details("create_agent", "agent", agent)
 
-            assert agent.agent_name == "CustomerAgent"
+            assert agent.agent_name.split("_", 1)[0] == "CustomerAgent"
             assert agent.attributes.enable_human_tool is False
 
         # -------------------------------
@@ -317,7 +332,7 @@ def test_3800_agent_end_to_end(
         # -------------------------------
         with log_step("Create tools"):
             websearch_tool = Tool(
-                tool_name="Websearch",
+                tool_name=websearch_tool_name,
                 attributes=ToolAttributes(
                     tool_type="WEBSEARCH",
                     instruction="Use this tool to find the current price of a product from a URL.",
@@ -327,7 +342,7 @@ def test_3800_agent_end_to_end(
             websearch_tool.create(replace=True)
             created["tools"].append(websearch_tool)
             log_object_details("create_websearch_tool", "tool", websearch_tool)
-            fetched_websearch_tool = Tool.fetch("Websearch")
+            fetched_websearch_tool = Tool.fetch(websearch_tool_name)
             logger.info(
                 "Verified fetched websearch tool credential | tool=%s | credential=%s",
                 fetched_websearch_tool.tool_name,
@@ -340,7 +355,7 @@ def test_3800_agent_end_to_end(
 
             # Email notification tool
             email_tool = Tool(
-                tool_name="Email",
+                tool_name=email_tool_name,
                 attributes=ToolAttributes(
                     tool_type="NOTIFICATION",
                     tool_params=ToolParams(
@@ -355,7 +370,7 @@ def test_3800_agent_end_to_end(
             email_tool.create(replace=True)
             created["tools"].append(email_tool)
             log_object_details("create_email_tool", "tool", email_tool)
-            fetched_email_tool = Tool.fetch("Email")
+            fetched_email_tool = Tool.fetch(email_tool_name)
             logger.info(
                 "Verified fetched email tool credential | tool=%s | credential=%s",
                 fetched_email_tool.tool_name,
@@ -366,7 +381,7 @@ def test_3800_agent_end_to_end(
                 == email_cred
             )
 
-            assert Tool("Email") is not None
+            assert Tool(email_tool_name) is not None
             assert (
                 websearch_tool.attributes.tool_params.credential_name
                 == openai_cred
@@ -380,7 +395,7 @@ def test_3800_agent_end_to_end(
         # -------------------------------
         with log_step("Create task"):
             task = Task(
-                task_name="Return_And_Price_Match",
+                task_name=task_name,
                 attributes=TaskAttributes(
                     instruction=(
                         "Process a product return request from a customer. "
@@ -393,7 +408,7 @@ def test_3800_agent_end_to_end(
                         "3. If defective: "
                         "   a. Process the defective return."
                     ),
-                    tools=["Websearch", "Email"],
+                    tools=[websearch_tool_name, email_tool_name],
                     enable_human_tool=False,
                 ),
             )
@@ -401,24 +416,29 @@ def test_3800_agent_end_to_end(
             created["task"] = task
             log_object_details("create_task", "task", task)
 
-            assert task.task_name == "Return_And_Price_Match"
-            assert set(task.attributes.tools) == {"Websearch", "Email"}
+            assert task.task_name == task_name
+            assert {
+                tool.split("_", 1)[0] for tool in task.attributes.tools
+            } == {"Websearch", "Email"}
             assert task.attributes.enable_human_tool is False
 
-        assert task.task_name == "Return_And_Price_Match"
-        assert set(task.attributes.tools) == {"Websearch", "Email"}
+        assert task.task_name == task_name
+        assert {tool.split("_", 1)[0] for tool in task.attributes.tools} == {
+            "Websearch",
+            "Email",
+        }
 
         # -------------------------------
         # TEAM
         # -------------------------------
         with log_step("Create team"):
             team = Team(
-                team_name="ReturnAgency",
+                team_name=team_name,
                 attributes=TeamAttributes(
                     agents=[
                         {
-                            "name": "CustomerAgent",
-                            "task": "Return_And_Price_Match",
+                            "name": agent_name,
+                            "task": task_name,
                         }
                     ],
                     process="sequential",
@@ -428,37 +448,48 @@ def test_3800_agent_end_to_end(
             created["team"] = team
             log_object_details("create_team", "team", team)
 
-            assert team.team_name == "ReturnAgency"
+            assert team.team_name == team_name
 
         # -------------------------------
         # RUN CONVERSATION
         # -------------------------------
         with log_step("Run agent conversation"):
-            conversation_id = str(uuid.uuid4())
+            conversation = select_ai.Conversation(
+                attributes=select_ai.ConversationAttributes(
+                    title="Agent end-to-end test",
+                    description="Conversation for agent end-to-end test",
+                )
+            )
+            conversation.create()
+            conversation_id = conversation.conversation_id
 
             prompts = [
                 "I want to return an office chair",
-                "The price when I bought it is 100. But I found a cheaper price",
+                "The price when I bought it is 100. I found it for 80 now.",
                 "Here is the price match link 'https://www.ikea.com/us/en/p/stefan-chair-brown-black-00211088/'",
-                "Yes, I would like to proceed with a refund",
+                "The current lower price is 80, so the refund amount should be 20.",
+                "Yes, I would like to proceed with the refund.",
             ]
 
-            for idx, prompt in enumerate(prompts, start=1):
-                logger.info("USER %d: %s", idx, prompt)
+            try:
+                for idx, prompt in enumerate(prompts, start=1):
+                    logger.info("USER %d: %s", idx, prompt)
 
-                response = team.run(
-                    prompt=prompt,
-                    params={"conversation_id": conversation_id},
-                )
+                    response = team.run(
+                        prompt=prompt,
+                        params={"conversation_id": conversation_id},
+                    )
 
-                print(f"\nAGENT RESPONSE {idx}:\n{response}\n")
-                logger.info("AGENT RESPONSE %d: %s", idx, response)
+                    print(f"\nAGENT RESPONSE {idx}:\n{response}\n")
+                    logger.info("AGENT RESPONSE %d: %s", idx, response)
 
-                assert response is not None
-                assert isinstance(response, (str, dict))
+                    assert response is not None
+                    assert isinstance(response, (str, dict))
 
-                if isinstance(response, dict):
-                    assert response
+                    if isinstance(response, dict):
+                        assert response
+            finally:
+                conversation.delete(force=True)
 
             with select_ai.cursor() as cur:
                 cur.execute(

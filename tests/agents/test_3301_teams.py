@@ -274,11 +274,24 @@ def test_3302_fetch(team_attributes):
 
 def test_3303_run(team):
     log_step(f"Running team: {team.team_name}")
-    response = team.run("What is 2+2?", {"conversation_id": str(uuid.uuid4())})
-    log_step(f"Team run response: {response}")
-    assert isinstance(response, str)
-    assert len(response) > 0
-    log_ok("Run OK")
+    conversation = select_ai.Conversation(
+        attributes=select_ai.ConversationAttributes(
+            title="Agent team contract test",
+            description="Conversation for team run contract test",
+        )
+    )
+    conversation.create()
+    try:
+        response = team.run(
+            "What is 2+2?",
+            {"conversation_id": conversation.conversation_id},
+        )
+        log_step(f"Team run response: {response}")
+        assert isinstance(response, str)
+        assert len(response) > 0
+        log_ok("Run OK")
+    finally:
+        conversation.delete(force=True)
 
 
 def test_3304_disable_enable_contract(team):
