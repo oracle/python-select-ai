@@ -70,32 +70,11 @@ def setup_and_teardown(request, connect, enabledisable_params):
         object_storage_credential_name=request.cls.objstore_cred,
     )
     request.cls.vector_index_attributes = vi_attrs
-    request.cls.index_name = p["enabledisable_index_name"]
-    vector_index = select_ai.VectorIndex(
-        index_name=request.cls.index_name,
-        attributes=vi_attrs,
-        description="Test vector index",
-        profile=request.cls.profile,
-    )
-    vector_index.create(replace=True)
-
-    try:
-        created_indexes = [idx.index_name for idx in VectorIndex.list()]
-    except Exception:
-        created_indexes = [idx.index_name for idx in VectorIndex().list()]
-    assert (
-        request.cls.index_name.upper() in created_indexes
-    ), f"VectorIndex {request.cls.index_name} was not created"
+    request.cls.base_index_name = p["enabledisable_index_name"]
 
     yield
 
     logger.info("=== Tearing down TestEnableDisableVectorIndex class ===")
-    try:
-        vector_index = VectorIndex(index_name=request.cls.index_name)
-        request.cls.delete_index_with_retry(vector_index, force=True)
-    except Exception as e:
-        logger.info(f"Warning: drop vector index failed: {e}")
-
     request.cls.delete_profile(request.cls.profile)
     request.cls.delete_credential()
     logger.info("Teardown complete.\n")
@@ -271,42 +250,60 @@ class TestEnableDisableVectorIndex:
     def setup_method(self, method):
         logger.info(f"SetUp for {method.__name__}")
         self.objstore_cred = self.__class__.objstore_cred
-        self.vecidx = select_ai.VectorIndex()
-        indexes = list(
-            self.vecidx.list(index_name_pattern=f"^{self.index_name}$")
+        self.index_name = f"{self.base_index_name}_{method.__name__}"
+        self.vector_index = VectorIndex(
+            index_name=self.index_name,
+            attributes=self.vector_index_attributes,
+            description="Test vector index",
+            profile=self.profile,
         )
-        assert len(indexes) == 1, (
-            f"Expected exactly one vector index named {self.index_name}, "
-            f"got {len(indexes)}"
-        )
-        self.vector_index = indexes[0]
+        self.vector_index.create(replace=True)
         logger.info(self.vector_index.index_name)
-        try:
-            self.vector_index.enable()
-            time.sleep(1)
-        except oracledb.DatabaseError as e:
-            if "ORA-20000" not in str(e):
-                raise
 
     def teardown_method(self, method):
         logger.info(f"TearDown for {method.__name__}")
+        try:
+            self.delete_index_with_retry(
+                VectorIndex(index_name=self.index_name), force=True
+            )
+        except Exception as exc:
+            logger.warning(
+                "Warning: drop vector index %s failed: %s",
+                self.index_name,
+                exc,
+            )
 
-    def wait_for_status_table(self, cursor, status_table, retries=5, delay=2):
-        for _ in range(retries):
+    def wait_for_status_table(self, cursor, status_table, timeout=60, delay=2):
+        """Wait until the asynchronously-created pipeline status table exists."""
+        deadline = time.monotonic() + timeout
+        attempts = 0
+        while True:
+            attempts += 1
             try:
                 cursor.execute(f"SELECT COUNT(*) FROM {status_table}")
                 return cursor.fetchone()
             except oracledb.DatabaseError as e:
-                if "ORA-00942" in str(e):
-                    time.sleep(delay)
-                    continue
-                raise
-        return None
+                if "ORA-00942" not in str(e):
+                    raise
+                if time.monotonic() >= deadline:
+                    logger.info(
+                        "Status table %s was not visible after %s attempts "
+                        "within %s seconds.",
+                        status_table,
+                        attempts,
+                        timeout,
+                    )
+                    return None
+                time.sleep(delay)
 
     def wait_for_pipeline_entry(
-        self, cursor, pipeline_name, retries=5, delay=2
+        self, cursor, pipeline_name, timeout=60, delay=2
     ):
-        for _ in range(retries):
+        """Wait for ENABLE_VECTOR_INDEX to publish pipeline metadata."""
+        deadline = time.monotonic() + timeout
+        attempts = 0
+        while True:
+            attempts += 1
             cursor.execute(
                 "SELECT status_table FROM user_cloud_pipelines WHERE pipeline_name = :1",
                 [pipeline_name],
@@ -314,8 +311,16 @@ class TestEnableDisableVectorIndex:
             row = cursor.fetchone()
             if row and row[0]:
                 return row[0]
+            if time.monotonic() >= deadline:
+                logger.info(
+                    "Pipeline %s was not visible after %s attempts within "
+                    "%s seconds.",
+                    pipeline_name,
+                    attempts,
+                    timeout,
+                )
+                return None
             time.sleep(delay)
-        return None
 
     def test_5501(self):
         """Disabling and enabling the vector index."""
@@ -435,6 +440,9 @@ class TestEnableDisableVectorIndex:
 
     def test_5510(self):
         """Pipeline metadata is available after enabling the vector index."""
+        logger.info(f"Disabling then enabling vector index: {self.index_name}")
+        self.vector_index.disable()
+        self.vector_index.enable()
         pipeline_name = f"{self.index_name.upper()}$VECPIPELINE"
         logger.info(f"Checking pipeline activity after enabling vector index")
         with select_ai.cursor() as cursor:

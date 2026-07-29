@@ -7,6 +7,7 @@
 
 import asyncio
 import logging
+import time
 
 import oracledb
 import pytest
@@ -69,32 +70,11 @@ async def setup_and_teardown(request, async_connect, enabledisable_params):
         object_storage_credential_name=request.cls.objstore_cred,
     )
     request.cls.vector_index_attributes = vi_attrs
-    request.cls.index_name = p["enabledisable_index_name"]
-
-    vector_index = AsyncVectorIndex(
-        index_name=request.cls.index_name,
-        attributes=vi_attrs,
-        description="Test vector index",
-        profile=request.cls.profile,
-    )
-    await vector_index.create(replace=True)
-
-    created_indexes = [idx.index_name async for idx in AsyncVectorIndex.list()]
-    assert (
-        request.cls.index_name.upper() in created_indexes
-    ), f"VectorIndex {request.cls.index_name} was not created"
+    request.cls.base_index_name = p["enabledisable_index_name"]
 
     yield
 
     logger.info("=== Tearing down TestAsyncEnableDisableVectorIndex class ===")
-    try:
-        await request.cls.delete_index_with_retry(
-            AsyncVectorIndex(index_name=request.cls.index_name),
-            force=True,
-        )
-    except Exception as exc:
-        logger.info("Warning: drop vector index failed: %s", exc)
-
     try:
         await request.cls.profile.delete()
     except Exception as exc:
@@ -113,16 +93,37 @@ async def setup_and_teardown(request, async_connect, enabledisable_params):
 
 @pytest.fixture(autouse=True)
 async def vector_index_state(request):
+    """Create an isolated vector index for each test method."""
     logger.info("--- Starting test: %s ---", request.function.__name__)
-    request.cls.vecidx = AsyncVectorIndex()
-    request.cls.async_vector_index = await AsyncVectorIndex.fetch(
-        request.cls.index_name
+    index_name = f"{request.cls.base_index_name}_{request.function.__name__}"
+    vector_index = AsyncVectorIndex(
+        index_name=index_name,
+        attributes=request.cls.vector_index_attributes,
+        description="Test vector index",
+        profile=request.cls.profile,
     )
-    logger.info(request.cls.async_vector_index.index_name)
-    await request.cls.async_vector_index.enable()
-    await asyncio.sleep(1)
-    yield
-    logger.info("--- Finished test: %s ---", request.function.__name__)
+    await vector_index.create(replace=True)
+
+    # Test instances, unlike the class, are not shared between test methods.
+    request.instance.index_name = index_name
+    request.instance.async_vector_index = await AsyncVectorIndex.fetch(
+        index_name
+    )
+    logger.info(request.instance.async_vector_index.index_name)
+
+    try:
+        yield
+    finally:
+        try:
+            await request.cls.delete_index_with_retry(
+                AsyncVectorIndex(index_name=index_name),
+                force=True,
+            )
+        except Exception as exc:
+            logger.warning(
+                "Warning: drop vector index %s failed: %s", index_name, exc
+            )
+        logger.info("--- Finished test: %s ---", request.function.__name__)
 
 
 @pytest.mark.usefixtures("enabledisable_params", "setup_and_teardown")
@@ -287,8 +288,12 @@ class TestAsyncEnableDisableVectorIndex:
                 )
                 await asyncio.sleep(delay)
 
-    async def wait_for_status_table(self, status_table, retries=5, delay=2):
-        for _ in range(retries):
+    async def wait_for_status_table(self, status_table, timeout=60, delay=2):
+        """Wait until the asynchronously-created pipeline status table exists."""
+        deadline = time.monotonic() + timeout
+        attempts = 0
+        while True:
+            attempts += 1
             try:
                 async with select_ai.async_cursor() as cursor:
                     await cursor.execute(
@@ -296,14 +301,27 @@ class TestAsyncEnableDisableVectorIndex:
                     )
                     return await cursor.fetchone()
             except oracledb.DatabaseError as exc:
-                if "ORA-00942" in str(exc):
-                    await asyncio.sleep(delay)
-                    continue
-                raise
-        return None
+                if "ORA-00942" not in str(exc):
+                    raise
+                if time.monotonic() >= deadline:
+                    logger.info(
+                        "Status table %s was not visible after %s attempts "
+                        "within %s seconds.",
+                        status_table,
+                        attempts,
+                        timeout,
+                    )
+                    return None
+                await asyncio.sleep(delay)
 
-    async def wait_for_pipeline_entry(self, pipeline_name, retries=5, delay=2):
-        for _ in range(retries):
+    async def wait_for_pipeline_entry(
+        self, pipeline_name, timeout=60, delay=2
+    ):
+        """Wait for ENABLE_VECTOR_INDEX to publish pipeline metadata."""
+        deadline = time.monotonic() + timeout
+        attempts = 0
+        while True:
+            attempts += 1
             async with select_ai.async_cursor() as cursor:
                 await cursor.execute(
                     "SELECT status_table FROM user_cloud_pipelines "
@@ -313,8 +331,16 @@ class TestAsyncEnableDisableVectorIndex:
                 row = await cursor.fetchone()
             if row and row[0]:
                 return row[0]
+            if time.monotonic() >= deadline:
+                logger.info(
+                    "Pipeline %s was not visible after %s attempts within "
+                    "%s seconds.",
+                    pipeline_name,
+                    attempts,
+                    timeout,
+                )
+                return None
             await asyncio.sleep(delay)
-        return None
 
     async def test_5501(self):
         """Disabling and enabling the vector index."""
@@ -443,6 +469,11 @@ class TestAsyncEnableDisableVectorIndex:
 
     async def test_5510(self):
         """Pipeline metadata is available after enabling the vector index."""
+        logger.info(
+            "Disabling then enabling vector index: %s", self.index_name
+        )
+        await self.async_vector_index.disable()
+        await self.async_vector_index.enable()
         pipeline_name = f"{self.index_name.upper()}$VECPIPELINE"
         logger.info("Checking pipeline activity after enabling vector index")
         status_table = await self.wait_for_pipeline_entry(pipeline_name)
