@@ -468,3 +468,18 @@ async def test_3321_double_delete(team_attributes):
     await t.create()
     await t.delete(force=True)
     await expect_async_error("ORA-20053", lambda: t.delete(force=False))
+
+
+async def test_3322_describe_team(team):
+    """Return metadata and aggregated skills for an async team."""
+    description = json.loads(await team.describe_team())
+
+    assert description["name"] == team.team_name
+    assert isinstance(description["skills"], list)
+
+
+async def test_3323_list_tools(team):
+    """Return the JSON array of tools available to an async team."""
+    tools = json.loads(await team.list_tools())
+
+    assert isinstance(tools, list)

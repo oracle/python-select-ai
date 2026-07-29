@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -420,3 +420,23 @@ async def test_3224_list_all_non_empty():
     for name in names:
         logger.info("  - %s", name)
     assert len(names) > 0
+
+
+async def test_3225_create_supervisor_agent(agent_attributes):
+    """Create and fetch an async agent configured as a team supervisor."""
+    name = f"PYSAI_SUPERVISOR_AGENT_{uuid.uuid4().hex.upper()}"
+    attributes = AgentAttributes(
+        profile_name=agent_attributes.profile_name,
+        role="You supervise and coordinate the team.",
+        enable_human_tool=False,
+        supervisor=True,
+    )
+    supervisor_agent = AsyncAgent(name, attributes=attributes)
+    await supervisor_agent.create(replace=True)
+
+    try:
+        fetched = await AsyncAgent.fetch(name)
+        assert fetched.attributes is not None
+        assert fetched.attributes.supervisor is True
+    finally:
+        await supervisor_agent.delete(force=True)

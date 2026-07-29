@@ -514,3 +514,55 @@ def test_3321_double_delete(team_attributes):
     # Second delete without force to actually raise the error
     expect_error("ORA-20053", lambda: t.delete(force=False))
     log_ok("Double delete confirmed error")
+
+
+def test_3322_create_team_with_supervisor(agent, task):
+    """Create and fetch a sequential team with a supervisor agent."""
+    supervisor_name = f"PYSAI_SUPERVISOR_AGENT_{uuid.uuid4().hex.upper()}"
+    team_name = f"PYSAI_SUPERVISED_TEAM_{uuid.uuid4().hex.upper()}"
+    supervisor_agent = Agent(
+        agent_name=supervisor_name,
+        attributes=AgentAttributes(
+            profile_name=PYSAI_TEAM_PROFILE_NAME,
+            role="You delegate work to specialist agents.",
+            enable_human_tool=False,
+            supervisor=True,
+        ),
+    )
+    supervisor_agent.create(replace=True)
+
+    supervised_team = Team(
+        team_name=team_name,
+        attributes=TeamAttributes(
+            process="sequential",
+            supervisor_agent=supervisor_name,
+            agents=[{"name": agent.agent_name, "task": task.task_name}],
+        ),
+    )
+    try:
+        supervised_team.create(replace=True)
+        fetched = Team.fetch(team_name)
+        assert fetched.attributes is not None
+        assert fetched.attributes.process == "sequential"
+        assert fetched.attributes.supervisor_agent == supervisor_name
+        assert fetched.attributes.agents == [
+            {"name": agent.agent_name, "task": task.task_name}
+        ]
+    finally:
+        supervised_team.delete(force=True)
+        supervisor_agent.delete(force=True)
+
+
+def test_3323_describe_team(team):
+    """Return metadata and aggregated skills for an existing team."""
+    description = json.loads(team.describe_team())
+
+    assert description["name"] == team.team_name
+    assert isinstance(description["skills"], list)
+
+
+def test_3324_list_tools(team):
+    """Return the JSON array of tools available to an existing team."""
+    tools = json.loads(team.list_tools())
+
+    assert isinstance(tools, list)

@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -36,11 +36,14 @@ class AgentAttributes(SelectAIDataClass):
     :param str role: Agent's role also sent to LLM
     :param bool enable_human_tool: Enable human tool support. Agent
      will ask question to the user for any clarification
+    :param bool supervisor: Whether the agent supervises other agents in a
+     supervised team.
     """
 
     profile_name: str
     role: str
     enable_human_tool: Optional[bool] = True
+    supervisor: Optional[bool] = None
 
 
 class BaseAgent(ABC):
