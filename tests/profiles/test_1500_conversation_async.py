@@ -325,3 +325,26 @@ async def test_1519_create_with_description_none(async_conversation_factory):
     attributes = await conversation.get_attributes()
     assert attributes.title == f"{CONVERSATION_PREFIX}_NONE_DESC"
     assert attributes.description is None
+
+
+@pytest.mark.anyio
+async def test_1520_add_update_and_remove_tag(async_conversation):
+    """Async conversation tags can be added, updated, and removed."""
+    await async_conversation.add_tag("PROJECT", "SALES")
+    await async_conversation.add_tag("PROJECT", "MARKETING")
+    await async_conversation.remove_tag("PROJECT")
+    await async_conversation.remove_tag("PROJECT", force=True)
+
+
+@pytest.mark.anyio
+async def test_1521_delete_missing_prompt_with_force(async_conversation):
+    """Forced deletion of a missing async conversation prompt succeeds."""
+    await async_conversation.delete_prompt(
+        str(uuid.uuid4()).upper(), force=True
+    )
+
+
+@pytest.mark.anyio
+async def test_1522_list_prompts_for_new_conversation(async_conversation):
+    """A new async conversation has no stored prompts."""
+    assert [prompt async for prompt in async_conversation.list_prompts()] == []

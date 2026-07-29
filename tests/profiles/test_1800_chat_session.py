@@ -271,6 +271,25 @@ def test_1805_invalid_conversation_object(chat_session_profile):
             pass
 
 
+def test_1806_list_prompts(chat_session_profile, conversation_factory):
+    """A chat prompt is available from the conversation prompt history."""
+    conversation = conversation_factory(title="Prompt History")
+    prompt_text = "Reply with the word prompt-history."
+    with chat_session_profile.chat_session(
+        conversation=conversation
+    ) as session:
+        session.chat(prompt=prompt_text)
+
+    prompts = list(conversation.list_prompts())
+    assert prompts
+    stored_prompt = next(
+        prompt for prompt in prompts if prompt.prompt == prompt_text
+    )
+    assert stored_prompt.conversation_id == conversation.conversation_id
+    assert stored_prompt.conversation_prompt_id
+    assert stored_prompt.prompt_response
+
+
 # def test_1806_missing_conversation_attributes(chat_session_profile):
 #     """Conversation without attributes raises error"""
 #     conversation = Conversation(attributes=None)

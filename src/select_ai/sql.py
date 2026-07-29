@@ -127,6 +127,26 @@ WHERE conversation_id = :conversation_id
 """
 
 
+LIST_USER_CONVERSATION_PROMPTS = """
+SELECT conversation_prompt_id,
+       conversation_id,
+       conversation_title,
+       profile_name,
+       prompt_action,
+       prompt,
+       prompt_response,
+       created,
+       modified,
+       client_identifier,
+       client_ip,
+       sid,
+       serial#
+FROM USER_CLOUD_AI_CONVERSATION_PROMPTS
+WHERE conversation_id = :conversation_id
+ORDER BY created
+"""
+
+
 GET_VECTOR_PIPELINE_LAST_EXECUTION = """
 SELECT CAST(last_execution AT TIME ZONE 'UTC' AS TIMESTAMP)
 FROM USER_CLOUD_PIPELINES

@@ -12,6 +12,7 @@ from .conversation import (
     AsyncConversation,
     Conversation,
     ConversationAttributes,
+    ConversationPrompt,
 )
 from .credential import (
     async_create_credential,
