@@ -10,6 +10,7 @@
 (with logging for behavior visibility)
 """
 
+import json
 import logging
 import os
 import uuid
@@ -701,3 +702,22 @@ def test_3023_drop_tool_force_false_non_existent_raises():
     with pytest.raises(oracledb.Error) as exc:
         tool.delete(force=False)
     logger.info("Received expected drop error: %s", exc.value)
+
+
+def test_3024_describe_tool(plsql_tool):
+    """Return JSON metadata for a registered PL/SQL tool."""
+    description_json = plsql_tool.describe_tool()
+    description = json.loads(description_json)
+
+    assert isinstance(description, dict)
+    assert description["attributes"]["function"] == PLSQL_FUNCTION_NAME
+    assert description["description"] == plsql_tool.description
+    assert description["function_args"]
+
+
+def test_3025_run_tool(plsql_tool):
+    """Invoke a registered PL/SQL tool with a JSON input payload."""
+    result = plsql_tool.run_tool('{"p_birth_date":"2000-01-01"}')
+
+    assert isinstance(result, str)
+    assert result

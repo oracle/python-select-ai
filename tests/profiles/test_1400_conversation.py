@@ -276,3 +276,21 @@ def test_1419_create_with_description_none(conversation_factory):
     attrs = conv.get_attributes()
     assert attrs.title == f"{CONVERSATION_PREFIX}_NONE_DESC"
     assert attrs.description is None
+
+
+def test_1420_add_update_and_remove_tag(conversation):
+    """Conversation tags can be added, updated, and removed."""
+    conversation.add_tag("PROJECT", "SALES")
+    conversation.add_tag("PROJECT", "MARKETING")
+    conversation.remove_tag("PROJECT")
+    conversation.remove_tag("PROJECT", force=True)
+
+
+def test_1421_delete_missing_prompt_with_force(conversation):
+    """Deleting a missing conversation prompt succeeds when forced."""
+    conversation.delete_prompt(str(uuid.uuid4()).upper(), force=True)
+
+
+def test_1422_list_prompts_for_new_conversation(conversation):
+    """A new conversation has no stored prompts."""
+    assert list(conversation.list_prompts()) == []

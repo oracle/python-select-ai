@@ -18,6 +18,11 @@ export TNS_ADMIN=<path/to/dir_containing_tnsnames.ora>
 > grant privileges to regular user. They are used in 2 sample scripts
 > `enable_ai_provider.py` and `disable_ai_provider.py`
 
+Some of the new samples use this optional environment variable:
+
+- `SELECT_AI_PROFILE_NAME` — existing profile for the conversation and
+  supervised-team samples.
+
 
 `SELECT_AI_DB_CONNECT_STRING` can be in any one of the following formats
 

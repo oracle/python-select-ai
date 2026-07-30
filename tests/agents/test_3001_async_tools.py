@@ -9,6 +9,7 @@
 3001 - Async API coverage for select_ai.agent AsyncTool APIs
 """
 
+import json
 import logging
 import os
 import uuid
@@ -794,3 +795,22 @@ async def test_3023_drop_tool_force_false_non_existent_raises():
     with pytest.raises(oracledb.Error) as exc:
         await tool.delete(force=False)
     logger.info("Received expected drop error: %s", exc.value)
+
+
+async def test_3024_describe_tool(plsql_tool):
+    """Return JSON metadata for a registered async PL/SQL tool."""
+    description_json = await plsql_tool.describe_tool()
+    description = json.loads(description_json)
+
+    assert isinstance(description, dict)
+    assert description["attributes"]["function"] == PLSQL_FUNCTION_NAME
+    assert description["description"] == plsql_tool.description
+    assert description["function_args"]
+
+
+async def test_3025_run_tool(plsql_tool):
+    """Invoke a registered async PL/SQL tool with JSON input."""
+    result = await plsql_tool.run_tool('{"p_birth_date":"2000-01-01"}')
+
+    assert isinstance(result, str)
+    assert result

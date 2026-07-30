@@ -652,6 +652,34 @@ class Tool(_BaseTool):
                 },
             )
 
+    def run_tool(self, input: str) -> Optional[str]:
+        """Run this tool directly and return its result.
+
+        :param str input: Tool input payload.
+        :return: The tool result.
+        :rtype: str or None
+        """
+        with cursor() as cr:
+            data = cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.RUN_TOOL",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={
+                    "tool_name": self.tool_name,
+                    "input": input,
+                },
+            )
+            return data.read() if data is not None else None
+
+    def describe_tool(self) -> Optional[str]:
+        """Return this tool's JSON metadata and function arguments."""
+        with cursor() as cr:
+            data = cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TOOL",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={"tool_name": self.tool_name},
+            )
+            return data.read() if data is not None else None
+
     @classmethod
     def fetch(cls, tool_name: str) -> "Tool":
         """
@@ -1118,6 +1146,29 @@ class AsyncTool(_BaseTool):
                     "tool_name": self.tool_name,
                 },
             )
+
+    async def run_tool(self, input: str) -> Optional[str]:
+        """Asynchronously run this tool directly and return its result."""
+        async with async_cursor() as cr:
+            data = await cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.RUN_TOOL",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={
+                    "tool_name": self.tool_name,
+                    "input": input,
+                },
+            )
+            return await data.read() if data is not None else None
+
+    async def describe_tool(self) -> Optional[str]:
+        """Asynchronously return this tool's JSON metadata."""
+        async with async_cursor() as cr:
+            data = await cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TOOL",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={"tool_name": self.tool_name},
+            )
+            return await data.read() if data is not None else None
 
     @classmethod
     async def fetch(cls, tool_name: str) -> "AsyncTool":

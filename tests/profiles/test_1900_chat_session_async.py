@@ -295,3 +295,25 @@ async def test_1906_missing_conversation_attributes(
             conversation=conversation
         ):
             await conversation.chat(prompt="Hello World")
+
+
+@pytest.mark.anyio
+async def test_1907_list_prompts(
+    async_chat_session_profile, async_conversation_factory
+):
+    """An async chat prompt is available from conversation prompt history."""
+    conversation = await async_conversation_factory(title="Prompt History")
+    prompt_text = "Reply with the word prompt-history."
+    async with async_chat_session_profile.chat_session(
+        conversation=conversation
+    ) as session:
+        await session.chat(prompt=prompt_text)
+
+    prompts = [prompt async for prompt in conversation.list_prompts()]
+    assert prompts
+    stored_prompt = next(
+        prompt for prompt in prompts if prompt.prompt == prompt_text
+    )
+    assert stored_prompt.conversation_id == conversation.conversation_id
+    assert stored_prompt.conversation_prompt_id
+    assert stored_prompt.prompt_response

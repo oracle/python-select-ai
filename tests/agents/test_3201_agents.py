@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
@@ -9,17 +9,20 @@
 3200 - Module for testing select_ai agents
 """
 
-import uuid
 import logging
+import os
+import uuid
+
+import oracledb
 import pytest
 import select_ai
-import os
-from select_ai.agent import Agent, AgentAttributes
+from select_ai.agent import Agent, AgentAttributes, get_definition
 from select_ai.errors import AgentNotFoundError
-import oracledb
 
 # Path
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
 LOG_FILE = os.path.join(PROJECT_ROOT, "log", "tkex_test_3201_agents.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
@@ -41,6 +44,7 @@ logger = logging.getLogger()
 # Per-test logging
 # -----------------------------------------------------------------------------
 
+
 @pytest.fixture(autouse=True)
 def log_test_name(request):
     logger.info(f"--- Starting test: {request.function.__name__} ---")
@@ -52,15 +56,20 @@ def log_test_name(request):
 # Helper Functions
 # -----------------------------------------------------------------------------
 
+
 def get_agent_status(agent_name):
     with select_ai.cursor() as cur:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT status
             FROM USER_AI_AGENTS
             WHERE agent_name = :agent_name
-        """, {"agent_name": agent_name})
+        """,
+            {"agent_name": agent_name},
+        )
         row = cur.fetchone()
         return row[0] if row else None
+
 
 # -----------------------------------------------------------------------------
 # Test constants
@@ -69,12 +78,17 @@ def get_agent_status(agent_name):
 PYSAI_AGENT_NAME = f"PYSAI_3200_AGENT_{uuid.uuid4().hex.upper()}"
 PYSAI_AGENT_DESC = "PYSAI_3200_AGENT_DESCRIPTION"
 PYSAI_PROFILE_NAME = f"PYSAI_3200_PROFILE_{uuid.uuid4().hex.upper()}"
-PYSAI_DISABLED_AGENT_NAME = f"PYSAI_3200_DISABLED_AGENT_{uuid.uuid4().hex.upper()}"
-PYSAI_MISSING_AGENT_NAME = f"PYSAI_3200_MISSING_AGENT_{uuid.uuid4().hex.upper()}"
+PYSAI_DISABLED_AGENT_NAME = (
+    f"PYSAI_3200_DISABLED_AGENT_{uuid.uuid4().hex.upper()}"
+)
+PYSAI_MISSING_AGENT_NAME = (
+    f"PYSAI_3200_MISSING_AGENT_{uuid.uuid4().hex.upper()}"
+)
 
 # -----------------------------------------------------------------------------
 # Fixtures
 # -----------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="module")
 def python_gen_ai_profile(profile_attributes):
@@ -112,6 +126,7 @@ def agent(python_gen_ai_profile, agent_attributes):
     logger.info("Deleting agent: %s", PYSAI_AGENT_NAME)
     agent.delete(force=True)
 
+
 # -----------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------
@@ -134,9 +149,11 @@ def expect_oracle_error(expected_code, fn):
     else:
         pytest.fail(f"Expected error {expected_code} did not occur")
 
+
 # -----------------------------------------------------------------------------
 # Tests
 # -----------------------------------------------------------------------------
+
 
 def test_3200_identity(agent, agent_attributes):
     logger.info("Verifying agent identity")
@@ -219,7 +236,9 @@ def test_3205_create_agent_with_enabled_false_sets_disabled(agent_attributes):
 
 
 def test_3206_drop_agent_force_true_non_existent():
-    logger.info("Dropping missing agent with force=True: %s", PYSAI_MISSING_AGENT_NAME)
+    logger.info(
+        "Dropping missing agent with force=True: %s", PYSAI_MISSING_AGENT_NAME
+    )
     a = Agent(agent_name=PYSAI_MISSING_AGENT_NAME)
     a.delete(force=True)
     status = get_agent_status(PYSAI_MISSING_AGENT_NAME)
@@ -228,7 +247,9 @@ def test_3206_drop_agent_force_true_non_existent():
 
 
 def test_3207_drop_agent_force_false_non_existent_raises():
-    logger.info("Dropping missing agent with force=False: %s", PYSAI_MISSING_AGENT_NAME)
+    logger.info(
+        "Dropping missing agent with force=False: %s", PYSAI_MISSING_AGENT_NAME
+    )
     a = Agent(agent_name=PYSAI_MISSING_AGENT_NAME)
     expect_oracle_error("ORA-20050", lambda: a.delete(force=False))
 
@@ -243,7 +264,9 @@ def test_3208_create_requires_agent_name(agent_attributes):
 def test_3209_create_requires_attributes():
     logger.info("Validating create() requires attributes")
     with pytest.raises(AttributeError) as exc:
-        Agent(agent_name=f"PYSAI_3200_NO_ATTR_{uuid.uuid4().hex.upper()}").create()
+        Agent(
+            agent_name=f"PYSAI_3200_NO_ATTR_{uuid.uuid4().hex.upper()}"
+        ).create()
     logger.info("Received expected error: %s", exc.value)
 
 
@@ -293,15 +316,25 @@ def test_3212_set_attributes(agent):
 
 def test_3213_set_attribute_invalid_key(agent):
     logger.info("Setting invalid attribute key on agent: %s", agent.agent_name)
-    expect_oracle_error("ORA-20050", lambda: agent.set_attribute("no_such_key", 123))
+    expect_oracle_error(
+        "ORA-20050", lambda: agent.set_attribute("no_such_key", 123)
+    )
+
 
 def test_3214_set_attribute_none(agent):
-    logger.info("Setting attribute 'role' to None on agent: %s", agent.agent_name)
+    logger.info(
+        "Setting attribute 'role' to None on agent: %s", agent.agent_name
+    )
     expect_oracle_error("ORA-20050", lambda: agent.set_attribute("role", None))
 
+
 def test_3215_set_attribute_empty(agent):
-    logger.info("Setting attribute 'role' to empty string on agent: %s", agent.agent_name)
+    logger.info(
+        "Setting attribute 'role' to empty string on agent: %s",
+        agent.agent_name,
+    )
     expect_oracle_error("ORA-20050", lambda: agent.set_attribute("role", ""))
+
 
 def test_3216_create_existing_without_replace(agent_attributes):
     logger.info("Create existing agent without replace should fail")
@@ -312,31 +345,34 @@ def test_3216_create_existing_without_replace(agent_attributes):
     )
     expect_oracle_error("ORA-20050", lambda: a.create(replace=False))
 
+
 def test_3217_delete_and_recreate(agent_attributes):
     name = f"PYSAI_RECREATE_{uuid.uuid4().hex}"
     logger.info("Create agent: %s", name)
-    #Create agent
+    # Create agent
     a = Agent(name, attributes=agent_attributes)
     a.create()
     # Verify created
     fetched = Agent.fetch(name)
     logger.info("Agent created successfully: %s", fetched.agent_name)
     assert fetched.agent_name == name
-    #Delete agent
+    # Delete agent
     logger.info("Delete agent: %s", name)
     a.delete(force=True)
     # Verify deleted
     logger.info("Attempting fetch after delete for agent: %s", name)
     expect_oracle_error("NOT_FOUND", lambda: Agent.fetch(name))
     logger.info("Agent deleted successfully: %s", name)
-    #Recreate agent
+    # Recreate agent
     logger.info("Recreate agent: %s", name)
     a.create(replace=False)
     # Verify recreated
     fetched_recreated = Agent.fetch(name)
-    logger.info("Agent recreated successfully: %s", fetched_recreated.agent_name)
+    logger.info(
+        "Agent recreated successfully: %s", fetched_recreated.agent_name
+    )
     assert fetched_recreated.agent_name == name
-    #Final cleanup
+    # Final cleanup
     logger.info("Cleanup agent: %s", name)
     a.delete(force=True)
     # Verify cleanup
@@ -411,7 +447,9 @@ def test_3220_set_attribute_after_delete(agent_attributes):
 
     logger.info("Attempting to set attribute on deleted agent: %s", name)
     expect_oracle_error("ORA-20050", lambda: a.set_attribute("role", "X"))
-    logger.info("Set attribute after delete confirmed error for agent: %s", name)
+    logger.info(
+        "Set attribute after delete confirmed error for agent: %s", name
+    )
 
 
 def test_3221_double_delete_force_true(agent_attributes):
@@ -436,7 +474,9 @@ def test_3221_double_delete_force_true(agent_attributes):
     a.delete(force=True)
     logger.info("Second delete completed, verifying still deleted: %s", name)
     expect_oracle_error("NOT_FOUND", lambda: Agent.fetch(name))
-    logger.info("Confirmed agent still does not exist after double delete: %s", name)
+    logger.info(
+        "Confirmed agent still does not exist after double delete: %s", name
+    )
 
 
 def test_3222_double_delete_force_false_raises(agent_attributes):
@@ -458,7 +498,9 @@ def test_3222_double_delete_force_false_raises(agent_attributes):
 
     logger.info("Deleting agent second time with force=False: %s", name)
     expect_oracle_error("ORA-20050", lambda: a.delete(force=False))
-    logger.info("Confirmed second delete with force=False raises error: %s", name)
+    logger.info(
+        "Confirmed second delete with force=False raises error: %s", name
+    )
 
 
 def test_3223_fetch_after_delete(agent_attributes):
@@ -489,3 +531,32 @@ def test_3224_list_all_non_empty():
     for name in names:
         logger.info("  - %s", name)
     assert len(names) > 0
+
+
+def test_3225_get_definition(agent):
+    """Return a canonical PL/SQL definition for an existing AI agent."""
+    definition = get_definition("AGENT", agent.agent_name)
+
+    assert definition is not None
+    assert agent.agent_name in definition.upper()
+    assert "DBMS_CLOUD_AI_AGENT.CREATE_AGENT" in definition.upper()
+
+
+def test_3226_create_supervisor_agent(agent_attributes):
+    """Create and fetch an agent configured as a team supervisor."""
+    name = f"PYSAI_SUPERVISOR_AGENT_{uuid.uuid4().hex.upper()}"
+    attributes = AgentAttributes(
+        profile_name=agent_attributes.profile_name,
+        role="You supervise and coordinate the team.",
+        enable_human_tool=False,
+        supervisor=True,
+    )
+    supervisor_agent = Agent(name, attributes=attributes)
+    supervisor_agent.create(replace=True)
+
+    try:
+        fetched = Agent.fetch(name)
+        assert fetched.attributes is not None
+        assert fetched.attributes.supervisor is True
+    finally:
+        supervisor_agent.delete(force=True)

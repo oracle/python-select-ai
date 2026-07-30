@@ -17,10 +17,16 @@ from select_ai.db import async_cursor, cursor
 from select_ai.errors import ConversationNotFoundError
 from select_ai.sql import (
     GET_USER_CONVERSATION_ATTRIBUTES,
+    LIST_USER_CONVERSATION_PROMPTS,
     LIST_USER_CONVERSATIONS,
 )
 
-__all__ = ["AsyncConversation", "Conversation", "ConversationAttributes"]
+__all__ = [
+    "AsyncConversation",
+    "Conversation",
+    "ConversationAttributes",
+    "ConversationPrompt",
+]
 
 
 @dataclass
@@ -51,6 +57,33 @@ class ConversationAttributes(SelectAIDataClass):
             else:
                 attributes[k] = v
         return json.dumps(attributes)
+
+
+@dataclass
+class ConversationPrompt:
+    """A prompt and response stored in a conversation's history."""
+
+    conversation_prompt_id: str
+    conversation_id: str
+    conversation_title: str
+    profile_name: Optional[str]
+    prompt_action: Optional[str]
+    prompt: Optional[str]
+    prompt_response: Optional[str]
+    created: Optional[datetime.datetime]
+    modified: Optional[datetime.datetime]
+    client_identifier: Optional[str]
+    client_ip: Optional[str]
+    sid: Optional[int]
+    serial: Optional[int]
+
+
+def _read_lob(value):
+    return value.read() if isinstance(value, oracledb.LOB) else value
+
+
+async def _async_read_lob(value):
+    return await value.read() if hasattr(value, "read") else value
 
 
 class _BaseConversation:
@@ -107,6 +140,82 @@ class Conversation(_BaseConversation):
                     "force": force,
                 },
             )
+
+    def delete_prompt(
+        self, conversation_prompt_id: str, force: bool = False
+    ) -> None:
+        """Delete a stored prompt from this conversation.
+
+        :param str conversation_prompt_id: Identifier of the prompt to delete.
+        :param bool force: Ignore a missing prompt when ``True``.
+        """
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.DELETE_CONVERSATION_PROMPT",
+                keyword_parameters={
+                    "conversation_prompt_id": conversation_prompt_id,
+                    "force": force,
+                },
+            )
+
+    def add_tag(self, tag_key: str, tag_value: str) -> None:
+        """Add or update a tag on this conversation.
+
+        :param str tag_key: Tag name.
+        :param str tag_value: Value associated with the tag name.
+        """
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.ADD_CONVERSATION_TAG",
+                keyword_parameters={
+                    "conversation_id": self.conversation_id,
+                    "tag_key": tag_key,
+                    "tag_value": tag_value,
+                },
+            )
+
+    def remove_tag(self, tag_key: str, force: bool = False) -> None:
+        """Remove a tag from this conversation.
+
+        :param str tag_key: Tag name to remove.
+        :param bool force: Ignore a missing tag when ``True``.
+        """
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.REMOVE_CONVERSATION_TAG",
+                keyword_parameters={
+                    "conversation_id": self.conversation_id,
+                    "tag_key": tag_key,
+                    "force": force,
+                },
+            )
+
+    def list_prompts(self) -> Iterator[ConversationPrompt]:
+        """List the prompts and responses stored for this conversation.
+
+        :return: Prompts in creation order.
+        """
+        with cursor() as cr:
+            cr.execute(
+                LIST_USER_CONVERSATION_PROMPTS,
+                conversation_id=self.conversation_id,
+            )
+            for row in cr.fetchall():
+                yield ConversationPrompt(
+                    conversation_prompt_id=row[0],
+                    conversation_id=row[1],
+                    conversation_title=row[2],
+                    profile_name=row[3],
+                    prompt_action=row[4],
+                    prompt=_read_lob(row[5]),
+                    prompt_response=_read_lob(row[6]),
+                    created=row[7],
+                    modified=row[8],
+                    client_identifier=row[9],
+                    client_ip=row[10],
+                    sid=row[11],
+                    serial=row[12],
+                )
 
     @classmethod
     def fetch(cls, conversation_id: str) -> "Conversation":
@@ -221,6 +330,82 @@ class AsyncConversation(_BaseConversation):
                     "force": force,
                 },
             )
+
+    async def delete_prompt(
+        self, conversation_prompt_id: str, force: bool = False
+    ) -> None:
+        """Delete a stored prompt from this conversation.
+
+        :param str conversation_prompt_id: Identifier of the prompt to delete.
+        :param bool force: Ignore a missing prompt when ``True``.
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.DELETE_CONVERSATION_PROMPT",
+                keyword_parameters={
+                    "conversation_prompt_id": conversation_prompt_id,
+                    "force": force,
+                },
+            )
+
+    async def add_tag(self, tag_key: str, tag_value: str) -> None:
+        """Add or update a tag on this conversation.
+
+        :param str tag_key: Tag name.
+        :param str tag_value: Value associated with the tag name.
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.ADD_CONVERSATION_TAG",
+                keyword_parameters={
+                    "conversation_id": self.conversation_id,
+                    "tag_key": tag_key,
+                    "tag_value": tag_value,
+                },
+            )
+
+    async def remove_tag(self, tag_key: str, force: bool = False) -> None:
+        """Remove a tag from this conversation.
+
+        :param str tag_key: Tag name to remove.
+        :param bool force: Ignore a missing tag when ``True``.
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.REMOVE_CONVERSATION_TAG",
+                keyword_parameters={
+                    "conversation_id": self.conversation_id,
+                    "tag_key": tag_key,
+                    "force": force,
+                },
+            )
+
+    async def list_prompts(self) -> AsyncGenerator[ConversationPrompt, None]:
+        """List the prompts and responses stored for this conversation.
+
+        :return: Prompts in creation order.
+        """
+        async with async_cursor() as cr:
+            await cr.execute(
+                LIST_USER_CONVERSATION_PROMPTS,
+                conversation_id=self.conversation_id,
+            )
+            for row in await cr.fetchall():
+                yield ConversationPrompt(
+                    conversation_prompt_id=row[0],
+                    conversation_id=row[1],
+                    conversation_title=row[2],
+                    profile_name=row[3],
+                    prompt_action=row[4],
+                    prompt=await _async_read_lob(row[5]),
+                    prompt_response=await _async_read_lob(row[6]),
+                    created=row[7],
+                    modified=row[8],
+                    client_identifier=row[9],
+                    client_ip=row[10],
+                    sid=row[11],
+                    serial=row[12],
+                )
 
     @classmethod
     async def fetch(cls, conversation_id: str) -> "AsyncConversation":

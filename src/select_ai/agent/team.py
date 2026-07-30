@@ -45,10 +45,18 @@ class TeamAttributes(SelectAIDataClass):
     :param str process: Execution order of tasks. Currently only "sequential"
      is supported.
 
+    :param str supervisor_agent: Name of the agent that supervises the team
+     when using a supervised execution process.
+
+    :param str supervisor_task: Database-generated task associated with the
+     supervisor agent.
+
     """
 
     agents: List[Mapping]
     process: str = "sequential"
+    supervisor_agent: Optional[str] = None
+    supervisor_task: Optional[str] = None
 
 
 class BaseTeam(ABC):
@@ -331,6 +339,26 @@ class Team(BaseTeam):
             else:
                 result = None
             return result
+
+    def describe_team(self) -> Optional[str]:
+        """Return this team's JSON metadata and aggregated skills."""
+        with cursor() as cr:
+            data = cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TEAM",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={"team_name": self.team_name},
+            )
+            return data.read() if data is not None else None
+
+    def list_tools(self) -> Optional[str]:
+        """Return JSON metadata for the tools available to this team."""
+        with cursor() as cr:
+            data = cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.LIST_TOOLS",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={"team_name": self.team_name},
+            )
+            return data.read() if data is not None else None
 
     @classmethod
     def export_team(
@@ -775,6 +803,26 @@ class AsyncTeam(BaseTeam):
             else:
                 result = None
             return result
+
+    async def describe_team(self) -> Optional[str]:
+        """Asynchronously return this team's JSON metadata and skills."""
+        async with async_cursor() as cr:
+            data = await cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TEAM",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={"team_name": self.team_name},
+            )
+            return await data.read() if data is not None else None
+
+    async def list_tools(self) -> Optional[str]:
+        """Asynchronously return JSON metadata for this team's tools."""
+        async with async_cursor() as cr:
+            data = await cr.callfunc(
+                "DBMS_CLOUD_AI_AGENT.LIST_TOOLS",
+                oracledb.DB_TYPE_CLOB,
+                keyword_parameters={"team_name": self.team_name},
+            )
+            return await data.read() if data is not None else None
 
     @classmethod
     async def export_team(
