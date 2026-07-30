@@ -30,11 +30,12 @@ from select_ai.agent import (
     ToolParams,
 )
 
-pytestmark = pytest.mark.skip(
-    reason="Temporarily skipped due to intermittent failures. This needs to be root caused before enabling"
-)
-
-pytestmark = pytest.mark.anyio
+pytestmark = [
+    pytest.mark.anyio,
+    pytest.mark.skip(
+        reason="Temporarily skipped due to intermittent failures. This needs to be root caused before enabling"
+    ),
+]
 
 # ----------------------------------------------------------------------
 # LOGGING
