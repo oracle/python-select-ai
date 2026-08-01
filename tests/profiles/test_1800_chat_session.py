@@ -23,10 +23,6 @@ from select_ai import (
 
 logger = logging.getLogger(__name__)
 
-pytestmark = pytest.mark.skip(
-    reason="Temporarily skipped due to long execution times and intermittent failures. This needs to be root caused before enabling"
-)
-
 PROFILE_PREFIX = f"PYSAI_1800_{uuid.uuid4().hex.upper()}"
 
 CATEGORY_PROMPTS = {
