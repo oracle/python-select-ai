@@ -396,7 +396,9 @@ class TestAsyncEnableDisableVectorIndex:
     async def test_5506(self):
         """Disabling a nonexistent index raises error."""
         logger.info("Disabling nonexistent index to test error handling")
-        invalid_index = AsyncVectorIndex(index_name="does_not_exist")
+        invalid_index = AsyncVectorIndex(
+            index_name=f"does_not_exist_{self.base_index_name}"
+        )
         with pytest.raises(oracledb.DatabaseError) as exc_info:
             await invalid_index.disable()
         logger.info(
@@ -407,7 +409,9 @@ class TestAsyncEnableDisableVectorIndex:
     async def test_5507(self):
         """Enabling a nonexistent index raises error."""
         logger.info("Enabling nonexistent index to test error handling")
-        invalid_index = AsyncVectorIndex(index_name="does_not_exist")
+        invalid_index = AsyncVectorIndex(
+            index_name=f"does_not_exist_{self.base_index_name}"
+        )
         with pytest.raises(oracledb.DatabaseError) as exc_info:
             await invalid_index.enable()
         logger.info(

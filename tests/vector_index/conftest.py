@@ -104,6 +104,11 @@ def vcidx_params(
     embedding_location,
     vcidx_object_store_credentials,
 ):
+    # Test modules share a schema. Include the module name in every generated
+    # resource so credentials, profiles, and indexes never overlap.
+    module_suffix = (
+        Path(request.module.__file__).stem.removeprefix("test_").upper()
+    )
     py_suffix = os.environ.get("PYTHON_VERSION_WITHOUT_DOT")
     run_suffix = os.environ.get("GITHUB_RUN_ID")
     run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
@@ -113,9 +118,9 @@ def vcidx_params(
         run_suffix = uuid.uuid4().hex[:12].upper()
 
     if py_suffix:
-        resource_suffix = f"PY{py_suffix}_{run_suffix}"
+        resource_suffix = f"PY{py_suffix}_{run_suffix}_{module_suffix}"
     else:
-        resource_suffix = f"PYSAI_{run_suffix}"
+        resource_suffix = f"PYSAI_{run_suffix}_{module_suffix}"
 
     return {
         "resource_suffix": resource_suffix,
