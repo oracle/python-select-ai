@@ -1,6 +1,8 @@
 name: select_ai_py_tests
 on:
   push:
+    branches:
+      - "**"
   workflow_call:
 
 permissions:
