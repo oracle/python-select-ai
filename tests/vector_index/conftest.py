@@ -98,6 +98,7 @@ def vcidx_object_store_credentials():
 
 @pytest.fixture(scope="class")
 def vcidx_params(
+    request,
     test_env,
     oci_credential,
     oci_compartment_id,
