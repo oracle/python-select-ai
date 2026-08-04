@@ -121,6 +121,12 @@ class TestListVectorIndex:
     def expected_index_names(self):
         return [index_name.upper() for index_name in self.indexes]
 
+    def fetch_expected_indexes(self):
+        return [
+            select_ai.VectorIndex.fetch(index_name)
+            for index_name in self.expected_index_names()
+        ]
+
     @classmethod
     def get_native_cred_param(cls, cred_name=None) -> dict:
         logger.info(f"Preparing native credential params for: {cred_name}")
@@ -226,7 +232,7 @@ class TestListVectorIndex:
         """Verify each index has correct profile name."""
         logger.info("Verifying each index has correct profile name...")
         expected_profile = self.profile_name
-        for index in self.vector_index.list(index_name_pattern=".*"):
+        for index in self.fetch_expected_indexes():
             assert (
                 index.profile.profile_name == expected_profile
             ), f"Profile mismatch for {index.index_name}: expected {expected_profile}, got {index.profile.profile_name}"
@@ -238,13 +244,7 @@ class TestListVectorIndex:
             "Verifying each index has correct object store credential name..."
         )
         expected_credential = self.objstore_cred
-        expected_names = self._managed_index_names(self.indexes)
-        indexes = [
-            index
-            for index in self.vector_index.list(index_name_pattern=".*")
-            if index.index_name in expected_names
-        ]
-        for index in indexes:
+        for index in self.fetch_expected_indexes():
             assert (
                 index.attributes.object_storage_credential_name
                 == expected_credential
@@ -255,7 +255,7 @@ class TestListVectorIndex:
         """Verify descriptions for all indexes."""
         logger.info("Verifying descriptions for all indexes...")
         expected_description = "Test vector index"
-        for index in self.vector_index.list(index_name_pattern=".*"):
+        for index in self.fetch_expected_indexes():
             assert (
                 index.description == expected_description
             ), f"Description mismatch for {index.index_name}: expected {expected_description}, got {index.description}"

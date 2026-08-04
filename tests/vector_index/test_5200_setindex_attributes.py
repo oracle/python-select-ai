@@ -911,7 +911,9 @@ class TestSetVectorIndexAttributes:
     def test_5229(self):
         """Update on nonexistent vector index."""
         logger.info("Testing update on nonexistent vector index...")
-        temp_index = VectorIndex(index_name="does_not_exist")
+        temp_index = VectorIndex(
+            index_name=f"does_not_exist_{self.resource_suffix}"
+        )
         with pytest.raises(AttributeError):
             temp_index.set_attribute("chunk_size", 512)
         logger.info(
