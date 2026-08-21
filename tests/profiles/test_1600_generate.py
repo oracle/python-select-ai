@@ -67,7 +67,7 @@ def generate_profile(generate_profile_attributes):
     )
     profile.set_attribute(
         attribute_name="model",
-        attribute_value="meta.llama-3.1-405b-instruct",
+        attribute_value="meta.llama-3.3-70b-instruct",
     )
     yield profile
     logger.info("Deleting generate profile %s", profile.profile_name)
@@ -99,7 +99,7 @@ def negative_profile(test_env, oci_credential, generate_provider):
     )
     profile.set_attribute(
         attribute_name="model",
-        attribute_value="meta.llama-3.1-405b-instruct",
+        attribute_value="meta.llama-3.3-70b-instruct",
     )
     yield profile
     logger.info("Deleting negative generate profile %s", profile.profile_name)
