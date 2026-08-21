@@ -79,6 +79,9 @@ async def vector_index_test_state(request):
 
 @pytest.mark.usefixtures("delete_vec_params", "setup_and_teardown")
 class TestAsyncDeleteVectorIndex:
+    def resource_name(self, name: str) -> str:
+        return f"{name}_{self.delete_vec_params['resource_suffix']}"
+
     @classmethod
     def get_native_cred_param(cls, cred_name=None) -> dict:
         logger.info("Preparing native credential params for: %s", cred_name)
@@ -420,14 +423,16 @@ class TestAsyncDeleteVectorIndex:
     async def test_5109(self):
         """Test delete of a nonexistent index (should not error)."""
         idx = select_ai.AsyncVectorIndex(
-            index_name="nonexistent_index",
+            index_name=self.resource_name("nonexistent_index"),
             attributes=self.vector_index_attributes,
             profile=self.profile,
         )
         logger.info("Attempting to delete nonexistent index")
         await idx.delete(force=True)
         await asyncio.sleep(1)
-        await self.assert_index_count("^nonexistent_index", 0)
+        await self.assert_index_count(
+            f"^{self.resource_name('nonexistent_index')}$", 0
+        )
         logger.info("Nonexistent delete verified (no error)")
 
     async def test_5110(self):
@@ -458,7 +463,7 @@ class TestAsyncDeleteVectorIndex:
     async def test_5111(self):
         """Test case-sensitive name for create and delete."""
         idx = select_ai.AsyncVectorIndex(
-            index_name="CaseSensitiveIndex",
+            index_name=self.resource_name("CaseSensitiveIndex"),
             attributes=self.vector_index_attributes,
             profile=self.profile,
         )
@@ -467,12 +472,14 @@ class TestAsyncDeleteVectorIndex:
         logger.info("Deleting case-sensitive index")
         await idx.delete(force=True)
         await asyncio.sleep(1)
-        await self.assert_index_count("^CaseSensitiveIndex", 0)
+        await self.assert_index_count(
+            f"^{self.resource_name('CaseSensitiveIndex')}$", 0
+        )
         logger.info("Case-sensitive index delete verified")
 
     async def test_5112(self):
         """Test creation and deletion with long index name."""
-        long_name = "index_" + "x" * 40
+        long_name = self.resource_name("index_" + "x" * 40)
         idx = select_ai.AsyncVectorIndex(
             index_name=long_name,
             attributes=self.vector_index_attributes,
@@ -488,7 +495,10 @@ class TestAsyncDeleteVectorIndex:
 
     async def test_5113(self):
         """Test creation and bulk deletion of indexes."""
-        names = [f"bulk_idx_{i}" for i in range(3)]
+        names = [
+            f"bulk_idx_{self.delete_vec_params['resource_suffix']}_{i}"
+            for i in range(3)
+        ]
         logger.info("Creating bulk indexes")
         for name in names:
             await select_ai.AsyncVectorIndex(
@@ -506,7 +516,9 @@ class TestAsyncDeleteVectorIndex:
             ).delete(force=True)
             await asyncio.sleep(1)
             logger.info("Deleted %s", name)
-        await self.assert_index_count("^bulk_idx_", 0)
+        await self.assert_index_count(
+            f"^bulk_idx_{self.delete_vec_params['resource_suffix']}_", 0
+        )
         logger.info("Bulk delete verified")
 
     async def test_5114(self):
@@ -545,24 +557,26 @@ class TestAsyncDeleteVectorIndex:
     async def test_5116(self):
         """Test delete of one out of multiple indexes."""
         idx1 = select_ai.AsyncVectorIndex(
-            index_name="IDX_1",
+            index_name=self.resource_name("IDX_1"),
             attributes=self.vector_index_attributes,
             profile=self.profile,
         )
         idx2 = select_ai.AsyncVectorIndex(
-            index_name="IDX_2",
+            index_name=self.resource_name("IDX_2"),
             attributes=self.vector_index_attributes,
             profile=self.profile,
         )
-        logger.info("Creating two indexes IDX_1 and IDX_2")
+        logger.info("Creating two isolated indexes")
         await idx1.create(replace=True)
         await idx2.create(replace=True)
         logger.info("Deleting IDX_1 only")
-        await self.delete_and_wait(force=True, pattern="^IDX_1$")
+        await self.delete_and_wait(
+            force=True, pattern=f"^{self.resource_name('IDX_1')}$"
+        )
         remaining_idx2 = [
             index
             async for index in self.async_vector_index.list(
-                index_name_pattern="^IDX_2$"
+                index_name_pattern=f"^{self.resource_name('IDX_2')}$"
             )
         ]
         logger.info("IDX_2 entries after IDX_1 delete: %s", remaining_idx2)

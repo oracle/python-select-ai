@@ -106,6 +106,9 @@ async def vector_index_state(request):
 
 @pytest.mark.usefixtures("vector_attr_params", "setup_and_teardown")
 class TestAsyncGetVectorIndexAttributes:
+    def resource_name(self, name: str) -> str:
+        return f"{name}_{self.resource_suffix}"
+
     @classmethod
     def get_native_cred_param(cls, cred_name=None):
         logger.info("Preparing native credential params for: %s", cred_name)
@@ -263,7 +266,7 @@ class TestAsyncGetVectorIndexAttributes:
         logger.info("Testing get_attributes() with a nonexistent index...")
         with pytest.raises(VectorIndexNotFoundError):
             await AsyncVectorIndex(
-                index_name="does_not_exist"
+                index_name=self.resource_name("does_not_exist")
             ).get_attributes()
         logger.info(
             "Nonexistent index correctly raised VectorIndexNotFoundError."
@@ -273,7 +276,7 @@ class TestAsyncGetVectorIndexAttributes:
         """Verify error after deleting a temporary vector index."""
         logger.info("Testing error after deleting a temporary vector index...")
         temp_index = AsyncVectorIndex(
-            index_name="temp_index_for_delete",
+            index_name=self.resource_name("temp_index_for_delete"),
             attributes=OracleVectorIndexAttributes(
                 location=self.embedding_location,
                 object_storage_credential_name=self.objstore_cred,
@@ -289,7 +292,7 @@ class TestAsyncGetVectorIndexAttributes:
         )
         with pytest.raises(VectorIndexNotFoundError):
             await AsyncVectorIndex(
-                index_name="temp_index_for_delete"
+                index_name=self.resource_name("temp_index_for_delete")
             ).get_attributes()
         logger.info("Expected error raised after deleting index.")
 
@@ -300,7 +303,7 @@ class TestAsyncGetVectorIndexAttributes:
             "the vector index..."
         )
         temp_index = AsyncVectorIndex(
-            index_name="temp_index_for_delete",
+            index_name=self.resource_name("temp_index_for_delete"),
             attributes=OracleVectorIndexAttributes(
                 location=self.embedding_location,
                 object_storage_credential_name=self.objstore_cred,
@@ -361,7 +364,7 @@ class TestAsyncGetVectorIndexAttributes:
             "Creating multiple vector indices to compare their attributes..."
         )
         index_a = AsyncVectorIndex(
-            index_name="index_a",
+            index_name=self.resource_name("index_a"),
             attributes=OracleVectorIndexAttributes(
                 location=self.embedding_location,
                 object_storage_credential_name=self.objstore_cred,
@@ -370,7 +373,7 @@ class TestAsyncGetVectorIndexAttributes:
             profile=self.profile,
         )
         index_b = AsyncVectorIndex(
-            index_name="index_b",
+            index_name=self.resource_name("index_b"),
             attributes=OracleVectorIndexAttributes(
                 location=self.embedding_location,
                 object_storage_credential_name=self.objstore_cred,
@@ -385,10 +388,10 @@ class TestAsyncGetVectorIndexAttributes:
             await index_b.create(replace=True)
             logger.info("Fetching attributes for both indices...")
             attrs_a = await AsyncVectorIndex(
-                index_name="index_a"
+                index_name=self.resource_name("index_a")
             ).get_attributes()
             attrs_b = await AsyncVectorIndex(
-                index_name="index_b"
+                index_name=self.resource_name("index_b")
             ).get_attributes()
             logger.info("Attrs_a: %s", attrs_a)
             assert attrs_a.pipeline_name != attrs_b.pipeline_name
@@ -411,7 +414,7 @@ class TestAsyncGetVectorIndexAttributes:
             "Testing attributes consistency after delete and recreate..."
         )
         temp_index = AsyncVectorIndex(
-            index_name="temp_recreate",
+            index_name=self.resource_name("temp_recreate"),
             attributes=OracleVectorIndexAttributes(
                 location=self.embedding_location,
                 object_storage_credential_name=self.objstore_cred,
@@ -428,7 +431,7 @@ class TestAsyncGetVectorIndexAttributes:
             await temp_index.create(replace=True)
             logger.info("Fetching attributes after recreation...")
             attrs = await AsyncVectorIndex(
-                index_name="temp_recreate"
+                index_name=self.resource_name("temp_recreate")
             ).get_attributes()
             assert attrs.object_storage_credential_name == self.objstore_cred
             logger.info("Recreate test completed successfully.")

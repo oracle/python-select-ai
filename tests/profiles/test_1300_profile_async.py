@@ -277,7 +277,7 @@ async def test_1307():
     assert profile.attributes.provider.model == "meta.llama-3.1-70b-instruct"
 
 
-async def test_1308(oci_credential):
+async def test_1308(oci_credential, oci_compartment_id):
     """Set multiple attributes for a Profile"""
     logger.info(
         "Setting multiple attributes for async profile %s",
@@ -290,6 +290,7 @@ async def test_1308(oci_credential):
             model="meta.llama-4-maverick-17b-128e-instruct-fp8",
             region="us-chicago-1",
             oci_apiformat="GENERIC",
+            oci_compartment_id=oci_compartment_id,
         ),
         object_list=[{"owner": "ADMIN", "name": "gymnasts"}],
         comments=True,

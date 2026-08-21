@@ -1,6 +1,8 @@
 name: select_ai_py_tests
 on:
   push:
+    branches:
+      - "**"
   workflow_call:
 
 permissions:
@@ -9,6 +11,20 @@ permissions:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    services:
+      adb:
+        image: ghcr.io/oracle/adb-free:latest-26ai
+        env:
+          WORKLOAD_TYPE: ATP
+          START_ORDS: "False"
+          ENABLE_ARCHIVE_LOG: "False"
+          ADMIN_PASSWORD: ${{ secrets.PYSAI_TEST_ADMIN_PASSWORD }}
+          WALLET_PASSWORD: ${{ secrets.PYSAI_TEST_WALLET_PASSWORD }}
+        ports:
+          - 1521:1521
+        options: >-
+          --cap-add SYS_ADMIN
+          --device /dev/fuse
     strategy:
       fail-fast: true
       matrix:
@@ -36,6 +52,17 @@ jobs:
           pip install pytest anyio
           pip install -e .
 
+      - name: Wait for ADB Free Container
+        run: |
+          for attempt in {1..60}; do
+            if nc -z localhost 1521; then
+              exit 0
+            fi
+            sleep 10
+          done
+          docker logs ${{ job.services.adb.id }}
+          exit 1
+
       - name: Run select_ai tests
         run: |
           python_version=${{matrix.python-version}}
@@ -44,9 +71,9 @@ jobs:
         env:
           PYSAI_TEST_USER: ${{ secrets.PYSAI_TEST_USER }}_${{env.PYTHON_VERSION_WITHOUT_DOT}}
           PYSAI_TEST_USER_PASSWORD: ${{ secrets.PYSAI_TEST_USER_PASSWORD }}
-          PYSAI_TEST_ADMIN_USER: ${{ secrets.PYSAI_TEST_ADMIN_USER }}
+          PYSAI_TEST_ADMIN_USER: ADMIN
           PYSAI_TEST_ADMIN_PASSWORD: ${{ secrets.PYSAI_TEST_ADMIN_PASSWORD }}
-          PYSAI_TEST_CONNECT_STRING: ${{ secrets.PYSAI_TEST_CONNECT_STRING }}
+          PYSAI_TEST_CONNECT_STRING: localhost:1521/myatp
           PYSAI_TEST_OCI_USER_OCID: ${{ secrets.PYSAI_TEST_OCI_USER_OCID }}
           PYSAI_TEST_OCI_TENANCY_OCID: ${{ secrets.PYSAI_TEST_OCI_TENANCY_OCID }}
           PYSAI_TEST_OCI_PRIVATE_KEY: ${{ secrets.PYSAI_TEST_OCI_PRIVATE_KEY }}

@@ -117,6 +117,9 @@ def log_test_name(request):
 
 @pytest.mark.usefixtures("vector_attr_params", "setup_and_teardown")
 class TestGetVectorIndexAttributes:
+    def resource_name(self, name: str) -> str:
+        return f"{name}_{self.resource_suffix}"
+
     @classmethod
     def get_native_cred_param(cls, cred_name=None):
         logger.info(f"Preparing native credential params for: {cred_name}")
@@ -284,7 +287,9 @@ class TestGetVectorIndexAttributes:
         """Calling get_attributes on nonexistent index raises error."""
         logger.info("Testing get_attributes() with a nonexistent index...")
         with pytest.raises(VectorIndexNotFoundError):
-            VectorIndex(index_name="does_not_exist").get_attributes()
+            VectorIndex(
+                index_name=self.resource_name("does_not_exist")
+            ).get_attributes()
         logger.info(
             "Nonexistent index correctly raised VectorIndexNotFoundError."
         )
@@ -298,7 +303,7 @@ class TestGetVectorIndexAttributes:
         )
         logger.info("Creating temporary vector index...")
         temp_index = VectorIndex(
-            index_name="temp_index_for_delete",
+            index_name=self.resource_name("temp_index_for_delete"),
             attributes=vector_index_attributes,
             description="Test vector index",
             profile=self.profile,
@@ -310,7 +315,9 @@ class TestGetVectorIndexAttributes:
             "Temporary vector index deleted. Attempting to fetch attributes..."
         )
         with pytest.raises(VectorIndexNotFoundError):
-            VectorIndex(index_name="temp_index_for_delete").get_attributes()
+            VectorIndex(
+                index_name=self.resource_name("temp_index_for_delete")
+            ).get_attributes()
         logger.info("Expected error raised after deleting index.")
 
     def test_5310(self):
@@ -324,7 +331,7 @@ class TestGetVectorIndexAttributes:
         )
         logger.info("Creating temporary vector index for deletion test...")
         temp_index = VectorIndex(
-            index_name="temp_index_for_delete",
+            index_name=self.resource_name("temp_index_for_delete"),
             attributes=vector_index_attributes,
             description="Test vector index",
             profile=self.profile,
@@ -390,7 +397,7 @@ class TestGetVectorIndexAttributes:
         )
         logger.info("Creating index_a...")
         index_a = VectorIndex(
-            index_name="index_a",
+            index_name=self.resource_name("index_a"),
             attributes=vector_index_attributes,
             description="Test vector index",
             profile=self.profile,
@@ -398,16 +405,20 @@ class TestGetVectorIndexAttributes:
         index_a.create(replace=True)
         logger.info("Creating index_b...")
         index_b = VectorIndex(
-            index_name="index_b",
+            index_name=self.resource_name("index_b"),
             attributes=vector_index_attributes,
             description="Test vector index",
             profile=self.profile,
         )
         index_b.create(replace=True)
         logger.info("Fetching attributes for both indices...")
-        attrs_a = VectorIndex(index_name="index_a").get_attributes()
+        attrs_a = VectorIndex(
+            index_name=self.resource_name("index_a")
+        ).get_attributes()
         logger.info(f"Attrs_a: {attrs_a}")
-        attrs_b = VectorIndex(index_name="index_b").get_attributes()
+        attrs_b = VectorIndex(
+            index_name=self.resource_name("index_b")
+        ).get_attributes()
         assert attrs_a.pipeline_name != attrs_b.pipeline_name
         logger.info("Indices have distinct pipeline names as expected.")
         logger.info("Deleting both indices...")
@@ -426,7 +437,7 @@ class TestGetVectorIndexAttributes:
         )
         logger.info("Creating temporary vector index for recreate test...")
         temp_index = VectorIndex(
-            index_name="temp_recreate",
+            index_name=self.resource_name("temp_recreate"),
             attributes=vector_index_attributes,
             description="Test vector index",
             profile=self.profile,
@@ -437,7 +448,9 @@ class TestGetVectorIndexAttributes:
         logger.info("Recreating temporary index...")
         temp_index.create(replace=True)
         logger.info("Fetching attributes after recreation...")
-        attrs = VectorIndex(index_name="temp_recreate").get_attributes()
+        attrs = VectorIndex(
+            index_name=self.resource_name("temp_recreate")
+        ).get_attributes()
         assert attrs.object_storage_credential_name == self.objstore_cred
         temp_index.delete(force=True)
         logger.info("Recreate test completed successfully.")
