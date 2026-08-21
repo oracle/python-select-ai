@@ -20,6 +20,12 @@ Install the optional command line interface:
 python3 -m pip install 'select_ai[cli]'
 ```
 
+Install A2A server support:
+
+```bash
+python3 -m pip install 'select_ai[a2a]'
+```
+
 ## Documentation
 
 See [Select AI for Python documentation][documentation]
@@ -36,6 +42,43 @@ profiles:
 ```bash
 select-ai chat --profile OCI_AI_PROFILE
 ```
+
+### A2A Server
+
+Expose one Oracle Database AI agent team as an A2A JSON-RPC HTTP server:
+
+```bash
+select-ai a2a serve --team SALES_ANALYST --port 8000
+```
+
+The command obtains database connection settings from its options or the
+`SELECT_AI_*` environment variables. Its Agent Card is available at
+`/.well-known/agent-card.json`, and its JSON-RPC endpoint is
+`/a2a/jsonrpc/`. Set `--public-url` when the server is behind a proxy or load
+balancer so that clients receive its externally reachable URL.
+
+The server accepts both A2A 1.x and the A2A v0.3 JSON-RPC streaming protocol
+for compatibility with Gemini Enterprise.
+
+Generate the A2A v0.3 Agent Card to paste into Gemini Enterprise after the
+service has a public URL:
+
+```bash
+select-ai a2a agent-card \
+  --team ORACLE_AI_DATABASE_AGENT \
+  --public-url https://YOUR-SERVICE.run.app
+```
+
+### Cloud Run
+
+The repository includes an Oracle Linux 10 / Python 3.12 container image in
+the `gcloud` directory for Cloud Run. Configure `A2A_TEAM`, `PUBLIC_URL`, and the standard
+`SELECT_AI_*` connection environment variables at deployment. Inject
+`SELECT_AI_PASSWORD` from Secret Manager; never add database credentials to
+the image or source tree.
+
+See [gcloud/README.md](gcloud/README.md) for one-time secret setup, image
+build, and per-team deployment commands.
 
 ![Select AI CLI demo](doc/source/image/select_ai_cli_demo.gif)
 

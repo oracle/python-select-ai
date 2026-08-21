@@ -7,7 +7,7 @@ name = "select_ai"
 dynamic = ["version"]
 description = "Select AI for Python"
 readme = {file = "README.md", content-type = "text/markdown"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     {name="Abhishek Singh", email="abhishek.o.singh@oracle.com"}
 ]
@@ -28,7 +28,6 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -47,6 +46,11 @@ dependencies = [
 [project.optional-dependencies]
 cli = [
     "click",
+]
+a2a = [
+    "click",
+    "a2a-sdk[http-server]>=1.0.3",
+    "uvicorn>=0.30",
 ]
 test = [
     "anyio",
