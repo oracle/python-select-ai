@@ -32,7 +32,7 @@ workflows will be added in upcoming releases as the CLI evolves.
       :width: 100%
 
 The package provides an optional ``select-ai`` command line tool. Install the
-CLI extra to use it:
+CLI extra to use it, including the A2A server commands:
 
 .. code-block:: bash
 

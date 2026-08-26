@@ -5,13 +5,13 @@ steps:
     args:
       - build
       - --file
-      - gcloud/Dockerfile
+      - docker/Dockerfile
       - --tag
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai-a2a-server:${_IMAGE_TAG}
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
       - .
 
 images:
-  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai-a2a-server:${_IMAGE_TAG}
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
 
 substitutions:
   _REGION: us-central1

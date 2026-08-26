@@ -13,6 +13,14 @@ import click
 from select_ai.cli.common import connection_options
 from select_ai.version import __version__
 
+try:
+    import uvicorn
+
+    from select_ai.agent.a2a.server import create_app
+except ImportError:
+    create_app = None
+    uvicorn = None
+
 
 @click.group()
 def a2a():
@@ -50,21 +58,11 @@ def serve(
     wallet_password,
 ):
     """Start an A2A HTTP server for one database AI agent team."""
-    try:
-        from select_ai.a2a_server import (
-            create_app,
-            ensure_a2a_dependencies,
-        )
-
-        ensure_a2a_dependencies()
-        import uvicorn
-    except RuntimeError as exc:
-        raise click.ClickException(str(exc)) from exc
-    except ImportError as exc:
+    if create_app is None or uvicorn is None:
         raise click.ClickException(
-            "A2A server support requires the optional 'a2a' extra. "
-            "Install it with: pip install 'select_ai[a2a]'"
-        ) from exc
+            "A2A server support requires the optional 'cli' extra. "
+            "Install it with: pip install 'select_ai[cli]'"
+        )
 
     if password is None:
         password = getpass.getpass("Database password: ")

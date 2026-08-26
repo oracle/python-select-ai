@@ -19,6 +19,12 @@ __pycache__/
 .ruff_cache/
 build/
 dist/
+doc/
 docs/
 tests/
 samples/
+*.docx
+*.pdf
+*.png
+*.jpg
+*.jpeg

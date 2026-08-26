@@ -20,11 +20,7 @@ Install the optional command line interface:
 python3 -m pip install 'select_ai[cli]'
 ```
 
-Install A2A server support:
-
-```bash
-python3 -m pip install 'select_ai[a2a]'
-```
+The CLI extra includes A2A server support.
 
 ## Documentation
 
@@ -36,12 +32,15 @@ Examples can be found in the [/samples][samples] directory
 
 ## Command Line Interface
 
-The optional `select-ai` command provides an interactive chat REPL for Select AI
-profiles:
+The optional `select-ai` command provides interactive chat, SQL, profile
+management, and A2A server tools for Select AI:
 
+### Chat
 ```bash
 select-ai chat --profile OCI_AI_PROFILE
 ```
+![Select AI CLI demo](doc/source/image/select_ai_cli_demo.gif)
+
 
 ### A2A Server
 
@@ -57,6 +56,11 @@ The command obtains database connection settings from its options or the
 `/a2a/jsonrpc/`. Set `--public-url` when the server is behind a proxy or load
 balancer so that clients receive its externally reachable URL.
 
+For Autonomous Database mTLS, also set `SELECT_AI_WALLET_LOCATION` to the
+directory containing the unzipped wallet and set `SELECT_AI_WALLET_PASSWORD`.
+The CLI passes both values to the Select AI SDK as `wallet_location` and
+`wallet_password`.
+
 The server accepts both A2A 1.x and the A2A v0.3 JSON-RPC streaming protocol
 for compatibility with Gemini Enterprise.
 
@@ -69,20 +73,12 @@ select-ai a2a agent-card \
   --public-url https://YOUR-SERVICE.run.app
 ```
 
-### Cloud Run
+## Cloud Run
 
-The repository includes an Oracle Linux 10 / Python 3.12 container image in
-the `gcloud` directory for Cloud Run. Configure `A2A_TEAM`, `PUBLIC_URL`, and the standard
-`SELECT_AI_*` connection environment variables at deployment. Inject
-`SELECT_AI_PASSWORD` from Secret Manager; never add database credentials to
-the image or source tree.
+Deploy the A2A server to Cloud Run using the instructions in
+[gcloud/README.md](https://github.com/oracle/python-select-ai/blob/main/gcloud/README.md).
 
-See [gcloud/README.md](gcloud/README.md) for one-time secret setup, image
-build, and per-team deployment commands.
-
-![Select AI CLI demo](doc/source/image/select_ai_cli_demo.gif)
-
-### Basic Example
+## Basic Example
 
 ```python
 import select_ai
