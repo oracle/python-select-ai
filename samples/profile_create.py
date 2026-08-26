@@ -22,7 +22,7 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 select_ai.connect(user=user, password=password, dsn=dsn)
 provider = select_ai.OCIGenAIProvider(
-    region="us-chicago-1", oci_apiformat="GENERIC"
+    region="us-chicago-1", oci_apiformat="GENERIC", model="openai.gpt-4.1"
 )
 profile_attributes = select_ai.ProfileAttributes(
     credential_name="my_oci_ai_profile_key",

@@ -20,6 +20,8 @@ Install the optional command line interface:
 python3 -m pip install 'select_ai[cli]'
 ```
 
+The CLI extra includes A2A server support.
+
 ## Documentation
 
 See [Select AI for Python documentation][documentation]
@@ -30,16 +32,53 @@ Examples can be found in the [/samples][samples] directory
 
 ## Command Line Interface
 
-The optional `select-ai` command provides an interactive chat REPL for Select AI
-profiles:
+The optional `select-ai` command provides interactive chat, SQL, profile
+management, and A2A server tools for Select AI:
 
+### Chat
 ```bash
 select-ai chat --profile OCI_AI_PROFILE
 ```
-
 ![Select AI CLI demo](doc/source/image/select_ai_cli_demo.gif)
 
-### Basic Example
+
+### A2A Server
+
+Expose one Oracle Database AI agent team as an A2A JSON-RPC HTTP server:
+
+```bash
+select-ai a2a serve --team SALES_ANALYST --port 8000
+```
+
+The command obtains database connection settings from its options or the
+`SELECT_AI_*` environment variables. Its Agent Card is available at
+`/.well-known/agent-card.json`, and its JSON-RPC endpoint is
+`/a2a/jsonrpc/`. Set `--public-url` when the server is behind a proxy or load
+balancer so that clients receive its externally reachable URL.
+
+For Autonomous Database mTLS, also set `SELECT_AI_WALLET_LOCATION` to the
+directory containing the unzipped wallet and set `SELECT_AI_WALLET_PASSWORD`.
+The CLI passes both values to the Select AI SDK as `wallet_location` and
+`wallet_password`.
+
+The server accepts both A2A 1.x and the A2A v0.3 JSON-RPC streaming protocol
+for compatibility with Gemini Enterprise.
+
+Generate the A2A v0.3 Agent Card to paste into Gemini Enterprise after the
+service has a public URL:
+
+```bash
+select-ai a2a agent-card \
+  --team ORACLE_AI_DATABASE_AGENT \
+  --public-url https://YOUR-SERVICE.run.app
+```
+
+## Cloud Run
+
+Deploy the A2A server to Cloud Run using the instructions in
+[gcloud/README.md](https://github.com/oracle/python-select-ai/blob/main/gcloud/README.md).
+
+## Basic Example
 
 ```python
 import select_ai

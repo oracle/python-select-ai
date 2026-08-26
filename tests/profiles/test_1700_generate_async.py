@@ -71,7 +71,7 @@ async def async_generate_profile(async_generate_profile_attributes):
     )
     await profile.set_attribute(
         attribute_name="model",
-        attribute_value="meta.llama-3.1-405b-instruct",
+        attribute_value="meta.llama-3.3-70b-instruct",
     )
     yield profile
     logger.info("Deleting async generate profile %s", profile.profile_name)
@@ -105,7 +105,7 @@ async def async_negative_profile(
     )
     await profile.set_attribute(
         attribute_name="model",
-        attribute_value="meta.llama-3.1-405b-instruct",
+        attribute_value="meta.llama-3.3-70b-instruct",
     )
     yield profile
     logger.info(

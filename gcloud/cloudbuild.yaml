@@ -1,0 +1,19 @@
+# Build one reusable A2A server image. Database team selection is Cloud Run
+# configuration, not an image-build input.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --file
+      - docker/Dockerfile
+      - --tag
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
+      - .
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
+
+substitutions:
+  _REGION: us-central1
+  _REPOSITORY: select-ai
+  _IMAGE_TAG: latest

@@ -45,7 +45,7 @@ profile = select_ai.Profile(
 # the objects reside in ObjectStore and the vector database is
 # Oracle
 vector_index_attributes = select_ai.OracleVectorIndexAttributes(
-    location="https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph",
+    location="https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/*.json",
     object_storage_credential_name="my_oci_ai_profile_key",
 )
 

@@ -76,7 +76,7 @@ def test_1003(oci_gen_ai_profile):
 def test_1004(oci_gen_ai_profile):
     """Chat for a simple NL prompt"""
     oci_gen_ai_profile.set_attribute(
-        attribute_name="model", attribute_value="meta.llama-3.1-405b-instruct"
+        attribute_name="model", attribute_value="meta.llama-3.3-70b-instruct"
     )
     prompt = "What is a database?"
     chat = oci_gen_ai_profile.chat(prompt)
@@ -87,7 +87,7 @@ def test_1004(oci_gen_ai_profile):
 def test_1005(oci_gen_ai_profile):
     """Run SQL for a simple NL prompt"""
     oci_gen_ai_profile.set_attribute(
-        attribute_name="model", attribute_value="meta.llama-3.1-405b-instruct"
+        attribute_name="model", attribute_value="meta.llama-3.3-70b-instruct"
     )
     prompt = "How many gymnast in the table?"
     df = oci_gen_ai_profile.run_sql(prompt)
