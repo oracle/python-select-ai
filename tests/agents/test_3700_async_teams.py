@@ -57,7 +57,7 @@ async def history_tool():
             RETURN VARCHAR2
             IS
             BEGIN
-                RETURN '{"message":"async history test complete"}';
+                RETURN '{{"message":"async history test complete"}}';
             END;
             """
         )

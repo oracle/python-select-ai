@@ -57,7 +57,7 @@ def history_tool():
             RETURN VARCHAR2
             IS
             BEGIN
-                RETURN '{"message":"history test complete"}';
+                RETURN '{{"message":"history test complete"}}';
             END;
             """
         )
