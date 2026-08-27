@@ -50,6 +50,8 @@ class ProfileAttributes(SelectAIDataClass):
      most relevant tables or all tables to the LLM. Supported values are -
      'automated' and 'all'
     :param select_ai.Provider provider: AI Provider
+    :param int seed: Signed 64-bit integer used to make model output more
+     reproducible when the provider supports it.
     :param str stop_tokens: The generated text will be terminated at the
      beginning of the earliest stop sequence. Sequence will be incorporated
      into the text. The attribute value must be a valid array of string values
@@ -75,7 +77,7 @@ class ProfileAttributes(SelectAIDataClass):
     object_list: Optional[List[Mapping]] = None
     object_list_mode: Optional[str] = None
     provider: Optional[Provider] = None
-    seed: Optional[str] = None
+    seed: Optional[int] = None
     stop_tokens: Optional[str] = None
     streaming: Optional[str] = None
     temperature: Optional[float] = None
@@ -92,7 +94,7 @@ class ProfileAttributes(SelectAIDataClass):
         attributes = {}
         for k, v in self.dict(exclude_null=exclude_null).items():
             if isinstance(v, Provider):
-                for provider_k, provider_v in v.dict(
+                for provider_k, provider_v in v.profile_dict(
                     exclude_null=exclude_null
                 ).items():
                     attributes[Provider.key_alias(provider_k)] = provider_v

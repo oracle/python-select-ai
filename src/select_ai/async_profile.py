@@ -191,8 +191,8 @@ class AsyncProfile(BaseProfile):
         """
         self.attributes.set_attribute(attribute_name, attribute_value)
         if isinstance(attribute_value, Provider):
-            for k, v in attribute_value.dict().items():
-                await self._set_attribute(k, v)
+            for k, v in attribute_value.profile_dict().items():
+                await self._set_attribute(Provider.key_alias(k), v)
         else:
             await self._set_attribute(attribute_name, attribute_value)
 
