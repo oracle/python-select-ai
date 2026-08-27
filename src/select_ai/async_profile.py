@@ -275,6 +275,30 @@ class AsyncProfile(BaseProfile):
         """
         await self._delete(profile_name=self.profile_name, force=force)
 
+    async def enable(self) -> None:
+        """Asynchronously enable this AI profile in the database.
+
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.ENABLE_PROFILE",
+                keyword_parameters={"profile_name": self.profile_name},
+            )
+
+    async def disable(self) -> None:
+        """Asynchronously disable this AI profile in the database.
+
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.DISABLE_PROFILE",
+                keyword_parameters={"profile_name": self.profile_name},
+            )
+
     @classmethod
     async def delete_profile(cls, profile_name: str, force: bool = False):
         """Asynchronously deletes an AI profile from the database

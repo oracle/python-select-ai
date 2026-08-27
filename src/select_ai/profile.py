@@ -247,6 +247,30 @@ class Profile(BaseProfile):
         """
         self._delete(profile_name=self.profile_name, force=force)
 
+    def enable(self) -> None:
+        """Enable this AI profile in the database.
+
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.ENABLE_PROFILE",
+                keyword_parameters={"profile_name": self.profile_name},
+            )
+
+    def disable(self) -> None:
+        """Disable this AI profile in the database.
+
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.DISABLE_PROFILE",
+                keyword_parameters={"profile_name": self.profile_name},
+            )
+
     @classmethod
     def delete_profile(cls, profile_name: str, force: bool = False):
         """Class method to delete an AI profile from the database
