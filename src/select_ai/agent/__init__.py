@@ -8,6 +8,17 @@
 
 from .core import Agent, AgentAttributes, AsyncAgent
 from .definition import async_get_definition, get_definition
+from .history import (
+    AsyncTaskHistory,
+    AsyncTeamHistory,
+    AsyncToolHistory,
+    TaskHistory,
+    TaskHistoryEvent,
+    TeamHistory,
+    TeamHistoryEvent,
+    ToolHistory,
+    ToolHistoryEvent,
+)
 from .task import AsyncTask, Task, TaskAttributes
 from .team import AsyncTeam, Team, TeamAttributes
 from .tool import (

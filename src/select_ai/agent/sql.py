@@ -80,3 +80,37 @@ SELECT t.AGENT_TEAM_NAME as team_name, description
 FROM USER_AI_AGENT_TEAMS t
 WHERE REGEXP_LIKE(t.AGENT_TEAM_NAME, :team_name_pattern, 'i')
 """
+
+
+LIST_USER_AI_AGENT_TEAM_HISTORY = """
+SELECT team_exec_id, team_name, state, start_date, end_date, conversation_id,
+       params
+FROM user_ai_agent_team_history
+WHERE (:team_name IS NULL OR team_name = :team_name)
+  AND (:team_exec_id IS NULL OR team_exec_id = :team_exec_id)
+ORDER BY start_date DESC NULLS LAST
+"""
+
+
+LIST_USER_AI_AGENT_TASK_HISTORY = """
+SELECT team_exec_id, team_name, task_order, agent_name, task_name,
+       conversation_params, input, result, state, start_date, end_date
+FROM user_ai_agent_task_history
+WHERE (:team_name IS NULL OR team_name = :team_name)
+  AND (:task_name IS NULL OR task_name = :task_name)
+  AND (:agent_name IS NULL OR agent_name = :agent_name)
+  AND (:team_exec_id IS NULL OR team_exec_id = :team_exec_id)
+ORDER BY start_date DESC NULLS LAST
+"""
+
+
+LIST_USER_AI_AGENT_TOOL_HISTORY = """
+SELECT invocation_id, team_exec_id, task_order, tool_name, agent_name,
+       task_name, start_date, end_date, input, output, tool_output
+FROM user_ai_agent_tool_history
+WHERE (:tool_name IS NULL OR tool_name = :tool_name)
+  AND (:task_name IS NULL OR task_name = :task_name)
+  AND (:agent_name IS NULL OR agent_name = :agent_name)
+  AND (:team_exec_id IS NULL OR team_exec_id = :team_exec_id)
+ORDER BY start_date DESC NULLS LAST
+"""

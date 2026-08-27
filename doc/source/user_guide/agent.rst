@@ -446,6 +446,44 @@ operations.
 
 .. latex:clearpage::
 
+*************
+Agent history
+*************
+
+``TeamHistory``, ``TaskHistory``, and ``ToolHistory`` provide typed,
+read-only access to the current user's Select AI Agent history views. They
+query only ``USER_AI_AGENT_TEAM_HISTORY``, ``USER_AI_AGENT_TASK_HISTORY``,
+and ``USER_AI_AGENT_TOOL_HISTORY`` respectively. Results are yielded newest
+first. Tool ``input`` and ``output`` values are decoded to Python objects when
+they contain valid JSON; other CLOB payloads are returned as strings.
+
+.. code-block:: python
+
+   from select_ai.agent import TaskHistory, TeamHistory, ToolHistory
+
+   for run in TeamHistory.list(team_name="MOVIE_AGENT_TEAM", limit=10):
+       print(run.team_exec_id, run.state)
+
+   for run in TaskHistory.list(team_exec_id="<team execution id>"):
+       print(run.task_name, run.result)
+
+   for call in ToolHistory.list(tool_name="MOVIE_SQL_TOOL", limit=20):
+       print(call.input, call.output)
+
+The sample retrieves a team's latest execution and uses its ``team_exec_id``
+to retrieve the associated task and tool history.
+
+.. autoclass:: select_ai.agent.TeamHistory
+   :members:
+
+.. autoclass:: select_ai.agent.TaskHistory
+   :members:
+
+.. autoclass:: select_ai.agent.ToolHistory
+   :members:
+
+.. latex:clearpage::
+
 *****************
 AI agent examples
 *****************
