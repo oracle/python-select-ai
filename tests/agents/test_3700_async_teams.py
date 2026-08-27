@@ -228,7 +228,8 @@ async def test_3304_async_team_and_task_history(team):
         assert tool_runs[0].tool_name == PYSAI_3700_TOOL_NAME
         assert tool_runs[0].invocation_id
         assert tool_runs[0].output == {
-            "message": "async history test complete"
+            "status": "success",
+            "result": '\'{"message":"async history test complete"}\'',
         }
     finally:
         await conversation.delete(force=True)

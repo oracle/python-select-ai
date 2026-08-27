@@ -216,6 +216,9 @@ def test_3304_team_and_task_history(team):
         assert len(tool_runs) == 1
         assert tool_runs[0].tool_name == PYSAI_3300_TOOL_NAME
         assert tool_runs[0].invocation_id
-        assert tool_runs[0].output == {"message": "history test complete"}
+        assert tool_runs[0].output == {
+            "status": "success",
+            "result": '\'{"message":"history test complete"}\'',
+        }
     finally:
         conversation.delete(force=True)

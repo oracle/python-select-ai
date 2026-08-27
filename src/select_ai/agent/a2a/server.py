@@ -7,11 +7,16 @@
 
 """A2A HTTP server for Oracle Database AI Agent Teams."""
 
+import json
 from contextlib import asynccontextmanager
 from typing import Optional
 
 from a2a.compat.v0_3.conversions import to_compat_agent_card
-from a2a.helpers import new_task_from_user_message, new_text_part
+from a2a.helpers import (
+    new_data_part,
+    new_task_from_user_message,
+    new_text_part,
+)
 from a2a.server.agent_execution import AgentExecutor
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.routes import create_jsonrpc_routes
@@ -26,6 +31,25 @@ from select_ai.agent import AsyncTeam
 from select_ai.agent.a2a.context_store import OracleContextStore
 from select_ai.agent.a2a.task_store import OracleTaskStore
 from select_ai.version import __version__
+
+_A2UI_MIME_TYPE = "application/a2ui+json"
+
+
+def _a2ui_payload(result: str | None) -> dict | None:
+    """Return an A2UI response envelope, if ``RUN_TEAM`` returned one."""
+    if not result:
+        return None
+    try:
+        payload = json.loads(result)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("metadata", {}).get("mimeType") != _A2UI_MIME_TYPE:
+        return None
+    if not isinstance(payload.get("data"), list):
+        return None
+    return payload
 
 
 class DatabaseTeamExecutor(AgentExecutor):
@@ -57,8 +81,13 @@ class DatabaseTeamExecutor(AgentExecutor):
             prompt=context.get_user_input(),
             params={"conversation_id": conversation_id},
         )
+        a2ui_payload = _a2ui_payload(result)
         await updater.add_artifact(
-            parts=[new_text_part(result or "")],
+            parts=(
+                [new_data_part(a2ui_payload)]
+                if a2ui_payload is not None
+                else [new_text_part(result or "")]
+            ),
             name="database-agent-result",
             last_chunk=True,
         )
