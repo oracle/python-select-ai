@@ -737,14 +737,20 @@ class Profile(BaseProfile):
             )
 
     def translate(
-        self, text: str, source_language: str, target_language: str
+        self,
+        text: str,
+        source_language: Optional[str] = None,
+        target_language: Optional[str] = None,
     ) -> Union[str, None]:
         """
-        Translate a text using a source language and a target language
+        Translate text using the supplied languages or the profile defaults.
 
         :param str text: Text to translate
-        :param str source_language: Source language
-        :param str target_language: Target language
+        :param str source_language: Source language. When omitted, the profile
+         value is used; if the profile does not define one, the provider
+         detects the source language.
+        :param str target_language: Target language. When omitted, the profile
+         value is used.
         :return: str
         """
         parameters = {
