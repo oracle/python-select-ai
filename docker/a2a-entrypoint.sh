@@ -1,4 +1,11 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Copyright (c) 2026, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# http://oss.oracle.com/licenses/upl.
+# -----------------------------------------------------------------------------
 
 # Cloud Run-only A2A launcher. It expands the optional wallet archive mounted
 # by deploy.sh, then starts the generic select-ai CLI in A2A server mode.

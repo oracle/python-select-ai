@@ -1,3 +1,10 @@
+# -----------------------------------------------------------------------------
+# Copyright (c) 2026, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# http://oss.oracle.com/licenses/upl.
+# -----------------------------------------------------------------------------
+
 FROM oraclelinux:10-slim
 
 ENV PATH=/opt/venv/bin:$PATH

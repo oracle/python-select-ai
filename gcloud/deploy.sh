@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# -----------------------------------------------------------------------------
+# Copyright (c) 2026, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# http://oss.oracle.com/licenses/upl.
+# -----------------------------------------------------------------------------
+
 # Deploy one Select AI A2A server to private Cloud Run. On its first run it
 # creates the ADB secrets used by this service. Later runs reuse both those
 # secrets and the service's currently deployed image.
