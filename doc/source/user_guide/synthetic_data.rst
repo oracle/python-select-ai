@@ -72,7 +72,9 @@ Use ``SyntheticDataParams`` to control how generation is performed:
 ``sample_rows`` controls how many existing rows are used as examples for the
 model. ``table_statistics`` and ``comments`` include additional table metadata.
 ``priority`` controls resource priority for generation work; supported values
-are ``HIGH``, ``MEDIUM``, and ``LOW``.
+are ``HIGH``, ``MEDIUM``, and ``LOW``. All parameters are optional. Parameters
+that are not supplied are omitted from the request, allowing the database to
+apply its defaults.
 
 Sync and async APIs
 ===================

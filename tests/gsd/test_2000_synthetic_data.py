@@ -201,3 +201,28 @@ def test_2009_params_json_string_is_coerced():
     assert isinstance(attributes.params, SyntheticDataParams)
     assert attributes.params.sample_rows == 1
     assert attributes.params.table_statistics is True
+
+
+def test_2010_params_omit_unspecified_values():
+    """Only explicitly supplied parameters are serialized."""
+    params = SyntheticDataParams(sample_rows=1)
+
+    assert params.dict() == {"sample_rows": 1}
+
+
+def test_2011_empty_params_serialize_as_empty_json_object():
+    """An empty params object is serialized as an empty JSON object."""
+    attributes = SyntheticDataAttributes(
+        object_name="people", params=SyntheticDataParams()
+    )
+
+    assert attributes.prepare()["params"] == "{}"
+
+
+def test_2012_generate_with_empty_params(synthetic_profile):
+    """The database accepts an empty JSON object for params."""
+    attributes = _build_attributes(params=SyntheticDataParams())
+
+    result = synthetic_profile.generate_synthetic_data(attributes)
+
+    assert result is None
