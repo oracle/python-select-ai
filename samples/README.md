@@ -23,6 +23,35 @@ Some of the new samples use this optional environment variable:
 - `SELECT_AI_PROFILE_NAME` — existing profile for the conversation and
   supervised-team samples.
 
+## A2A non-blocking task polling
+
+Start a Select AI A2A server before running these samples:
+
+```bash
+select-ai a2a serve --team ORACLE_AI_DATABASE_AGENT --port 8000
+```
+
+After starting a local A2A server, run the fixed sales-analysis prompt as a
+non-blocking task and poll it until completion:
+
+```bash
+python samples/a2a/task_poll.py
+```
+
+The sample sends the A2A v0.3 `message/send` request with
+`configuration.blocking: false`, prints the returned task ID, and polls
+`tasks/get`. Edit `ENDPOINT` or `PROMPT` at the top of the script if needed.
+
+To compare it with the default blocking behavior, run:
+
+```bash
+python samples/a2a/blocking_task.py
+```
+
+This sample intentionally omits `configuration.blocking`. The server waits
+for the database work to finish and returns the completed Task in the initial
+`message/send` response; no polling is needed.
+
 
 `SELECT_AI_DB_CONNECT_STRING` can be in any one of the following formats
 

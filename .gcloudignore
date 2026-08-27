@@ -28,3 +28,4 @@ samples/
 *.png
 *.jpg
 *.jpeg
+build/

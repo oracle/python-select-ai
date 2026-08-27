@@ -21,3 +21,4 @@ wallets
 *.sso
 *.p12
 *.zip
+build/
