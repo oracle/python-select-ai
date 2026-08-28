@@ -475,3 +475,25 @@ async def test_1318(python_gen_ai_profile):
         text="Thank you", source_language="en", target_language="de"
     )
     assert response == "Danke"
+
+
+async def test_1319_profile_status(python_gen_ai_profile, async_cursor):
+    """Disable and re-enable an async profile."""
+    try:
+        await python_gen_ai_profile.disable()
+        await async_cursor.execute(
+            "SELECT status FROM USER_CLOUD_AI_PROFILES "
+            "WHERE profile_name = :profile_name",
+            profile_name=python_gen_ai_profile.profile_name,
+        )
+        assert (await async_cursor.fetchone())[0] == "DISABLED"
+    finally:
+        # Keep the shared fixture usable if the status assertion fails.
+        await python_gen_ai_profile.enable()
+
+    await async_cursor.execute(
+        "SELECT status FROM USER_CLOUD_AI_PROFILES "
+        "WHERE profile_name = :profile_name",
+        profile_name=python_gen_ai_profile.profile_name,
+    )
+    assert (await async_cursor.fetchone())[0] == "ENABLED"

@@ -74,6 +74,11 @@ Attribute groups
      - Tunes model generation behavior.
    * - ``conversation``
      - Enables conversation history for context-aware chat workflows.
+   * - ``source_language``, ``target_language``
+     - Set default languages for ``Profile.translate()`` and
+       ``AsyncProfile.translate()``. If no source language is configured or
+       supplied per call, the provider detects it. A target language must be
+       supplied either per call or in the profile.
    * - ``vector_index_name``, ``enable_sources``,
        ``enable_source_offsets``, ``enable_custom_source_uri``
      - Configures retrieval-augmented generation and source reporting for

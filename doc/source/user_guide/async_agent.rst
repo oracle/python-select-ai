@@ -5,6 +5,20 @@
 use ``asyncio`` and ``select_ai.async_connect()`` or
 ``select_ai.create_pool_async()``.
 
+The history API follows the same pattern. ``AsyncTeamHistory``,
+``AsyncTaskHistory``, and ``AsyncToolHistory`` query only the current user's
+history views and yield typed events newest first.
+
+.. code-block:: python
+
+   from select_ai.agent import AsyncToolHistory
+
+   async for call in AsyncToolHistory.list(limit=10):
+       print(call.tool_name, call.output)
+
+The async sample retrieves a team's latest execution and uses its
+``team_exec_id`` to retrieve the associated task and tool history.
+
 The async agent object model mirrors the synchronous agent object model:
 
 .. list-table:: Sync and async agent APIs

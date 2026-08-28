@@ -75,7 +75,7 @@ async def test_1103(async_oci_gen_ai_profile):
 async def test_1104(async_oci_gen_ai_profile):
     """Chat for a simple NL prompt"""
     await async_oci_gen_ai_profile.set_attribute(
-        attribute_name="model", attribute_value="meta.llama-3.1-405b-instruct"
+        attribute_name="model", attribute_value="meta.llama-3.3-70b-instruct"
     )
     prompt = "What is a database?"
     chat = await async_oci_gen_ai_profile.chat(prompt)
@@ -86,7 +86,7 @@ async def test_1104(async_oci_gen_ai_profile):
 async def test_1105(async_oci_gen_ai_profile):
     """Run SQL for a simple NL prompt"""
     await async_oci_gen_ai_profile.set_attribute(
-        attribute_name="model", attribute_value="meta.llama-3.1-405b-instruct"
+        attribute_name="model", attribute_value="meta.llama-3.3-70b-instruct"
     )
     prompt = "How many gymnast in the table?"
     df = await async_oci_gen_ai_profile.run_sql(prompt)

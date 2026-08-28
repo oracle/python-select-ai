@@ -110,7 +110,5 @@ print("Created tool: ", SELECT_AI_TOOL_NAME)
 
 # Run the Agent Team
 for conversation_id, prompt in USER_QUERIES.items():
-    response = team.run(
-        prompt=prompt, params={"conversation_id": conversation_id}
-    )
+    response = team.run(prompt=prompt)
     print(response)

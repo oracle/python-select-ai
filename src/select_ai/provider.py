@@ -86,6 +86,23 @@ class Provider(SelectAIDataClass):
             "aws_apiformat",
         }
 
+    def profile_dict(self, exclude_null=True):
+        """Return provider attributes suitable for a DBMS_CLOUD_AI profile.
+
+        The result contains only values held by this provider instance. In
+        particular, native provider endpoints remain available for network
+        access configuration but are omitted from database profile payloads.
+        OpenAI and endpoint-only custom providers retain provider_endpoint.
+        """
+        attributes = self.dict(exclude_null=exclude_null)
+        if not self.should_include_provider_endpoint():
+            attributes.pop("provider_endpoint", None)
+        return attributes
+
+    def should_include_provider_endpoint(self) -> bool:
+        """Whether to include provider_endpoint in a DBMS_CLOUD_AI profile."""
+        return True
+
 
 @dataclass
 class AzureProvider(Provider):
@@ -106,7 +123,13 @@ class AzureProvider(Provider):
 
     def __post_init__(self):
         super().__post_init__()
-        self.provider_endpoint = f"{self.azure_resource_name}.openai.azure.com"
+        if self.provider_endpoint is None:
+            self.provider_endpoint = (
+                f"{self.azure_resource_name}.openai.azure.com"
+            )
+
+    def should_include_provider_endpoint(self) -> bool:
+        return False
 
 
 @dataclass
@@ -140,6 +163,9 @@ class OCIGenAIProvider(Provider):
     oci_endpoint_id: Optional[str] = None
     oci_runtimetype: Optional[str] = None
 
+    def should_include_provider_endpoint(self) -> bool:
+        return False
+
 
 @dataclass
 class CohereProvider(Provider):
@@ -148,7 +174,10 @@ class CohereProvider(Provider):
     """
 
     provider_name: str = COHERE
-    provider_endpoint = "api.cohere.ai"
+    provider_endpoint: Optional[str] = "api.cohere.ai"
+
+    def should_include_provider_endpoint(self) -> bool:
+        return False
 
 
 @dataclass
@@ -158,7 +187,10 @@ class GoogleProvider(Provider):
     """
 
     provider_name: str = GOOGLE
-    provider_endpoint = "generativelanguage.googleapis.com"
+    provider_endpoint: Optional[str] = "generativelanguage.googleapis.com"
+
+    def should_include_provider_endpoint(self) -> bool:
+        return False
 
 
 @dataclass
@@ -168,7 +200,10 @@ class HuggingFaceProvider(Provider):
     """
 
     provider_name: str = HUGGINGFACE
-    provider_endpoint = "api-inference.huggingface.co"
+    provider_endpoint: Optional[str] = "api-inference.huggingface.co"
+
+    def should_include_provider_endpoint(self) -> bool:
+        return False
 
 
 @dataclass
@@ -182,7 +217,13 @@ class AWSProvider(Provider):
 
     def __post_init__(self):
         super().__post_init__()
-        self.provider_endpoint = f"bedrock-runtime.{self.region}.amazonaws.com"
+        if self.provider_endpoint is None:
+            self.provider_endpoint = (
+                f"bedrock-runtime.{self.region}.amazonaws.com"
+            )
+
+    def should_include_provider_endpoint(self) -> bool:
+        return False
 
 
 @dataclass
@@ -192,4 +233,7 @@ class AnthropicProvider(Provider):
     """
 
     provider_name: str = ANTHROPIC
-    provider_endpoint = "api.anthropic.com"
+    provider_endpoint: Optional[str] = "api.anthropic.com"
+
+    def should_include_provider_endpoint(self) -> bool:
+        return False

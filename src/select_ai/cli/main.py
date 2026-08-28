@@ -16,6 +16,7 @@ except ImportError:
         )
 
 else:
+    from select_ai.cli.a2a import a2a
     from select_ai.cli.chat import chat
     from select_ai.cli.profile import profile_group
     from select_ai.cli.sql import sql
@@ -27,6 +28,7 @@ else:
     cli.add_command(chat)
     cli.add_command(sql)
     cli.add_command(profile_group, "profile")
+    cli.add_command(a2a)
 
 
 if __name__ == "__main__":

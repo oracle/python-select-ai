@@ -50,6 +50,11 @@ class ProfileAttributes(SelectAIDataClass):
      most relevant tables or all tables to the LLM. Supported values are -
      'automated' and 'all'
     :param select_ai.Provider provider: AI Provider
+    :param int seed: Signed 64-bit integer used to make model output more
+     reproducible when the provider supports it.
+    :param str source_language: Default language of text passed to the
+     translate operation. If omitted, the translation provider can detect the
+     source language.
     :param str stop_tokens: The generated text will be terminated at the
      beginning of the earliest stop sequence. Sequence will be incorporated
      into the text. The attribute value must be a valid array of string values
@@ -57,6 +62,9 @@ class ProfileAttributes(SelectAIDataClass):
     :param float temperature: Temperature is a non-negative float number used
      to tune the degree of randomness. Lower temperatures mean less random
      generations.
+    :param str target_language: Default language into which text is translated.
+     This is required by the database when no target language is supplied to
+     the translate operation.
     :param str vector_index_name: Name of the vector index
 
     """
@@ -75,10 +83,12 @@ class ProfileAttributes(SelectAIDataClass):
     object_list: Optional[List[Mapping]] = None
     object_list_mode: Optional[str] = None
     provider: Optional[Provider] = None
-    seed: Optional[str] = None
+    seed: Optional[int] = None
+    source_language: Optional[str] = None
     stop_tokens: Optional[str] = None
     streaming: Optional[str] = None
     temperature: Optional[float] = None
+    target_language: Optional[str] = None
     vector_index_name: Optional[str] = None
 
     def __post_init__(self):
@@ -92,7 +102,7 @@ class ProfileAttributes(SelectAIDataClass):
         attributes = {}
         for k, v in self.dict(exclude_null=exclude_null).items():
             if isinstance(v, Provider):
-                for provider_k, provider_v in v.dict(
+                for provider_k, provider_v in v.profile_dict(
                     exclude_null=exclude_null
                 ).items():
                     attributes[Provider.key_alias(provider_k)] = provider_v

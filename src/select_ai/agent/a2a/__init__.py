@@ -2,7 +2,7 @@
 # Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
-# http://oss.oracle.com/licenses/upl.
+# https://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-__version__ = "1.5.0"
+"""A2A support for Select AI Agent Teams."""

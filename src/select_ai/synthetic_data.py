@@ -20,22 +20,23 @@ class SyntheticDataParams(SelectAIDataClass):
      to guide the LLM in data generation
 
     :param bool table_statistics: Enable or disable the use of table
-     statistics information. Default value is False
+     statistics information. When omitted, the database default is used.
 
     :param str priority: Assign a priority value that defines the number of
      parallel requests sent to the LLM for generating synthetic data.
      Tasks with a higher priority will consume more database resources and
-     complete faster. Possible values are: HIGH, MEDIUM, LOW
+     complete faster. Possible values are: HIGH, MEDIUM, LOW. When omitted,
+     the database default is used.
 
     :param bool comments: Enable or disable sending comments to the LLM to
-     guide data generation. Default value is False
+     guide data generation. When omitted, the database default is used.
 
     """
 
     sample_rows: Optional[int] = None
-    table_statistics: Optional[bool] = False
-    priority: Optional[str] = "HIGH"
-    comments: Optional[bool] = False
+    table_statistics: Optional[bool] = None
+    priority: Optional[str] = None
+    comments: Optional[bool] = None
 
 
 @dataclass

@@ -191,8 +191,8 @@ class AsyncProfile(BaseProfile):
         """
         self.attributes.set_attribute(attribute_name, attribute_value)
         if isinstance(attribute_value, Provider):
-            for k, v in attribute_value.dict().items():
-                await self._set_attribute(k, v)
+            for k, v in attribute_value.profile_dict().items():
+                await self._set_attribute(Provider.key_alias(k), v)
         else:
             await self._set_attribute(attribute_name, attribute_value)
 
@@ -274,6 +274,30 @@ class AsyncProfile(BaseProfile):
         :raises: oracledb.DatabaseError
         """
         await self._delete(profile_name=self.profile_name, force=force)
+
+    async def enable(self) -> None:
+        """Asynchronously enable this AI profile in the database.
+
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.ENABLE_PROFILE",
+                keyword_parameters={"profile_name": self.profile_name},
+            )
+
+    async def disable(self) -> None:
+        """Asynchronously disable this AI profile in the database.
+
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.DISABLE_PROFILE",
+                keyword_parameters={"profile_name": self.profile_name},
+            )
 
     @classmethod
     async def delete_profile(cls, profile_name: str, force: bool = False):
@@ -790,14 +814,20 @@ class AsyncProfile(BaseProfile):
         return responses
 
     async def translate(
-        self, text: str, source_language: str, target_language: str
+        self,
+        text: str,
+        source_language: Optional[str] = None,
+        target_language: Optional[str] = None,
     ) -> Union[str, None]:
         """
-        Translate a text using a source language and a target language
+        Translate text using the supplied languages or the profile defaults.
 
         :param str text: Text to translate
-        :param str source_language: Source language
-        :param str target_language: Target language
+        :param str source_language: Source language. When omitted, the profile
+         value is used; if the profile does not define one, the provider
+         detects the source language.
+        :param str target_language: Target language. When omitted, the profile
+         value is used.
         :return: str
         """
         parameters = {
