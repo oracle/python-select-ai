@@ -22,6 +22,7 @@ from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.routes import create_jsonrpc_routes
 from a2a.server.tasks import TaskUpdater
 from a2a.types import AgentCapabilities, AgentCard, AgentInterface, AgentSkill
+from google.protobuf.json_format import ParseDict
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route
@@ -32,11 +33,9 @@ from select_ai.agent.a2a.context_store import OracleContextStore
 from select_ai.agent.a2a.task_store import OracleTaskStore
 from select_ai.version import __version__
 
-_A2UI_MIME_TYPE = "application/a2ui+json"
 
-
-def _a2ui_payload(result: str | None) -> dict | None:
-    """Return an A2UI response envelope, if ``RUN_TEAM`` returned one."""
+def _message_parts(result: str | None):
+    """Convert a serialized A2A message into its constituent parts."""
     if not result:
         return None
     try:
@@ -45,11 +44,24 @@ def _a2ui_payload(result: str | None) -> dict | None:
         return None
     if not isinstance(payload, dict):
         return None
-    if payload.get("metadata", {}).get("mimeType") != _A2UI_MIME_TYPE:
+    message_parts = payload.get("parts")
+    if payload.get("kind") != "message" or not isinstance(message_parts, list):
         return None
-    if not isinstance(payload.get("data"), list):
-        return None
-    return payload
+    parts = []
+    for part in message_parts:
+        if not isinstance(part, dict):
+            return None
+        if part.get("kind") == "text" and isinstance(part.get("text"), str):
+            parts.append(new_text_part(part["text"]))
+        elif part.get("kind") == "data" and "data" in part:
+            output_part = new_data_part(part["data"])
+            if isinstance(part.get("metadata"), dict):
+                ParseDict(part["metadata"], output_part.metadata)
+            parts.append(output_part)
+        else:
+            # Avoid silently discarding an unsupported part type.
+            return None
+    return parts or None
 
 
 class DatabaseTeamExecutor(AgentExecutor):
@@ -81,11 +93,11 @@ class DatabaseTeamExecutor(AgentExecutor):
             prompt=context.get_user_input(),
             params={"conversation_id": conversation_id},
         )
-        a2ui_payload = _a2ui_payload(result)
+        message_parts = _message_parts(result)
         await updater.add_artifact(
             parts=(
-                [new_data_part(a2ui_payload)]
-                if a2ui_payload is not None
+                message_parts
+                if message_parts is not None
                 else [new_text_part(result or "")]
             ),
             name="database-agent-result",
