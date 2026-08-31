@@ -1,0 +1,220 @@
+# Build one Select AI image, deploy Consul and workers to GKE, then deploy the
+# public dynamic gateway to Cloud Run.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --file
+      - docker/Dockerfile
+      - --tag
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
+      - .
+
+  # GKE and Cloud Run consume the image during this build, so publish it before
+  # deploying either workload. The top-level images: field publishes only after
+  # every build step succeeds, which is too late for the worker rollout.
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
+
+  - name: gcr.io/cloud-builders/gke-deploy
+    args:
+      - run
+      - --filename=gcloud/gateway/gke/namespace.yaml
+      - --location=${_REGION}
+      - --cluster=${_CLUSTER}
+
+  # gke-deploy writes generated manifests to output/. Cloud Build shares the
+  # source workspace across steps, so remove only that builder output before
+  # invoking it again.
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - rm -rf output
+
+  - name: gcr.io/cloud-builders/kubectl
+    entrypoint: bash
+    env:
+      - CLOUDSDK_COMPUTE_REGION=${_REGION}
+      - CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}
+    args:
+      - -ceu
+      - |
+        if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
+          kubectl delete --namespace select-ai-gateway deployment/select-ai-worker --ignore-not-found
+          if [[ "${_ROTATE_WORKER_MTLS}" == "true" ]]; then
+            kubectl delete --namespace select-ai-gateway statefulset/select-ai-worker --ignore-not-found --wait=true
+          fi
+        else
+          kubectl delete --namespace select-ai-gateway statefulset/select-ai-worker --ignore-not-found
+        fi
+
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [[ "${_ENABLE_WORKER_MTLS}" != "true" ]]; then
+          exit 0
+        fi
+        gcloud secrets versions access latest --secret=select-ai-worker-mtls-cert > /workspace/worker.crt
+        gcloud secrets versions access latest --secret=select-ai-worker-mtls-key > /workspace/worker.key
+        gcloud secrets versions access latest --secret=select-ai-gateway-mtls-ca > /workspace/gateway-ca.crt
+
+  - name: gcr.io/cloud-builders/kubectl
+    entrypoint: bash
+    env:
+      - CLOUDSDK_COMPUTE_REGION=${_REGION}
+      - CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}
+    args:
+      - -ceu
+      - |
+        if [[ "${_ENABLE_WORKER_MTLS}" != "true" ]]; then
+          exit 0
+        fi
+        kubectl -n select-ai-gateway create secret tls select-ai-worker-server-tls \
+          --cert=/workspace/worker.crt --key=/workspace/worker.key \
+          --dry-run=client -o yaml | kubectl apply -f -
+        kubectl -n select-ai-gateway create secret generic select-ai-gateway-client-ca \
+          --from-file=ca.crt=/workspace/gateway-ca.crt \
+          --dry-run=client -o yaml | kubectl apply -f -
+
+  - name: gcr.io/cloud-builders/gke-deploy
+    args:
+      - run
+      - --filename=gcloud/gateway/gke/consul.yaml
+      - --location=${_REGION}
+      - --cluster=${_CLUSTER}
+
+  - name: gcr.io/cloud-builders/kubectl
+    entrypoint: bash
+    env:
+      - CLOUDSDK_COMPUTE_REGION=${_REGION}
+      - CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}
+    args:
+      - -ceu
+      - |
+        kubectl wait --namespace select-ai-gateway \
+          --for=jsonpath='{.status.loadBalancer.ingress[0].ip}' \
+          service/consul-server --timeout=300s
+        kubectl get --namespace select-ai-gateway service/consul-server \
+          -o jsonpath='{.status.loadBalancer.ingress[0].ip}' \
+          > /workspace/consul-ip
+
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        image="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}"
+        worker_manifest=gcloud/gateway/gke/worker.yaml
+        if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
+          worker_manifest=gcloud/gateway/gke/worker-mtls.yaml
+        fi
+        sed -e "s|WORKER_IMAGE|$image|" \
+          -e "s|WORKER_REPLICAS|${_WORKER_REPLICAS}|" \
+          -e "s|WORKER_DOMAIN|${_WORKER_DOMAIN}|" \
+          "$worker_manifest" > /workspace/worker.yaml
+
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - rm -rf output
+
+  - name: gcr.io/cloud-builders/gke-deploy
+    args:
+      - run
+      - --filename=/workspace/worker.yaml
+      - --location=${_REGION}
+      - --cluster=${_CLUSTER}
+
+  - name: gcr.io/cloud-builders/kubectl
+    entrypoint: bash
+    env:
+      - CLOUDSDK_COMPUTE_REGION=${_REGION}
+      - CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER}
+    args:
+      - -ceu
+      - |
+        if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
+          kubectl rollout status --namespace select-ai-gateway statefulset/select-ai-worker --timeout=300s
+          kubectl get pods --namespace select-ai-gateway -l app=select-ai-worker \
+            -o jsonpath='{range .items[*]}{.metadata.name}={.status.podIP}{"\n"}{end}' \
+            > /workspace/worker-pods
+        else
+          kubectl rollout status --namespace select-ai-gateway deployment/select-ai-worker --timeout=300s
+        fi
+
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [[ "${_ENABLE_WORKER_MTLS}" != "true" ]]; then
+          exit 0
+        fi
+        while IFS== read -r pod_name pod_ip; do
+          record_name="${pod_name}.${_WORKER_DOMAIN}."
+          gcloud dns record-sets delete "$record_name" --type=A \
+            --zone="${_WORKER_DNS_ZONE}" --quiet || true
+          gcloud dns record-sets create "$record_name" --type=A --ttl=30 \
+            --rrdatas="$pod_ip" --zone="${_WORKER_DNS_ZONE}"
+        done < /workspace/worker-pods
+
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        consul_ip=$(cat /workspace/consul-ip)
+        image="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}"
+        mtls_args=()
+        mtls_env=""
+        if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
+          mtls_args=(
+            "--update-secrets=/var/run/select-ai-mtls-ca/ca.pem=select-ai-gateway-mtls-ca:latest,/var/run/select-ai-mtls-cert/tls.crt=select-ai-gateway-mtls-cert:latest,/var/run/select-ai-mtls-key/tls.key=select-ai-gateway-mtls-key:latest"
+          )
+          mtls_env=",WORKER_TLS_CA_FILE=/var/run/select-ai-mtls-ca/ca.pem,WORKER_TLS_CERT_FILE=/var/run/select-ai-mtls-cert/tls.crt,WORKER_TLS_KEY_FILE=/var/run/select-ai-mtls-key/tls.key"
+        fi
+        gcloud run deploy "${_GATEWAY_SERVICE}" \
+          --image="$image" \
+          --region="${_REGION}" \
+          --no-allow-unauthenticated \
+          --network="${_NETWORK}" \
+          --subnet="${_SUBNET}" \
+          --vpc-egress=all-traffic \
+          --max-instances=1 \
+          --min-instances=1 \
+          --port=8080 \
+          --command=select-ai \
+          --args=a2a,gateway \
+          --set-env-vars="AGENT_URL=https://pending.invalid,CONSUL_HTTP_URL=http://$consul_ip:8500,WORKER_SERVICE=select-ai-worker,SESSION_TTL_SECONDS=900$mtls_env" \
+          "${mtls_args[@]}"
+        gateway_url=$(gcloud run services describe "${_GATEWAY_SERVICE}" \
+          --region="${_REGION}" --format='value(status.url)')
+        gcloud run services update "${_GATEWAY_SERVICE}" \
+          --region="${_REGION}" \
+          --update-env-vars="AGENT_URL=$gateway_url"
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
+
+substitutions:
+  _REGION: us-central1
+  _CLUSTER: select-ai-a2a-gateway
+  _REPOSITORY: select-ai
+  _IMAGE_TAG: dev
+  _GATEWAY_SERVICE: select-ai-a2a-gateway
+  _NETWORK: default
+  _SUBNET: default
+  _WORKER_REPLICAS: "2"
+  _ENABLE_WORKER_MTLS: "false"
+  _ROTATE_WORKER_MTLS: "false"
+  _WORKER_DOMAIN: ""
+  _WORKER_DNS_ZONE: select-ai-workers
+
+options:
+  logging: CLOUD_LOGGING_ONLY

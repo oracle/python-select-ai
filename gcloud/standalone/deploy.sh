@@ -15,7 +15,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: gcloud/deploy.sh [options]
+Usage: gcloud/standalone/deploy.sh [options]
 
 Deploy the Select AI A2A server to private Cloud Run.
 
@@ -45,7 +45,7 @@ Options:
 EOF
 }
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 project_id=""
 region="us-central1"
 repository="select-ai"
@@ -227,7 +227,7 @@ if [[ "$build_image" == true ]]; then
   image_uri="$region-docker.pkg.dev/$project_id/$repository/select-ai:$image_tag"
   echo "Building $image_uri"
   gcloud builds submit "$repo_root" --project="$project_id" \
-    --config="$repo_root/gcloud/cloudbuild.yaml" \
+    --config="$repo_root/gcloud/standalone/cloudbuild.yaml" \
     --substitutions="_REGION=$region,_REPOSITORY=$repository,_IMAGE_TAG=$image_tag"
 elif [[ -z "$image_uri" && "$service_exists" == true ]]; then
   image_uri="$(gcloud run services describe "$service" --project="$project_id" --region="$region" \

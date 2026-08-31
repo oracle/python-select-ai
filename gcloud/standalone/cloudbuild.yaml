@@ -5,8 +5,8 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-# Build one reusable A2A server image. Database team selection is Cloud Run
-# configuration, not an image-build input.
+# Build one reusable Select AI image for standalone servers, the gateway, and
+# GKE worker replicas. Runtime role selection is deployment configuration.
 steps:
   - name: gcr.io/cloud-builders/docker
     args:

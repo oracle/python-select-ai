@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: select-ai-worker
+  namespace: select-ai-gateway
+spec:
+  replicas: WORKER_REPLICAS
+  selector:
+    matchLabels:
+      app: select-ai-worker
+  template:
+    metadata:
+      labels:
+        app: select-ai-worker
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: worker
+          image: WORKER_IMAGE
+          command:
+            - select-ai
+          args:
+            - a2a
+            - worker
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: CONSUL_HTTP_URL
+              value: http://consul-server.select-ai-gateway.svc.cluster.local:8500
+            - name: WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: WORKER_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: WORKER_PORT
+              value: "8080"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
