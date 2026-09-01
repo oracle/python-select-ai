@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consul-server
+  namespace: select-ai-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consul-server
+  template:
+    metadata:
+      labels:
+        app: consul-server
+    spec:
+      containers:
+        - name: consul
+          image: hashicorp/consul:1.21.5
+          args:
+            - agent
+            - -server
+            - -bootstrap-expect=1
+            - -client=0.0.0.0
+          ports:
+            - name: http
+              containerPort: 8500
+          readinessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul-server
+  namespace: select-ai-gateway
+  annotations:
+    networking.gke.io/load-balancer-type: Internal
+spec:
+  type: LoadBalancer
+  selector:
+    app: consul-server
+  ports:
+    - name: http
+      port: 8500
+      targetPort: http

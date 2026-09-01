@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: select-ai-worker
+  namespace: select-ai-gateway
+spec:
+  serviceName: select-ai-worker
+  replicas: WORKER_REPLICAS
+  selector:
+    matchLabels:
+      app: select-ai-worker
+  template:
+    metadata:
+      labels:
+        app: select-ai-worker
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: worker
+          image: WORKER_IMAGE
+          command: [select-ai]
+          args:
+            - a2a
+            - worker
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8443"
+            - --session-ttl-seconds
+            - "SESSION_TTL_SECONDS"
+            - --tls-cert-file
+            - /var/run/select-ai-mtls/tls.crt
+            - --tls-key-file
+            - /var/run/select-ai-mtls/tls.key
+            - --tls-ca-file
+            - /var/run/select-ai-mtls/gateway-ca.crt
+          ports:
+            - name: https
+              containerPort: 8443
+          env:
+            - name: CONSUL_HTTP_URL
+              value: http://consul-server.select-ai-gateway.svc.cluster.local:8500
+            - name: WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: WORKER_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: WORKER_PORT
+              value: "8443"
+            - name: WORKER_ENDPOINT
+              value: https://$(POD_NAME).select-ai-worker.select-ai-gateway.svc.GKE_DNS_DOMAIN:8443
+          volumeMounts:
+            - name: worker-server-tls
+              mountPath: /var/run/select-ai-mtls/tls.crt
+              subPath: tls.crt
+              readOnly: true
+            - name: worker-server-tls
+              mountPath: /var/run/select-ai-mtls/tls.key
+              subPath: tls.key
+              readOnly: true
+            - name: gateway-client-ca
+              mountPath: /var/run/select-ai-mtls/gateway-ca.crt
+              subPath: ca.crt
+              readOnly: true
+          readinessProbe:
+            tcpSocket:
+              port: https
+          livenessProbe:
+            tcpSocket:
+              port: https
+      volumes:
+        - name: worker-server-tls
+          secret:
+            secretName: select-ai-worker-server-tls
+        - name: gateway-client-ca
+          secret:
+            secretName: select-ai-gateway-client-ca

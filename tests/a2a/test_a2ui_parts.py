@@ -12,7 +12,7 @@ from google.protobuf.json_format import MessageToDict
 
 pytest.importorskip("a2a")
 
-from select_ai.agent.a2a.server import _message_parts
+from select_ai.agent.a2a.results import message_parts
 
 
 def test_a2a_message_parts_are_forwarded_with_metadata():
@@ -33,7 +33,7 @@ def test_a2a_message_parts_are_forwarded_with_metadata():
         }
     )
 
-    parts = _message_parts(result)
+    parts = message_parts(result)
 
     assert [
         MessageToDict(part, preserving_proto_field_name=True) for part in parts
@@ -57,7 +57,7 @@ def test_a2a_text_message_is_forwarded():
         }
     )
 
-    parts = _message_parts(result)
+    parts = message_parts(result)
 
     assert [
         MessageToDict(part, preserving_proto_field_name=True) for part in parts

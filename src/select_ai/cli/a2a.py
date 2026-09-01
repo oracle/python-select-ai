@@ -7,6 +7,7 @@
 
 import getpass
 import json
+import ssl
 
 import click
 
@@ -89,6 +90,156 @@ def serve(
     click.echo(
         f"A2A Agent Card: {public_url.rstrip('/')}/.well-known/agent-card.json"
     )
+    uvicorn.run(app, host=host, port=port)
+
+
+@a2a.command("worker")
+@click.option("--host", default="0.0.0.0", show_default=True)
+@click.option("--port", default=8080, show_default=True, type=int)
+@click.option(
+    "--session-ttl-seconds",
+    default=900,
+    show_default=True,
+    type=click.IntRange(min=1),
+)
+@click.option(
+    "--session-start-timeout-seconds",
+    default=30,
+    show_default=True,
+    type=click.IntRange(min=1),
+)
+@click.option(
+    "--tls-cert-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="Worker TLS server certificate. Requires all --tls-* options.",
+)
+@click.option(
+    "--tls-key-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="Worker TLS server private key. Requires all --tls-* options.",
+)
+@click.option(
+    "--tls-ca-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="CA used to validate the gateway client certificate.",
+)
+def worker(
+    host,
+    port,
+    session_ttl_seconds,
+    session_start_timeout_seconds,
+    tls_cert_file,
+    tls_key_file,
+    tls_ca_file,
+):
+    """Start the internal, in-memory Select AI session worker."""
+    try:
+        from select_ai.agent.a2a import create_worker_app
+    except ImportError as error:
+        raise click.ClickException(
+            "Worker support requires the optional 'a2a' extra. "
+            "Install it with: pip install 'select_ai[a2a]'"
+        ) from error
+
+    app = create_worker_app(
+        session_ttl_seconds=session_ttl_seconds,
+        session_start_timeout_seconds=session_start_timeout_seconds,
+    )
+    tls_files = (tls_cert_file, tls_key_file, tls_ca_file)
+    if any(tls_files) and not all(tls_files):
+        raise click.ClickException(
+            "Worker mTLS requires --tls-cert-file, --tls-key-file, and "
+            "--tls-ca-file."
+        )
+    uvicorn_options = {}
+    if tls_cert_file:
+        uvicorn_options = {
+            "ssl_certfile": tls_cert_file,
+            "ssl_keyfile": tls_key_file,
+            "ssl_ca_certs": tls_ca_file,
+            "ssl_cert_reqs": ssl.CERT_REQUIRED,
+        }
+    uvicorn.run(app, host=host, port=port, **uvicorn_options)
+
+
+@a2a.command("gateway")
+@click.option("--host", default="0.0.0.0", show_default=True)
+@click.option("--port", default=8080, show_default=True, type=int)
+@click.option(
+    "--agent-url",
+    required=True,
+    envvar="AGENT_URL",
+    help="Public base URL advertised in the gateway Agent Card.",
+)
+@click.option(
+    "--consul-url",
+    default="http://consul:8500",
+    show_default=True,
+    envvar="CONSUL_HTTP_URL",
+    help="Consul HTTP API URL.",
+)
+@click.option(
+    "--worker-service",
+    default="select-ai-worker",
+    show_default=True,
+    envvar="WORKER_SERVICE",
+    help="Consul service name for Select AI workers.",
+)
+@click.option(
+    "--session-ttl-seconds",
+    default=900,
+    show_default=True,
+    type=click.IntRange(min=1),
+    envvar="SESSION_TTL_SECONDS",
+)
+@click.option(
+    "--worker-tls-ca-file",
+    envvar="WORKER_TLS_CA_FILE",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="CA bundle used to validate worker certificates.",
+)
+@click.option(
+    "--worker-tls-cert-file",
+    envvar="WORKER_TLS_CERT_FILE",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="Gateway client certificate used for worker mTLS.",
+)
+@click.option(
+    "--worker-tls-key-file",
+    envvar="WORKER_TLS_KEY_FILE",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="Gateway client private key used for worker mTLS.",
+)
+def gateway(
+    host,
+    port,
+    agent_url,
+    consul_url,
+    worker_service,
+    session_ttl_seconds,
+    worker_tls_ca_file,
+    worker_tls_cert_file,
+    worker_tls_key_file,
+):
+    """Start the public A2A/A2UI database-session gateway."""
+    try:
+        from select_ai.agent.a2a import GatewaySettings, create_gateway_app
+    except ImportError as error:
+        raise click.ClickException(
+            "Gateway support requires the optional 'a2a' extra. "
+            "Install it with: pip install 'select_ai[a2a]'"
+        ) from error
+
+    settings = GatewaySettings(
+        agent_url=agent_url,
+        consul_url=consul_url,
+        worker_service=worker_service,
+        session_ttl_seconds=session_ttl_seconds,
+        worker_tls_ca_file=worker_tls_ca_file,
+        worker_tls_cert_file=worker_tls_cert_file,
+        worker_tls_key_file=worker_tls_key_file,
+    )
+    app = create_gateway_app(settings)
     uvicorn.run(app, host=host, port=port)
 
 

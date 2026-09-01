@@ -7,61 +7,27 @@
 
 """A2A HTTP server for Oracle Database AI Agent Teams."""
 
-import json
 from contextlib import asynccontextmanager
 from typing import Optional
 
 from a2a.compat.v0_3.conversions import to_compat_agent_card
-from a2a.helpers import (
-    new_data_part,
-    new_task_from_user_message,
-    new_text_part,
-)
+from a2a.helpers import new_task_from_user_message
 from a2a.server.agent_execution import AgentExecutor
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.routes import create_jsonrpc_routes
 from a2a.server.tasks import TaskUpdater
 from a2a.types import AgentCapabilities, AgentCard, AgentInterface, AgentSkill
-from google.protobuf.json_format import ParseDict
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 import select_ai
 from select_ai.agent import AsyncTeam
+from select_ai.agent.a2a.a2ui import A2UI_MIME_TYPE, a2ui_extension
 from select_ai.agent.a2a.context_store import OracleContextStore
+from select_ai.agent.a2a.results import add_team_result
 from select_ai.agent.a2a.task_store import OracleTaskStore
 from select_ai.version import __version__
-
-
-def _message_parts(result: str | None):
-    """Convert a serialized A2A message into its constituent parts."""
-    if not result:
-        return None
-    try:
-        payload = json.loads(result)
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(payload, dict):
-        return None
-    message_parts = payload.get("parts")
-    if payload.get("kind") != "message" or not isinstance(message_parts, list):
-        return None
-    parts = []
-    for part in message_parts:
-        if not isinstance(part, dict):
-            return None
-        if part.get("kind") == "text" and isinstance(part.get("text"), str):
-            parts.append(new_text_part(part["text"]))
-        elif part.get("kind") == "data" and "data" in part:
-            output_part = new_data_part(part["data"])
-            if isinstance(part.get("metadata"), dict):
-                ParseDict(part["metadata"], output_part.metadata)
-            parts.append(output_part)
-        else:
-            # Avoid silently discarding an unsupported part type.
-            return None
-    return parts or None
 
 
 class DatabaseTeamExecutor(AgentExecutor):
@@ -93,16 +59,7 @@ class DatabaseTeamExecutor(AgentExecutor):
             prompt=context.get_user_input(),
             params={"conversation_id": conversation_id},
         )
-        message_parts = _message_parts(result)
-        await updater.add_artifact(
-            parts=(
-                message_parts
-                if message_parts is not None
-                else [new_text_part(result or "")]
-            ),
-            name="database-agent-result",
-            last_chunk=True,
-        )
+        await add_team_result(updater, result)
         await updater.complete()
 
     async def cancel(self, context, event_queue):
@@ -196,8 +153,11 @@ def _build_agent_card(
         description=description,
         version=__version__,
         default_input_modes=["text/plain"],
-        default_output_modes=["text/plain"],
-        capabilities=AgentCapabilities(streaming=True),
+        default_output_modes=["text/plain", A2UI_MIME_TYPE],
+        capabilities=AgentCapabilities(
+            streaming=True,
+            extensions=[a2ui_extension()],
+        ),
         supported_interfaces=[
             AgentInterface(
                 protocol_binding="JSONRPC",
@@ -218,7 +178,7 @@ def _build_agent_card(
                 tags=["oracle", "database", "select-ai"],
                 examples=[],
                 input_modes=["text/plain"],
-                output_modes=["text/plain"],
+                output_modes=["text/plain", A2UI_MIME_TYPE],
             )
         ],
     )
