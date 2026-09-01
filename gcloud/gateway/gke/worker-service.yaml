@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: select-ai-worker
+  namespace: select-ai-gateway
+spec:
+  # This is service discovery only: it allocates no load balancer and no
+  # virtual Service IP. Cloud DNS for GKE publishes the current Pod IPs.
+  clusterIP: None
+  selector:
+    app: select-ai-worker
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    - name: https
+      port: 8443
+      targetPort: 8443

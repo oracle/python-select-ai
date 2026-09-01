@@ -10,6 +10,7 @@
 import asyncio
 
 import pytest
+import requests
 
 pytest.importorskip("fastapi")
 
@@ -380,3 +381,30 @@ def test_a2ui_action_reads_an_operation_list_or_single_operation():
     )
 
     assert action == {"name": "submit_database_connection"}
+
+
+def test_gateway_returns_connection_error_when_worker_rejects_opening():
+    executor = GatewayExecutor.__new__(GatewayExecutor)
+    executor.sessions = {}
+
+    class Client:
+        @staticmethod
+        def open_session(_context_id, _session_info):
+            raise requests.HTTPError("worker rejected the connection")
+
+    executor.worker_client = Client()
+
+    parts = asyncio.run(
+        executor._open_session(
+            {
+                "dsn": "database",
+                "username": "user",
+                "password": "password",
+                "team_name": "TEAM",
+            },
+            "context-1",
+        )
+    )
+
+    assert parts[0].text.startswith("Could not connect.")
+    assert executor.sessions == {}

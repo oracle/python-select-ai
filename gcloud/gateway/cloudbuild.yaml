@@ -25,9 +25,23 @@ steps:
       - --location=${_REGION}
       - --cluster=${_CLUSTER}
 
-  # gke-deploy writes generated manifests to output/. Cloud Build shares the
-  # source workspace across steps, so remove only that builder output before
-  # invoking it again.
+  # gke-deploy writes generated manifests to output/. Remove its output before
+  # running it for the headless worker Service.
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -ceu
+      - rm -rf output
+
+  - name: gcr.io/cloud-builders/gke-deploy
+    args:
+      - run
+      - --filename=gcloud/gateway/gke/worker-service.yaml
+      - --location=${_REGION}
+      - --cluster=${_CLUSTER}
+
+  # Cloud Build shares the source workspace across steps, so remove only the
+  # gke-deploy builder output before invoking another deployment tool.
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     args:
@@ -115,7 +129,8 @@ steps:
         fi
         sed -e "s|WORKER_IMAGE|$image|" \
           -e "s|WORKER_REPLICAS|${_WORKER_REPLICAS}|" \
-          -e "s|WORKER_DOMAIN|${_WORKER_DOMAIN}|" \
+          -e "s|SESSION_TTL_SECONDS|${_SESSION_TTL_SECONDS}|" \
+          -e "s|GKE_DNS_DOMAIN|${_GKE_DNS_DOMAIN}|" \
           "$worker_manifest" > /workspace/worker.yaml
 
   - name: gcr.io/cloud-builders/gcloud
@@ -141,28 +156,9 @@ steps:
       - |
         if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
           kubectl rollout status --namespace select-ai-gateway statefulset/select-ai-worker --timeout=300s
-          kubectl get pods --namespace select-ai-gateway -l app=select-ai-worker \
-            -o jsonpath='{range .items[*]}{.metadata.name}={.status.podIP}{"\n"}{end}' \
-            > /workspace/worker-pods
         else
           kubectl rollout status --namespace select-ai-gateway deployment/select-ai-worker --timeout=300s
         fi
-
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    args:
-      - -ceu
-      - |
-        if [[ "${_ENABLE_WORKER_MTLS}" != "true" ]]; then
-          exit 0
-        fi
-        while IFS== read -r pod_name pod_ip; do
-          record_name="${pod_name}.${_WORKER_DOMAIN}."
-          gcloud dns record-sets delete "$record_name" --type=A \
-            --zone="${_WORKER_DNS_ZONE}" --quiet || true
-          gcloud dns record-sets create "$record_name" --type=A --ttl=30 \
-            --rrdatas="$pod_ip" --zone="${_WORKER_DNS_ZONE}"
-        done < /workspace/worker-pods
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
@@ -191,7 +187,7 @@ steps:
           --port=8080 \
           --command=select-ai \
           --args=a2a,gateway \
-          --set-env-vars="AGENT_URL=https://pending.invalid,CONSUL_HTTP_URL=http://$consul_ip:8500,WORKER_SERVICE=select-ai-worker,SESSION_TTL_SECONDS=900$mtls_env" \
+          --set-env-vars="AGENT_URL=https://pending.invalid,CONSUL_HTTP_URL=http://$consul_ip:8500,WORKER_SERVICE=select-ai-worker,SESSION_TTL_SECONDS=${_SESSION_TTL_SECONDS}$mtls_env" \
           "${mtls_args[@]}"
         gateway_url=$(gcloud run services describe "${_GATEWAY_SERVICE}" \
           --region="${_REGION}" --format='value(status.url)')
@@ -211,10 +207,10 @@ substitutions:
   _NETWORK: default
   _SUBNET: default
   _WORKER_REPLICAS: "2"
+  _SESSION_TTL_SECONDS: "900"
   _ENABLE_WORKER_MTLS: "false"
   _ROTATE_WORKER_MTLS: "false"
-  _WORKER_DOMAIN: ""
-  _WORKER_DNS_ZONE: select-ai-workers
+  _GKE_DNS_DOMAIN: select-ai-a2a-gateway.internal
 
 options:
   logging: CLOUD_LOGGING_ONLY

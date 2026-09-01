@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 
+import requests
 from a2a.compat.v0_3.conversions import to_compat_agent_card
 from a2a.helpers import (
     new_data_part,
@@ -100,7 +101,7 @@ class GatewayExecutor(AgentExecutor):
                 context_id,
                 session_info,
             )
-        except (ValueError, RuntimeError):
+        except (requests.RequestException, ValueError, RuntimeError):
             return [
                 new_text_part(
                     "Could not connect. Check the DSN, credentials, and team "

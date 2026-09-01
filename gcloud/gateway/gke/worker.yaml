@@ -26,6 +26,8 @@ spec:
             - 0.0.0.0
             - --port
             - "8080"
+            - --session-ttl-seconds
+            - "SESSION_TTL_SECONDS"
           ports:
             - name: http
               containerPort: 8080
