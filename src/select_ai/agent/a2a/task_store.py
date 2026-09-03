@@ -126,12 +126,24 @@ class OracleTaskStore(TaskStore):
                 SELECT task_json
                 FROM SELECT_AI_A2A_TASKS
                 WHERE owner = :owner
+                  AND (
+                      :context_id IS NULL OR context_id = :context_id
+                  )
+                  AND (
+                      :status IS NULL OR
+                      JSON_VALUE(task_json, '$.status.state') = :status
+                  )
+                  AND (
+                      :status_timestamp_after IS NULL OR
+                      JSON_VALUE(task_json, '$.status.timestamp')
+                          >= :status_timestamp_after
+                  )
                 ORDER BY updated_at DESC, task_id DESC
             """,
             owner=self._owner(context),
+            **self._list_query_parameters(params),
         )
         tasks = [await self._task_from_json(row[0]) for row in rows]
-        tasks = self._filter_tasks(tasks, params)
         total_size = len(tasks)
         start_index = self._page_start_index(tasks, params.page_token)
         page_size = params.page_size or DEFAULT_LIST_TASKS_PAGE_SIZE
@@ -162,31 +174,28 @@ class OracleTaskStore(TaskStore):
         )
 
     @staticmethod
-    def _filter_tasks(
-        tasks: list[Task],
+    def _list_query_parameters(
         params: a2a_pb2.ListTasksRequest,
-    ) -> list[Task]:
-        if params.context_id:
-            tasks = [
-                task for task in tasks if task.context_id == params.context_id
-            ]
+    ) -> dict[str, str | None]:
+        """Convert protobuf list filters to Oracle query parameters."""
+        status = None
         if params.status:
-            tasks = [
-                task
-                for task in tasks
-                if task.HasField("status")
-                and task.status.state == params.status
-            ]
-        if params.HasField("status_timestamp_after"):
-            timestamp_after = params.status_timestamp_after.ToJsonString()
-            tasks = [
-                task
-                for task in tasks
-                if task.HasField("status")
-                and task.status.HasField("timestamp")
-                and task.status.timestamp.ToJsonString() >= timestamp_after
-            ]
-        return tasks
+            try:
+                status = a2a_pb2.TaskState.Name(params.status)
+            except ValueError:
+                # An unknown enum value cannot match a stored protobuf JSON
+                # enum name, which preserves the old empty-result behavior.
+                status = "__UNKNOWN_TASK_STATE__"
+        timestamp_after = (
+            params.status_timestamp_after.ToJsonString()
+            if params.HasField("status_timestamp_after")
+            else None
+        )
+        return {
+            "context_id": params.context_id or None,
+            "status": status,
+            "status_timestamp_after": timestamp_after,
+        }
 
     def _owner(self, context: ServerCallContext) -> str:
         return self.owner_resolver(context) or "anonymous"
