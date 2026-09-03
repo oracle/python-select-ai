@@ -1,4 +1,4 @@
-# Dynamic gateway deployment
+# Dynamic gateway
 
 Dynamic gateway mode exposes one public A2A endpoint. Each user dynamically
 selects an Oracle database connection and Select AI team through the A2UI
@@ -6,15 +6,62 @@ connection form. A session remains available for 15 minutes by default. Set a
 different lifetime in seconds with `--session-ttl-seconds`; for example,
 `--session-ttl-seconds 1800` keeps sessions for 30 minutes.
 
+## Protocol architecture
+
+```text
+┌──────────────┐  A2A JSON-RPC/HTTP  ┌──────────────────┐                                     ┌────────────────────────────┐
+│ A2A client   │────────────────────►│ Gateway instances│──── route lookup/update ──────────► │ Service Registry           │
+└──────────────┘                     │ Public A2A API   │                                     │ Service discovery          │
+                                     │ A2UI bootstrap   │                                     │ Session routes             │
+                                     └────────┬─────────┘                                     │ Task routes                │
+                                              │ Internal protobuf                             │                            │
+                                              ▼                                               │                            │
+                                     ┌──────────────────┐                                     │                            │
+                                     │ Worker pool      │──── registration / heartbeat------->│                            │
+                                     │ worker-0, ...    │                                     │                            │
+                                     └────────┬─────────┘                                     └────────────────────────────┘
+                                              │ one child per database session
+                                              ▼
+                                     ┌──────────────────┐
+                                     │ Session runtime  │
+                                     │ A2A handler      │
+                                     │ Task/context     │
+                                     │ stores           │
+                                     │ Database session │
+                                     └────────┬─────────┘
+                                              │ SQL / Select AI
+                                              ▼
+                                     ┌──────────────────┐
+                                     │ Oracle Database  │
+                                     └──────────────────┘
+```
+
+The gateway is the only public A2A application. It selects a worker through
+the Service Registry, opens a session there, and proxies subsequent A2A calls
+using the internal protobuf protocol. The selected worker starts one child
+runtime for that session. The child owns the database connection,
+`DefaultRequestHandler`, `OracleTaskStore`, and `OracleContextStore`.
+
+The Service Registry stores only service-discovery and non-secret
+session/task-to-worker metadata. Task payloads and context mappings remain in
+Oracle. Connection-form tasks are response-only bootstrap tasks: they are
+created by the gateway before a database session exists and are not persisted
+or routed.
+
+## GCP deployment
+
+The protocol architecture above is implemented on GCP as follows:
+
 ```text
  ┌──────────────────────┐
  │ A2A / Gemini client  │
  └──────────┬───────────┘
             │ public A2A
             v
- ┌──────────────────────┐
- │ Cloud Run gateway    │
- └──────┬───────┬───────┘
+ ┌────────────────────────────┐
+ │ Cloud Run gateway          │
+ │ A2A proxy + form bootstrap │
+ └──────┬───────────┬─────────┘
         │       │ private VPC: mTLS request to worker hostname
         │       │
         │       │     ┌─────────────────────── GKE ───────────────────────┐
@@ -23,18 +70,15 @@ different lifetime in seconds with `--session-ttl-seconds`; for example,
         │             │                    │                              │
         │             │                    v                              │
         │             │ [StatefulSet worker-0 / worker-1 / ...]           │
-        │             │ session child process → Oracle Database           │
+        │             │ session child: A2A handler + Oracle stores        │
+        │             │                    │                              │
+        │             │                    v                              │
+        │             │              Oracle Database                      │
         │             │                                                   │
         │             │ [Consul]                                          │
         └────────────>│ selects healthy worker; returns worker hostname   │
                       └───────────────────────────────────────────────────┘
 ```
-
-The gateway is the only public A2A application. Consul and workers are a GKE
-clustered service: Consul selects a worker for each new dynamic session, and
-the chosen worker retains that session's process and Oracle conversation.
-
-## Deploy the complete stack
 
 Run this from the repository root:
 
@@ -68,10 +112,14 @@ gcloud/gateway/deploy.sh \
 ```
 
 The Cloud Run gateway uses direct VPC egress to reach the internal Consul load
-balancer and GKE worker pod addresses. The default one-instance gateway limit
-is intentional: gateway A2A task and context/session state is currently in
-memory. Workers, rather than the gateway, provide the clustered capacity for
-dynamic sessions.
+balancer and GKE worker pod addresses. The gateway keeps only the connection
+form task transiently, before a database session exists. Connected task and
+context state is stored in Oracle on the selected worker. Workers, rather
+than the gateway, provide the clustered capacity for dynamic sessions.
+The deployment currently keeps one gateway instance as an operational default;
+the gateway does not cache forms or connected task/context state. Gateway
+scaling does not change session affinity because Consul stores the session and
+task routes.
 
 `cloudbuild.yaml` is the complete build and deployment workflow. It supplies
 the generated image and Consul endpoint values to the Cloud Run gateway at

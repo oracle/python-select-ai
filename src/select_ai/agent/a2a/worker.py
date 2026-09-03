@@ -21,11 +21,22 @@ from dataclasses import dataclass
 from multiprocessing.connection import Connection
 
 import httpx
-from fastapi import FastAPI, HTTPException, status
-from fastapi.responses import PlainTextResponse
+from fastapi import FastAPI, HTTPException, Request, status
 from pydantic import BaseModel, Field, SecretStr
+from starlette.responses import Response
+
+from select_ai.agent.a2a.session_runtime import SessionRuntime
+from select_ai.agent.a2a.worker_protocol import (
+    PROTOBUF_CONTENT_TYPE,
+    WORKER_A2A_METHOD_HEADER,
+    WORKER_RESULT_KIND_HEADER,
+    PipeMessageType,
+    ResultKind,
+    WorkerResult,
+)
 
 LOGGER = logging.getLogger(__name__)
+_SESSION_REAPER_INTERVAL_SECONDS = 1
 
 
 class OpenSessionRequest(BaseModel):
@@ -36,12 +47,6 @@ class OpenSessionRequest(BaseModel):
     username: str = Field(min_length=1, max_length=128)
     password: SecretStr = Field(min_length=1, max_length=1_024)
     team_name: str = Field(min_length=1, max_length=128)
-
-
-class PromptRequest(BaseModel):
-    """One user prompt for a previously opened session."""
-
-    prompt: str = Field(min_length=1, max_length=32_000)
 
 
 @dataclass
@@ -65,7 +70,6 @@ class SessionWorker:
         self.session_ttl_seconds = session_ttl_seconds
         self.session_start_timeout_seconds = session_start_timeout_seconds
         self.sessions: dict[str, ChildSession] = {}
-        self.lock = asyncio.Lock()
 
     async def open(self, request: OpenSessionRequest) -> None:
         """Start a child runtime and wait until its database pool is ready."""
@@ -98,23 +102,24 @@ class SessionWorker:
         except Exception:
             await self._terminate(session)
             raise
-        async with self.lock:
-            previous = self.sessions.pop(request.session_id, None)
-            if previous:
-                await self._terminate(previous)
-            self.sessions[request.session_id] = session
+        previous = self.sessions.pop(request.session_id, None)
+        self.sessions[request.session_id] = session
+        if previous:
+            await self._terminate(previous)
 
     async def get(self, session_id: str) -> ChildSession:
         """Return a live session, closing it if its expiry has elapsed."""
-        async with self.lock:
-            session = self.sessions.get(session_id)
-            if session and (
-                session.expires_at <= time.monotonic()
-                or not session.process.is_alive()
-            ):
-                self.sessions.pop(session_id, None)
-                await self._terminate(session)
-                session = None
+        expired_session = None
+        session = self.sessions.get(session_id)
+        if session and (
+            session.expires_at <= time.monotonic()
+            or not session.process.is_alive()
+        ):
+            self.sessions.pop(session_id, None)
+            expired_session = session
+            session = None
+        if expired_session:
+            await self._terminate(expired_session)
         if session is None:
             raise HTTPException(
                 status_code=404,
@@ -122,32 +127,57 @@ class SessionWorker:
             )
         return session
 
-    async def send_prompt(self, session_id: str, prompt: str) -> str | None:
-        """Run one prompt in the process that owns this database session."""
+    async def dispatch(
+        self,
+        session_id: str,
+        method: str,
+        payload: bytes,
+    ) -> WorkerResult:
+        """Run one A2A operation in the process owning this session."""
         session = await self.get(session_id)
+        response = None
+        failure = None
         async with session.lock:
-            if not session.process.is_alive():
-                await self._discard(session_id, session)
-                raise HTTPException(
-                    status_code=404,
-                    detail="Database session expired; reconnect required.",
-                )
-            try:
-                await asyncio.to_thread(
-                    session.connection.send,
-                    {"type": "run", "prompt": prompt},
-                )
-                response = await self._receive(session, timeout_seconds=120)
-            except (EOFError, OSError, TimeoutError) as error:
-                await self._discard(session_id, session)
-                raise HTTPException(
-                    status_code=502,
-                    detail=(
-                        "Database session is unavailable; reconnect required."
-                    ),
-                ) from error
-        if response.get("type") == "result":
-            return response.get("result")
+            if session.process.is_alive():
+                try:
+                    await asyncio.to_thread(
+                        session.connection.send,
+                        {
+                            "type": PipeMessageType.A2A.value,
+                            "method": method,
+                            "payload": payload,
+                        },
+                    )
+                    response = await self._receive(
+                        session,
+                        timeout_seconds=120,
+                    )
+                except (EOFError, OSError, TimeoutError) as error:
+                    failure = error
+        if failure is not None:
+            await self._discard(session_id, session)
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    "Database session is unavailable; reconnect required."
+                ),
+            ) from failure
+        if response is None:
+            await self._discard(session_id, session)
+            raise HTTPException(
+                status_code=404,
+                detail="Database session expired; reconnect required.",
+            )
+        if response.get("type") == PipeMessageType.RESULT.value:
+            return response.get(
+                "result",
+                WorkerResult(ResultKind.NONE),
+            )
+        if response.get("type") == PipeMessageType.A2A_ERROR.value:
+            raise HTTPException(
+                status_code=400,
+                detail=response.get("detail", "A2A request failed."),
+            )
         LOGGER.error("Select AI session process reported a command failure.")
         raise HTTPException(
             status_code=502,
@@ -156,8 +186,7 @@ class SessionWorker:
 
     async def close(self, session_id: str) -> None:
         """Terminate a session on an explicit gateway DELETE request."""
-        async with self.lock:
-            session = self.sessions.pop(session_id, None)
+        session = self.sessions.pop(session_id, None)
         if session is None:
             raise HTTPException(
                 status_code=404,
@@ -165,13 +194,37 @@ class SessionWorker:
             )
         await self._terminate(session)
 
+    async def reap_expired(self) -> None:
+        """Continuously terminate expired or dead child sessions."""
+        while True:
+            await asyncio.sleep(_SESSION_REAPER_INTERVAL_SECONDS)
+            await self._reap_expired_sessions()
+
     async def close_all(self) -> None:
         """Terminate all child sessions during worker shutdown."""
-        async with self.lock:
-            sessions = list(self.sessions.values())
-            self.sessions.clear()
+        sessions = list(self.sessions.values())
+        self.sessions.clear()
         for session in sessions:
             await self._terminate(session)
+
+    async def _reap_expired_sessions(self) -> None:
+        now = time.monotonic()
+        expired = [
+            (session_id, session)
+            for session_id, session in self.sessions.items()
+            if session.expires_at <= now or not session.process.is_alive()
+        ]
+        for session_id, _session in expired:
+            self.sessions.pop(session_id, None)
+
+        for session_id, session in expired:
+            try:
+                await self._terminate(session)
+            except Exception:
+                LOGGER.exception(
+                    "Failed to terminate expired session %s.",
+                    session_id,
+                )
 
     async def _wait_ready(
         self,
@@ -188,7 +241,7 @@ class SessionWorker:
                 status_code=504,
                 detail="Database session start timed out.",
             ) from error
-        if response.get("type") == "ready":
+        if response.get("type") == PipeMessageType.READY.value:
             return
         detail = response.get("detail", "Database login failed.")
         for secret in (
@@ -214,26 +267,30 @@ class SessionWorker:
         return await asyncio.to_thread(session.connection.recv)
 
     async def _discard(self, session_id: str, session: ChildSession) -> None:
-        async with self.lock:
-            if self.sessions.get(session_id) is session:
-                self.sessions.pop(session_id, None)
+        if self.sessions.get(session_id) is session:
+            self.sessions.pop(session_id, None)
         await self._terminate(session)
 
     @staticmethod
     async def _terminate(session: ChildSession) -> None:
-        def stop() -> None:
+        async with session.lock:
             try:
-                if session.process.is_alive():
-                    with contextlib.suppress(OSError):
-                        session.connection.send({"type": "close"})
-                    session.process.join(timeout=5)
-                if session.process.is_alive():
-                    session.process.terminate()
-                    session.process.join(timeout=5)
+                with contextlib.suppress(OSError):
+                    await asyncio.to_thread(
+                        session.connection.send,
+                        {"type": PipeMessageType.CLOSE.value},
+                    )
+                await asyncio.to_thread(session.process.join, timeout=5)
+                for stop in (
+                    session.process.terminate,
+                    session.process.kill,
+                ):
+                    if not session.process.is_alive():
+                        break
+                    await asyncio.to_thread(stop)
+                    await asyncio.to_thread(session.process.join, timeout=5)
             finally:
-                session.connection.close()
-
-        await asyncio.to_thread(stop)
+                await asyncio.to_thread(session.connection.close)
 
 
 def _session_process_main(
@@ -262,10 +319,10 @@ async def _run_session_process(
     session_id: str,
     team_name: str,
 ) -> None:
-    """Open one async connection and execute raw ``AsyncTeam`` prompts."""
+    """Open one async connection and execute A2A operations."""
     import select_ai
-    from select_ai.agent import AsyncTeam
 
+    runtime: SessionRuntime | None = None
     ready = False
     try:
         await select_ai.async_connect(
@@ -275,47 +332,98 @@ async def _run_session_process(
         )
         if not await select_ai.async_is_connected():
             raise RuntimeError("Database login failed.")
-        connection.send({"type": "ready"})
+        runtime = SessionRuntime(session_id, team_name)
+        await runtime.initialize()
+        connection.send({"type": PipeMessageType.READY.value})
         ready = True
-        conversation_id = None
-        while True:
-            try:
-                command = await asyncio.to_thread(connection.recv)
-            except EOFError:
-                return
-            if command.get("type") == "close":
-                return
-            if command.get("type") != "run":
-                connection.send(
-                    {"type": "error", "detail": "Invalid command."}
-                )
-                continue
-            try:
-                if conversation_id is None:
-                    conversation = select_ai.AsyncConversation(
-                        attributes=select_ai.ConversationAttributes(
-                            title=f"A2A {team_name}",
-                            description=f"Temporary session {session_id}",
-                        )
-                    )
-                    conversation_id = await conversation.create()
-                result = await AsyncTeam(team_name=team_name).run(
-                    prompt=command["prompt"],
-                    params={"conversation_id": conversation_id},
-                )
-                connection.send({"type": "result", "result": result})
-            except Exception:
-                # Keep session-process failures private from gateway callers.
-                LOGGER.error("Select AI session command failed")
-                connection.send({"type": "error"})
+        await _serve_session_commands(connection, runtime)
     except Exception as error:
-        LOGGER.error("Select AI session process startup failed")
-        if not ready:
-            with contextlib.suppress(OSError):
-                connection.send({"type": "error", "detail": str(error)})
+        _report_session_process_error(connection, error, not ready)
     finally:
+        await _close_session_process(runtime, select_ai)
+
+
+async def _serve_session_commands(
+    connection: Connection,
+    runtime: SessionRuntime,
+) -> None:
+    """Serve commands for one initialized database session."""
+    while True:
+        command = await _receive_session_command(connection)
+        if (
+            command is None
+            or command.get("type") == PipeMessageType.CLOSE.value
+        ):
+            return
+        if command.get("type") != PipeMessageType.A2A.value:
+            connection.send(
+                {
+                    "type": PipeMessageType.ERROR.value,
+                    "detail": "Invalid command.",
+                }
+            )
+            continue
+        await _handle_a2a_command(connection, runtime, command)
+
+
+async def _receive_session_command(connection: Connection) -> dict | None:
+    """Read one command without blocking the event loop."""
+    try:
+        return await asyncio.to_thread(connection.recv)
+    except EOFError:
+        return None
+
+
+async def _handle_a2a_command(
+    connection: Connection,
+    runtime: SessionRuntime,
+    command: dict,
+) -> None:
+    """Execute one internal A2A command and send its result."""
+    try:
+        result = await runtime.handle(
+            command["method"],
+            command.get("payload", b""),
+        )
+    except Exception as error:
+        LOGGER.exception("Select AI session A2A command failed")
+        connection.send(
+            {"type": PipeMessageType.A2A_ERROR.value, "detail": str(error)}
+        )
+        return
+    connection.send({"type": PipeMessageType.RESULT.value, "result": result})
+
+
+def _report_session_process_error(
+    connection: Connection,
+    error: Exception,
+    during_startup: bool,
+) -> None:
+    """Report startup failures without sending errors after readiness."""
+    message = (
+        "Select AI session process startup failed"
+        if during_startup
+        else "Select AI session process failed"
+    )
+    LOGGER.error(message)
+    if during_startup:
+        with contextlib.suppress(OSError):
+            connection.send(
+                {"type": PipeMessageType.ERROR.value, "detail": str(error)}
+            )
+
+
+async def _close_session_process(
+    runtime: SessionRuntime | None,
+    select_ai,
+) -> None:
+    """Close the A2A handler and database connection owned by the child."""
+    handler = getattr(runtime, "handler", None)
+    if handler is not None:
         with contextlib.suppress(Exception):
-            await select_ai.async_disconnect()
+            await handler.aclose()
+    with contextlib.suppress(Exception):
+        await select_ai.async_disconnect()
 
 
 async def _register_with_consul(
@@ -393,9 +501,13 @@ def create_worker_app(
             worker_endpoint,
         )
         heartbeat = asyncio.create_task(_heartbeat(consul_url, worker_id))
+        reaper = asyncio.create_task(worker.reap_expired())
         try:
             yield
         finally:
+            reaper.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await reaper
             heartbeat.cancel()
             with contextlib.suppress(asyncio.CancelledError):
                 await heartbeat
@@ -418,13 +530,29 @@ def create_worker_app(
         await worker.open(request)
         return {"status": "opened"}
 
-    @app.post("/sessions/{session_id}/messages")
-    async def send_message(
+    @app.post("/sessions/{session_id}/a2a")
+    async def handle_a2a(
         session_id: str,
-        request: PromptRequest,
-    ) -> PlainTextResponse:
-        result = await worker.send_prompt(session_id, request.prompt)
-        return PlainTextResponse(result or "")
+        request: Request,
+    ) -> Response:
+        method = request.headers.get(WORKER_A2A_METHOD_HEADER)
+        if not method:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Missing {WORKER_A2A_METHOD_HEADER} header.",
+            )
+        result = await worker.dispatch(
+            session_id,
+            method,
+            await request.body(),
+        )
+        return Response(
+            content=result.payload,
+            media_type=PROTOBUF_CONTENT_TYPE,
+            headers={
+                WORKER_RESULT_KIND_HEADER: result.kind.value,
+            },
+        )
 
     @app.delete(
         "/sessions/{session_id}",

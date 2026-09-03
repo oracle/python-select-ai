@@ -132,7 +132,7 @@ def worker(
     tls_key_file,
     tls_ca_file,
 ):
-    """Start the internal, in-memory Select AI session worker."""
+    """Start the internal Select AI session worker."""
     try:
         from select_ai.agent.a2a import create_worker_app
     except ImportError as error:

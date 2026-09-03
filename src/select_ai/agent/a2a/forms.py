@@ -7,27 +7,30 @@
 
 """A2UI connection form emitted by the public gateway."""
 
+from uuid import uuid4
 
-_CATALOG = (
-    "https://www.gstatic.com/vertexaisearch/a2ui/v0_9/"
-    "gemini_enterprise_composite_catalog.json"
-)
+from select_ai.agent.a2a.a2ui import A2UI_CATALOG_ID, A2UI_VERSION
 
 
-def connection_form() -> list[dict]:
+def connection_form(surface_id: str | None = None) -> list[dict]:
     """Return the non-persistent database connection form."""
+    # A2UI surface IDs must be globally unique for the renderer's lifetime.
+    # Gemini retains surfaces for an A2A conversation after the connection
+    # form is submitted, so reusing a fixed ID prevents a reconnect form from
+    # being created in that same conversation.
+    surface_id = surface_id or f"db-connect-{uuid4().hex}"
     return [
         {
-            "version": "v0.9",
+            "version": A2UI_VERSION,
             "createSurface": {
-                "surfaceId": "db-connect",
-                "catalogId": _CATALOG,
+                "surfaceId": surface_id,
+                "catalogId": A2UI_CATALOG_ID,
             },
         },
         {
-            "version": "v0.9",
+            "version": A2UI_VERSION,
             "updateComponents": {
-                "surfaceId": "db-connect",
+                "surfaceId": surface_id,
                 "components": [
                     {"id": "root", "component": "Card", "child": "column"},
                     {
@@ -102,9 +105,9 @@ def connection_form() -> list[dict]:
             },
         },
         {
-            "version": "v0.9",
+            "version": A2UI_VERSION,
             "updateDataModel": {
-                "surfaceId": "db-connect",
+                "surfaceId": surface_id,
                 "path": "/",
                 "value": {
                     "dsn": "",

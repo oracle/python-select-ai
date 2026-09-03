@@ -166,10 +166,15 @@ if [[ "$enable_worker_mtls" == "true" ]]; then
     fi
   done
   if [[ "$create_mtls_material" != "true" ]]; then
-    existing_worker_certificate_sans="$(gcloud secrets versions access latest \
-      --secret=select-ai-worker-mtls-cert --project="$project_id" 2>/dev/null | \
-      openssl x509 -noout -ext subjectAltName 2>/dev/null || true)"
-    if [[ "$existing_worker_certificate_sans" != *"DNS:$worker_certificate_dns_name"* ]]; then
+    # macOS ships LibreSSL, which does not support x509's -ext option.
+    # Read the portable text representation and perform a literal SAN check.
+    existing_worker_certificate_text="$(
+      gcloud secrets versions access latest \
+        --secret=select-ai-worker-mtls-cert --project="$project_id" 2>/dev/null | \
+      openssl x509 -noout -text 2>/dev/null || true
+    )"
+    if ! printf '%s\n' "$existing_worker_certificate_text" | \
+      grep -F -- "DNS:$worker_certificate_dns_name" >/dev/null; then
       create_mtls_material="true"
       echo "Replacing mTLS material because the worker certificate does not"
       echo "match the GKE DNS domain."
