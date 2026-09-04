@@ -481,6 +481,7 @@ class TestAsyncCreateVectorIndex:
                     **test_env.connect_params(use_pool=True)
                 )
 
+        await self.async_vector_index.create(replace=True)
         await self.async_vector_index.grant_access(username)
         fetched, listed = await fetch_and_list_as_sharing_user()
         assert fetched.index_name == self.index_name

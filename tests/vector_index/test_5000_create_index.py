@@ -504,6 +504,7 @@ class TestCreateVectorIndex:
                 select_ai.disconnect()
                 select_ai.create_pool(**test_env.connect_params(use_pool=True))
 
+        self.vector_index.create(replace=True)
         self.vector_index.grant_access(username)
         fetched, listed = fetch_and_list_as_sharing_user()
         assert fetched.index_name == self.index_name
