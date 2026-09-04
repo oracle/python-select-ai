@@ -486,7 +486,9 @@ class TestAsyncCreateVectorIndex:
         fetched, listed = await fetch_and_list_as_sharing_user()
         assert fetched.index_name == self.index_name
         assert fetched.owner == owner
-        assert [index.index_name for index in listed] == [self.index_name]
+        assert [index.index_name for index in listed] == [
+            self.index_name.upper()
+        ]
 
         await self.async_vector_index.revoke_access(username)
 
