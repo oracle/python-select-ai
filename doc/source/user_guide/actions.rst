@@ -57,6 +57,21 @@ The following actions can be performed using ``select_ai``:
 Action methods
 ==============
 
+Request-specific profile attributes can be supplied with the optional
+``attributes`` mapping. For example, override ``additional_instructions`` for
+a single chat request:
+
+.. code-block:: python
+
+   response = profile.chat(
+       prompt="Write sample Python code to build and test a regression model",
+       attributes={
+           "additional_instructions": (
+               "Return executable code as plain text without Markdown fences."
+           )
+       },
+   )
+
 .. list-table:: Action to method mapping
    :header-rows: 1
    :widths: 30 35 35

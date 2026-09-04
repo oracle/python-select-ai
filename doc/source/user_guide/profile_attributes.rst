@@ -74,6 +74,9 @@ Attribute groups
      - Tunes model generation behavior.
    * - ``conversation``
      - Enables conversation history for context-aware chat workflows.
+   * - ``additional_instructions``
+     - Provides persistent guidance, business rules, or response constraints
+       for requests that use the profile.
    * - ``source_language``, ``target_language``
      - Set default languages for ``Profile.translate()`` and
        ``AsyncProfile.translate()``. If no source language is configured or
@@ -133,6 +136,23 @@ responses:
        temperature=0.1,
        stop_tokens='[";"]',
    )
+
+Additional instructions
+=======================
+
+Use ``additional_instructions`` for guidance that should apply to every
+request made with a profile:
+
+.. code-block:: python
+
+   attributes = select_ai.ProfileAttributes(
+       provider=provider,
+       credential_name="my_oci_ai_profile_key",
+       additional_instructions="Return concise, executable Python code.",
+   )
+
+For guidance that applies to only one request, pass an ``attributes`` mapping
+to an action method instead of changing the saved profile.
 
 .. autoclass:: select_ai.ProfileAttributes
    :members:

@@ -41,6 +41,8 @@ class ProfileAttributes(SelectAIDataClass):
      provider APIs.
     :param bool enforce_object_list: Specifies whether to restrict the LLM
      to generate SQL that uses only tables covered by the object list.
+    :param str additional_instructions: Persistent guidance that Select AI
+     applies to requests that use the profile.
     :param int max_tokens: Denotes the number of tokens to return per
      generation. Default is 1024.
     :param List[Mapping] object_list: Array of JSON objects specifying
@@ -69,6 +71,7 @@ class ProfileAttributes(SelectAIDataClass):
 
     """
 
+    additional_instructions: Optional[str] = None
     annotations: Optional[bool] = None
     case_sensitive_values: Optional[bool] = None
     comments: Optional[bool] = None

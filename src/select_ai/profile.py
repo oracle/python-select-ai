@@ -474,6 +474,7 @@ class Profile(BaseProfile):
         prompt: str,
         action: Optional[Action] = Action.RUNSQL,
         params: Mapping = None,
+        attributes: Mapping = None,
     ) -> Union[pandas.DataFrame, str, None]:
         """Perform AI translation using this profile
 
@@ -481,9 +482,13 @@ class Profile(BaseProfile):
         :param select_ai.profile.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :return: Union[pandas.DataFrame, str]
         """
-        parameters = self._generate_parameters(prompt, action, params)
+        parameters = self._generate_parameters(
+            prompt, action, params, attributes
+        )
         data = cr.callfunc(
             "DBMS_CLOUD_AI.GENERATE",
             oracledb.DB_TYPE_CLOB,
@@ -503,6 +508,7 @@ class Profile(BaseProfile):
         prompt: str,
         action: Optional[Action],
         params: Mapping = None,
+        attributes: Mapping = None,
     ) -> Mapping:
         if not prompt:
             raise ValueError("prompt cannot be empty or None")
@@ -510,10 +516,13 @@ class Profile(BaseProfile):
             "prompt": prompt,
             "action": action,
             "profile_name": self.profile_name,
-            # "attributes": self.attributes.json(),
         }
         if params:
             parameters["params"] = json.dumps(params)
+        if attributes is not None:
+            if not isinstance(attributes, Mapping):
+                raise TypeError("'attributes' must be a mapping")
+            parameters["attributes"] = json.dumps(attributes)
         return parameters
 
     def _generate_stream(
@@ -522,6 +531,7 @@ class Profile(BaseProfile):
         action: Optional[Action],
         params: Mapping = None,
         chunk_size: int = 8192,
+        attributes: Mapping = None,
     ) -> Generator[str, None, None]:
         with cursor() as cr:
             yield from self._generate_stream_with_cursor(
@@ -530,6 +540,7 @@ class Profile(BaseProfile):
                 action=action,
                 params=params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
 
     def _generate_stream_with_cursor(
@@ -539,13 +550,16 @@ class Profile(BaseProfile):
         action: Optional[Action],
         params: Mapping = None,
         chunk_size: int = 8192,
+        attributes: Mapping = None,
     ) -> Generator[str, None, None]:
         if action == Action.RUNSQL:
             raise ValueError("stream=True is not supported for run_sql")
         if chunk_size <= 0:
             raise ValueError("chunk_size must be greater than 0")
 
-        parameters = self._generate_parameters(prompt, action, params)
+        parameters = self._generate_parameters(
+            prompt, action, params, attributes
+        )
         data = cr.callfunc(
             "DBMS_CLOUD_AI.GENERATE",
             oracledb.DB_TYPE_CLOB,
@@ -569,6 +583,8 @@ class Profile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[pandas.DataFrame, str, Generator[str, None, None], None]:
         """Perform AI translation using this profile
 
@@ -576,15 +592,23 @@ class Profile(BaseProfile):
         :param select_ai.profile.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: Union[pandas.DataFrame, str]
         """
         if stream:
-            return self._generate_stream(prompt, action, params, chunk_size)
+            return self._generate_stream(
+                prompt, action, params, chunk_size, attributes
+            )
         with cursor() as cr:
             return self._generate_with_cursor(
-                cr, prompt=prompt, action=action, params=params
+                cr,
+                prompt=prompt,
+                action=action,
+                params=params,
+                attributes=attributes,
             )
 
     def chat(
@@ -593,11 +617,15 @@ class Profile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Chat with the LLM
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -608,6 +636,7 @@ class Profile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     @contextmanager
@@ -639,11 +668,15 @@ class Profile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Narrate the result of the SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -654,6 +687,7 @@ class Profile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     def explain_sql(
@@ -662,11 +696,15 @@ class Profile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Explain the generated SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -677,17 +715,31 @@ class Profile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
-    def run_sql(self, prompt: str, params: Mapping = None) -> pandas.DataFrame:
+    def run_sql(
+        self,
+        prompt: str,
+        params: Mapping = None,
+        *,
+        attributes: Mapping = None,
+    ) -> pandas.DataFrame:
         """Run the generate SQL statement and return a pandas Dataframe built
         using the result set
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :return: pandas.DataFrame
         """
-        return self.generate(prompt, action=Action.RUNSQL, params=params)
+        return self.generate(
+            prompt,
+            action=Action.RUNSQL,
+            params=params,
+            attributes=attributes,
+        )
 
     def show_sql(
         self,
@@ -695,11 +747,15 @@ class Profile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Show the generated SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -710,6 +766,7 @@ class Profile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     def show_prompt(
@@ -718,11 +775,15 @@ class Profile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Show the prompt sent to LLM
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -733,6 +794,7 @@ class Profile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     def summarize(
@@ -854,7 +916,12 @@ class Session:
         self._cursor = None
 
     def chat(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         if stream:
             return self.profile._generate_stream_with_cursor(
@@ -863,13 +930,23 @@ class Session:
                 action=Action.CHAT,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return self.profile._generate_with_cursor(
-            self._cursor, prompt=prompt, action=Action.CHAT, params=self.params
+            self._cursor,
+            prompt=prompt,
+            action=Action.CHAT,
+            params=self.params,
+            attributes=attributes,
         )
 
     def narrate(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Narrate the result of the SQL
 
@@ -885,13 +962,23 @@ class Session:
                 action=Action.NARRATE,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return self.profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.NARRATE, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.NARRATE,
+            params=self.params,
+            attributes=attributes,
         )
 
     def explain_sql(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Explain the generated SQL
 
@@ -907,12 +994,19 @@ class Session:
                 action=Action.EXPLAINSQL,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return self.profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.EXPLAINSQL, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.EXPLAINSQL,
+            params=self.params,
+            attributes=attributes,
         )
 
-    def run_sql(self, prompt: str) -> pandas.DataFrame:
+    def run_sql(
+        self, prompt: str, *, attributes: Mapping = None
+    ) -> pandas.DataFrame:
         """Run the generate SQL statement and return a pandas Dataframe built
         using the result set
 
@@ -920,11 +1014,20 @@ class Session:
         :return: pandas.DataFrame
         """
         return self.profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.RUNSQL, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.RUNSQL,
+            params=self.params,
+            attributes=attributes,
         )
 
     def show_sql(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Show the generated SQL
 
@@ -941,13 +1044,23 @@ class Session:
                 action=Action.SHOWSQL,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return self.profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.SHOWSQL, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.SHOWSQL,
+            params=self.params,
+            attributes=attributes,
         )
 
     def show_prompt(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, Generator[str, None, None]]:
         """Show the prompt sent to LLM
 
@@ -964,9 +1077,14 @@ class Session:
                 action=Action.SHOWPROMPT,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return self.profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.SHOWPROMPT, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.SHOWPROMPT,
+            params=self.params,
+            attributes=attributes,
         )
 
     def __enter__(self):
