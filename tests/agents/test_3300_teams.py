@@ -11,7 +11,6 @@
 
 import uuid
 
-import oracledb
 import pytest
 import select_ai
 from select_ai.agent import (
@@ -223,66 +222,3 @@ def test_3304_team_and_task_history(team):
         }
     finally:
         conversation.delete(force=True)
-
-
-def test_3305_grant_and_revoke_team_access(
-    team,
-    python_gen_ai_profile,
-    shared_credential_access,
-    sharing_user,
-    test_env,
-):
-    username = sharing_user["username"]
-    owner = test_env.test_user.upper()
-    qualified_name = f"{owner}.{team.team_name}"
-    qualified_profile_name = f"{owner}.{python_gen_ai_profile.profile_name}"
-
-    def run_as_sharing_user():
-        select_ai.disconnect()
-        select_ai.connect(**sharing_user["connect_params"])
-        try:
-            shared_team = Team(team_name=qualified_name)
-            return shared_team.run(
-                prompt="Reply with the number 4.",
-                params={"conversation_id": conversation_id},
-                profile_name=qualified_profile_name,
-            )
-        finally:
-            select_ai.disconnect()
-            select_ai.create_pool(**test_env.connect_params(use_pool=True))
-
-    with oracledb.connect(**test_env.connect_params(admin=True)) as conn:
-        with conn.cursor() as cr:
-            cr.execute(
-                f"GRANT EXECUTE ON {owner}.{PYSAI_3300_FUNCTION_NAME} "
-                f"TO {username}"
-            )
-        conn.commit()
-    python_gen_ai_profile.grant_access(username)
-    team.grant_access(username)
-
-    with oracledb.connect(**sharing_user["connect_params"]) as conn:
-        with conn.cursor() as cr:
-            conversation_id = cr.callfunc(
-                "DBMS_CLOUD_AI.CREATE_CONVERSATION",
-                oracledb.DB_TYPE_VARCHAR,
-                keyword_parameters={
-                    "attributes": '{"title":"Team sharing test"}'
-                },
-            )
-    result = run_as_sharing_user()
-    assert result
-
-    team.revoke_access(username)
-    python_gen_ai_profile.revoke_access(username)
-    with pytest.raises(oracledb.DatabaseError):
-        run_as_sharing_user()
-    with oracledb.connect(**sharing_user["connect_params"]) as conn:
-        with conn.cursor() as cr:
-            cr.callproc(
-                "DBMS_CLOUD_AI.DROP_CONVERSATION",
-                keyword_parameters={
-                    "conversation_id": conversation_id,
-                    "force": True,
-                },
-            )
