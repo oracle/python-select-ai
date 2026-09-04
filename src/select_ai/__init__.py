@@ -17,8 +17,12 @@ from .conversation import (
 from .credential import (
     async_create_credential,
     async_delete_credential,
+    async_grant_credential_access,
+    async_revoke_credential_access,
     create_credential,
     delete_credential,
+    grant_credential_access,
+    revoke_credential_access,
 )
 from .db import (
     async_connect,

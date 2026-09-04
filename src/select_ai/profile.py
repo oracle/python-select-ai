@@ -13,6 +13,7 @@ import oracledb
 import pandas
 
 from select_ai import Conversation
+from select_ai._validations import validate_user_or_role_name
 from select_ai.action import Action
 from select_ai.base_profile import (
     BaseProfile,
@@ -29,9 +30,9 @@ from select_ai.errors import (
 from select_ai.feedback import FeedbackOperation, FeedbackType
 from select_ai.provider import Provider
 from select_ai.sql import (
-    GET_USER_AI_PROFILE,
-    GET_USER_AI_PROFILE_ATTRIBUTES,
-    LIST_USER_AI_PROFILES,
+    GET_ALL_AI_PROFILE,
+    GET_ALL_AI_PROFILE_ATTRIBUTES,
+    LIST_ALL_AI_PROFILES,
 )
 from select_ai.summary import SummaryParams
 from select_ai.synthetic_data import SyntheticDataAttributes
@@ -57,12 +58,15 @@ class Profile(BaseProfile):
         if self.profile_name:
             profile_exists = False
             try:
-                saved_description = self._get_profile_description(
-                    profile_name=self.profile_name
+                saved_description, saved_owner = self._get_profile_description(
+                    profile_name=self.profile_name,
+                    owner=self.owner,
                 )
+                self.owner = saved_owner
                 profile_exists = True
                 saved_attributes = self._get_attributes(
                     profile_name=self.profile_name,
+                    owner=self.owner,
                     raise_on_empty=True,
                 )
                 self._raise_error_if_profile_exists()
@@ -83,39 +87,51 @@ class Profile(BaseProfile):
                 )
 
     @staticmethod
-    def _get_profile_description(profile_name) -> Union[str, None]:
-        """Get description of profile from USER_CLOUD_AI_PROFILES
+    def _get_profile_description(
+        profile_name: str, owner: Optional[str] = None
+    ) -> Tuple[Union[str, None], str]:
+        """Get a profile description and owner from ALL_CLOUD_AI_PROFILES.
 
-        :param str profile_name:
-        :return: Union[str, None] profile description
+        :param str profile_name: Name of the profile.
+        :param str owner: Owner of a shared profile. Defaults to current schema.
+        :return: Tuple containing the profile description and owner.
         :raises: ProfileNotFoundError
         """
         with cursor() as cr:
-            cr.execute(GET_USER_AI_PROFILE, profile_name=profile_name.upper())
+            cr.execute(
+                GET_ALL_AI_PROFILE,
+                profile_name=profile_name.upper(),
+                owner=owner.upper() if owner else None,
+            )
             profile = cr.fetchone()
             if profile:
                 if profile[1] is not None:
-                    return profile[1].read()
+                    description = profile[1].read()
                 else:
-                    return None
+                    description = None
+                return description, profile[2]
             else:
                 raise ProfileNotFoundError(profile_name)
 
     @staticmethod
     def _get_attributes(
-        profile_name, raise_on_empty: bool = False
+        profile_name,
+        owner: Optional[str] = None,
+        raise_on_empty: bool = False,
     ) -> Union[ProfileAttributes, None]:
         """Get AI profile attributes from the Database
 
         :param str profile_name: Name of the profile
+        :param str owner: Owner of a shared profile. Defaults to current schema.
         :param bool raise_on_empty: Raise an error if attributes are empty
         :return: select_ai.ProfileAttributes
         :raises: select_ai.errors.ProfileAttributesEmptyError
         """
         with cursor() as cr:
             cr.execute(
-                GET_USER_AI_PROFILE_ATTRIBUTES,
+                GET_ALL_AI_PROFILE_ATTRIBUTES,
                 profile_name=profile_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             attributes = cr.fetchall()
             if attributes:
@@ -132,7 +148,10 @@ class Profile(BaseProfile):
 
         :return: select_ai.ProfileAttributes
         """
-        return self._get_attributes(profile_name=self.profile_name)
+        return self._get_attributes(
+            profile_name=self.profile_name,
+            owner=self.owner,
+        )
 
     def _set_attribute(
         self,
@@ -271,6 +290,40 @@ class Profile(BaseProfile):
                 keyword_parameters={"profile_name": self.profile_name},
             )
 
+    def grant_access(self, user_or_role_name: str) -> None:
+        """Grant a database user or role access to this AI profile.
+
+        :param str user_or_role_name: Database user or role receiving access.
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.GRANT_PROFILE_ACCESS",
+                keyword_parameters={
+                    "profile_name": self.profile_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
+    def revoke_access(self, user_or_role_name: str) -> None:
+        """Revoke a database user or role's access to this AI profile.
+
+        :param str user_or_role_name: Database user or role losing access.
+        :return: None
+        :raises: oracledb.DatabaseError
+        """
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.REVOKE_PROFILE_ACCESS",
+                keyword_parameters={
+                    "profile_name": self.profile_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
     @classmethod
     def delete_profile(cls, profile_name: str, force: bool = False):
         """Class method to delete an AI profile from the database
@@ -283,15 +336,22 @@ class Profile(BaseProfile):
         cls._delete(profile_name=profile_name, force=force)
 
     @classmethod
-    def fetch(cls, profile_name: str) -> "Profile":
+    def fetch(
+        cls, profile_name: str, owner: Optional[str] = None
+    ) -> "Profile":
         """Create a proxy Profile object from fetched attributes saved in the
         database
 
         :param str profile_name: The name of the AI profile
+        :param str owner: Owner of a shared profile. Defaults to current schema.
         :return: select_ai.Profile
         :raises: ProfileNotFoundError
         """
-        return cls(profile_name, raise_error_if_exists=False)
+        return cls(
+            profile_name,
+            owner=owner,
+            raise_error_if_exists=False,
+        )
 
     def _save_feedback(
         self,
@@ -380,25 +440,30 @@ class Profile(BaseProfile):
 
     @classmethod
     def list(
-        cls, profile_name_pattern: str = ".*"
+        cls,
+        profile_name_pattern: str = ".*",
+        owner: Optional[str] = None,
     ) -> Generator["Profile", None, None]:
         """List AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
          match. Default value is ".*" i.e. match all AI profiles.
+        :param str owner: Owner of shared profiles. Defaults to current schema.
 
         :return: Iterator[Profile]
         """
         with cursor() as cr:
             cr.execute(
-                LIST_USER_AI_PROFILES,
+                LIST_ALL_AI_PROFILES,
                 profile_name_pattern=profile_name_pattern,
+                owner=owner.upper() if owner else None,
             )
             for row in cr.fetchall():
                 profile_name = row[0]
                 yield cls(
                     profile_name=profile_name,
+                    owner=row[2],
                     raise_error_if_exists=False,
                     raise_error_on_empty_attributes=False,
                 )

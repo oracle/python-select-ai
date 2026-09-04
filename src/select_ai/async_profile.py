@@ -19,6 +19,7 @@ from typing import (
 import oracledb
 import pandas
 
+from select_ai._validations import validate_user_or_role_name
 from select_ai.action import Action
 from select_ai.base_profile import (
     BaseProfile,
@@ -43,9 +44,9 @@ from select_ai.feedback import (
 )
 from select_ai.provider import Provider
 from select_ai.sql import (
-    GET_USER_AI_PROFILE,
-    GET_USER_AI_PROFILE_ATTRIBUTES,
-    LIST_USER_AI_PROFILES,
+    GET_ALL_AI_PROFILE,
+    GET_ALL_AI_PROFILE_ATTRIBUTES,
+    LIST_ALL_AI_PROFILES,
 )
 from select_ai.summary import SummaryParams
 from select_ai.synthetic_data import SyntheticDataAttributes
@@ -75,12 +76,17 @@ class AsyncProfile(BaseProfile):
         if self.profile_name:
             profile_exists = False
             try:
-                saved_description = await self._get_profile_description(
-                    profile_name=self.profile_name
+                saved_description, saved_owner = (
+                    await self._get_profile_description(
+                        profile_name=self.profile_name,
+                        owner=self.owner,
+                    )
                 )
+                self.owner = saved_owner
                 profile_exists = True
                 saved_attributes = await self._get_attributes(
                     profile_name=self.profile_name,
+                    owner=self.owner,
                     raise_on_empty=True,
                 )
                 self._raise_error_if_profile_exists()
@@ -100,38 +106,43 @@ class AsyncProfile(BaseProfile):
         return self
 
     @staticmethod
-    async def _get_profile_description(profile_name) -> Union[str, None]:
-        """Get description of profile from USER_CLOUD_AI_PROFILES
+    async def _get_profile_description(
+        profile_name: str, owner: Optional[str] = None
+    ) -> Tuple[Union[str, None], str]:
+        """Get a profile description and owner from ALL_CLOUD_AI_PROFILES.
 
         :param str profile_name: Name of profile
-        :return: Description of profile
-        :rtype: str
+        :param str owner: Owner of a shared profile. Defaults to current schema.
+        :return: Tuple containing the profile description and owner.
         :raises: ProfileNotFoundError
 
         """
         async with async_cursor() as cr:
             await cr.execute(
-                GET_USER_AI_PROFILE,
+                GET_ALL_AI_PROFILE,
                 profile_name=profile_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             profile = await cr.fetchone()
-            if profile is None:
-                raise ProfileNotFoundError(profile_name)
             if profile:
                 if profile[1] is not None:
-                    return await profile[1].read()
+                    description = await profile[1].read()
                 else:
-                    return None
+                    description = None
+                return description, profile[2]
             else:
                 raise ProfileNotFoundError(profile_name)
 
     @staticmethod
     async def _get_attributes(
-        profile_name: str, raise_on_empty: bool = True
+        profile_name: str,
+        owner: Optional[str] = None,
+        raise_on_empty: bool = True,
     ) -> Union[ProfileAttributes, None]:
         """Asynchronously gets AI profile attributes from the Database
 
         :param str profile_name: Name of the profile
+        :param str owner: Owner of a shared profile. Defaults to current schema.
         :param bool raise_on_empty: Raise an error if attributes are empty
         :return: select_ai.provider.ProviderAttributes
         :raises: select_ai.errors.ProfileAttributesEmptyError
@@ -139,8 +150,9 @@ class AsyncProfile(BaseProfile):
         """
         async with async_cursor() as cr:
             await cr.execute(
-                GET_USER_AI_PROFILE_ATTRIBUTES,
+                GET_ALL_AI_PROFILE_ATTRIBUTES,
                 profile_name=profile_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             attributes = await cr.fetchall()
             if attributes:
@@ -158,7 +170,10 @@ class AsyncProfile(BaseProfile):
         :return: select_ai.provider.ProviderAttributes
         :raises: ProfileNotFoundError
         """
-        return await self._get_attributes(profile_name=self.profile_name)
+        return await self._get_attributes(
+            profile_name=self.profile_name,
+            owner=self.owner,
+        )
 
     async def _set_attribute(
         self,
@@ -299,6 +314,30 @@ class AsyncProfile(BaseProfile):
                 keyword_parameters={"profile_name": self.profile_name},
             )
 
+    async def grant_access(self, user_or_role_name: str) -> None:
+        """Asynchronously grant a user or role access to this AI profile."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.GRANT_PROFILE_ACCESS",
+                keyword_parameters={
+                    "profile_name": self.profile_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
+    async def revoke_access(self, user_or_role_name: str) -> None:
+        """Asynchronously revoke a user or role's profile access."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.REVOKE_PROFILE_ACCESS",
+                keyword_parameters={
+                    "profile_name": self.profile_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
     @classmethod
     async def delete_profile(cls, profile_name: str, force: bool = False):
         """Asynchronously deletes an AI profile from the database
@@ -311,15 +350,22 @@ class AsyncProfile(BaseProfile):
         await cls._delete(profile_name=profile_name, force=force)
 
     @classmethod
-    async def fetch(cls, profile_name: str) -> "AsyncProfile":
+    async def fetch(
+        cls, profile_name: str, owner: Optional[str] = None
+    ) -> "AsyncProfile":
         """Asynchronously create an AI Profile object from attributes
         saved in the database
 
-        :param str profile_name:
+        :param str profile_name: Name of the AI profile.
+        :param str owner: Owner of a shared profile. Defaults to current schema.
         :return: select_ai.Profile
         :raises: ProfileNotFoundError
         """
-        return await cls(profile_name, raise_error_if_exists=False)
+        return await cls(
+            profile_name,
+            owner=owner,
+            raise_error_if_exists=False,
+        )
 
     async def _save_feedback(
         self,
@@ -410,26 +456,31 @@ class AsyncProfile(BaseProfile):
 
     @classmethod
     async def list(
-        cls, profile_name_pattern: str = ".*"
+        cls,
+        profile_name_pattern: str = ".*",
+        owner: Optional[str] = None,
     ) -> AsyncGenerator["AsyncProfile", None]:
         """Asynchronously list AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
          match. Default value is ".*" i.e. match all AI profiles.
+        :param str owner: Owner of shared profiles. Defaults to current schema.
 
         :return: Iterator[Profile]
         """
         async with async_cursor() as cr:
             await cr.execute(
-                LIST_USER_AI_PROFILES,
+                LIST_ALL_AI_PROFILES,
                 profile_name_pattern=profile_name_pattern,
+                owner=owner.upper() if owner else None,
             )
             rows = await cr.fetchall()
             for row in rows:
                 profile_name = row[0]
                 yield await cls(
                     profile_name=profile_name,
+                    owner=row[2],
                     raise_error_if_exists=False,
                     raise_error_on_empty_attributes=False,
                 )

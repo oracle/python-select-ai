@@ -163,6 +163,8 @@ class BaseProfile(ABC):
 
     :param str description: Description of the profile
 
+    :param str owner: Database user that owns the profile
+
     :param bool merge: Fetches the profile
      from database, merges the non-null attributes and saves it back
      in the database. Default value is False
@@ -189,6 +191,7 @@ class BaseProfile(ABC):
         replace: Optional[bool] = False,
         raise_error_if_exists: Optional[bool] = True,
         raise_error_on_empty_attributes: Optional[bool] = False,
+        owner: Optional[str] = None,
     ):
         """Initialize a base profile"""
         self.profile_name = profile_name
@@ -199,10 +202,20 @@ class BaseProfile(ABC):
             )
         self.attributes = attributes
         self.description = description
+        self.owner = owner.upper() if owner else None
         self.merge = merge
         self.replace = replace
         self.raise_error_if_exists = raise_error_if_exists
         self.raise_error_on_empty_attributes = raise_error_on_empty_attributes
+
+    @property
+    def qualified_name(self) -> Optional[str]:
+        """Return the owner-qualified profile name when owner is known."""
+        if self.profile_name is None:
+            return None
+        if self.owner is None:
+            return self.profile_name
+        return f"{self.owner}.{self.profile_name}"
 
     def _raise_error_if_profile_exists(self):
         """

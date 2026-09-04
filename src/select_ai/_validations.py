@@ -13,6 +13,16 @@ from typing import Any, get_args, get_origin, get_type_hints
 NoneType = type(None)
 
 
+def validate_user_or_role_name(user_or_role_name: str) -> str:
+    """Validate and normalize a sharing grantee name."""
+    if not isinstance(user_or_role_name, str):
+        raise TypeError("'user_or_role_name' must be a string")
+    user_or_role_name = user_or_role_name.strip()
+    if not user_or_role_name:
+        raise ValueError("'user_or_role_name' cannot be empty")
+    return user_or_role_name
+
+
 def _match(value, annot) -> bool:
     """Recursively validate value against a typing annotation."""
     if annot is Any:

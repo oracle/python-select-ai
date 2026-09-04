@@ -483,3 +483,61 @@ async def test_3323_list_tools(team):
     tools = json.loads(await team.list_tools())
 
     assert isinstance(tools, list)
+
+
+async def test_3324_grant_and_revoke_team_access(
+    team,
+    python_gen_ai_profile,
+    shared_credential_access,
+    sharing_user,
+    test_env,
+):
+    username = sharing_user["username"]
+    owner = test_env.test_user.upper()
+    qualified_name = f"{owner}.{team.team_name}"
+    qualified_profile_name = f"{owner}.{python_gen_ai_profile.profile_name}"
+
+    async def run_as_sharing_user():
+        await select_ai.async_disconnect()
+        await select_ai.async_connect(**sharing_user["connect_params"])
+        try:
+            shared_team = AsyncTeam(team_name=qualified_name)
+            return await shared_team.run(
+                prompt="Reply with the number 4.",
+                params={"conversation_id": conversation_id},
+                profile_name=qualified_profile_name,
+            )
+        finally:
+            await select_ai.async_disconnect()
+            select_ai.create_pool_async(
+                **test_env.connect_params(use_pool=True)
+            )
+
+    await python_gen_ai_profile.grant_access(username)
+    await team.grant_access(username)
+
+    with oracledb.connect(**sharing_user["connect_params"]) as conn:
+        with conn.cursor() as cr:
+            conversation_id = cr.callfunc(
+                "DBMS_CLOUD_AI.CREATE_CONVERSATION",
+                oracledb.DB_TYPE_VARCHAR,
+                keyword_parameters={
+                    "attributes": '{"title":"Team sharing test"}'
+                },
+            )
+    result = await run_as_sharing_user()
+    assert result
+
+    await team.revoke_access(username)
+    await python_gen_ai_profile.revoke_access(username)
+    with pytest.raises(oracledb.DatabaseError):
+        await run_as_sharing_user()
+    with oracledb.connect(**sharing_user["connect_params"]) as conn:
+        with conn.cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.DROP_CONVERSATION",
+                keyword_parameters={
+                    "conversation_id": conversation_id,
+                    "force": True,
+                },
+            )
