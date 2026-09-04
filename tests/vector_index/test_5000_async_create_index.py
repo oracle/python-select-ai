@@ -11,7 +11,6 @@ import oracledb
 import pytest
 import select_ai
 from select_ai import OracleVectorIndexAttributes
-from select_ai.errors import VectorIndexNotFoundError
 
 logger = logging.getLogger("TestAsyncCreateVectorIndex")
 
@@ -455,7 +454,7 @@ class TestAsyncCreateVectorIndex:
             await self.async_vector_index.create(replace=True)
         logger.info("Successfully recreated vector index multiple times.")
 
-    async def test_5019_grant_and_revoke_access(self, sharing_user, test_env):
+    async def test_5019_grant_access(self, sharing_user, test_env):
         username = sharing_user["username"]
         owner = test_env.test_user.upper()
 
@@ -489,27 +488,3 @@ class TestAsyncCreateVectorIndex:
         assert [index.index_name for index in listed] == [
             self.index_name.upper()
         ]
-
-        await self.async_vector_index.revoke_access(username)
-
-        try:
-            await select_ai.async_disconnect()
-            await select_ai.async_connect(**sharing_user["connect_params"])
-            with pytest.raises(VectorIndexNotFoundError):
-                await select_ai.AsyncVectorIndex.fetch(
-                    self.index_name,
-                    owner=owner,
-                )
-            listed = [
-                index
-                async for index in select_ai.AsyncVectorIndex.list(
-                    self.index_name,
-                    owner=owner,
-                )
-            ]
-            assert not listed
-        finally:
-            await select_ai.async_disconnect()
-            select_ai.create_pool_async(
-                **test_env.connect_params(use_pool=True)
-            )

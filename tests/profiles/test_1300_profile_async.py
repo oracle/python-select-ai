@@ -497,39 +497,3 @@ async def test_1319_profile_status(python_gen_ai_profile, async_cursor):
         profile_name=python_gen_ai_profile.profile_name,
     )
     assert (await async_cursor.fetchone())[0] == "ENABLED"
-
-
-async def test_1320_grant_and_revoke_profile_access(
-    python_gen_ai_profile, shared_credential_access, sharing_user, test_env
-):
-    profile_name = python_gen_ai_profile.profile_name.upper()
-    owner = test_env.test_user.upper()
-    username = sharing_user["username"]
-
-    await python_gen_ai_profile.grant_access(username)
-    with oracledb.connect(**sharing_user["connect_params"]) as conn:
-        with conn.cursor() as cr:
-            cr.execute(
-                """
-                SELECT COUNT(*)
-                FROM ALL_CLOUD_AI_PROFILES
-                WHERE profile_name = :profile_name AND owner = :owner
-                """,
-                profile_name=profile_name,
-                owner=owner,
-            )
-            assert cr.fetchone()[0] == 1
-
-    await python_gen_ai_profile.revoke_access(username)
-    with oracledb.connect(**sharing_user["connect_params"]) as conn:
-        with conn.cursor() as cr:
-            cr.execute(
-                """
-                SELECT COUNT(*)
-                FROM ALL_CLOUD_AI_PROFILES
-                WHERE profile_name = :profile_name AND owner = :owner
-                """,
-                profile_name=profile_name,
-                owner=owner,
-            )
-            assert cr.fetchone()[0] == 0

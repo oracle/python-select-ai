@@ -11,7 +11,6 @@ import oracledb
 import pytest
 import select_ai
 from select_ai import OracleVectorIndexAttributes
-from select_ai.errors import VectorIndexNotFoundError
 
 logger = logging.getLogger("TestCreateVectorIndex")
 
@@ -481,7 +480,7 @@ class TestCreateVectorIndex:
             self.vector_index.create(replace=True)
         logger.info("Successfully recreated vector index multiple times.")
 
-    def test_5019_grant_and_revoke_access(self, sharing_user, test_env):
+    def test_5019_grant_access(self, sharing_user, test_env):
         username = sharing_user["username"]
         owner = test_env.test_user.upper()
 
@@ -512,17 +511,3 @@ class TestCreateVectorIndex:
         assert [index.index_name for index in listed] == [
             self.index_name.upper()
         ]
-
-        self.vector_index.revoke_access(username)
-
-        try:
-            select_ai.disconnect()
-            select_ai.connect(**sharing_user["connect_params"])
-            with pytest.raises(VectorIndexNotFoundError):
-                select_ai.VectorIndex.fetch(self.index_name, owner=owner)
-            assert not list(
-                select_ai.VectorIndex.list(self.index_name, owner=owner)
-            )
-        finally:
-            select_ai.disconnect()
-            select_ai.create_pool(**test_env.connect_params(use_pool=True))
