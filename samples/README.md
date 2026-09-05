@@ -52,6 +52,23 @@ This sample intentionally omits `configuration.blocking`. The server waits
 for the database work to finish and returns the completed Task in the initial
 `message/send` response; no polling is needed.
 
+## A2A dynamic gateway
+
+The dynamic gateway samples submit the A2UI database connection form, open a
+temporary worker session, and execute database tasks. The gateway advertises
+`streaming: false` and supports non-blocking task execution with
+`configuration.blocking: false` and `tasks/get`.
+
+Gateway-specific samples that perform the form handshake and then execute a
+real database task are in [a2a/gateway](a2a/gateway/README.md):
+
+```bash
+python samples/a2a/gateway/blocking_task.py
+python samples/a2a/gateway/task_poll.py
+```
+
+See that README for local Consul, worker, and gateway startup instructions.
+
 
 `SELECT_AI_DB_CONNECT_STRING` can be in any one of the following formats
 
