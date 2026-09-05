@@ -19,6 +19,7 @@ from typing import (
 import oracledb
 import pandas
 
+from select_ai._validations import validate_user_or_role_name
 from select_ai.action import Action
 from select_ai.base_profile import (
     BaseProfile,
@@ -43,9 +44,9 @@ from select_ai.feedback import (
 )
 from select_ai.provider import Provider
 from select_ai.sql import (
-    GET_USER_AI_PROFILE,
-    GET_USER_AI_PROFILE_ATTRIBUTES,
-    LIST_USER_AI_PROFILES,
+    GET_ALL_AI_PROFILE,
+    GET_ALL_AI_PROFILE_ATTRIBUTES,
+    LIST_ALL_AI_PROFILES,
 )
 from select_ai.summary import SummaryParams
 from select_ai.synthetic_data import SyntheticDataAttributes
@@ -75,12 +76,17 @@ class AsyncProfile(BaseProfile):
         if self.profile_name:
             profile_exists = False
             try:
-                saved_description = await self._get_profile_description(
-                    profile_name=self.profile_name
+                saved_description, saved_owner = (
+                    await self._get_profile_description(
+                        profile_name=self.profile_name,
+                        owner=self.owner,
+                    )
                 )
+                self.owner = saved_owner
                 profile_exists = True
                 saved_attributes = await self._get_attributes(
                     profile_name=self.profile_name,
+                    owner=self.owner,
                     raise_on_empty=True,
                 )
                 self._raise_error_if_profile_exists()
@@ -100,38 +106,43 @@ class AsyncProfile(BaseProfile):
         return self
 
     @staticmethod
-    async def _get_profile_description(profile_name) -> Union[str, None]:
-        """Get description of profile from USER_CLOUD_AI_PROFILES
+    async def _get_profile_description(
+        profile_name: str, owner: Optional[str] = None
+    ) -> Tuple[Union[str, None], str]:
+        """Get a profile description and owner from ALL_CLOUD_AI_PROFILES.
 
         :param str profile_name: Name of profile
-        :return: Description of profile
-        :rtype: str
+        :param str owner: Owner of a shared profile. Defaults to current schema.
+        :return: Tuple containing the profile description and owner.
         :raises: ProfileNotFoundError
 
         """
         async with async_cursor() as cr:
             await cr.execute(
-                GET_USER_AI_PROFILE,
+                GET_ALL_AI_PROFILE,
                 profile_name=profile_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             profile = await cr.fetchone()
-            if profile is None:
-                raise ProfileNotFoundError(profile_name)
             if profile:
                 if profile[1] is not None:
-                    return await profile[1].read()
+                    description = await profile[1].read()
                 else:
-                    return None
+                    description = None
+                return description, profile[2]
             else:
                 raise ProfileNotFoundError(profile_name)
 
     @staticmethod
     async def _get_attributes(
-        profile_name: str, raise_on_empty: bool = True
+        profile_name: str,
+        owner: Optional[str] = None,
+        raise_on_empty: bool = True,
     ) -> Union[ProfileAttributes, None]:
         """Asynchronously gets AI profile attributes from the Database
 
         :param str profile_name: Name of the profile
+        :param str owner: Owner of a shared profile. Defaults to current schema.
         :param bool raise_on_empty: Raise an error if attributes are empty
         :return: select_ai.provider.ProviderAttributes
         :raises: select_ai.errors.ProfileAttributesEmptyError
@@ -139,8 +150,9 @@ class AsyncProfile(BaseProfile):
         """
         async with async_cursor() as cr:
             await cr.execute(
-                GET_USER_AI_PROFILE_ATTRIBUTES,
+                GET_ALL_AI_PROFILE_ATTRIBUTES,
                 profile_name=profile_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             attributes = await cr.fetchall()
             if attributes:
@@ -158,7 +170,10 @@ class AsyncProfile(BaseProfile):
         :return: select_ai.provider.ProviderAttributes
         :raises: ProfileNotFoundError
         """
-        return await self._get_attributes(profile_name=self.profile_name)
+        return await self._get_attributes(
+            profile_name=self.profile_name,
+            owner=self.owner,
+        )
 
     async def _set_attribute(
         self,
@@ -299,6 +314,30 @@ class AsyncProfile(BaseProfile):
                 keyword_parameters={"profile_name": self.profile_name},
             )
 
+    async def grant_access(self, user_or_role_name: str) -> None:
+        """Asynchronously grant a user or role access to this AI profile."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.GRANT_PROFILE_ACCESS",
+                keyword_parameters={
+                    "profile_name": self.profile_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
+    async def revoke_access(self, user_or_role_name: str) -> None:
+        """Asynchronously revoke a user or role's profile access."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.REVOKE_PROFILE_ACCESS",
+                keyword_parameters={
+                    "profile_name": self.profile_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
     @classmethod
     async def delete_profile(cls, profile_name: str, force: bool = False):
         """Asynchronously deletes an AI profile from the database
@@ -311,15 +350,22 @@ class AsyncProfile(BaseProfile):
         await cls._delete(profile_name=profile_name, force=force)
 
     @classmethod
-    async def fetch(cls, profile_name: str) -> "AsyncProfile":
+    async def fetch(
+        cls, profile_name: str, owner: Optional[str] = None
+    ) -> "AsyncProfile":
         """Asynchronously create an AI Profile object from attributes
         saved in the database
 
-        :param str profile_name:
+        :param str profile_name: Name of the AI profile.
+        :param str owner: Owner of a shared profile. Defaults to current schema.
         :return: select_ai.Profile
         :raises: ProfileNotFoundError
         """
-        return await cls(profile_name, raise_error_if_exists=False)
+        return await cls(
+            profile_name,
+            owner=owner,
+            raise_error_if_exists=False,
+        )
 
     async def _save_feedback(
         self,
@@ -410,26 +456,31 @@ class AsyncProfile(BaseProfile):
 
     @classmethod
     async def list(
-        cls, profile_name_pattern: str = ".*"
+        cls,
+        profile_name_pattern: str = ".*",
+        owner: Optional[str] = None,
     ) -> AsyncGenerator["AsyncProfile", None]:
         """Asynchronously list AI Profiles saved in the database.
 
         :param str profile_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
          match. Default value is ".*" i.e. match all AI profiles.
+        :param str owner: Owner of shared profiles. Defaults to current schema.
 
         :return: Iterator[Profile]
         """
         async with async_cursor() as cr:
             await cr.execute(
-                LIST_USER_AI_PROFILES,
+                LIST_ALL_AI_PROFILES,
                 profile_name_pattern=profile_name_pattern,
+                owner=owner.upper() if owner else None,
             )
             rows = await cr.fetchall()
             for row in rows:
                 profile_name = row[0]
                 yield await cls(
                     profile_name=profile_name,
+                    owner=row[2],
                     raise_error_if_exists=False,
                     raise_error_on_empty_attributes=False,
                 )
@@ -440,6 +491,7 @@ class AsyncProfile(BaseProfile):
         prompt: str,
         action=Action.SHOWSQL,
         params: Mapping = None,
+        attributes: Mapping = None,
     ) -> Union[pandas.DataFrame, str, None]:
         """Asynchronously perform AI translation using this profile
 
@@ -447,9 +499,13 @@ class AsyncProfile(BaseProfile):
         :param select_ai.profile.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :return: Union[pandas.DataFrame, str]
         """
-        parameters = self._generate_parameters(prompt, action, params)
+        parameters = self._generate_parameters(
+            prompt, action, params, attributes
+        )
 
         data = await cr.callfunc(
             "DBMS_CLOUD_AI.GENERATE",
@@ -470,6 +526,7 @@ class AsyncProfile(BaseProfile):
         prompt: str,
         action,
         params: Mapping = None,
+        attributes: Mapping = None,
     ) -> Mapping:
         if not prompt:
             raise ValueError("prompt cannot be empty or None")
@@ -478,10 +535,13 @@ class AsyncProfile(BaseProfile):
             "prompt": prompt,
             "action": action,
             "profile_name": self.profile_name,
-            # "attributes": self.attributes.json(),
         }
         if params:
             parameters["params"] = json.dumps(params)
+        if attributes is not None:
+            if not isinstance(attributes, Mapping):
+                raise TypeError("'attributes' must be a mapping")
+            parameters["attributes"] = json.dumps(attributes)
         return parameters
 
     async def _generate_stream(
@@ -490,6 +550,7 @@ class AsyncProfile(BaseProfile):
         action,
         params: Mapping = None,
         chunk_size: int = 8192,
+        attributes: Mapping = None,
     ) -> AsyncGenerator[str, None]:
         async with async_cursor() as cr:
             async for chunk in self._generate_stream_with_cursor(
@@ -498,6 +559,7 @@ class AsyncProfile(BaseProfile):
                 action=action,
                 params=params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             ):
                 yield chunk
 
@@ -508,13 +570,16 @@ class AsyncProfile(BaseProfile):
         action,
         params: Mapping = None,
         chunk_size: int = 8192,
+        attributes: Mapping = None,
     ) -> AsyncGenerator[str, None]:
         if action == Action.RUNSQL:
             raise ValueError("stream=True is not supported for run_sql")
         if chunk_size <= 0:
             raise ValueError("chunk_size must be greater than 0")
 
-        parameters = self._generate_parameters(prompt, action, params)
+        parameters = self._generate_parameters(
+            prompt, action, params, attributes
+        )
         data = await cr.callfunc(
             "DBMS_CLOUD_AI.GENERATE",
             oracledb.DB_TYPE_CLOB,
@@ -538,6 +603,8 @@ class AsyncProfile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[pandas.DataFrame, str, AsyncGenerator[str, None], None]:
         """Asynchronously perform AI translation using this profile
 
@@ -545,15 +612,23 @@ class AsyncProfile(BaseProfile):
         :param select_ai.profile.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an async iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: Union[pandas.DataFrame, str]
         """
         if stream:
-            return self._generate_stream(prompt, action, params, chunk_size)
+            return self._generate_stream(
+                prompt, action, params, chunk_size, attributes
+            )
         async with async_cursor() as cr:
             return await self._generate_with_cursor(
-                cr, prompt=prompt, action=action, params=params
+                cr,
+                prompt=prompt,
+                action=action,
+                params=params,
+                attributes=attributes,
             )
 
     async def chat(
@@ -562,11 +637,15 @@ class AsyncProfile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, AsyncGenerator[str, None]]:
         """Asynchronously chat with the LLM
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an async iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -577,6 +656,7 @@ class AsyncProfile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     @asynccontextmanager
@@ -611,11 +691,15 @@ class AsyncProfile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, AsyncGenerator[str, None]]:
         """Narrate the result of the SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an async iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -626,6 +710,7 @@ class AsyncProfile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     async def explain_sql(
@@ -634,11 +719,15 @@ class AsyncProfile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ):
         """Explain the generated SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an async iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -649,18 +738,30 @@ class AsyncProfile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     async def run_sql(
-        self, prompt, params: Mapping = None
+        self,
+        prompt,
+        params: Mapping = None,
+        *,
+        attributes: Mapping = None,
     ) -> pandas.DataFrame:
         """Explain the generated SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :return: pandas.DataFrame
         """
-        return await self.generate(prompt, action=Action.RUNSQL, params=params)
+        return await self.generate(
+            prompt,
+            action=Action.RUNSQL,
+            params=params,
+            attributes=attributes,
+        )
 
     async def show_sql(
         self,
@@ -668,11 +769,15 @@ class AsyncProfile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ):
         """Show the generated SQL
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an async iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -683,6 +788,7 @@ class AsyncProfile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     async def show_prompt(
@@ -691,11 +797,15 @@ class AsyncProfile(BaseProfile):
         params: Mapping = None,
         stream: bool = False,
         chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ):
         """Show the prompt sent to LLM
 
         :param str prompt: Natural language prompt
         :param params: Parameters to include in the LLM request
+        :param Mapping attributes: Profile attributes to override for this
+         request
         :param bool stream: Return an async iterator of response chunks
         :param int chunk_size: Number of characters to read per stream chunk
         :return: str
@@ -706,6 +816,7 @@ class AsyncProfile(BaseProfile):
             params=params,
             stream=stream,
             chunk_size=chunk_size,
+            attributes=attributes,
         )
 
     async def summarize(
@@ -776,6 +887,8 @@ class AsyncProfile(BaseProfile):
         self,
         prompt_specifications: List[Tuple[str, Action]],
         continue_on_error: bool = False,
+        *,
+        attributes: Mapping = None,
     ) -> List[Union[str, pandas.DataFrame]]:
         """Send Multiple prompts in a single roundtrip to the Database
 
@@ -784,16 +897,25 @@ class AsyncProfile(BaseProfile):
          corresponding action
 
         :param bool continue_on_error: True to continue on error else False
+        :param Mapping attributes: Profile attributes to override for every
+         request in the pipeline
         :return: List[Union[str, pandas.DataFrame]]
         """
+        serialized_attributes = None
+        if attributes is not None:
+            if not isinstance(attributes, Mapping):
+                raise TypeError("'attributes' must be a mapping")
+            serialized_attributes = json.dumps(attributes)
+
         pipeline = oracledb.create_pipeline()
         for prompt, action in prompt_specifications:
             parameters = {
                 "prompt": prompt,
                 "action": action,
                 "profile_name": self.profile_name,
-                # "attributes": self.attributes.json(),
             }
+            if serialized_attributes is not None:
+                parameters["attributes"] = serialized_attributes
             pipeline.add_callfunc(
                 "DBMS_CLOUD_AI.GENERATE",
                 return_type=oracledb.DB_TYPE_CLOB,
@@ -866,7 +988,12 @@ class AsyncSession:
         self._cursor = None
 
     async def chat(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, AsyncGenerator[str, None]]:
         if stream:
             return self.async_profile._generate_stream_with_cursor(
@@ -875,13 +1002,23 @@ class AsyncSession:
                 action=Action.CHAT,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return await self.async_profile._generate_with_cursor(
-            self._cursor, prompt=prompt, action=Action.CHAT, params=self.params
+            self._cursor,
+            prompt=prompt,
+            action=Action.CHAT,
+            params=self.params,
+            attributes=attributes,
         )
 
     async def narrate(
-        self, prompt, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, AsyncGenerator[str, None]]:
         """Narrate the result of the SQL
 
@@ -897,13 +1034,23 @@ class AsyncSession:
                 action=Action.NARRATE,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return await self.async_profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.NARRATE, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.NARRATE,
+            params=self.params,
+            attributes=attributes,
         )
 
     async def explain_sql(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, AsyncGenerator[str, None]]:
         """Explain the generated SQL
 
@@ -919,23 +1066,39 @@ class AsyncSession:
                 action=Action.EXPLAINSQL,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return await self.async_profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.EXPLAINSQL, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.EXPLAINSQL,
+            params=self.params,
+            attributes=attributes,
         )
 
-    async def run_sql(self, prompt: str) -> pandas.DataFrame:
+    async def run_sql(
+        self, prompt: str, *, attributes: Mapping = None
+    ) -> pandas.DataFrame:
         """Explain the generated SQL
 
         :param str prompt: Natural language prompt
         :return: pandas.DataFrame
         """
         return await self.async_profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.RUNSQL, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.RUNSQL,
+            params=self.params,
+            attributes=attributes,
         )
 
     async def show_sql(
-        self, prompt, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, AsyncGenerator[str, None]]:
         """Show the generated SQL
 
@@ -951,13 +1114,23 @@ class AsyncSession:
                 action=Action.SHOWSQL,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return await self.async_profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.SHOWSQL, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.SHOWSQL,
+            params=self.params,
+            attributes=attributes,
         )
 
     async def show_prompt(
-        self, prompt: str, stream: bool = False, chunk_size: int = 8192
+        self,
+        prompt: str,
+        stream: bool = False,
+        chunk_size: int = 8192,
+        *,
+        attributes: Mapping = None,
     ) -> Union[str, AsyncGenerator[str, None]]:
         """Show the prompt sent to LLM
 
@@ -973,9 +1146,14 @@ class AsyncSession:
                 action=Action.SHOWPROMPT,
                 params=self.params,
                 chunk_size=chunk_size,
+                attributes=attributes,
             )
         return await self.async_profile._generate_with_cursor(
-            self._cursor, prompt, action=Action.SHOWPROMPT, params=self.params
+            self._cursor,
+            prompt,
+            action=Action.SHOWPROMPT,
+            params=self.params,
+            attributes=attributes,
         )
 
     async def __aenter__(self):

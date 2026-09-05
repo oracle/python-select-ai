@@ -453,3 +453,38 @@ class TestAsyncCreateVectorIndex:
         for _ in range(10):
             await self.async_vector_index.create(replace=True)
         logger.info("Successfully recreated vector index multiple times.")
+
+    async def test_5019_grant_access(self, sharing_user, test_env):
+        username = sharing_user["username"]
+        owner = test_env.test_user.upper()
+
+        async def fetch_and_list_as_sharing_user():
+            try:
+                await select_ai.async_disconnect()
+                await select_ai.async_connect(**sharing_user["connect_params"])
+                fetched = await select_ai.AsyncVectorIndex.fetch(
+                    self.index_name,
+                    owner=owner,
+                )
+                listed = [
+                    index
+                    async for index in select_ai.AsyncVectorIndex.list(
+                        self.index_name,
+                        owner=owner,
+                    )
+                ]
+                return fetched, listed
+            finally:
+                await select_ai.async_disconnect()
+                select_ai.create_pool_async(
+                    **test_env.connect_params(use_pool=True)
+                )
+
+        await self.async_vector_index.create(replace=True)
+        await self.async_vector_index.grant_access(username)
+        fetched, listed = await fetch_and_list_as_sharing_user()
+        assert fetched.index_name == self.index_name
+        assert fetched.owner == owner
+        assert [index.index_name for index in listed] == [
+            self.index_name.upper()
+        ]

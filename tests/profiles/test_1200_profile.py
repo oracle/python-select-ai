@@ -404,3 +404,24 @@ def test_1219_profile_status(python_gen_ai_profile, cursor):
         profile_name=python_gen_ai_profile.profile_name,
     )
     assert cursor.fetchone()[0] == "ENABLED"
+
+
+def test_1221_shared_profile_credential_access(
+    python_gen_ai_profile, shared_credential_access, sharing_user
+):
+    username = sharing_user["username"]
+    python_gen_ai_profile.grant_access(username)
+    try:
+        with oracledb.connect(**sharing_user["connect_params"]) as conn:
+            with conn.cursor() as cr:
+                cr.execute(
+                    """
+                    SELECT COUNT(*)
+                    FROM ALL_CREDENTIALS
+                    WHERE credential_name = :credential_name
+                    """,
+                    credential_name=shared_credential_access,
+                )
+                assert cr.fetchone()[0] == 1
+    finally:
+        python_gen_ai_profile.revoke_access(username)

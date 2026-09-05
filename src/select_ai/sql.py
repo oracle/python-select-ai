@@ -73,41 +73,47 @@ BEGIN
 END;
 """
 
-GET_USER_AI_PROFILE_ATTRIBUTES = """
+GET_ALL_AI_PROFILE_ATTRIBUTES = """
 SELECT attribute_name, attribute_value
-FROM USER_CLOUD_AI_PROFILE_ATTRIBUTES
+FROM ALL_CLOUD_AI_PROFILE_ATTRIBUTES
 WHERE profile_name = :profile_name
+AND owner = COALESCE(:owner, SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'))
 """
 
-GET_USER_AI_PROFILE = """
-SELECT profile_name, description
-FROM  USER_CLOUD_AI_PROFILES
+GET_ALL_AI_PROFILE = """
+SELECT profile_name, description, owner
+FROM ALL_CLOUD_AI_PROFILES
 WHERE profile_name = :profile_name
+AND owner = COALESCE(:owner, SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'))
 """
 
 
-LIST_USER_AI_PROFILES = """
-SELECT profile_name, description
-FROM USER_CLOUD_AI_PROFILES
+LIST_ALL_AI_PROFILES = """
+SELECT profile_name, description, owner
+FROM ALL_CLOUD_AI_PROFILES
 WHERE REGEXP_LIKE(profile_name, :profile_name_pattern, 'i')
+AND owner = COALESCE(:owner, SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'))
 """
 
-LIST_USER_VECTOR_INDEXES = """
-SELECT v.index_name, v.description
-FROM USER_CLOUD_VECTOR_INDEXES v
+LIST_ALL_VECTOR_INDEXES = """
+SELECT v.index_name, v.description, v.owner
+FROM ALL_CLOUD_VECTOR_INDEXES v
 WHERE REGEXP_LIKE(v.index_name, :index_name_pattern, 'i')
+AND v.owner = COALESCE(:owner, SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'))
 """
 
-GET_USER_VECTOR_INDEX = """
-select index_name, description
-from USER_CLOUD_VECTOR_INDEXES v
-where index_name = :index_name
+GET_ALL_VECTOR_INDEX = """
+SELECT index_name, description, owner
+FROM ALL_CLOUD_VECTOR_INDEXES
+WHERE index_name = :index_name
+AND owner = COALESCE(:owner, SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'))
 """
 
-GET_USER_VECTOR_INDEX_ATTRIBUTES = """
+GET_ALL_VECTOR_INDEX_ATTRIBUTES = """
 SELECT attribute_name, attribute_value
-FROM USER_CLOUD_VECTOR_INDEX_ATTRIBUTES
-WHERE INDEX_NAME = :index_name
+FROM ALL_CLOUD_VECTOR_INDEX_ATTRIBUTES
+WHERE index_name = :index_name
+AND owner = COALESCE(:owner, SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'))
 """
 
 LIST_USER_CONVERSATIONS = """

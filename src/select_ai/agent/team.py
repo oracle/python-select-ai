@@ -21,6 +21,7 @@ from typing import (
 import oracledb
 
 from select_ai._abc import SelectAIDataClass
+from select_ai._validations import validate_user_or_role_name
 from select_ai.agent.sql import (
     GET_USER_AI_AGENT_TEAM,
     GET_USER_AI_AGENT_TEAM_ATTRIBUTES,
@@ -240,6 +241,30 @@ class Team(BaseTeam):
                 "DBMS_CLOUD_AI_AGENT.ENABLE_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
+                },
+            )
+
+    def grant_access(self, user_or_role_name: str) -> None:
+        """Grant a database user or role access to this agent team."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.GRANT_TEAM_ACCESS",
+                keyword_parameters={
+                    "team_name": self.team_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
+    def revoke_access(self, user_or_role_name: str) -> None:
+        """Revoke a database user or role's access to this agent team."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.REVOKE_TEAM_ACCESS",
+                keyword_parameters={
+                    "team_name": self.team_name,
+                    "user_or_role_name": user_or_role_name,
                 },
             )
 
@@ -701,6 +726,30 @@ class AsyncTeam(BaseTeam):
                 "DBMS_CLOUD_AI_AGENT.ENABLE_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
+                },
+            )
+
+    async def grant_access(self, user_or_role_name: str) -> None:
+        """Asynchronously grant a user or role access to this agent team."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.GRANT_TEAM_ACCESS",
+                keyword_parameters={
+                    "team_name": self.team_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
+    async def revoke_access(self, user_or_role_name: str) -> None:
+        """Asynchronously revoke a user or role's agent team access."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI_AGENT.REVOKE_TEAM_ACCESS",
+                keyword_parameters={
+                    "team_name": self.team_name,
+                    "user_or_role_name": user_or_role_name,
                 },
             )
 

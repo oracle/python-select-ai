@@ -16,15 +16,16 @@ import oracledb
 from select_ai import BaseProfile
 from select_ai._abc import SelectAIDataClass
 from select_ai._enums import StrEnum
+from select_ai._validations import validate_user_or_role_name
 from select_ai.async_profile import AsyncProfile
 from select_ai.db import async_cursor, cursor
 from select_ai.errors import ProfileNotFoundError, VectorIndexNotFoundError
 from select_ai.profile import Profile
 from select_ai.sql import (
-    GET_USER_VECTOR_INDEX,
-    GET_USER_VECTOR_INDEX_ATTRIBUTES,
+    GET_ALL_VECTOR_INDEX,
+    GET_ALL_VECTOR_INDEX_ATTRIBUTES,
     GET_VECTOR_PIPELINE_LAST_EXECUTION,
-    LIST_USER_VECTOR_INDEXES,
+    LIST_ALL_VECTOR_INDEXES,
 )
 
 
@@ -116,6 +117,7 @@ class _BaseVectorIndex(ABC):
         index_name: Optional[str] = None,
         description: Optional[str] = None,
         attributes: Optional[VectorIndexAttributes] = None,
+        owner: Optional[str] = None,
     ):
         """Initialize a Vector Index"""
         if attributes and not isinstance(attributes, VectorIndexAttributes):
@@ -132,6 +134,16 @@ class _BaseVectorIndex(ABC):
         self.index_name = index_name
         self.attributes = attributes
         self.description = description
+        self.owner = owner.upper() if owner else None
+
+    @property
+    def qualified_name(self) -> Optional[str]:
+        """Return the owner-qualified index name when owner is known."""
+        if self.index_name is None:
+            return None
+        if self.owner is None:
+            return self.index_name
+        return f"{self.owner}.{self.index_name}"
 
     def __repr__(self):
         return (
@@ -151,17 +163,22 @@ class VectorIndex(_BaseVectorIndex):
     """
 
     @staticmethod
-    def _get_attributes(index_name: str) -> VectorIndexAttributes:
+    def _get_attributes(
+        index_name: str, owner: Optional[str] = None
+    ) -> VectorIndexAttributes:
         """Get attributes of a vector index
 
         :return: select_ai.VectorIndexAttributes
+        :param str owner: Owner of a shared index. Defaults to current schema.
         :raises: VectorIndexNotFoundError
         """
         if not index_name:
             raise AttributeError("'index_name' is required")
         with cursor() as cr:
             cr.execute(
-                GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name.upper()
+                GET_ALL_VECTOR_INDEX_ATTRIBUTES,
+                index_name=index_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             attributes = cr.fetchall()
             if attributes:
@@ -178,23 +195,31 @@ class VectorIndex(_BaseVectorIndex):
                 raise VectorIndexNotFoundError(index_name=index_name)
 
     @staticmethod
-    def _get_description(index_name) -> Union[str, None]:
-        """Get description of the Vector Index from USER_CLOUD_VECTOR_INDEXES
+    def _get_description(
+        index_name: str, owner: Optional[str] = None
+    ) -> tuple[Union[str, None], str]:
+        """Get an index description and owner.
 
         :param str index_name: The name of the vector index
-        :return: Union[str, None] profile description
+        :param str owner: Owner of a shared index. Defaults to current schema.
+        :return: Tuple containing the index description and owner.
         :raises: ProfileNotFoundError
         """
         if not index_name:
             raise AttributeError("'index_name' is required")
         with cursor() as cr:
-            cr.execute(GET_USER_VECTOR_INDEX, index_name=index_name.upper())
+            cr.execute(
+                GET_ALL_VECTOR_INDEX,
+                index_name=index_name.upper(),
+                owner=owner.upper() if owner else None,
+            )
             index = cr.fetchone()
             if index:
                 if index[1] is not None:
-                    return index[1].read()
+                    description = index[1].read()
                 else:
-                    return None
+                    description = None
+                return description, index[2]
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
@@ -333,19 +358,49 @@ class VectorIndex(_BaseVectorIndex):
                 else:
                     raise
 
+    def grant_access(self, user_or_role_name: str) -> None:
+        """Grant a database user or role access to this vector index."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.GRANT_VECTOR_INDEX_ACCESS",
+                keyword_parameters={
+                    "index_name": self.index_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
+    def revoke_access(self, user_or_role_name: str) -> None:
+        """Revoke a database user or role's vector index access."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        with cursor() as cr:
+            cr.callproc(
+                "DBMS_CLOUD_AI.REVOKE_VECTOR_INDEX_ACCESS",
+                keyword_parameters={
+                    "index_name": self.index_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
     @classmethod
-    def fetch(cls, index_name: str) -> "VectorIndex":
+    def fetch(
+        cls, index_name: str, owner: Optional[str] = None
+    ) -> "VectorIndex":
         """
         Fetches vector index attributes from the
         database and builds a proxy object for the
         passed index_name
 
         :param str index_name: The name of the vector index
+        :param str owner: Owner of a shared index. Defaults to current schema.
         """
-        description = cls._get_description(index_name)
-        attributes = cls._get_attributes(index_name)
+        description, saved_owner = cls._get_description(index_name, owner)
+        attributes = cls._get_attributes(index_name, saved_owner)
         try:
-            profile = Profile(profile_name=attributes.profile_name)
+            profile = Profile(
+                profile_name=attributes.profile_name,
+                owner=saved_owner,
+            )
         except ProfileNotFoundError:
             profile = None
         return cls(
@@ -353,6 +408,7 @@ class VectorIndex(_BaseVectorIndex):
             attributes=attributes,
             profile=profile,
             index_name=index_name,
+            owner=saved_owner,
         )
 
     def set_attribute(
@@ -411,7 +467,7 @@ class VectorIndex(_BaseVectorIndex):
         :return: select_ai.VectorIndexAttributes
         :raises: VectorIndexNotFoundError
         """
-        return self._get_attributes(self.index_name)
+        return self._get_attributes(self.index_name, self.owner)
 
     def get_next_refresh_timestamp(self) -> Optional[datetime]:
         """
@@ -446,28 +502,40 @@ class VectorIndex(_BaseVectorIndex):
         :return: select_ai.Profile
         :raises: ProfileNotFoundError
         """
-        attributes = self._get_attributes(index_name=self.index_name)
-        profile = Profile(profile_name=attributes.profile_name)
+        attributes = self._get_attributes(
+            index_name=self.index_name,
+            owner=self.owner,
+        )
+        profile = Profile(
+            profile_name=attributes.profile_name,
+            owner=self.owner,
+        )
         return profile
 
     @classmethod
-    def list(cls, index_name_pattern: str = ".*") -> Iterator["VectorIndex"]:
+    def list(
+        cls,
+        index_name_pattern: str = ".*",
+        owner: Optional[str] = None,
+    ) -> Iterator["VectorIndex"]:
         """List Vector Indexes
 
         :param str index_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
          match. Default value is ".*" i.e. match all vector indexes.
+        :param str owner: Owner of shared indexes. Defaults to current schema.
 
         :return: Iterator[VectorIndex]
         """
         with cursor() as cr:
             cr.execute(
-                LIST_USER_VECTOR_INDEXES,
+                LIST_ALL_VECTOR_INDEXES,
                 index_name_pattern=index_name_pattern,
+                owner=owner.upper() if owner else None,
             )
             for row in cr.fetchall():
                 index_name = row[0]
-                yield cls.fetch(index_name=index_name)
+                yield cls.fetch(index_name=index_name, owner=row[2])
 
 
 class AsyncVectorIndex(_BaseVectorIndex):
@@ -482,17 +550,22 @@ class AsyncVectorIndex(_BaseVectorIndex):
     """
 
     @staticmethod
-    async def _get_attributes(index_name: str) -> VectorIndexAttributes:
+    async def _get_attributes(
+        index_name: str, owner: Optional[str] = None
+    ) -> VectorIndexAttributes:
         """Get attributes of a vector index
 
         :return: select_ai.VectorIndexAttributes
+        :param str owner: Owner of a shared index. Defaults to current schema.
         :raises: VectorIndexNotFoundError
         """
         if not index_name:
             raise AttributeError("'index_name' is required")
         async with async_cursor() as cr:
             await cr.execute(
-                GET_USER_VECTOR_INDEX_ATTRIBUTES, index_name=index_name.upper()
+                GET_ALL_VECTOR_INDEX_ATTRIBUTES,
+                index_name=index_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             attributes = await cr.fetchall()
             if attributes:
@@ -509,25 +582,31 @@ class AsyncVectorIndex(_BaseVectorIndex):
                 raise VectorIndexNotFoundError(index_name=index_name)
 
     @staticmethod
-    async def _get_description(index_name) -> Union[str, None]:
-        """Get description of the Vector Index from USER_CLOUD_VECTOR_INDEXES
+    async def _get_description(
+        index_name: str, owner: Optional[str] = None
+    ) -> tuple[Union[str, None], str]:
+        """Get an index description and owner.
 
         :param str index_name: The name of the vector index
-        :return: Union[str, None] profile description
+        :param str owner: Owner of a shared index. Defaults to current schema.
+        :return: Tuple containing the index description and owner.
         :raises: ProfileNotFoundError
         """
         if not index_name:
             raise AttributeError("'index_name' is required")
         async with async_cursor() as cr:
             await cr.execute(
-                GET_USER_VECTOR_INDEX, index_name=index_name.upper()
+                GET_ALL_VECTOR_INDEX,
+                index_name=index_name.upper(),
+                owner=owner.upper() if owner else None,
             )
             index = await cr.fetchone()
             if index:
                 if index[1] is not None:
-                    return await index[1].read()
+                    description = await index[1].read()
                 else:
-                    return None
+                    description = None
+                return description, index[2]
             else:
                 raise VectorIndexNotFoundError(index_name=index_name)
 
@@ -664,19 +743,51 @@ class AsyncVectorIndex(_BaseVectorIndex):
                 else:
                     raise
 
+    async def grant_access(self, user_or_role_name: str) -> None:
+        """Asynchronously grant a user or role access to this vector index."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.GRANT_VECTOR_INDEX_ACCESS",
+                keyword_parameters={
+                    "index_name": self.index_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
+    async def revoke_access(self, user_or_role_name: str) -> None:
+        """Asynchronously revoke a user or role's vector index access."""
+        user_or_role_name = validate_user_or_role_name(user_or_role_name)
+        async with async_cursor() as cr:
+            await cr.callproc(
+                "DBMS_CLOUD_AI.REVOKE_VECTOR_INDEX_ACCESS",
+                keyword_parameters={
+                    "index_name": self.index_name,
+                    "user_or_role_name": user_or_role_name,
+                },
+            )
+
     @classmethod
-    async def fetch(cls, index_name: str) -> "AsyncVectorIndex":
+    async def fetch(
+        cls, index_name: str, owner: Optional[str] = None
+    ) -> "AsyncVectorIndex":
         """
         Fetches vector index attributes from the
         database and builds a proxy object for the
         passed index_name
 
         :param str index_name: The name of the vector index
+        :param str owner: Owner of a shared index. Defaults to current schema.
         """
-        description = await cls._get_description(index_name)
-        attributes = await cls._get_attributes(index_name)
+        description, saved_owner = await cls._get_description(
+            index_name, owner
+        )
+        attributes = await cls._get_attributes(index_name, saved_owner)
         try:
-            profile = await AsyncProfile(profile_name=attributes.profile_name)
+            profile = await AsyncProfile(
+                profile_name=attributes.profile_name,
+                owner=saved_owner,
+            )
         except ProfileNotFoundError:
             profile = None
         return cls(
@@ -684,6 +795,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
             attributes=attributes,
             profile=profile,
             index_name=index_name,
+            owner=saved_owner,
         )
 
     async def set_attribute(
@@ -737,7 +849,10 @@ class AsyncVectorIndex(_BaseVectorIndex):
         :return: select_ai.VectorIndexAttributes
         :raises: VectorIndexNotFoundError
         """
-        return await self._get_attributes(index_name=self.index_name)
+        return await self._get_attributes(
+            index_name=self.index_name,
+            owner=self.owner,
+        )
 
     async def get_next_refresh_timestamp(self) -> Optional[datetime]:
         """Return the UTC timestamp for the next scheduled refresh."""
@@ -770,30 +885,40 @@ class AsyncVectorIndex(_BaseVectorIndex):
         :return: select_ai.AsyncProfile
         :raises: ProfileNotFoundError
         """
-        attributes = await self._get_attributes(index_name=self.index_name)
-        profile = await AsyncProfile(profile_name=attributes.profile_name)
+        attributes = await self._get_attributes(
+            index_name=self.index_name,
+            owner=self.owner,
+        )
+        profile = await AsyncProfile(
+            profile_name=attributes.profile_name,
+            owner=self.owner,
+        )
         return profile
 
     @classmethod
     async def list(
-        cls, index_name_pattern: str = ".*"
+        cls,
+        index_name_pattern: str = ".*",
+        owner: Optional[str] = None,
     ) -> AsyncGenerator["AsyncVectorIndex", None]:
         """List Vector Indexes.
 
         :param str index_name_pattern: Regular expressions can be used
          to specify a pattern. Function REGEXP_LIKE is used to perform the
          match. Default value is ".*" i.e. match all vector indexes.
+        :param str owner: Owner of shared indexes. Defaults to current schema.
 
         :return: AsyncGenerator[VectorIndex]
 
         """
         async with async_cursor() as cr:
             await cr.execute(
-                LIST_USER_VECTOR_INDEXES,
+                LIST_ALL_VECTOR_INDEXES,
                 index_name_pattern=index_name_pattern,
+                owner=owner.upper() if owner else None,
             )
             rows = await cr.fetchall()
             for row in rows:
                 index_name = row[0]
-                index = await cls.fetch(index_name=index_name)
+                index = await cls.fetch(index_name=index_name, owner=row[2])
                 yield index

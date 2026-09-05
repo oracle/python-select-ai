@@ -284,6 +284,49 @@ def test_1616_chat_stream(generate_profile):
     assert "Oracle Cloud Infrastructure" in response
 
 
+def test_1620_generate_with_request_attributes(generate_profile):
+    """Request attributes are passed through to the database generate call"""
+    instruction = "Include the exact marker PYSAI_REQUEST_ATTRIBUTES_E2E in the response."
+
+    show_prompt = generate_profile.show_prompt(
+        prompt="Tell me about OCI",
+        attributes={"additional_instructions": instruction},
+    )
+
+    assert instruction in show_prompt
+
+
+@pytest.fixture
+def profile_with_additional_instructions(oci_credential, generate_provider):
+    instruction = "Include the exact marker PYSAI_PROFILE_ATTRIBUTES_E2E in the response."
+    profile_name = f"{PROFILE_PREFIX}_ATTR_{uuid.uuid4().hex.upper()}"
+    profile = Profile(
+        profile_name=profile_name,
+        attributes=ProfileAttributes(
+            credential_name=oci_credential["credential_name"],
+            provider=generate_provider,
+            additional_instructions=instruction,
+        ),
+        description="Generate profile attributes E2E test profile",
+        replace=True,
+    )
+    yield profile, instruction
+    profile.delete(force=True)
+
+
+def test_1621_profile_attributes_reach_database(
+    profile_with_additional_instructions,
+):
+    """Persistent profile attributes are stored and used by the database"""
+    profile, instruction = profile_with_additional_instructions
+
+    fetched_attributes = profile.get_attributes()
+    assert fetched_attributes.additional_instructions == instruction
+
+    show_prompt = profile.show_prompt(prompt="Tell me about OCI")
+    assert instruction in show_prompt
+
+
 def test_1616_empty_prompt_raises_value_error(negative_profile):
     """Empty prompts raise ValueError for profile methods"""
     logger.info(

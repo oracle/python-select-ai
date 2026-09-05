@@ -158,6 +158,57 @@ def test_env(pytestconfig):
     return env
 
 
+@pytest.fixture(scope="session")
+def sharing_user(test_env, setup_test_user):
+    """Create a real database user used by object-sharing E2E tests."""
+    username = f"PYSAI_SHARE_{uuid.uuid4().hex[:12].upper()}"
+    password = f"PySai_{uuid.uuid4().hex}1aA"
+    with oracledb.connect(**test_env.connect_params(admin=True)) as conn:
+        with conn.cursor() as cur:
+            cur.execute(f'CREATE USER {username} IDENTIFIED BY "{password}"')
+            _grant_basic_schema_privileges(cur, username=username)
+            _grant_select_ai_privileges(cur, username=username)
+            _grant_http_access(
+                cur,
+                username=username,
+                provider_endpoint=select_ai.OpenAIProvider.provider_endpoint,
+            )
+        conn.commit()
+
+    yield {
+        "username": username,
+        "connect_params": {
+            **test_env.connect_params(),
+            "user": username,
+            "password": password,
+        },
+    }
+
+    with oracledb.connect(**test_env.connect_params(admin=True)) as conn:
+        with conn.cursor() as cur:
+            cur.execute(f"DROP USER {username} CASCADE")
+        conn.commit()
+
+
+@pytest.fixture(scope="module")
+def shared_credential_access(oci_credential, sharing_user):
+    """Grant the sharing user access to the profile's credential object."""
+    credential_name = oci_credential["credential_name"].upper()
+    username = sharing_user["username"]
+
+    select_ai.grant_credential_access(
+        credential_name=credential_name,
+        user_or_role_name=username,
+    )
+
+    yield credential_name
+
+    select_ai.revoke_credential_access(
+        credential_name=credential_name,
+        user_or_role_name=username,
+    )
+
+
 @pytest.fixture(autouse=True, scope="session")
 def setup_test_user(test_env):
     with oracledb.connect(**test_env.connect_params(admin=True)) as conn:
@@ -169,6 +220,8 @@ def setup_test_user(test_env):
                 password=test_env.test_user_password,
             )
             _grant_basic_schema_privileges(cur, username=test_env.test_user)
+            cur.execute(f"GRANT CREATE PUBLIC SYNONYM TO {test_env.test_user}")
+            cur.execute(f"GRANT DROP PUBLIC SYNONYM TO {test_env.test_user}")
             _grant_select_ai_privileges(cur, username=test_env.test_user)
             _grant_http_access(
                 cur,
@@ -227,9 +280,16 @@ def oci_credential(connect, test_env):
         "private_key": get_env_value("OCI_PRIVATE_KEY", required=True),
         "fingerprint": get_env_value("OCI_FINGERPRINT", required=True),
     }
-    select_ai.create_credential(credential, replace=True)
+    select_ai.create_credential(
+        credential,
+        replace=True,
+        public_synonym=True,
+    )
     yield credential
-    select_ai.delete_credential(PYSAI_OCI_CREDENTIAL_NAME)
+    select_ai.delete_credential(
+        PYSAI_OCI_CREDENTIAL_NAME,
+        public_synonym=True,
+    )
 
 
 @pytest.fixture(scope="module")

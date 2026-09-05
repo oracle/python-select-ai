@@ -41,6 +41,8 @@ class ProfileAttributes(SelectAIDataClass):
      provider APIs.
     :param bool enforce_object_list: Specifies whether to restrict the LLM
      to generate SQL that uses only tables covered by the object list.
+    :param str additional_instructions: Persistent guidance that Select AI
+     applies to requests that use the profile.
     :param int max_tokens: Denotes the number of tokens to return per
      generation. Default is 1024.
     :param List[Mapping] object_list: Array of JSON objects specifying
@@ -69,6 +71,7 @@ class ProfileAttributes(SelectAIDataClass):
 
     """
 
+    additional_instructions: Optional[str] = None
     annotations: Optional[bool] = None
     case_sensitive_values: Optional[bool] = None
     comments: Optional[bool] = None
@@ -163,6 +166,8 @@ class BaseProfile(ABC):
 
     :param str description: Description of the profile
 
+    :param str owner: Database user that owns the profile
+
     :param bool merge: Fetches the profile
      from database, merges the non-null attributes and saves it back
      in the database. Default value is False
@@ -189,6 +194,7 @@ class BaseProfile(ABC):
         replace: Optional[bool] = False,
         raise_error_if_exists: Optional[bool] = True,
         raise_error_on_empty_attributes: Optional[bool] = False,
+        owner: Optional[str] = None,
     ):
         """Initialize a base profile"""
         self.profile_name = profile_name
@@ -199,10 +205,20 @@ class BaseProfile(ABC):
             )
         self.attributes = attributes
         self.description = description
+        self.owner = owner.upper() if owner else None
         self.merge = merge
         self.replace = replace
         self.raise_error_if_exists = raise_error_if_exists
         self.raise_error_on_empty_attributes = raise_error_on_empty_attributes
+
+    @property
+    def qualified_name(self) -> Optional[str]:
+        """Return the owner-qualified profile name when owner is known."""
+        if self.profile_name is None:
+            return None
+        if self.owner is None:
+            return self.profile_name
+        return f"{self.owner}.{self.profile_name}"
 
     def _raise_error_if_profile_exists(self):
         """

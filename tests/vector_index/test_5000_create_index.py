@@ -479,3 +479,35 @@ class TestCreateVectorIndex:
         for _ in range(10):
             self.vector_index.create(replace=True)
         logger.info("Successfully recreated vector index multiple times.")
+
+    def test_5019_grant_access(self, sharing_user, test_env):
+        username = sharing_user["username"]
+        owner = test_env.test_user.upper()
+
+        def fetch_and_list_as_sharing_user():
+            try:
+                select_ai.disconnect()
+                select_ai.connect(**sharing_user["connect_params"])
+                fetched = select_ai.VectorIndex.fetch(
+                    self.index_name,
+                    owner=owner,
+                )
+                listed = list(
+                    select_ai.VectorIndex.list(
+                        self.index_name,
+                        owner=owner,
+                    )
+                )
+                return fetched, listed
+            finally:
+                select_ai.disconnect()
+                select_ai.create_pool(**test_env.connect_params(use_pool=True))
+
+        self.vector_index.create(replace=True)
+        self.vector_index.grant_access(username)
+        fetched, listed = fetch_and_list_as_sharing_user()
+        assert fetched.index_name == self.index_name
+        assert fetched.owner == owner
+        assert [index.index_name for index in listed] == [
+            self.index_name.upper()
+        ]

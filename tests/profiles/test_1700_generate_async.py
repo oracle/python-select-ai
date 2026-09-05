@@ -319,6 +319,53 @@ async def test_1716_chat_stream(async_generate_profile):
 
 
 @pytest.mark.anyio
+async def test_1720_generate_with_request_attributes(async_generate_profile):
+    """Request attributes are passed through to the database generate call"""
+    instruction = "Include the exact marker PYSAI_REQUEST_ATTRIBUTES_E2E in the response."
+
+    show_prompt = await async_generate_profile.show_prompt(
+        prompt="Tell me about OCI",
+        attributes={"additional_instructions": instruction},
+    )
+
+    assert instruction in show_prompt
+
+
+@pytest.fixture
+async def async_profile_with_additional_instructions(
+    oci_credential, async_generate_provider
+):
+    instruction = "Include the exact marker PYSAI_PROFILE_ATTRIBUTES_E2E in the response."
+    profile_name = f"{PROFILE_PREFIX}_ATTR_{uuid.uuid4().hex.upper()}"
+    profile = await AsyncProfile(
+        profile_name=profile_name,
+        attributes=ProfileAttributes(
+            credential_name=oci_credential["credential_name"],
+            provider=async_generate_provider,
+            additional_instructions=instruction,
+        ),
+        description="Async generate profile attributes E2E test profile",
+        replace=True,
+    )
+    yield profile, instruction
+    await profile.delete(force=True)
+
+
+@pytest.mark.anyio
+async def test_1721_profile_attributes_reach_database(
+    async_profile_with_additional_instructions,
+):
+    """Persistent profile attributes are stored and used by the database"""
+    profile, instruction = async_profile_with_additional_instructions
+
+    fetched_attributes = await profile.get_attributes()
+    assert fetched_attributes.additional_instructions == instruction
+
+    show_prompt = await profile.show_prompt(prompt="Tell me about OCI")
+    assert instruction in show_prompt
+
+
+@pytest.mark.anyio
 async def test_1716_empty_prompt_raises_value_error(async_negative_profile):
     """Empty prompts raise ValueError for async profile methods"""
     logger.info("Validating async empty prompts raise ValueError")
