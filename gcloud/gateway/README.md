@@ -42,6 +42,11 @@ using the internal protobuf protocol. The selected worker starts one child
 runtime for that session. The child owns the database connection,
 `DefaultRequestHandler`, `OracleTaskStore`, and `OracleContextStore`.
 
+The session connection path currently accepts a DSN, username, and password.
+Oracle Database wallet-based mTLS is not yet supported for these dynamic
+sessions. The optional worker mTLS mode below protects the gateway-to-worker
+HTTP connection; it does not provide database mTLS.
+
 The Service Registry stores only service-discovery and non-secret
 session/task-to-worker metadata. Task payloads and context mappings remain in
 Oracle. Connection-form tasks are response-only bootstrap tasks: they are
@@ -129,6 +134,10 @@ deployment time.
 
 Local testing does not use mTLS. The default GCloud deployment also keeps the
 current private-VPC HTTP worker transport.
+
+This mTLS mode applies only between the Cloud Run gateway and GKE workers. It
+is independent of Oracle Database authentication, and does not enable wallet-
+based database mTLS for gateway sessions.
 
 For a short-lived GCloud mTLS test:
 
