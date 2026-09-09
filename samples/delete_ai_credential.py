@@ -20,6 +20,8 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 select_ai.connect(user=user, password=password, dsn=dsn)
 select_ai.delete_credential(
-    credential_name="my_oci_ai_profile_key", force=True
+    credential_name="my_oci_ai_profile_key",
+    force=True,
+    public_synonym=True,
 )
 print("Deleted credential: my_oci_ai_profile_key")

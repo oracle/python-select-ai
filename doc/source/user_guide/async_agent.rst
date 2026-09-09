@@ -8,6 +8,7 @@ use ``asyncio`` and ``select_ai.async_connect()`` or
 The history API follows the same pattern. ``AsyncTeamHistory``,
 ``AsyncTaskHistory``, and ``AsyncToolHistory`` query only the current user's
 history views and yield typed events newest first.
+See :ref:`async-agent-history` for the complete API reference and sample.
 
 .. code-block:: python
 
@@ -150,6 +151,38 @@ output::
 
 .. latex:clearpage::
 
+Inspect and run a tool
+++++++++++++++++++++++
+
+Use ``AsyncTool.describe_tool()`` to return JSON metadata for a tool, including
+its function arguments. Use ``AsyncTool.run_tool(input)`` to invoke a tool
+directly with an input payload.
+
+.. code-block:: python
+
+   tool = await AsyncTool.fetch("MOVIE_SQL_TOOL")
+   print(await tool.describe_tool())
+   print(await tool.run_tool('{"query": "How many movies are there?"}'))
+
+The complete example creates a temporary PL/SQL tool, describes it, invokes it,
+and removes the temporary database objects:
+
+.. literalinclude:: ../../../samples/agent/async/tool_run_describe.py
+   :language: python
+   :lines: 14-
+
+The generated tool name and calculated age vary between runs. Representative
+output is:
+
+output::
+
+    Tool description:
+    {"tool_name": "SAMPLE_AGE_TOOL_<generated suffix>", ...}
+    Tool result:
+    <calculated age in years>
+
+.. latex:clearpage::
+
 
 *************
 ``AsyncTask``
@@ -247,6 +280,76 @@ AsyncTeam
 
 .. autoclass:: select_ai.agent.AsyncTeam
    :members:
+
+Share an async team
++++++++++++++++++++
+
+Grant or revoke access for a database user or role with ``AsyncTeam`` methods.
+Run these methods as the team owner:
+
+.. code-block:: python
+
+   team = await AsyncTeam.fetch("MOVIE_AGENT_TEAM")
+   await team.grant_access("APP_USER")
+   await team.revoke_access("APP_USER")
+
+Team fetch and list operations use the connected user's agent-team views and do
+not currently accept an ``owner`` argument.
+
+Supervised teams
+++++++++++++++++
+
+Configure an asynchronous supervised team in the same way as a synchronous
+team. Set ``supervisor=True`` on the coordinating agent and pass its name as
+``TeamAttributes.supervisor_agent``. Keep the worker agent and task
+assignments in the team's ``agents`` list.
+
+The database creates the supervisor task when the team is created, so
+``supervisor_task`` should not be supplied by the application. Fetch the team
+after creation to read the generated value from
+``fetched.attributes.supervisor_task``.
+
+.. code-block:: python
+
+   supervisor = AsyncAgent(
+       agent_name="MOVIE_SUPERVISOR",
+       attributes=AgentAttributes(
+           profile_name="oci_ai_profile",
+           role="You supervise and coordinate the team.",
+           supervisor=True,
+       ),
+   )
+
+   team = AsyncTeam(
+       team_name="MOVIE_AGENT_TEAM",
+       attributes=TeamAttributes(
+           agents=[
+               {"name": "MOVIE_ANALYST", "task": "ANALYZE_MOVIE_TASK"}
+           ],
+           process="sequential",
+           supervisor_agent=supervisor.agent_name,
+       ),
+   )
+
+The complete asynchronous example creates the team, runs a prompt through the
+supervisor workflow, and inspects its generated supervisor task and metadata.
+``AsyncTeam.run()`` starts the team workflow; the configured supervisor agent
+coordinates the worker agent as part of that call.
+
+.. literalinclude:: ../../../samples/agent/async/team_supervisor_inspect.py
+   :language: python
+   :lines: 14-
+
+The generated names and returned JSON metadata vary between runs. Representative
+output is:
+
+output::
+
+    Team response: <answer from the supervised team>
+    Supervisor agent: SAMPLE_SUPERVISOR_<generated suffix>
+    Supervisor task: <generated supervisor task>
+    Team description: <JSON team metadata>
+    Team tools: <JSON tool metadata>
 
 .. latex:clearpage::
 
@@ -351,6 +454,22 @@ storage, ``AsyncTeam.export_team()`` writes the specification to the location
 and returns ``None``. When importing from object storage, pass the same
 credential and location instead of ``specification``.
 
+Inspect a team
+++++++++++++++
+
+``AsyncTeam.describe_team()`` returns JSON metadata and the aggregated skills
+for a team. ``AsyncTeam.list_tools()`` returns JSON metadata for the tools
+available to that team.
+
+.. code-block:: python
+
+   team = await AsyncTeam.fetch("MOVIE_AGENT_TEAM")
+   print(await team.describe_team())
+   print(await team.list_tools())
+
+The asynchronous supervised-team sample also demonstrates both inspection
+methods.
+
 .. latex:clearpage::
 
 Lifecycle helpers
@@ -374,6 +493,106 @@ operations.
 
 .. latex:clearpage::
 
+Object definitions
+******************
+
+Use ``async_get_definition(object_type, object_name)`` to asynchronously
+retrieve the canonical PL/SQL block for recreating an AI ``AGENT``, ``TASK``,
+``TOOL``, or ``TEAM``. The function returns ``None`` when the database does not
+return a definition.
+
+.. code-block:: python
+
+   from select_ai.agent import async_get_definition
+
+   definition = await async_get_definition("TASK", "ANALYZE_MOVIE_TASK")
+   print(definition)
+
+See the asynchronous definition sample for a complete create, inspect, and
+cleanup flow.
+
+.. literalinclude:: ../../../samples/agent/async/get_definition.py
+   :language: python
+   :lines: 14-
+
+The task name and exact PL/SQL formatting vary between runs and database
+versions. Representative output is:
+
+output::
+
+    BEGIN
+      DBMS_CLOUD_AI_AGENT.CREATE_TASK(...);
+    END;
+    /
+
+.. latex:clearpage::
+
+
+.. _async-agent-history:
+
+********************
+Async agent history
+********************
+
+``AsyncTeamHistory``, ``AsyncTaskHistory``, and
+``AsyncToolHistory`` provide asynchronous, read-only access to the current
+user's Select AI Agent history views. Their ``list()`` methods return async
+iterators ordered from newest to oldest.
+
+Use ``team_exec_id`` from a team event to scope task and tool history to the
+same execution. Filters such as ``team_name``, ``task_name``,
+``agent_name``, and ``tool_name`` can be used when an execution
+identifier is not available. Tool ``input`` and ``output`` values
+are decoded to Python objects when they contain valid JSON.
+
+.. code-block:: python
+
+   from select_ai.agent import (
+       AsyncTaskHistory,
+       AsyncTeamHistory,
+       AsyncToolHistory,
+   )
+
+   async for team_run in AsyncTeamHistory.list(
+       team_name="ORACLE_AI_DATABASE_AGENT",
+       limit=1,
+   ):
+       print(team_run)
+       async for task_run in AsyncTaskHistory.list(
+           team_exec_id=team_run.team_exec_id
+       ):
+           print(task_run)
+       async for tool_run in AsyncToolHistory.list(
+           team_exec_id=team_run.team_exec_id
+       ):
+           print(tool_run)
+
+The complete sample retrieves a team's latest execution and uses its
+``team_exec_id`` to retrieve the associated task and tool history:
+
+.. autoclass:: select_ai.agent.AsyncTeamHistory
+   :members:
+
+.. autoclass:: select_ai.agent.AsyncTaskHistory
+   :members:
+
+.. autoclass:: select_ai.agent.AsyncToolHistory
+   :members:
+
+.. literalinclude:: ../../../samples/agent/async/agent_history_list.py
+   :language: python
+   :lines: 14-
+
+History depends on an existing execution for the configured team. Representative
+output is:
+
+output::
+
+    TeamHistoryEvent(team_exec_id='<team execution id>', team_name='ORACLE_AI_DATABASE_AGENT', state='<state>', ...)
+    TaskHistoryEvent(team_exec_id='<team execution id>', task_name='<task name>', state='<state>', ...)
+    ToolHistoryEvent(invocation_id=<invocation id>, team_exec_id='<team execution id>', tool_name='<tool name>', ...)
+
+.. latex:clearpage::
 
 List Teams
 ++++++++++

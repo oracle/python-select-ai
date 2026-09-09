@@ -143,7 +143,8 @@ tools or services that can forward each answer as soon as it is ready.
 This recipe uses ``AsyncProfile.run_pipeline()`` to send multiple
 prompt/action pairs in one database round trip. This is different from Python
 task concurrency: the application submits a batch and receives the batch
-results when the pipeline completes.
+results when the pipeline completes. Pass ``attributes=...`` to apply the
+same request-level profile overrides to every item in the pipeline.
 
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_pipeline.py
    :language: python

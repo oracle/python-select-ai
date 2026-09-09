@@ -122,6 +122,10 @@ The CLI passes both values to the Select AI SDK as `wallet_location` and
 The server accepts both A2A 1.x and the A2A v0.3 JSON-RPC streaming protocol
 for compatibility with Gemini Enterprise.
 
+See the [A2A user guide](doc/source/user_guide/a2a.rst) for the dynamic
+gateway, A2UI connection flow, persistent task state, task polling and
+cancellation, wallet configuration, and Google Cloud deployment modes.
+
 Generate the A2A v0.3 Agent Card to paste into Gemini Enterprise after the
 service has a public URL:
 

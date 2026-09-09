@@ -79,9 +79,10 @@ Attribute groups
        for requests that use the profile.
    * - ``source_language``, ``target_language``
      - Set default languages for ``Profile.translate()`` and
-       ``AsyncProfile.translate()``. If no source language is configured or
-       supplied per call, the provider detects it. A target language must be
-       supplied either per call or in the profile.
+       ``AsyncProfile.translate()``. Per-call values override these defaults.
+       If no source language is configured or supplied per call, the provider
+       detects it. A target language must be supplied either per call or in the
+       profile.
    * - ``vector_index_name``, ``enable_sources``,
        ``enable_source_offsets``, ``enable_custom_source_uri``
      - Configures retrieval-augmented generation and source reporting for

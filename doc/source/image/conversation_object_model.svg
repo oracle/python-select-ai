@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Select AI Conversation object model</title>
+  <desc id="desc">Conversation and AsyncConversation keep metadata, prompt history, and tags, and can be used by Profile chat sessions.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L11,5 L0,10 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 34px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 18px; fill: #475569; }
+      .card-title { font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; }
+      .section { font-family: Arial, sans-serif; font-size: 17px; font-weight: 700; fill: #334155; }
+      .body { font-family: Arial, sans-serif; font-size: 17px; fill: #334155; }
+      .small { font-family: Arial, sans-serif; font-size: 15px; fill: #475569; }
+      .label { font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #0f172a; }
+      .card { stroke-width: 2.5; rx: 18; }
+      .profile { fill: #eef2ff; stroke: #6366f1; }
+      .conversation { fill: #ecfeff; stroke: #0891b2; }
+      .attributes { fill: #f0fdf4; stroke: #16a34a; }
+      .history { fill: #fff7ed; stroke: #ea580c; }
+      .tags { fill: #fdf2f8; stroke: #db2777; }
+      .database { fill: #f8fafc; stroke: #64748b; }
+      .pill { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; rx: 14; }
+      .line { stroke: #64748b; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 8 7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <text x="800" y="52" text-anchor="middle" class="title">Conversation object model</text>
+  <text x="800" y="82" text-anchor="middle" class="subtitle">Conversations persist context, metadata, prompt history, and tags for follow-up work.</text>
+
+  <rect x="50" y="150" width="400" height="230" class="card profile" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="75" y="190" class="card-title">Profile / AsyncProfile</text>
+  <text x="75" y="220" class="small">Chat-session entry point</text>
+  <line x1="75" y1="240" x2="425" y2="240" class="divider"/>
+  <text x="75" y="275" class="section">chat_session(conversation=...)</text>
+  <text x="75" y="310" class="body">Passes the same conversation_id to</text>
+  <text x="75" y="337" class="body">each follow-up prompt.</text>
+  <text x="75" y="367" class="small">Sync and async context managers</text>
+
+  <rect x="550" y="115" width="500" height="350" class="card conversation" fill="#ecfeff" stroke="#0891b2"/>
+  <text x="575" y="155" class="card-title">Conversation / AsyncConversation</text>
+  <text x="575" y="185" class="small">Database-backed context container</text>
+  <line x1="575" y1="205" x2="1025" y2="205" class="divider"/>
+  <text x="575" y="238" class="section">Identity</text>
+  <text x="575" y="265" class="body">&#8226; conversation_id</text>
+  <text x="575" y="301" class="section">Lifecycle</text>
+  <text x="575" y="328" class="body">create, fetch, list, get_attributes</text>
+  <text x="575" y="354" class="body">set_attributes, delete</text>
+  <text x="575" y="390" class="section">History and tags</text>
+  <text x="575" y="417" class="body">list_prompts, delete_prompt</text>
+  <text x="575" y="443" class="body">add_tag, remove_tag</text>
+
+  <rect x="1150" y="150" width="400" height="240" class="card attributes" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="1175" y="190" class="card-title">ConversationAttributes</text>
+  <text x="1175" y="220" class="small">Metadata and retention policy</text>
+  <line x1="1175" y1="240" x2="1525" y2="240" class="divider"/>
+  <text x="1175" y="275" class="body">&#8226; title</text>
+  <text x="1175" y="302" class="body">&#8226; description</text>
+  <text x="1175" y="329" class="body">&#8226; retention_days</text>
+  <text x="1175" y="356" class="body">&#8226; conversation_length</text>
+
+  <path d="M450 265 L550 265" class="line"/>
+  <text x="500" y="250" text-anchor="middle" class="small">uses</text>
+  <path d="M1050 265 L1150 265" class="line"/>
+  <text x="1100" y="250" text-anchor="middle" class="small">has</text>
+
+  <rect x="550" y="575" width="500" height="190" class="card history" fill="#fff7ed" stroke="#ea580c"/>
+  <text x="575" y="615" class="card-title">ConversationPrompt</text>
+  <text x="575" y="645" class="small">One stored prompt and response</text>
+  <line x1="575" y1="663" x2="1025" y2="663" class="divider"/>
+  <text x="575" y="696" class="body">&#8226; conversation_prompt_id, conversation_id</text>
+  <text x="575" y="723" class="body">&#8226; profile_name, prompt_action</text>
+  <text x="575" y="750" class="body">&#8226; prompt, prompt_response, created, modified</text>
+
+  <rect x="1150" y="535" width="400" height="230" class="card tags" fill="#fdf2f8" stroke="#db2777"/>
+  <text x="1175" y="575" class="card-title">Conversation tags</text>
+  <text x="1175" y="608" class="body">add_tag(key, value)</text>
+  <text x="1175" y="637" class="body">remove_tag(key, force=False)</text>
+  <text x="1175" y="680" class="small">Use tags to classify or locate</text>
+  <text x="1175" y="706" class="small">conversation records.</text>
+
+  <rect x="50" y="575" width="400" height="190" class="card database" fill="#f8fafc" stroke="#64748b"/>
+  <text x="75" y="615" class="card-title">Database conversation</text>
+  <text x="75" y="650" class="body">Prompts and responses are retained</text>
+  <text x="75" y="677" class="body">according to the attributes.</text>
+  <text x="75" y="718" class="small">Use delete() for explicit cleanup.</text>
+
+  <path d="M800 465 L800 575" class="line"/>
+  <text x="823" y="530" class="small">stores</text>
+  <path d="M1050 390 C1110 430 1180 475 1250 535" class="line dashed"/>
+  <text x="1120" y="455" class="small">manages</text>
+  <path d="M550 670 L450 670" class="line dashed"/>
+  <text x="500" y="650" text-anchor="middle" class="small">persisted in</text>
+
+  <text x="800" y="845" text-anchor="middle" class="small">Conversation history is shared by follow-up prompts, while metadata, prompt records, and tags have separate APIs.</text>
+</svg>

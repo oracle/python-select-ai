@@ -182,6 +182,39 @@ output::
 
 .. latex:clearpage::
 
+Inspect and run a tool
+++++++++++++++++++++++
+
+Use ``Tool.describe_tool()`` to return JSON metadata for a tool, including its
+function arguments. Use ``Tool.run_tool(input)`` to invoke a tool directly with
+an input payload. Direct execution is useful for testing a tool independently
+of a team workflow.
+
+.. code-block:: python
+
+   tool = Tool.fetch("MOVIE_SQL_TOOL")
+   print(tool.describe_tool())
+   print(tool.run_tool('{"query": "How many movies are there?"}'))
+
+The complete example creates a temporary PL/SQL tool, describes it, invokes it,
+and removes the temporary database objects:
+
+.. literalinclude:: ../../../samples/agent/tool_run_describe.py
+   :language: python
+   :lines: 14-
+
+The generated tool name and calculated age vary between runs. Representative
+output is:
+
+output::
+
+    Tool description:
+    {"tool_name": "SAMPLE_AGE_TOOL_<generated suffix>", ...}
+    Tool result:
+    <calculated age in years>
+
+.. latex:clearpage::
+
 ********
 ``Task``
 ********
@@ -319,10 +352,79 @@ For example:
 .. autoclass:: select_ai.agent.TeamAttributes
    :members:
 
+Supervised teams
+++++++++++++++++
+
+A supervised team uses a dedicated agent to coordinate the other agents in the
+team. Set ``supervisor=True`` on that agent's ``AgentAttributes`` and pass the
+agent name in ``TeamAttributes.supervisor_agent``. The worker agent and task
+assignments remain in the team's ``agents`` list.
+
+``supervisor_task`` is created by the database when the team is created. Do not
+set it when constructing ``TeamAttributes``. Fetch the team after creation to
+read the generated value from ``fetched.attributes.supervisor_task``.
+
+.. code-block:: python
+
+   supervisor = Agent(
+       agent_name="MOVIE_SUPERVISOR",
+       attributes=AgentAttributes(
+           profile_name="oci_ai_profile",
+           role="You supervise and coordinate the team.",
+           supervisor=True,
+       ),
+   )
+
+   team = Team(
+       team_name="MOVIE_AGENT_TEAM",
+       attributes=TeamAttributes(
+           agents=[
+               {"name": "MOVIE_ANALYST", "task": "ANALYZE_MOVIE_TASK"}
+           ],
+           process="sequential",
+           supervisor_agent=supervisor.agent_name,
+       ),
+   )
+
+The complete example creates a supervised team, runs a prompt through the
+supervisor workflow, and inspects the generated supervisor task and team
+metadata. ``Team.run()`` starts the team workflow; the configured supervisor
+agent coordinates the worker agent as part of that call.
+
+.. literalinclude:: ../../../samples/agent/team_supervisor_inspect.py
+   :language: python
+   :lines: 14-
+
+The generated names and returned JSON metadata vary between runs. Representative
+output is:
+
+output::
+
+    Team response: <answer from the supervised team>
+    Supervisor agent: SAMPLE_SUPERVISOR_<generated suffix>
+    Supervisor task: <generated supervisor task>
+    Team description: <JSON team metadata>
+    Team tools: <JSON tool metadata>
+
 .. latex:clearpage::
 
 .. autoclass:: select_ai.agent.Team
    :members:
+
+Share a team
+++++++++++++
+
+Grant or revoke access for a database user or role with ``Team`` methods. Run
+these methods as the team owner:
+
+.. code-block:: python
+
+   team = Team.fetch("MOVIE_AGENT_TEAM")
+   team.grant_access("APP_USER")
+   team.revoke_access("APP_USER")
+
+Team fetch and list operations use the connected user's agent-team views and do
+not currently accept an ``owner`` argument.
 
 .. latex:clearpage::
 
@@ -425,6 +527,21 @@ storage, ``Team.export_team()`` writes the specification to the location and
 returns ``None``. When importing from object storage, pass the same credential
 and location instead of ``specification``.
 
+Inspect a team
+++++++++++++++
+
+``Team.describe_team()`` returns JSON metadata and the aggregated skills for a
+team. ``Team.list_tools()`` returns JSON metadata for the tools available to
+that team.
+
+.. code-block:: python
+
+   team = Team.fetch("MOVIE_AGENT_TEAM")
+   print(team.describe_team())
+   print(team.list_tools())
+
+The supervised-team sample also demonstrates both inspection methods.
+
 Lifecycle helpers
 +++++++++++++++++
 
@@ -443,6 +560,39 @@ operations.
    team.disable()
    team.enable()
    team.delete(force=True)
+
+.. latex:clearpage::
+
+Object definitions
+******************
+
+Use ``get_definition(object_type, object_name)`` to retrieve the canonical
+PL/SQL block for recreating an AI ``AGENT``, ``TASK``, ``TOOL``, or ``TEAM``.
+The function returns ``None`` when the database does not return a definition.
+
+.. code-block:: python
+
+   from select_ai.agent import get_definition
+
+   definition = get_definition("TASK", "ANALYZE_MOVIE_TASK")
+   print(definition)
+
+The asynchronous equivalent is ``async_get_definition``. See the sync and
+async definition samples for a complete create, inspect, and cleanup flow.
+
+.. literalinclude:: ../../../samples/agent/get_definition.py
+   :language: python
+   :lines: 14-
+
+The task name and exact PL/SQL formatting vary between runs and database
+versions. Representative output is:
+
+output::
+
+    BEGIN
+      DBMS_CLOUD_AI_AGENT.CREATE_TASK(...);
+    END;
+    /
 
 .. latex:clearpage::
 
@@ -481,6 +631,22 @@ to retrieve the associated task and tool history.
 
 .. autoclass:: select_ai.agent.ToolHistory
    :members:
+
+The complete sample prints the latest team execution and the task and tool
+events associated with that execution:
+
+.. literalinclude:: ../../../samples/agent/history_list.py
+   :language: python
+   :lines: 14-
+
+History depends on an existing execution for the configured team. Representative
+output is:
+
+output::
+
+    TeamHistoryEvent(team_exec_id='<team execution id>', team_name='ORACLE_AI_DATABASE_AGENT', state='<state>', ...)
+    TaskHistoryEvent(team_exec_id='<team execution id>', task_name='<task name>', state='<state>', ...)
+    ToolHistoryEvent(invocation_id=<invocation id>, team_exec_id='<team execution id>', tool_name='<tool name>', ...)
 
 .. latex:clearpage::
 

@@ -26,6 +26,7 @@ The usual profile lifecycle is:
   list.
 * Create the profile with ``select_ai.Profile(...)``.
 * Reuse the profile later by name.
+* Enable or disable the profile without deleting it.
 * Update profile attributes when provider settings or object scope changes.
 * Delete profiles that are no longer needed.
 
@@ -65,8 +66,18 @@ Profile Object Model
 ********************
 
 .. _profilefig:
-.. figure:: /image/profile_provider.png
-   :alt: Select AI Profile and Providers
+
+.. only:: html
+
+   .. figure:: /image/profile_object_model.svg
+      :alt: Select AI Profile object model
+      :width: 100%
+
+.. only:: latex
+
+   .. figure:: /image/profile_object_model.png
+      :alt: Select AI Profile object model
+      :width: 100%
 
 .. latex:clearpage::
 
@@ -149,6 +160,28 @@ database profile and raise an error if the profile does not exist:
 .. code-block:: python
 
    profile = select_ai.Profile.fetch("oci_ai_profile")
+
+.. latex:clearpage::
+
+**************************
+Enable and disable Profile
+**************************
+
+Use ``Profile.disable()`` to make an existing profile unavailable without
+deleting it. Call ``Profile.enable()`` to make it available again. These
+methods change the database profile status and return ``None``.
+
+.. literalinclude:: ../../../samples/profile_enable_disable.py
+   :language: python
+   :lines: 14-
+
+The sample uses ``SELECT_AI_PROFILE_NAME`` when set, otherwise it operates on
+``oci_ai_profile``. It always re-enables the profile during cleanup:
+
+output::
+
+    Disabled profile: oci_ai_profile
+    Enabled profile: oci_ai_profile
 
 .. latex:clearpage::
 
@@ -305,6 +338,79 @@ Streaming is supported by ``generate()``, ``chat()``, ``narrate()``,
 ``explain_sql()``, ``show_sql()``, and ``show_prompt()``. It is not supported
 for ``run_sql()``, which returns a ``pandas.DataFrame``.
 
+.. _request-profile-attributes:
+
+*****************************************
+Request-level profile attribute overrides
+*****************************************
+
+The ``attributes`` keyword accepts a mapping of profile attributes to apply to
+one request. These values override the corresponding saved profile attributes
+for that request only; they do not update the profile in the database. The
+mapping must contain JSON-serializable values.
+
+Request-level attributes are available on the following synchronous APIs:
+
+* ``Profile.generate()``, ``chat()``, and ``narrate()``.
+* SQL helpers: ``explain_sql()``, ``run_sql()``, ``show_sql()``, and
+  ``show_prompt()``.
+* ``Session.chat()``, ``narrate()``, ``explain_sql()``, ``run_sql()``,
+  ``show_sql()``, and ``show_prompt()``.
+* Streaming calls to the text-producing methods, by combining
+  ``stream=True`` with ``attributes=...``. ``run_sql()`` does not support
+  streaming.
+
+The mapping can include attributes such as ``additional_instructions``,
+the integer ``seed``, and ``source_language`` or ``target_language``. Use
+``ProfileAttributes`` for profile-wide defaults; use this mapping when an
+override should apply only to the current request.
+
+For ``translate()``, pass language values through its named
+``source_language`` and ``target_language`` arguments. The ``attributes``
+mapping described here applies to the generate/action APIs.
+
+.. code-block:: python
+
+   request_attributes = {
+       "additional_instructions": "Answer in one sentence.",
+       "seed": 42,
+       "source_language": "en",
+       "target_language": "de",
+   }
+
+   response = profile.chat(
+       prompt="What is Oracle Cloud Infrastructure?",
+       attributes=request_attributes,
+   )
+
+The same mapping can be used with streaming and session requests:
+
+.. code-block:: python
+
+   for chunk in profile.chat(
+       prompt="Summarize Oracle Cloud Infrastructure.",
+       stream=True,
+       attributes=request_attributes,
+   ):
+       print(chunk, end="")
+
+   with profile.chat_session(conversation) as session:
+       response = session.chat(
+           prompt="Give one more detail.",
+           attributes=request_attributes,
+       )
+
+The following sample uses ``show_prompt()`` to verify that the request-only
+``additional_instructions`` value reached the generated prompt:
+
+.. literalinclude:: ../../../samples/profile_request_attributes.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    Request attributes applied: True
+
 .. latex:clearpage::
 
 **************************
@@ -358,6 +464,35 @@ output::
 Translate
 ***********
 
+``Profile.translate()`` accepts optional ``source_language`` and
+``target_language`` arguments. Per-call values take precedence over the
+profile's ``source_language`` and ``target_language`` defaults.
+
+If ``source_language`` is omitted for both the call and the profile, source
+language detection is delegated to the translation provider. If
+``target_language`` is omitted, the profile's default is used; a target
+language must be supplied in one of those two places.
+
+Configure profile-level defaults with ``ProfileAttributes`` when creating or
+updating a profile:
+
+.. code-block:: python
+
+   language_defaults = select_ai.ProfileAttributes(
+       source_language="en",
+       target_language="de",
+   )
+
+   profile.set_attributes(language_defaults)
+   print(profile.translate(text="Thank you"))
+
+When only the target is supplied at the call site, the provider can detect the
+source language:
+
+.. code-block:: python
+
+   print(profile.translate(text="Thank you", target_language="de"))
+
 .. literalinclude:: ../../../samples/profile_translate.py
    :language: python
    :lines: 14-
@@ -373,8 +508,21 @@ List profiles
 **************************
 
 Profile listing returns profiles visible to the connected database user.
-Instantiate ``Profile`` with one of the returned names to reuse the saved
-profile.
+Pass ``owner`` to list profiles from a specific schema, including a profile
+shared with the connected user. Each returned object includes ``owner`` and
+the owner-qualified ``qualified_name`` property. Instantiate ``Profile`` with
+one of the returned names to reuse the saved profile.
+
+.. code-block:: python
+
+   profile = select_ai.Profile.fetch(
+       "OCI_AI_PROFILE",
+       owner="APP_OWNER",
+   )
+   print(profile.qualified_name)
+
+   for profile in select_ai.Profile.list(owner="APP_OWNER"):
+       print(profile.qualified_name)
 
 .. literalinclude:: ../../../samples/profiles_list.py
    :language: python

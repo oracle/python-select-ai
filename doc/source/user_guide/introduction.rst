@@ -59,6 +59,10 @@ Most workflows use the same building blocks:
    * - Credential
      - Store provider and service secrets securely in Oracle Database.
      - :ref:`Credential <credential>`
+   * - Sharing and ownership
+     - Share profiles, vector indexes, teams, and credentials with users or
+       roles and address objects owned by another schema.
+     - :ref:`Sharing and ownership <sharing>`
    * - Profile
      - Combine provider, credential, database object scope, and generation
        options into a reusable Select AI profile.

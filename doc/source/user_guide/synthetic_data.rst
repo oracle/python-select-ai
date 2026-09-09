@@ -146,7 +146,7 @@ output::
 .. latex:clearpage::
 
 Single Table Async API
-+++++++++++++++++++++
++++++++++++++++++++++++
 
 .. literalinclude:: ../../../samples/async/profile_gen_single_table_synthetic_data.py
    :language: python

@@ -34,5 +34,9 @@ credential = {
     "private_key": key_contents,
     "fingerprint": default_config["fingerprint"],
 }
-select_ai.create_credential(credential=credential, replace=True)
+select_ai.create_credential(
+    credential=credential,
+    replace=True,
+    public_synonym=True,
+)
 print("Created credential: ", credential["credential_name"])

@@ -1,17 +1,16 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2025, Oracle and/or its affiliates.
+# Copyright (c) 2026, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# async/delete_ai_credential
+# profile_enable_disable.py
 #
-# Async API to delete credential
+# Disable and re-enable an existing Select AI profile.
 # -----------------------------------------------------------------------------
 
-import asyncio
 import os
 
 import select_ai
@@ -19,16 +18,14 @@ import select_ai
 user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+profile_name = os.getenv("SELECT_AI_PROFILE_NAME", "oci_ai_profile")
 
+select_ai.connect(user=user, password=password, dsn=dsn)
+profile = select_ai.Profile(profile_name=profile_name)
 
-async def main():
-    await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    await select_ai.async_delete_credential(
-        credential_name="my_oci_ai_profile_key",
-        force=True,
-        public_synonym=True,
-    )
-    print("Deleted credential: my_oci_ai_profile_key")
-
-
-asyncio.run(main())
+profile.disable()
+try:
+    print("Disabled profile:", profile.profile_name)
+finally:
+    profile.enable()
+    print("Enabled profile:", profile.profile_name)
