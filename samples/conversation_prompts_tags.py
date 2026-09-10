@@ -19,6 +19,7 @@ import select_ai
 user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+profile_name = os.getenv("SELECT_AI_PROFILE_NAME", "oci_ai_profile")
 
 select_ai.connect(user=user, password=password, dsn=dsn)
 
@@ -26,7 +27,7 @@ conversation = select_ai.Conversation(
     attributes=select_ai.ConversationAttributes(title="Prompt and tag sample")
 )
 conversation.create()
-profile = select_ai.Profile(profile_name="oci_ai_profile")
+profile = select_ai.Profile(profile_name=profile_name)
 
 try:
     conversation.add_tag("PROJECT", "SELECT_AI")

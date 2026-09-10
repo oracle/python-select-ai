@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Select AI A2A deployment architecture</title>
+  <desc id="desc">Comparison of the standalone A2A server and dynamic A2A gateway deployment modes.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="6" viewBox="0 0 10 6" refX="10" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#4b5563"/>
+    </marker>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 28px; font-weight: 700; fill: #111827; }
+      .panel-title { font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #111827; }
+      .box-title { font-family: Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #111827; }
+      .box-text { font-family: Arial, sans-serif; font-size: 14px; fill: #374151; }
+      .small { font-family: Arial, sans-serif; font-size: 13px; fill: #4b5563; }
+      .panel { stroke: #9ca3af; stroke-width: 2; rx: 16; }
+      .client { fill: #eef2ff; stroke: #6366f1; }
+      .service { fill: #ecfeff; stroke: #0891b2; }
+      .worker { fill: #ecfdf5; stroke: #059669; }
+      .state { fill: #fff7ed; stroke: #ea580c; }
+      .database { fill: #f3f4f6; stroke: #4b5563; }
+      .arrow { stroke: #4b5563; stroke-width: 2.5; fill: none; }
+      .dashed { stroke-dasharray: 8 6; }
+      .divider { stroke: #d1d5db; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="820" fill="#ffffff"/>
+  <text x="700" y="46" text-anchor="middle" class="title">Select AI A2A deployment modes</text>
+  <text x="700" y="72" text-anchor="middle" class="small">Both modes expose an Agent Card and A2A JSON-RPC; they differ in where connection and session state live.</text>
+
+  <rect x="35" y="105" width="635" height="670" class="panel" fill="#fafafa"/>
+  <text x="352" y="145" text-anchor="middle" class="panel-title">Standalone A2A server</text>
+  <text x="352" y="169" text-anchor="middle" class="small">One configured database and one Select AI team</text>
+
+  <rect x="85" y="205" width="225" height="82" rx="12" class="client"/>
+  <text x="197" y="236" text-anchor="middle" class="box-title">A2A client</text>
+  <text x="197" y="260" text-anchor="middle" class="box-text">Gemini Enterprise or app</text>
+
+  <rect x="360" y="190" width="250" height="112" rx="12" class="service"/>
+  <text x="485" y="220" text-anchor="middle" class="box-title">select-ai a2a serve</text>
+  <text x="485" y="244" text-anchor="middle" class="box-text">Agent Card</text>
+  <text x="485" y="265" text-anchor="middle" class="box-text">A2A JSON-RPC and SSE</text>
+  <text x="485" y="286" text-anchor="middle" class="box-text">fixed connection pool</text>
+
+  <line x1="310" y1="246" x2="360" y2="246" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="360,246 350,241 350,251" fill="#4b5563"/>
+  <text x="335" y="232" text-anchor="middle" class="small">A2A</text>
+
+  <rect x="360" y="365" width="250" height="108" rx="12" class="worker"/>
+  <text x="485" y="398" text-anchor="middle" class="box-title">Select AI Agent Team</text>
+  <text x="485" y="421" text-anchor="middle" class="box-text">AsyncTeam(team_name)</text>
+  <text x="485" y="444" text-anchor="middle" class="box-text">Oracle conversations</text>
+
+  <line x1="485" y1="302" x2="485" y2="365" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="485,365 480,355 490,355" fill="#4b5563"/>
+  <text x="505" y="340" class="small">prompt</text>
+
+  <rect x="360" y="535" width="250" height="128" rx="12" class="database"/>
+  <text x="485" y="568" text-anchor="middle" class="box-title">Oracle Database</text>
+  <text x="485" y="592" text-anchor="middle" class="box-text">SELECT_AI_A2A_TASKS</text>
+  <text x="485" y="613" text-anchor="middle" class="box-text">SELECT_AI_A2A_CONTEXTS</text>
+  <text x="485" y="634" text-anchor="middle" class="box-text">conversation history</text>
+  <line x1="485" y1="473" x2="485" y2="535" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="485,535 480,525 490,525" fill="#4b5563"/>
+  <text x="485" y="505" text-anchor="middle" class="small">optional wallet-backed database connection</text>
+
+  <rect x="730" y="105" width="635" height="670" class="panel" fill="#fafafa"/>
+  <text x="1047" y="145" text-anchor="middle" class="panel-title">Dynamic A2A gateway</text>
+  <text x="1047" y="169" text-anchor="middle" class="small">Connection and team selected for each temporary session</text>
+
+  <rect x="780" y="205" width="205" height="82" rx="12" class="client"/>
+  <text x="882" y="236" text-anchor="middle" class="box-title">A2A client</text>
+  <text x="882" y="260" text-anchor="middle" class="box-text">A2UI-capable client</text>
+
+  <rect x="1035" y="190" width="280" height="112" rx="12" class="service"/>
+  <text x="1175" y="220" text-anchor="middle" class="box-title">select-ai a2a gateway</text>
+  <text x="1175" y="244" text-anchor="middle" class="box-text">public Agent Card and A2UI</text>
+  <text x="1175" y="265" text-anchor="middle" class="box-text">A2A JSON-RPC, no streaming</text>
+  <text x="1175" y="286" text-anchor="middle" class="box-text">session/task proxy</text>
+
+  <line x1="985" y1="246" x2="1035" y2="246" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="1035,246 1025,241 1025,251" fill="#4b5563"/>
+  <text x="1010" y="232" text-anchor="middle" class="small">A2A</text>
+
+  <rect x="780" y="365" width="205" height="108" rx="12" class="state"/>
+  <text x="882" y="398" text-anchor="middle" class="box-title">Consul</text>
+  <text x="882" y="421" text-anchor="middle" class="box-text">worker health/discovery</text>
+  <text x="882" y="444" text-anchor="middle" class="box-text">session/task routes</text>
+
+  <line x1="1035" y1="302" x2="980" y2="325" stroke="#4b5563" stroke-width="2.5"/>
+  <line x1="980" y1="325" x2="940" y2="350" stroke="#4b5563" stroke-width="2.5"/>
+  <line x1="940" y1="350" x2="925" y2="365" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="925,365 937,352 938,365" fill="#4b5563"/>
+  <text x="965" y="330" class="small">discover healthy worker</text>
+
+  <rect x="1060" y="350" width="250" height="108" rx="12" class="worker" opacity="0.38"/>
+  <text x="1185" y="383" text-anchor="middle" class="box-title" opacity="0.7">Worker N</text>
+  <text x="1185" y="407" text-anchor="middle" class="box-text" opacity="0.7">isolated session runtime</text>
+  <text x="1185" y="431" text-anchor="middle" class="box-text" opacity="0.7">scales horizontally</text>
+
+  <rect x="1047" y="365" width="250" height="108" rx="12" class="worker" opacity="0.62"/>
+  <text x="1172" y="398" text-anchor="middle" class="box-title" opacity="0.8">Worker 2</text>
+  <text x="1172" y="422" text-anchor="middle" class="box-text" opacity="0.8">isolated session runtime</text>
+  <text x="1172" y="446" text-anchor="middle" class="box-text" opacity="0.8">registers with Consul</text>
+
+  <rect x="1035" y="380" width="250" height="108" rx="12" class="worker"/>
+  <text x="1160" y="407" text-anchor="middle" class="box-title">select-ai a2a worker</text>
+  <text x="1160" y="430" text-anchor="middle" class="box-text">worker instance 1</text>
+  <text x="1160" y="452" text-anchor="middle" class="box-text">one child process per session</text>
+  <text x="1160" y="474" text-anchor="middle" class="box-text">Oracle connection and A2A handler</text>
+
+  <line x1="1175" y1="302" x2="1175" y2="350" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="1175,350 1170,340 1180,340" fill="#4b5563"/>
+  <text x="1195" y="330" class="small">protobuf over mTLS</text>
+
+  <line x1="1035" y1="455" x2="980" y2="475" stroke="#4b5563" stroke-width="2.5"/>
+  <line x1="980" y1="475" x2="940" y2="475" stroke="#4b5563" stroke-width="2.5"/>
+  <line x1="940" y1="475" x2="925" y2="473" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="925,473 937,466 936,478" fill="#4b5563"/>
+  <text x="958" y="494" class="small">register / heartbeat</text>
+
+  <rect x="1035" y="565" width="280" height="128" rx="12" class="database"/>
+  <text x="1175" y="598" text-anchor="middle" class="box-title">Oracle Database</text>
+  <text x="1175" y="622" text-anchor="middle" class="box-text">selected DSN, user, password</text>
+  <text x="1175" y="643" text-anchor="middle" class="box-text">selected team</text>
+  <text x="1175" y="664" text-anchor="middle" class="box-text">tasks, contexts, conversations</text>
+  <line x1="1160" y1="488" x2="1160" y2="565" stroke="#4b5563" stroke-width="2.5"/>
+  <polygon points="1160,565 1155,555 1165,555" fill="#4b5563"/>
+
+  <text x="1047" y="728" text-anchor="middle" class="small">Gateway talks directly to the selected worker for the session.</text>
+  <text x="1047" y="750" text-anchor="middle" class="small">Gateway database sessions do not currently accept Oracle wallets.</text>
+</svg>

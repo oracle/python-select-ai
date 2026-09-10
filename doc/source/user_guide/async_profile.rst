@@ -37,6 +37,7 @@ The usual async profile lifecycle is:
   list.
 * Create the profile with ``await select_ai.AsyncProfile(...)``.
 * Reuse the profile later by name.
+* Enable or disable the profile without deleting it.
 * Update profile attributes when provider settings or object scope changes.
 * Delete profiles that are no longer needed.
 
@@ -146,6 +147,28 @@ saved database profile and raise an error if the profile does not exist:
    async_profile = await select_ai.AsyncProfile.fetch(
        "async_oci_ai_profile"
    )
+
+.. latex:clearpage::
+
+*******************************
+Enable and disable AsyncProfile
+*******************************
+
+Use ``await AsyncProfile.disable()`` to make an existing profile unavailable
+without deleting it. Call ``await AsyncProfile.enable()`` to make it available
+again. These methods change the database profile status and return ``None``.
+
+.. literalinclude:: ../../../samples/async/profile_enable_disable.py
+   :language: python
+   :lines: 14-
+
+The sample uses ``SELECT_AI_PROFILE_NAME`` when set, otherwise it operates on
+``oci_ai_profile``. It always re-enables the profile during cleanup:
+
+output::
+
+    Disabled profile: oci_ai_profile
+    Enabled profile: oci_ai_profile
 
 .. latex:clearpage::
 
@@ -354,6 +377,83 @@ Streaming is supported by ``generate()``, ``chat()``, ``narrate()``,
 ``explain_sql()``, ``show_sql()``, and ``show_prompt()``. It is not supported
 for ``run_sql()``, which returns a ``pandas.DataFrame``.
 
+.. _async-request-profile-attributes:
+
+***********************************************
+Async request-level profile attribute overrides
+***********************************************
+
+The ``attributes`` keyword accepts a mapping of profile attributes to apply to
+one async request. These values override the corresponding saved profile
+attributes for that request only; they do not update the profile in the
+database. The mapping must contain JSON-serializable values.
+
+Request-level attributes are available on the following asynchronous APIs:
+
+* ``AsyncProfile.generate()``, ``chat()``, and ``narrate()``.
+* SQL helpers: ``explain_sql()``, ``run_sql()``, ``show_sql()``, and
+  ``show_prompt()``.
+* ``AsyncSession.chat()``, ``narrate()``, ``explain_sql()``, ``run_sql()``,
+  ``show_sql()``, and ``show_prompt()``.
+* ``AsyncProfile.run_pipeline()``, which applies the same mapping to every
+  prompt/action request in the pipeline.
+* Streaming calls to the text-producing methods, by combining
+  ``stream=True`` with ``attributes=...``. ``run_sql()`` does not support
+  streaming.
+
+The mapping can include attributes such as ``additional_instructions``,
+the integer ``seed``, and ``source_language`` or ``target_language``. Use
+``ProfileAttributes`` for profile-wide defaults; use this mapping when an
+override should apply only to the current request.
+
+For ``translate()``, pass language values through its named
+``source_language`` and ``target_language`` arguments. The ``attributes``
+mapping described here applies to the generate/action APIs.
+
+.. code-block:: python
+
+   request_attributes = {
+       "additional_instructions": "Answer in one sentence.",
+       "seed": 42,
+       "source_language": "en",
+       "target_language": "de",
+   }
+
+   response = await async_profile.chat(
+       prompt="What is Oracle Cloud Infrastructure?",
+       attributes=request_attributes,
+   )
+
+For async streaming, await the method call first and then iterate over the
+returned async iterator. The same mapping can be used with an async session:
+
+.. code-block:: python
+
+   chunks = await async_profile.chat(
+       prompt="Summarize Oracle Cloud Infrastructure.",
+       stream=True,
+       attributes=request_attributes,
+   )
+   async for chunk in chunks:
+       print(chunk, end="")
+
+   async with async_profile.chat_session(conversation) as session:
+       response = await session.chat(
+           prompt="Give one more detail.",
+           attributes=request_attributes,
+       )
+
+The following sample uses ``show_prompt()`` to verify that the request-only
+``additional_instructions`` value reached the generated prompt:
+
+.. literalinclude:: ../../../samples/async/profile_request_attributes.py
+   :language: python
+   :lines: 14-
+
+output::
+
+    Request attributes applied: True
+
 .. latex:clearpage::
 
 **************************
@@ -407,6 +507,35 @@ output::
 Translate
 ***********
 
+``AsyncProfile.translate()`` accepts optional ``source_language`` and
+``target_language`` arguments. Per-call values take precedence over the
+profile's ``source_language`` and ``target_language`` defaults.
+
+If ``source_language`` is omitted for both the call and the profile, source
+language detection is delegated to the translation provider. If
+``target_language`` is omitted, the profile's default is used; a target
+language must be supplied in one of those two places.
+
+Configure profile-level defaults with ``ProfileAttributes`` when creating or
+updating a profile:
+
+.. code-block:: python
+
+   language_defaults = select_ai.ProfileAttributes(
+       source_language="en",
+       target_language="de",
+   )
+
+   await async_profile.set_attributes(language_defaults)
+   print(await async_profile.translate(text="Thank you"))
+
+When only the target is supplied at the call site, the provider can detect the
+source language:
+
+.. code-block:: python
+
+   print(await async_profile.translate(text="Thank you", target_language="de"))
+
 
 .. literalinclude:: ../../../samples/async/profile_translate.py
    :language: python
@@ -421,6 +550,20 @@ output::
 *********************
 Async pipeline
 *********************
+
+``AsyncProfile.run_pipeline()`` also accepts ``attributes=...``. The mapping
+is applied to every prompt/action request in the pipeline, while the saved
+profile remains unchanged.
+
+.. code-block:: python
+
+   results = await async_profile.run_pipeline(
+       prompt_specifications,
+       attributes={
+           "additional_instructions": "Keep each answer concise.",
+           "seed": 42,
+       },
+   )
 
 .. literalinclude:: ../../../samples/async/profile_pipeline.py
    :language: python
@@ -455,8 +598,22 @@ output::
 List profiles asynchronously
 ****************************
 
-Profile listing returns profiles visible to the connected database user. The
-async list API returns an async iterator.
+Profile listing returns profiles visible to the connected database user. Pass
+``owner`` to list profiles from a specific schema, including a profile shared
+with the connected user. Returned objects include ``owner`` and the
+owner-qualified ``qualified_name`` property. The async list API returns an
+async iterator.
+
+.. code-block:: python
+
+   profile = await select_ai.AsyncProfile.fetch(
+       "OCI_AI_PROFILE",
+       owner="APP_OWNER",
+   )
+   print(profile.qualified_name)
+
+   async for profile in select_ai.AsyncProfile.list(owner="APP_OWNER"):
+       print(profile.qualified_name)
 
 .. literalinclude:: ../../../samples/async/profiles_list.py
    :language: python

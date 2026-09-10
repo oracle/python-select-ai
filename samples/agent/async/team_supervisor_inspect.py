@@ -8,8 +8,9 @@
 # -----------------------------------------------------------------------------
 # agent/async/team_supervisor_inspect.py
 #
-# Async version of the supervised team creation and inspection sample.
-# Requires SELECT_AI_PROFILE_NAME to name an existing AI profile.
+# Async version of the supervised team creation, execution, and inspection
+# sample.
+# Uses SELECT_AI_PROFILE_NAME when set; otherwise uses oci_ai_profile.
 # -----------------------------------------------------------------------------
 
 import asyncio
@@ -25,11 +26,15 @@ from select_ai.agent import (
     TaskAttributes,
     TeamAttributes,
 )
+from select_ai.conversation import (
+    AsyncConversation,
+    ConversationAttributes,
+)
 
 user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
-profile_name = os.getenv("SELECT_AI_PROFILE_NAME", "LLAMA_4_MAVERICK")
+profile_name = os.getenv("SELECT_AI_PROFILE_NAME", "oci_ai_profile")
 
 
 async def main():
@@ -70,22 +75,47 @@ async def main():
         ),
     )
 
-    await task.create(replace=True)
-    await worker.create(replace=True)
-    await supervisor.create(replace=True)
-    await team.create(replace=True)
+    conversation = AsyncConversation(
+        attributes=ConversationAttributes(
+            title="Supervised team sample",
+            description="Conversation for the supervised team sample",
+        )
+    )
 
+    created_objects = []
+    conversation_created = False
     try:
+        await task.create(replace=True)
+        created_objects.append(task)
+        await worker.create(replace=True)
+        created_objects.append(worker)
+        await supervisor.create(replace=True)
+        created_objects.append(supervisor)
+        await team.create(replace=True)
+        created_objects.append(team)
+
+        await conversation.create()
+        conversation_created = True
+        response = await team.run(
+            prompt="What is the capital of France? Answer in one sentence.",
+            params={"conversation_id": conversation.conversation_id},
+        )
+        if response is None or (
+            isinstance(response, str) and response.startswith("Task failed:")
+        ):
+            raise RuntimeError(f"Supervised team run failed: {response}")
+        print("Team response:", response)
+
         fetched = await AsyncTeam.fetch(team.team_name)
         print("Supervisor agent:", fetched.attributes.supervisor_agent)
         print("Supervisor task:", fetched.attributes.supervisor_task)
         print("Team description:", await team.describe_team())
         print("Team tools:", await team.list_tools())
     finally:
-        await team.delete(force=True)
-        await supervisor.delete(force=True)
-        await worker.delete(force=True)
-        await task.delete(force=True)
+        if conversation_created:
+            await conversation.delete(force=True)
+        for obj in reversed(created_objects):
+            await obj.delete(force=True)
 
 
 asyncio.run(main())

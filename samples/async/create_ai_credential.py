@@ -36,7 +36,9 @@ async def main():
         "fingerprint": default_config["fingerprint"],
     }
     await select_ai.async_create_credential(
-        credential=credential, replace=True
+        credential=credential,
+        replace=True,
+        public_synonym=True,
     )
     print("Created credential: ", credential["credential_name"])
 

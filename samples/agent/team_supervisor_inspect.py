@@ -8,8 +8,9 @@
 # -----------------------------------------------------------------------------
 # agent/team_supervisor_inspect.py
 #
-# Create a supervised team, then inspect its metadata and available tools.
-# Requires SELECT_AI_PROFILE_NAME to name an existing AI profile.
+# Create a supervised team, run it, then inspect its metadata and available
+# tools.
+# Uses SELECT_AI_PROFILE_NAME when set; otherwise uses oci_ai_profile.
 # -----------------------------------------------------------------------------
 
 import os
@@ -24,11 +25,12 @@ from select_ai.agent import (
     Team,
     TeamAttributes,
 )
+from select_ai.conversation import Conversation, ConversationAttributes
 
 user = os.getenv("SELECT_AI_USER")
 password = os.getenv("SELECT_AI_PASSWORD")
 dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
-profile_name = os.getenv("SELECT_AI_PROFILE_NAME", "LLAMA_4_MAVERICK")
+profile_name = os.getenv("SELECT_AI_PROFILE_NAME", "oci_ai_profile")
 suffix = uuid.uuid4().hex.upper()
 
 select_ai.connect(user=user, password=password, dsn=dsn)
@@ -67,19 +69,44 @@ team = Team(
     ),
 )
 
-task.create(replace=True)
-worker.create(replace=True)
-supervisor.create(replace=True)
-team.create(replace=True)
+conversation = Conversation(
+    attributes=ConversationAttributes(
+        title="Supervised team sample",
+        description="Conversation for the supervised team sample",
+    )
+)
 
+created_objects = []
+conversation_created = False
 try:
+    task.create(replace=True)
+    created_objects.append(task)
+    worker.create(replace=True)
+    created_objects.append(worker)
+    supervisor.create(replace=True)
+    created_objects.append(supervisor)
+    team.create(replace=True)
+    created_objects.append(team)
+
+    conversation.create()
+    conversation_created = True
+    response = team.run(
+        prompt="What is the capital of France? Answer in one sentence.",
+        params={"conversation_id": conversation.conversation_id},
+    )
+    if response is None or (
+        isinstance(response, str) and response.startswith("Task failed:")
+    ):
+        raise RuntimeError(f"Supervised team run failed: {response}")
+    print("Team response:", response)
+
     fetched = Team.fetch(team.team_name)
     print("Supervisor agent:", fetched.attributes.supervisor_agent)
     print("Supervisor task:", fetched.attributes.supervisor_task)
     print("Team description:", team.describe_team())
     print("Team tools:", team.list_tools())
 finally:
-    team.delete(force=True)
-    supervisor.delete(force=True)
-    worker.delete(force=True)
-    task.delete(force=True)
+    if conversation_created:
+        conversation.delete(force=True)
+    for obj in reversed(created_objects):
+        obj.delete(force=True)

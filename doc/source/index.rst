@@ -59,6 +59,15 @@ Credential
 
     user_guide/credential.rst
 
+Sharing and ownership
+=====================
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/sharing.rst
+
 
 Profile Attributes
 ==================
@@ -142,6 +151,15 @@ Async AI Agent
     :maxdepth: 3
 
     user_guide/async_agent.rst
+
+A2A Integration
+===============
+
+.. toctree::
+    :numbered:
+    :maxdepth: 3
+
+    user_guide/a2a.rst
 
 Command Line Interface
 ======================

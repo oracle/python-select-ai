@@ -17,6 +17,17 @@ send `A2A-Version: 1.0` and use `SendMessage`, `GetTask`, `ListTasks`, and
 `CancelTask`; its non-blocking option is `configuration.returnImmediately`.
 The gateway accepts both versions, but streaming is disabled in both.
 
+The sample scripts import `call`, `connect`, `send_prompt`, and
+`print_task_summary` from the adjacent
+[`_common.py`](https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/_common.py)
+file. This is a
+repository-local sample helper, not an additional Python dependency. It sends
+the JSON-RPC requests, performs the A2UI connection-form handshake using the
+environment variables below, and formats the final task result. If you copy a
+script elsewhere, copy
+[`_common.py`](https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/_common.py)
+with it or replace those helpers with your own A2A client code.
+
 ## Local setup
 
 Install the A2A extra if necessary:

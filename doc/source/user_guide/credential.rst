@@ -25,6 +25,7 @@ formats.
     :header-rows: 1
     :widths: 30 70
     :align: left
+    :class: longtable
 
     * - AI provider
       - Credential format
@@ -108,8 +109,13 @@ Pass ``replace=True`` when you want to recreate an existing credential with the
 same name. Without ``replace=True``, creating a credential that already exists
 raises a database error.
 
-Sync API
-++++++++
+Pass ``public_synonym=True`` to also create a public synonym with the same name
+as the credential. This requires the ``CREATE PUBLIC SYNONYM`` system
+privilege. The credential samples create the synonym and remove it during the
+delete step.
+
+Create Sync API
++++++++++++++++
 
 .. literalinclude:: ../../../samples/create_ai_credential.py
    :language: python
@@ -121,8 +127,8 @@ output::
 
 .. latex:clearpage::
 
-Async API
-+++++++++
+Create Async API
+++++++++++++++++
 
 .. literalinclude:: ../../../samples/async/create_ai_credential.py
    :language: python
@@ -140,10 +146,11 @@ Delete credential
 
 Use ``select_ai.delete_credential(...)`` to drop a credential that is no longer
 needed. Pass ``force=True`` when cleanup should succeed even if the credential
-does not exist.
+does not exist. Pass ``public_synonym=True`` to drop the credential's public
+synonym as well; this requires the ``DROP PUBLIC SYNONYM`` system privilege.
 
-Sync API
-++++++++
+Delete Sync API
++++++++++++++++
 
 .. literalinclude:: ../../../samples/delete_ai_credential.py
    :language: python
@@ -153,10 +160,8 @@ output::
 
     Deleted credential: my_oci_ai_profile_key
 
-.. latex:clearpage::
-
-Async API
-+++++++++
+Delete Async API
+++++++++++++++++
 
 .. literalinclude:: ../../../samples/async/delete_ai_credential.py
    :language: python
@@ -165,3 +170,39 @@ Async API
 output::
 
     Deleted credential: my_oci_ai_profile_key
+
+.. latex:clearpage::
+
+**************************
+Credential access
+**************************
+
+Use ``select_ai.grant_credential_access(...)`` and
+``select_ai.revoke_credential_access(...)`` to grant or revoke credential
+access for a database user or role. The asynchronous equivalents are
+``async_grant_credential_access(...)`` and
+``async_revoke_credential_access(...)``.
+
+.. code-block:: python
+
+   select_ai.grant_credential_access(
+       "MY_PROVIDER_CREDENTIAL",
+       "APP_USER",
+   )
+   select_ai.revoke_credential_access(
+       "MY_PROVIDER_CREDENTIAL",
+       "APP_USER",
+   )
+
+Use ``await`` with the asynchronous equivalents:
+
+.. code-block:: python
+
+   await select_ai.async_grant_credential_access(
+       "MY_PROVIDER_CREDENTIAL",
+       "APP_USER",
+   )
+   await select_ai.async_revoke_credential_access(
+       "MY_PROVIDER_CREDENTIAL",
+       "APP_USER",
+   )

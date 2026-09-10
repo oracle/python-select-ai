@@ -17,18 +17,21 @@ hosted behind the same A2A endpoint. Consul preserves session and task affinity
 when requests reach different gateway instances. Oracle Database capacity and
 the configured session TTL remain the limiting factors.
 
+![Select AI A2A deployment architecture](../doc/source/image/a2a_architecture.svg)
+
+The A2A commands are cloud-neutral: `select-ai a2a serve`,
+`select-ai a2a gateway`, and `select-ai a2a worker` can run as processes or
+containers on any cloud platform, a Kubernetes cluster, or self-managed
+infrastructure with the required Oracle and Consul connectivity. The scripts
+in this directory are optional Google Cloud automation for the Cloud Run/GKE
+topologies shown below.
+
 ## What the A2A client connects to
 
 ### Standalone server
 
 The standalone deployment is one Cloud Run A2A service for one configured
 Oracle database and one Select AI team.
-
-```text
-A2A client ── A2A JSON-RPC ──► Cloud Run A2A server ──► Oracle Database
-                                fixed credentials
-                                fixed team
-```
 
 The service receives its database credentials from Secret Manager. The A2A
 client can discover the Agent Card and immediately send a database prompt.
@@ -46,15 +49,6 @@ Use [standalone deployment](standalone/README.md) for the deployment details.
 
 The gateway deployment provides one public A2A endpoint for users who choose
 the database and Select AI team at runtime.
-
-```text
-A2A client ── A2A JSON-RPC ──► Cloud Run gateway
-                                │ A2UI connection form
-                                ▼
-                         GKE worker session ──► Oracle Database
-                                ▲
-                                │ Consul session/task routing
-```
 
 The client first sends a message and receives an A2UI connection form. After
 the client submits the DSN, username, password, and team name, the gateway

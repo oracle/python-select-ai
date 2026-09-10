@@ -40,8 +40,18 @@ The usual lifecycle is:
 ****************************
 
 .. _vectorindexfig:
-.. figure:: /image/vector_index.png
-   :alt: Select AI Vector Index
+
+.. only:: html
+
+   .. figure:: /image/vector_index_object_model.svg
+      :alt: Select AI Vector Index object model
+      :width: 100%
+
+.. only:: latex
+
+   .. figure:: /image/vector_index_object_model.png
+      :alt: Select AI Vector Index object model
+      :width: 100%
 
 .. latex:clearpage::
 
@@ -155,12 +165,13 @@ Important lifecycle methods:
        ``replace=True`` and the index already exists, the existing index is
        dropped and recreated. Use ``wait_for_completion=True`` when the next
        step depends on the initial load being complete.
-   * - ``fetch(index_name)``
+   * - ``fetch(index_name, owner=None)``
      - Build a ``VectorIndex`` proxy from database metadata, including
        attributes and the linked profile when it still exists.
-   * - ``list(index_name_pattern=".*")``
-     - Iterate over vector indexes visible to the current user. The pattern is
-       evaluated with Oracle ``REGEXP_LIKE``.
+   * - ``list(index_name_pattern=".*", owner=None)``
+     - Iterate over vector indexes visible to the current user or owned by the
+       specified schema. The pattern is evaluated with Oracle
+       ``REGEXP_LIKE``.
    * - ``set_attribute()`` and ``set_attributes()``
      - Update one or more index attributes.
    * - ``get_next_refresh_timestamp()``
@@ -214,9 +225,19 @@ Fetch vector index
 +++++++++++++++++++++++++++
 
 You can fetch the vector index attributes and associated AI profile using
-the class method ``VectorIndex.fetch(index_name)``. Fetch is useful when the
-index was created earlier or by another process and you want to inspect or
-update it without recreating the original Python object.
+the class method ``VectorIndex.fetch(index_name, owner=None)``. Pass ``owner``
+for an index shared from another schema. The returned object exposes the
+resolved ``owner`` and the owner-qualified ``qualified_name``. Fetch is useful
+when the index was created earlier or by another process and you want to inspect
+or update it without recreating the original Python object.
+
+.. code-block:: python
+
+   vector_index = select_ai.VectorIndex.fetch(
+       "PRODUCT_DOCS",
+       owner="APP_OWNER",
+   )
+   print(vector_index.qualified_name)
 
 .. literalinclude:: ../../../samples/vector_index_fetch.py
    :language: python
