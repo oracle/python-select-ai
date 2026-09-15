@@ -251,7 +251,7 @@ class VectorIndex(_BaseVectorIndex):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
                     keyword_parameters=parameters,
                 )
             except oracledb.DatabaseError as e:
@@ -260,7 +260,7 @@ class VectorIndex(_BaseVectorIndex):
                 if error.code == 20048 and replace:
                     self.delete(force=True)
                     cr.callproc(
-                        "DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -302,7 +302,7 @@ class VectorIndex(_BaseVectorIndex):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.DROP_VECTOR_INDEX",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DROP_VECTOR_INDEX",
                 keyword_parameters={
                     "index_name": self.index_name,
                     "include_data": include_data,
@@ -323,7 +323,7 @@ class VectorIndex(_BaseVectorIndex):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
                     keyword_parameters={"index_name": self.index_name},
                 )
             except oracledb.Error as e:
@@ -347,7 +347,7 @@ class VectorIndex(_BaseVectorIndex):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
                     keyword_parameters={"index_name": self.index_name},
                 )
             except oracledb.Error as e:
@@ -363,7 +363,7 @@ class VectorIndex(_BaseVectorIndex):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.GRANT_VECTOR_INDEX_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.GRANT_VECTOR_INDEX_ACCESS",
                 keyword_parameters={
                     "index_name": self.index_name,
                     "user_or_role_name": user_or_role_name,
@@ -375,7 +375,7 @@ class VectorIndex(_BaseVectorIndex):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.REVOKE_VECTOR_INDEX_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.REVOKE_VECTOR_INDEX_ACCESS",
                 keyword_parameters={
                     "index_name": self.index_name,
                     "user_or_role_name": user_or_role_name,
@@ -432,7 +432,7 @@ class VectorIndex(_BaseVectorIndex):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
                 keyword_parameters=parameters,
             )
 
@@ -456,7 +456,7 @@ class VectorIndex(_BaseVectorIndex):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
                 keyword_parameters=parameters,
             )
         self.attributes = self.get_attributes()
@@ -635,7 +635,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
-                    "DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
                     keyword_parameters=parameters,
                 )
             except oracledb.DatabaseError as e:
@@ -644,7 +644,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
                 if error.code == 20048 and replace:
                     await self.delete(force=True)
                     await cr.callproc(
-                        "DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_VECTOR_INDEX",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -670,7 +670,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.DROP_VECTOR_INDEX",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DROP_VECTOR_INDEX",
                 keyword_parameters={
                     "index_name": self.index_name,
                     "include_data": include_data,
@@ -709,7 +709,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
-                    "DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI.ENABLE_VECTOR_INDEX",
                     keyword_parameters={"index_name": self.index_name},
                 )
             except oracledb.DatabaseError as e:
@@ -733,7 +733,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
-                    "DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DISABLE_VECTOR_INDEX",
                     keyword_parameters={"index_name": self.index_name},
                 )
             except oracledb.Error as e:
@@ -748,7 +748,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.GRANT_VECTOR_INDEX_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.GRANT_VECTOR_INDEX_ACCESS",
                 keyword_parameters={
                     "index_name": self.index_name,
                     "user_or_role_name": user_or_role_name,
@@ -760,7 +760,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.REVOKE_VECTOR_INDEX_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.REVOKE_VECTOR_INDEX_ACCESS",
                 keyword_parameters={
                     "index_name": self.index_name,
                     "user_or_role_name": user_or_role_name,
@@ -817,7 +817,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         setattr(self.attributes, attribute_name, attribute_value)
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
                 keyword_parameters=parameters,
             )
 
@@ -838,7 +838,7 @@ class AsyncVectorIndex(_BaseVectorIndex):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.UPDATE_VECTOR_INDEX",
                 keyword_parameters=parameters,
             )
         self.attributes = await self.get_attributes()

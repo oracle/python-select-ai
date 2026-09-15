@@ -329,7 +329,7 @@ class Tool(_BaseTool):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -337,7 +337,7 @@ class Tool(_BaseTool):
                 if err_obj.code in (20050, 20052) and replace:
                     self.delete(force=True)
                     cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -610,7 +610,7 @@ class Tool(_BaseTool):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_TOOL",
                 keyword_parameters={
                     "tool_name": self.tool_name,
                     "force": force,
@@ -634,7 +634,7 @@ class Tool(_BaseTool):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_TOOL",
                 keyword_parameters={
                     "tool_name": self.tool_name,
                 },
@@ -646,7 +646,7 @@ class Tool(_BaseTool):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_TOOL",
                 keyword_parameters={
                     "tool_name": self.tool_name,
                 },
@@ -661,7 +661,7 @@ class Tool(_BaseTool):
         """
         with cursor() as cr:
             data = cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.RUN_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.RUN_TOOL",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={
                     "tool_name": self.tool_name,
@@ -674,7 +674,7 @@ class Tool(_BaseTool):
         """Return this tool's JSON metadata and function arguments."""
         with cursor() as cr:
             data = cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DESCRIBE_TOOL",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={"tool_name": self.tool_name},
             )
@@ -733,7 +733,7 @@ class Tool(_BaseTool):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
 
@@ -750,7 +750,7 @@ class Tool(_BaseTool):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
 
@@ -824,7 +824,7 @@ class AsyncTool(_BaseTool):
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -832,7 +832,7 @@ class AsyncTool(_BaseTool):
                 if err_obj.code in (20050, 20052) and replace:
                     await self.delete(force=True)
                     await cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TOOL",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -1105,7 +1105,7 @@ class AsyncTool(_BaseTool):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_TOOL",
                 keyword_parameters={
                     "tool_name": self.tool_name,
                     "force": force,
@@ -1129,7 +1129,7 @@ class AsyncTool(_BaseTool):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_TOOL",
                 keyword_parameters={
                     "tool_name": self.tool_name,
                 },
@@ -1141,7 +1141,7 @@ class AsyncTool(_BaseTool):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_TOOL",
                 keyword_parameters={
                     "tool_name": self.tool_name,
                 },
@@ -1151,7 +1151,7 @@ class AsyncTool(_BaseTool):
         """Asynchronously run this tool directly and return its result."""
         async with async_cursor() as cr:
             data = await cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.RUN_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.RUN_TOOL",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={
                     "tool_name": self.tool_name,
@@ -1164,7 +1164,7 @@ class AsyncTool(_BaseTool):
         """Asynchronously return this tool's JSON metadata."""
         async with async_cursor() as cr:
             data = await cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TOOL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DESCRIBE_TOOL",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={"tool_name": self.tool_name},
             )
@@ -1232,7 +1232,7 @@ class AsyncTool(_BaseTool):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
 
@@ -1251,6 +1251,6 @@ class AsyncTool(_BaseTool):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )

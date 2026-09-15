@@ -180,7 +180,7 @@ class Team(BaseTeam):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -188,7 +188,7 @@ class Team(BaseTeam):
                 if err_obj.code in (20053, 20052) and replace:
                     self.delete(force=True)
                     cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -202,7 +202,7 @@ class Team(BaseTeam):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
                     "force": force,
@@ -226,7 +226,7 @@ class Team(BaseTeam):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
                 },
@@ -238,7 +238,7 @@ class Team(BaseTeam):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
                 },
@@ -249,7 +249,7 @@ class Team(BaseTeam):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.GRANT_TEAM_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.GRANT_TEAM_ACCESS",
                 keyword_parameters={
                     "team_name": self.team_name,
                     "user_or_role_name": user_or_role_name,
@@ -261,7 +261,7 @@ class Team(BaseTeam):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.REVOKE_TEAM_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.REVOKE_TEAM_ACCESS",
                 keyword_parameters={
                     "team_name": self.team_name,
                     "user_or_role_name": user_or_role_name,
@@ -355,7 +355,7 @@ class Team(BaseTeam):
 
         with cursor() as cr:
             data = cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.RUN_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.RUN_TEAM",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters=parameters,
             )
@@ -369,7 +369,7 @@ class Team(BaseTeam):
         """Return this team's JSON metadata and aggregated skills."""
         with cursor() as cr:
             data = cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DESCRIBE_TEAM",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={"team_name": self.team_name},
             )
@@ -379,7 +379,7 @@ class Team(BaseTeam):
         """Return JSON metadata for the tools available to this team."""
         with cursor() as cr:
             data = cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.LIST_TOOLS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.LIST_TOOLS",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={"team_name": self.team_name},
             )
@@ -435,13 +435,13 @@ class Team(BaseTeam):
                 )
                 parameters["location"] = location
                 cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
                     keyword_parameters=parameters,
                 )
                 return None
 
             data = cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters=parameters,
             )
@@ -516,7 +516,7 @@ class Team(BaseTeam):
 
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.IMPORT_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.IMPORT_TEAM",
                 keyword_parameters=parameters,
             )
 
@@ -567,7 +567,7 @@ class Team(BaseTeam):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
 
@@ -584,7 +584,7 @@ class Team(BaseTeam):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
 
@@ -665,7 +665,7 @@ class AsyncTeam(BaseTeam):
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -673,7 +673,7 @@ class AsyncTeam(BaseTeam):
                 if err_obj.code in (20053, 20052) and replace:
                     await self.delete(force=True)
                     await cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TEAM",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -687,7 +687,7 @@ class AsyncTeam(BaseTeam):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
                     "force": force,
@@ -711,7 +711,7 @@ class AsyncTeam(BaseTeam):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
                 },
@@ -723,7 +723,7 @@ class AsyncTeam(BaseTeam):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_TEAM",
                 keyword_parameters={
                     "team_name": self.team_name,
                 },
@@ -734,7 +734,7 @@ class AsyncTeam(BaseTeam):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.GRANT_TEAM_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.GRANT_TEAM_ACCESS",
                 keyword_parameters={
                     "team_name": self.team_name,
                     "user_or_role_name": user_or_role_name,
@@ -746,7 +746,7 @@ class AsyncTeam(BaseTeam):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.REVOKE_TEAM_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.REVOKE_TEAM_ACCESS",
                 keyword_parameters={
                     "team_name": self.team_name,
                     "user_or_role_name": user_or_role_name,
@@ -843,7 +843,7 @@ class AsyncTeam(BaseTeam):
 
         async with async_cursor() as cr:
             data = await cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.RUN_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.RUN_TEAM",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters=parameters,
             )
@@ -857,7 +857,7 @@ class AsyncTeam(BaseTeam):
         """Asynchronously return this team's JSON metadata and skills."""
         async with async_cursor() as cr:
             data = await cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.DESCRIBE_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DESCRIBE_TEAM",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={"team_name": self.team_name},
             )
@@ -867,7 +867,7 @@ class AsyncTeam(BaseTeam):
         """Asynchronously return JSON metadata for this team's tools."""
         async with async_cursor() as cr:
             data = await cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.LIST_TOOLS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.LIST_TOOLS",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters={"team_name": self.team_name},
             )
@@ -923,13 +923,13 @@ class AsyncTeam(BaseTeam):
                 )
                 parameters["location"] = location
                 await cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
                     keyword_parameters=parameters,
                 )
                 return None
 
             data = await cr.callfunc(
-                "DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.EXPORT_TEAM",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters=parameters,
             )
@@ -1004,7 +1004,7 @@ class AsyncTeam(BaseTeam):
 
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.IMPORT_TEAM",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.IMPORT_TEAM",
                 keyword_parameters=parameters,
             )
 
@@ -1055,7 +1055,7 @@ class AsyncTeam(BaseTeam):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
 
@@ -1074,6 +1074,6 @@ class AsyncTeam(BaseTeam):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )

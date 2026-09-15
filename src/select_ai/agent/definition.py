@@ -23,7 +23,7 @@ def get_definition(object_type: str, object_name: str) -> Optional[str]:
     """
     with cursor() as cr:
         data = cr.callfunc(
-            "DBMS_CLOUD_AI_AGENT.GET_DEFINITION",
+            "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.GET_DEFINITION",
             oracledb.DB_TYPE_CLOB,
             keyword_parameters={
                 "object_type": object_type,
@@ -42,7 +42,7 @@ async def async_get_definition(
     """
     async with async_cursor() as cr:
         data = await cr.callfunc(
-            "DBMS_CLOUD_AI_AGENT.GET_DEFINITION",
+            "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.GET_DEFINITION",
             oracledb.DB_TYPE_CLOB,
             keyword_parameters={
                 "object_type": object_type,

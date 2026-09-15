@@ -156,7 +156,7 @@ class Task(BaseTask):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_TASK",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TASK",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -164,7 +164,7 @@ class Task(BaseTask):
                 if err_obj.code in (20051, 20052) and replace:
                     self.delete(force=True)
                     cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_TASK",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TASK",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -178,7 +178,7 @@ class Task(BaseTask):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_TASK",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_TASK",
                 keyword_parameters={
                     "task_name": self.task_name,
                     "force": force,
@@ -202,7 +202,7 @@ class Task(BaseTask):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_TASK",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_TASK",
                 keyword_parameters={
                     "task_name": self.task_name,
                 },
@@ -214,7 +214,7 @@ class Task(BaseTask):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_TASK",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_TASK",
                 keyword_parameters={
                     "task_name": self.task_name,
                 },
@@ -289,7 +289,7 @@ class Task(BaseTask):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
 
@@ -309,7 +309,7 @@ class Task(BaseTask):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
 
@@ -391,7 +391,7 @@ class AsyncTask(BaseTask):
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_TASK",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TASK",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -399,7 +399,7 @@ class AsyncTask(BaseTask):
                 if err_obj.code in (20051, 20052) and replace:
                     await self.delete(force=True)
                     await cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_TASK",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_TASK",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -413,7 +413,7 @@ class AsyncTask(BaseTask):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_TASK",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_TASK",
                 keyword_parameters={
                     "task_name": self.task_name,
                     "force": force,
@@ -437,7 +437,7 @@ class AsyncTask(BaseTask):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_TASK",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_TASK",
                 keyword_parameters={
                     "task_name": self.task_name,
                 },
@@ -449,7 +449,7 @@ class AsyncTask(BaseTask):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_TASK",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_TASK",
                 keyword_parameters={
                     "task_name": self.task_name,
                 },
@@ -527,7 +527,7 @@ class AsyncTask(BaseTask):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
 
@@ -547,6 +547,6 @@ class AsyncTask(BaseTask):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )

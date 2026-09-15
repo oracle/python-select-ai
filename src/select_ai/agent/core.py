@@ -146,7 +146,7 @@ class Agent(BaseAgent):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -154,7 +154,7 @@ class Agent(BaseAgent):
                 if err_obj.code in (20050, 20052) and replace:
                     self.delete(force=True)
                     cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -169,7 +169,7 @@ class Agent(BaseAgent):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_AGENT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_AGENT",
                 keyword_parameters={
                     "agent_name": self.agent_name,
                     "force": force,
@@ -194,7 +194,7 @@ class Agent(BaseAgent):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_AGENT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_AGENT",
                 keyword_parameters={
                     "agent_name": self.agent_name,
                 },
@@ -206,7 +206,7 @@ class Agent(BaseAgent):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_AGENT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_AGENT",
                 keyword_parameters={
                     "agent_name": self.agent_name,
                 },
@@ -273,7 +273,7 @@ class Agent(BaseAgent):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
         self.attributes = self._get_attributes(agent_name=self.agent_name)
@@ -290,7 +290,7 @@ class Agent(BaseAgent):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
         self.attributes = self._get_attributes(agent_name=self.agent_name)
@@ -369,7 +369,7 @@ class AsyncAgent(BaseAgent):
         async with async_cursor() as cr:
             try:
                 await cr.callproc(
-                    "DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
                     keyword_parameters=parameters,
                 )
             except oracledb.Error as err:
@@ -377,7 +377,7 @@ class AsyncAgent(BaseAgent):
                 if err_obj.code in (20050, 20052) and replace:
                     await self.delete(force=True)
                     await cr.callproc(
-                        "DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.CREATE_AGENT",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -392,7 +392,7 @@ class AsyncAgent(BaseAgent):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DROP_AGENT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DROP_AGENT",
                 keyword_parameters={
                     "agent_name": self.agent_name,
                     "force": force,
@@ -419,7 +419,7 @@ class AsyncAgent(BaseAgent):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.DISABLE_AGENT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.DISABLE_AGENT",
                 keyword_parameters={
                     "agent_name": self.agent_name,
                 },
@@ -431,7 +431,7 @@ class AsyncAgent(BaseAgent):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.ENABLE_AGENT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.ENABLE_AGENT",
                 keyword_parameters={
                     "agent_name": self.agent_name,
                 },
@@ -500,7 +500,7 @@ class AsyncAgent(BaseAgent):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTES",
                 keyword_parameters=parameters,
             )
         self.attributes = await self._get_attributes(
@@ -521,7 +521,7 @@ class AsyncAgent(BaseAgent):
         }
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT.SET_ATTRIBUTE",
                 keyword_parameters=parameters,
             )
         self.attributes = await self._get_attributes(
