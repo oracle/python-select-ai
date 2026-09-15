@@ -33,7 +33,7 @@ from select_ai.db import async_cursor, cursor
 
 @dataclass
 class TeamHistoryEvent(SelectAIDataClass):
-    """One row from ``USER_AI_AGENT_TEAM_HISTORY``."""
+    """One row from ``C##CLOUD$SERVICE.USER_AI_AGENT_TEAM_HISTORY``."""
 
     team_exec_id: str
     team_name: str
@@ -46,7 +46,7 @@ class TeamHistoryEvent(SelectAIDataClass):
 
 @dataclass
 class TaskHistoryEvent(SelectAIDataClass):
-    """One row from ``USER_AI_AGENT_TASK_HISTORY``."""
+    """One row from ``C##CLOUD$SERVICE.USER_AI_AGENT_TASK_HISTORY``."""
 
     team_exec_id: str
     team_name: str
@@ -63,7 +63,7 @@ class TaskHistoryEvent(SelectAIDataClass):
 
 @dataclass
 class ToolHistoryEvent(SelectAIDataClass):
-    """One row from ``USER_AI_AGENT_TOOL_HISTORY``."""
+    """One row from ``C##CLOUD$SERVICE.USER_AI_AGENT_TOOL_HISTORY``."""
 
     invocation_id: int
     team_exec_id: str
@@ -151,7 +151,7 @@ async def _async_events(
 
 
 class TeamHistory:
-    """Read runs from ``USER_AI_AGENT_TEAM_HISTORY``."""
+    """Read runs from ``C##CLOUD$SERVICE.USER_AI_AGENT_TEAM_HISTORY``."""
 
     @classmethod
     def list(
@@ -170,7 +170,7 @@ class TeamHistory:
 
 
 class TaskHistory:
-    """Read task runs from ``USER_AI_AGENT_TASK_HISTORY``."""
+    """Read task runs from ``C##CLOUD$SERVICE.USER_AI_AGENT_TASK_HISTORY``."""
 
     @classmethod
     def list(
@@ -196,7 +196,7 @@ class TaskHistory:
 
 
 class ToolHistory:
-    """Read tool calls from ``USER_AI_AGENT_TOOL_HISTORY``."""
+    """Read tool calls from ``C##CLOUD$SERVICE.USER_AI_AGENT_TOOL_HISTORY``."""
 
     @classmethod
     def list(
@@ -222,7 +222,8 @@ class ToolHistory:
 
 
 class AsyncTeamHistory:
-    """Asynchronously read runs from ``USER_AI_AGENT_TEAM_HISTORY``."""
+    """Asynchronously read runs from
+    ``C##CLOUD$SERVICE.USER_AI_AGENT_TEAM_HISTORY``."""
 
     @classmethod
     async def list(
@@ -242,7 +243,8 @@ class AsyncTeamHistory:
 
 
 class AsyncTaskHistory:
-    """Asynchronously read task runs from ``USER_AI_AGENT_TASK_HISTORY``."""
+    """Asynchronously read task runs from
+    ``C##CLOUD$SERVICE.USER_AI_AGENT_TASK_HISTORY``."""
 
     @classmethod
     async def list(
@@ -269,7 +271,8 @@ class AsyncTaskHistory:
 
 
 class AsyncToolHistory:
-    """Asynchronously read tool calls from ``USER_AI_AGENT_TOOL_HISTORY``."""
+    """Asynchronously read tool calls from
+    ``C##CLOUD$SERVICE.USER_AI_AGENT_TOOL_HISTORY``."""
 
     @classmethod
     async def list(

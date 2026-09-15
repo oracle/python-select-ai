@@ -37,7 +37,7 @@ def _append_host_ace_statement(privileges: List[str]) -> str:
     privilege_list = ", ".join(f":{name}" for name in privilege_bind_names)
     return f"""
     BEGIN
-        DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
+        SYS.DBMS_NETWORK_ACL_ADMIN.APPEND_HOST_ACE(
             host => :host,
             lower_port => :lower_port,
             upper_port => :upper_port,
@@ -58,7 +58,7 @@ def _remove_host_ace_statement(privileges: List[str]) -> str:
     privilege_list = ", ".join(f":{name}" for name in privilege_bind_names)
     return f"""
     BEGIN
-        DBMS_NETWORK_ACL_ADMIN.REMOVE_HOST_ACE(
+        SYS.DBMS_NETWORK_ACL_ADMIN.REMOVE_HOST_ACE(
             host => :host,
             lower_port => :lower_port,
             upper_port => :upper_port,
@@ -92,8 +92,10 @@ def _append_host_ace_parameters(
 
 async def async_grant_privileges(users: Union[str, List[str]]):
     """
-    This method grants execute privilege on the packages DBMS_CLOUD,
-    DBMS_CLOUD_AI, DBMS_CLOUD_AI_AGENT and DBMS_CLOUD_PIPELINE.
+    This method grants execute privilege on the packages
+    C##CLOUD$SERVICE.DBMS_CLOUD, C##CLOUD$SERVICE.DBMS_CLOUD_AI,
+    C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT and
+    C##CLOUD$SERVICE.DBMS_CLOUD_PIPELINE.
 
     """
     if isinstance(users, str):
@@ -107,8 +109,10 @@ async def async_grant_privileges(users: Union[str, List[str]]):
 
 async def async_revoke_privileges(users: Union[str, List[str]]):
     """
-    This method revokes execute privilege on the packages DBMS_CLOUD,
-    DBMS_CLOUD_AI, DBMS_CLOUD_AI_AGENT and DBMS_CLOUD_PIPELINE.
+    This method revokes execute privilege on the packages
+    C##CLOUD$SERVICE.DBMS_CLOUD, C##CLOUD$SERVICE.DBMS_CLOUD_AI,
+    C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT and
+    C##CLOUD$SERVICE.DBMS_CLOUD_PIPELINE.
 
     """
     if isinstance(users, str):
@@ -216,8 +220,10 @@ async def async_revoke_network_access(
 
 def grant_privileges(users: Union[str, List[str]]):
     """
-    This method grants execute privilege on the packages DBMS_CLOUD,
-    DBMS_CLOUD_AI, DBMS_CLOUD_AI_AGENT and DBMS_CLOUD_PIPELINE
+    This method grants execute privilege on the packages
+    C##CLOUD$SERVICE.DBMS_CLOUD, C##CLOUD$SERVICE.DBMS_CLOUD_AI,
+    C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT and
+    C##CLOUD$SERVICE.DBMS_CLOUD_PIPELINE
     """
     if isinstance(users, str):
         users = [users]
@@ -229,8 +235,10 @@ def grant_privileges(users: Union[str, List[str]]):
 
 def revoke_privileges(users: Union[str, List[str]]):
     """
-    This method revokes execute privilege on the packages DBMS_CLOUD,
-    DBMS_CLOUD_AI, DBMS_CLOUD_AI_AGENT and DBMS_CLOUD_PIPELINE.
+    This method revokes execute privilege on the packages
+    C##CLOUD$SERVICE.DBMS_CLOUD, C##CLOUD$SERVICE.DBMS_CLOUD_AI,
+    C##CLOUD$SERVICE.DBMS_CLOUD_AI_AGENT and
+    C##CLOUD$SERVICE.DBMS_CLOUD_PIPELINE.
     """
     if isinstance(users, str):
         users = [users]

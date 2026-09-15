@@ -29,11 +29,11 @@ DECLARE
     v_credential_name VARCHAR2(261);
     v_owner VARCHAR2(261);
 BEGIN
-    v_credential_name := DBMS_ASSERT.ENQUOTE_NAME(
-        DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
+    v_credential_name := SYS.DBMS_ASSERT.ENQUOTE_NAME(
+        SYS.DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
         FALSE
     );
-    v_owner := DBMS_ASSERT.ENQUOTE_NAME(
+    v_owner := SYS.DBMS_ASSERT.ENQUOTE_NAME(
         SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'),
         FALSE
     );
@@ -47,8 +47,8 @@ _DROP_PUBLIC_CREDENTIAL_SYNONYM = """
 DECLARE
     v_credential_name VARCHAR2(261);
 BEGIN
-    v_credential_name := DBMS_ASSERT.ENQUOTE_NAME(
-        DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
+    v_credential_name := SYS.DBMS_ASSERT.ENQUOTE_NAME(
+        SYS.DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
         FALSE
     );
     EXECUTE IMMEDIATE 'DROP PUBLIC SYNONYM ' || v_credential_name;
@@ -61,16 +61,16 @@ DECLARE
     v_owner VARCHAR2(261);
     v_user_or_role_name VARCHAR2(261);
 BEGIN
-    v_credential_name := DBMS_ASSERT.ENQUOTE_NAME(
-        DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
+    v_credential_name := SYS.DBMS_ASSERT.ENQUOTE_NAME(
+        SYS.DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
         FALSE
     );
-    v_owner := DBMS_ASSERT.ENQUOTE_NAME(
+    v_owner := SYS.DBMS_ASSERT.ENQUOTE_NAME(
         SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'),
         FALSE
     );
-    v_user_or_role_name := DBMS_ASSERT.ENQUOTE_NAME(
-        DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:user_or_role_name)),
+    v_user_or_role_name := SYS.DBMS_ASSERT.ENQUOTE_NAME(
+        SYS.DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:user_or_role_name)),
         FALSE
     );
     EXECUTE IMMEDIATE
@@ -85,16 +85,16 @@ DECLARE
     v_owner VARCHAR2(261);
     v_user_or_role_name VARCHAR2(261);
 BEGIN
-    v_credential_name := DBMS_ASSERT.ENQUOTE_NAME(
-        DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
+    v_credential_name := SYS.DBMS_ASSERT.ENQUOTE_NAME(
+        SYS.DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:credential_name)),
         FALSE
     );
-    v_owner := DBMS_ASSERT.ENQUOTE_NAME(
+    v_owner := SYS.DBMS_ASSERT.ENQUOTE_NAME(
         SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA'),
         FALSE
     );
-    v_user_or_role_name := DBMS_ASSERT.ENQUOTE_NAME(
-        DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:user_or_role_name)),
+    v_user_or_role_name := SYS.DBMS_ASSERT.ENQUOTE_NAME(
+        SYS.DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(:user_or_role_name)),
         FALSE
     );
     EXECUTE IMMEDIATE
@@ -207,14 +207,16 @@ async def async_create_credential(
 ):
     """Asynchronously create a credential.
 
-    Creates a credential object using DBMS_CLOUD.CREATE_CREDENTIAL. If replace
+    Creates a credential object using
+    C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL. If replace
     is True, credential will be replaced if it already exists. If
     public_synonym is True, a public synonym with the credential name is
     created for the credential in the current schema. Creating the synonym
     requires the CREATE PUBLIC SYNONYM system privilege.
 
     :param Mapping credential: Credential attributes accepted by
-        DBMS_CLOUD.CREATE_CREDENTIAL, including credential_name.
+        C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL, including
+        credential_name.
     :param bool replace: Replace an existing credential with the same name.
     :param bool public_synonym: Create a public synonym for the credential.
     :return: None
@@ -224,20 +226,21 @@ async def async_create_credential(
     async with async_cursor() as cr:
         try:
             await cr.callproc(
-                "DBMS_CLOUD.CREATE_CREDENTIAL", keyword_parameters=credential
+                "C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL",
+                keyword_parameters=credential,
             )
         except oracledb.DatabaseError as e:
             (error,) = e.args
             # If already exists and replace is True then drop and recreate
             if error.code == 20022 and replace:
                 await cr.callproc(
-                    "DBMS_CLOUD.DROP_CREDENTIAL",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD.DROP_CREDENTIAL",
                     keyword_parameters={
                         "credential_name": credential["credential_name"]
                     },
                 )
                 await cr.callproc(
-                    "DBMS_CLOUD.CREATE_CREDENTIAL",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL",
                     keyword_parameters=credential,
                 )
             else:
@@ -257,7 +260,8 @@ async def async_delete_credential(
 ):
     """Asynchronously delete a credential.
 
-    Deletes a credential object using DBMS_CLOUD.DROP_CREDENTIAL. If
+    Deletes a credential object using
+    C##CLOUD$SERVICE.DBMS_CLOUD.DROP_CREDENTIAL. If
     public_synonym is True, also drops its public synonym. Dropping the synonym
     requires the DROP PUBLIC SYNONYM system privilege.
 
@@ -276,7 +280,7 @@ async def async_delete_credential(
 
         try:
             await cr.callproc(
-                "DBMS_CLOUD.DROP_CREDENTIAL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD.DROP_CREDENTIAL",
                 keyword_parameters={"credential_name": credential_name},
             )
         except oracledb.DatabaseError as e:
@@ -294,14 +298,16 @@ def create_credential(
 ):
     """Create a credential.
 
-    Creates a credential object using DBMS_CLOUD.CREATE_CREDENTIAL. If replace
+    Creates a credential object using
+    C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL. If replace
     is True, credential will be replaced if it "already exists". If
     public_synonym is True, a public synonym with the credential name is
     created for the credential in the current schema. Creating the synonym
     requires the CREATE PUBLIC SYNONYM system privilege.
 
     :param Mapping credential: Credential attributes accepted by
-        DBMS_CLOUD.CREATE_CREDENTIAL, including credential_name.
+        C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL, including
+        credential_name.
     :param bool replace: Replace an existing credential with the same name.
     :param bool public_synonym: Create a public synonym for the credential.
     :return: None
@@ -311,20 +317,21 @@ def create_credential(
     with cursor() as cr:
         try:
             cr.callproc(
-                "DBMS_CLOUD.CREATE_CREDENTIAL", keyword_parameters=credential
+                "C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL",
+                keyword_parameters=credential,
             )
         except oracledb.DatabaseError as e:
             (error,) = e.args
             # If already exists and replace is True then drop and recreate
             if error.code == 20022 and replace:
                 cr.callproc(
-                    "DBMS_CLOUD.DROP_CREDENTIAL",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD.DROP_CREDENTIAL",
                     keyword_parameters={
                         "credential_name": credential["credential_name"]
                     },
                 )
                 cr.callproc(
-                    "DBMS_CLOUD.CREATE_CREDENTIAL",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD.CREATE_CREDENTIAL",
                     keyword_parameters=credential,
                 )
             else:
@@ -361,7 +368,7 @@ def delete_credential(
 
         try:
             cr.callproc(
-                "DBMS_CLOUD.DROP_CREDENTIAL",
+                "C##CLOUD$SERVICE.DBMS_CLOUD.DROP_CREDENTIAL",
                 keyword_parameters={"credential_name": credential_name},
             )
         except oracledb.DatabaseError as e:

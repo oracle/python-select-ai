@@ -90,7 +90,8 @@ class Profile(BaseProfile):
     def _get_profile_description(
         profile_name: str, owner: Optional[str] = None
     ) -> Tuple[Union[str, None], str]:
-        """Get a profile description and owner from ALL_CLOUD_AI_PROFILES.
+        """Get a profile description and owner from
+        C##CLOUD$SERVICE.ALL_CLOUD_AI_PROFILES.
 
         :param str profile_name: Name of the profile.
         :param str owner: Owner of a shared profile. Defaults to current schema.
@@ -165,7 +166,8 @@ class Profile(BaseProfile):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.SET_ATTRIBUTE", keyword_parameters=parameters
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.SET_ATTRIBUTE",
+                keyword_parameters=parameters,
             )
 
     def set_attribute(
@@ -208,7 +210,8 @@ class Profile(BaseProfile):
         }
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.SET_ATTRIBUTES", keyword_parameters=parameters
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.SET_ATTRIBUTES",
+                keyword_parameters=parameters,
             )
         self.attributes = self.get_attributes()
 
@@ -231,7 +234,7 @@ class Profile(BaseProfile):
         with cursor() as cr:
             try:
                 cr.callproc(
-                    "DBMS_CLOUD_AI.CREATE_PROFILE",
+                    "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_PROFILE",
                     keyword_parameters=parameters,
                 )
             except oracledb.DatabaseError as e:
@@ -240,7 +243,7 @@ class Profile(BaseProfile):
                 if error.code == 20046 and replace:
                     self.delete(force=True)
                     cr.callproc(
-                        "DBMS_CLOUD_AI.CREATE_PROFILE",
+                        "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_PROFILE",
                         keyword_parameters=parameters,
                     )
                 else:
@@ -250,7 +253,7 @@ class Profile(BaseProfile):
     def _delete(profile_name: str, force: bool = False):
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.DROP_PROFILE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DROP_PROFILE",
                 keyword_parameters={
                     "profile_name": profile_name,
                     "force": force,
@@ -274,7 +277,7 @@ class Profile(BaseProfile):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.ENABLE_PROFILE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.ENABLE_PROFILE",
                 keyword_parameters={"profile_name": self.profile_name},
             )
 
@@ -286,7 +289,7 @@ class Profile(BaseProfile):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.DISABLE_PROFILE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DISABLE_PROFILE",
                 keyword_parameters={"profile_name": self.profile_name},
             )
 
@@ -300,7 +303,7 @@ class Profile(BaseProfile):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.GRANT_PROFILE_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.GRANT_PROFILE_ACCESS",
                 keyword_parameters={
                     "profile_name": self.profile_name,
                     "user_or_role_name": user_or_role_name,
@@ -317,7 +320,7 @@ class Profile(BaseProfile):
         user_or_role_name = validate_user_or_role_name(user_or_role_name)
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.REVOKE_PROFILE_ACCESS",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.REVOKE_PROFILE_ACCESS",
                 keyword_parameters={
                     "profile_name": self.profile_name,
                     "user_or_role_name": user_or_role_name,
@@ -375,7 +378,10 @@ class Profile(BaseProfile):
         )
         params["profile_name"] = self.profile_name
         with cursor() as cr:
-            cr.callproc("DBMS_CLOUD_AI.FEEDBACK", keyword_parameters=params)
+            cr.callproc(
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.FEEDBACK",
+                keyword_parameters=params,
+            )
 
     def add_positive_feedback(
         self,
@@ -490,7 +496,7 @@ class Profile(BaseProfile):
             prompt, action, params, attributes
         )
         data = cr.callfunc(
-            "DBMS_CLOUD_AI.GENERATE",
+            "C##CLOUD$SERVICE.DBMS_CLOUD_AI.GENERATE",
             oracledb.DB_TYPE_CLOB,
             keyword_parameters=parameters,
         )
@@ -561,7 +567,7 @@ class Profile(BaseProfile):
             prompt, action, params, attributes
         )
         data = cr.callfunc(
-            "DBMS_CLOUD_AI.GENERATE",
+            "C##CLOUD$SERVICE.DBMS_CLOUD_AI.GENERATE",
             oracledb.DB_TYPE_CLOB,
             keyword_parameters=parameters,
         )
@@ -827,7 +833,7 @@ class Profile(BaseProfile):
         parameters["profile_name"] = self.profile_name
         with cursor() as cr:
             data = cr.callfunc(
-                "DBMS_CLOUD_AI.SUMMARIZE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.SUMMARIZE",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters=parameters,
             )
@@ -859,7 +865,7 @@ class Profile(BaseProfile):
         keyword_parameters["profile_name"] = self.profile_name
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.GENERATE_SYNTHETIC_DATA",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.GENERATE_SYNTHETIC_DATA",
                 keyword_parameters=keyword_parameters,
             )
 
@@ -888,7 +894,7 @@ class Profile(BaseProfile):
         }
         with cursor() as cr:
             data = cr.callfunc(
-                "DBMS_CLOUD_AI.TRANSLATE",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.TRANSLATE",
                 oracledb.DB_TYPE_CLOB,
                 keyword_parameters=parameters,
             )

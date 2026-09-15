@@ -124,7 +124,7 @@ class Conversation(_BaseConversation):
         """
         with cursor() as cr:
             self.conversation_id = cr.callfunc(
-                "DBMS_CLOUD_AI.CREATE_CONVERSATION",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_CONVERSATION",
                 oracledb.DB_TYPE_VARCHAR,
                 keyword_parameters={"attributes": self.attributes.json()},
             )
@@ -134,7 +134,7 @@ class Conversation(_BaseConversation):
         """Drops the conversation"""
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.DROP_CONVERSATION",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DROP_CONVERSATION",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "force": force,
@@ -151,7 +151,7 @@ class Conversation(_BaseConversation):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.DELETE_CONVERSATION_PROMPT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DELETE_CONVERSATION_PROMPT",
                 keyword_parameters={
                     "conversation_prompt_id": conversation_prompt_id,
                     "force": force,
@@ -166,7 +166,7 @@ class Conversation(_BaseConversation):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.ADD_CONVERSATION_TAG",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.ADD_CONVERSATION_TAG",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "tag_key": tag_key,
@@ -182,7 +182,7 @@ class Conversation(_BaseConversation):
         """
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.REMOVE_CONVERSATION_TAG",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.REMOVE_CONVERSATION_TAG",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "tag_key": tag_key,
@@ -233,7 +233,7 @@ class Conversation(_BaseConversation):
         """Updates the attributes of the conversation in the database"""
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.UPDATE_CONVERSATION",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.UPDATE_CONVERSATION",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "attributes": attributes.json(),
@@ -314,7 +314,7 @@ class AsyncConversation(_BaseConversation):
         """
         async with async_cursor() as cr:
             self.conversation_id = await cr.callfunc(
-                "DBMS_CLOUD_AI.CREATE_CONVERSATION",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.CREATE_CONVERSATION",
                 oracledb.DB_TYPE_VARCHAR,
                 keyword_parameters={"attributes": self.attributes.json()},
             )
@@ -324,7 +324,7 @@ class AsyncConversation(_BaseConversation):
         """Delete the conversation"""
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.DROP_CONVERSATION",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DROP_CONVERSATION",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "force": force,
@@ -341,7 +341,7 @@ class AsyncConversation(_BaseConversation):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.DELETE_CONVERSATION_PROMPT",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.DELETE_CONVERSATION_PROMPT",
                 keyword_parameters={
                     "conversation_prompt_id": conversation_prompt_id,
                     "force": force,
@@ -356,7 +356,7 @@ class AsyncConversation(_BaseConversation):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.ADD_CONVERSATION_TAG",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.ADD_CONVERSATION_TAG",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "tag_key": tag_key,
@@ -372,7 +372,7 @@ class AsyncConversation(_BaseConversation):
         """
         async with async_cursor() as cr:
             await cr.callproc(
-                "DBMS_CLOUD_AI.REMOVE_CONVERSATION_TAG",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.REMOVE_CONVERSATION_TAG",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "tag_key": tag_key,
@@ -418,7 +418,7 @@ class AsyncConversation(_BaseConversation):
         """Updates the attributes of the conversation"""
         with cursor() as cr:
             cr.callproc(
-                "DBMS_CLOUD_AI.UPDATE_CONVERSATION",
+                "C##CLOUD$SERVICE.DBMS_CLOUD_AI.UPDATE_CONVERSATION",
                 keyword_parameters={
                     "conversation_id": self.conversation_id,
                     "attributes": attributes.json(),
