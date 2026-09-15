@@ -5,7 +5,7 @@
 # https://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-"""Small A2A v0.3 client helpers for the dynamic gateway samples."""
+"""Small A2A v0.3 client helpers for dynamic session samples."""
 
 import json
 import os
@@ -13,14 +13,23 @@ import uuid
 from urllib.request import Request, urlopen
 
 ENDPOINT = os.environ.get(
-    "SELECT_AI_A2A_GATEWAY_ENDPOINT",
+    "SELECT_AI_A2A_ENDPOINT",
     "http://127.0.0.1:8000/a2a/jsonrpc/",
 )
 TEAM_NAME = os.environ.get("SELECT_AI_A2A_TEAM", "ORACLE_AI_DATABASE_AGENT")
+_CONNECTION_ENV = {
+    "dsn": "SELECT_AI_DB_CONNECT_STRING",
+    "username": "SELECT_AI_USER",
+    "password": "SELECT_AI_PASSWORD",
+    "team_name": "SELECT_AI_A2A_TEAM",
+}
 
 
 def call(method: str, params: dict) -> dict:
     """Make one A2A v0.3 JSON-RPC call and return its result."""
+    headers = {"Content-Type": "application/json"}
+    if token := os.environ.get("SELECT_AI_A2A_BEARER_TOKEN"):
+        headers["Authorization"] = f"Bearer {token}"
     request = Request(
         ENDPOINT,
         data=json.dumps(
@@ -31,7 +40,7 @@ def call(method: str, params: dict) -> dict:
                 "params": params,
             }
         ).encode(),
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
     with urlopen(request) as response:  # noqa: S310
@@ -53,13 +62,20 @@ def _message(text: str, context_id: str | None = None) -> dict:
 
 
 def connect(prompt: str) -> str:
-    """Bootstrap one gateway session and return its context ID."""
-    form_task = call("message/send", {"message": _message(prompt)})
-    if form_task["artifacts"][0]["name"] != "database-connection-form":
-        raise RuntimeError(
-            "Expected database-connection-form, got "
-            f"{form_task['artifacts'][0].get('name')}"
-        )
+    """Submit the requested form fields and return the connected context."""
+    form_task, fields = request_connection_form(prompt)
+    submitted = {}
+    for field in fields:
+        env_name = _CONNECTION_ENV[field]
+        value = os.environ.get(env_name)
+        if field == "team_name" and not value:
+            value = TEAM_NAME
+        if not value:
+            raise RuntimeError(
+                f"The connection form requires {field}; set {env_name}."
+            )
+
+        submitted[field] = value
 
     context_id = form_task["contextId"]
     connection_task = call(
@@ -77,16 +93,7 @@ def connect(prompt: str) -> str:
                             "version": "v0.9",
                             "action": {
                                 "name": "submit_database_connection",
-                                "context": {
-                                    "dsn": os.environ[
-                                        "SELECT_AI_DB_CONNECT_STRING"
-                                    ],
-                                    "username": os.environ["SELECT_AI_USER"],
-                                    "password": os.environ[
-                                        "SELECT_AI_PASSWORD"
-                                    ],
-                                    "team_name": TEAM_NAME,
-                                },
+                                "context": submitted,
                             },
                         },
                         "metadata": {"mimeType": "application/json+a2ui"},
@@ -99,6 +106,41 @@ def connect(prompt: str) -> str:
     if artifact["name"] != "database-session":
         raise RuntimeError(f"Database connection failed: {artifact['name']}")
     return context_id
+
+
+def request_connection_form(prompt: str) -> tuple[dict, tuple[str, ...]]:
+    """Request and inspect the server-generated A2UI connection form."""
+    form_task = call("message/send", {"message": _message(prompt)})
+    if form_task["artifacts"][0]["name"] != "database-connection-form":
+        raise RuntimeError(
+            "Expected database-connection-form, got "
+            f"{form_task['artifacts'][0].get('name')}"
+        )
+
+    fields = _connection_form_fields(form_task)
+    if not fields:
+        raise RuntimeError("The A2UI connection form contains no fields.")
+    return form_task, fields
+
+
+def _connection_form_fields(form_task: dict) -> tuple[str, ...]:
+    """Read canonical fields from the A2UI submit action."""
+    artifact = form_task["artifacts"][0]
+    for part in artifact.get("parts") or []:
+        operation = part.get("data") or {}
+        update = operation.get("updateComponents") or {}
+        for component in update.get("components") or []:
+            event = (component.get("action") or {}).get("event") or {}
+            if event.get("name") == "submit_database_connection":
+                context = event.get("context") or {}
+                unsupported = set(context) - set(_CONNECTION_ENV)
+                if unsupported:
+                    raise RuntimeError(
+                        "Connection form requested unsupported fields: "
+                        + ", ".join(sorted(unsupported))
+                    )
+                return tuple(context)
+    return ()
 
 
 def send_prompt(

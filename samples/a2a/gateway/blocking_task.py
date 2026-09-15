@@ -5,7 +5,7 @@
 # https://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-"""Connect to a dynamic A2A gateway, then send a blocking database request."""
+"""Connect to a dynamic A2A server, then send a blocking database request."""
 
 from _common import connect, print_task_summary, send_prompt
 
