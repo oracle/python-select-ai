@@ -34,6 +34,7 @@ class SessionSpec:
     """Complete inputs needed to start one isolated session."""
 
     session_id: str
+    owner: str
     dsn: str
     username: str
     password: str
@@ -119,6 +120,7 @@ class ProcessSessionBackend:
                 child_connection,
                 credentials,
                 spec.session_id,
+                spec.owner,
                 spec.team_name,
             ),
             daemon=True,
@@ -318,6 +320,7 @@ def _session_process_main(
     connection: Connection,
     credentials: dict[str, str],
     session_id: str,
+    owner: str,
     team_name: str,
 ) -> None:
     """Entrypoint for a child that owns one Select AI database session."""
@@ -327,6 +330,7 @@ def _session_process_main(
                 connection,
                 credentials,
                 session_id,
+                owner,
                 team_name,
             )
         )
@@ -338,6 +342,7 @@ async def _run_session_process(
     connection: Connection,
     credentials: dict[str, str],
     session_id: str,
+    owner: str,
     team_name: str,
 ) -> None:
     """Open one async connection and execute A2A operations."""
@@ -353,7 +358,7 @@ async def _run_session_process(
         )
         if not await select_ai.async_is_connected():
             raise RuntimeError("Database login failed.")
-        runtime = SessionRuntime(session_id, team_name)
+        runtime = SessionRuntime(session_id, owner, team_name)
         await runtime.initialize()
         connection.send({"type": PipeMessageType.READY.value})
         ready = True

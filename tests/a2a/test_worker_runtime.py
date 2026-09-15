@@ -136,6 +136,7 @@ def test_worker_uses_pipe_process_and_dispatches_a2a(monkeypatch):
     session_worker = session_process.ProcessSessionBackend(60, 1)
     request = session_process.SessionSpec(
         session_id="session-1",
+        owner="owner-1",
         username="user",
         password="password",
         dsn="database",
@@ -188,6 +189,7 @@ def test_expired_session_closes_the_process_and_pipe(monkeypatch):
     session_worker = session_process.ProcessSessionBackend(60, 1)
     request = session_process.SessionSpec(
         session_id="session-1",
+        owner="owner-1",
         username="user",
         password="password",
         dsn="database",
@@ -236,6 +238,7 @@ def test_session_reaper_closes_idle_expired_process(monkeypatch):
     session_worker = session_process.ProcessSessionBackend(60, 1)
     request = session_process.SessionSpec(
         session_id="session-1",
+        owner="owner-1",
         username="user",
         password="password",
         dsn="database",
@@ -281,8 +284,9 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
     connection_arguments = {}
 
     class Runtime:
-        def __init__(self, session_id, team_name):
+        def __init__(self, session_id, owner, team_name):
             assert session_id == "session-1"
+            assert owner == "owner-1"
             assert team_name == "TEAM"
 
         async def initialize(self):
@@ -316,6 +320,7 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
                 "dsn": "database",
             },
             "session-1",
+            "owner-1",
             "TEAM",
         )
     )
@@ -364,7 +369,7 @@ def test_session_runtime_builds_oracle_backed_default_handler(monkeypatch):
         lambda *args: "agent-card",
     )
 
-    runtime = session_runtime.SessionRuntime("session-1", "TEAM")
+    runtime = session_runtime.SessionRuntime("session-1", "owner-1", "TEAM")
     asyncio.run(runtime.initialize())
 
     assert initialized == [
@@ -395,7 +400,9 @@ def test_session_runtime_rejects_unknown_team_before_initializing_stores(
     monkeypatch.setattr(session_runtime, "OracleTaskStore", Store)
     monkeypatch.setattr(session_runtime, "OracleContextStore", Store)
 
-    runtime = session_runtime.SessionRuntime("session-1", "MISSPELLED_TEAM")
+    runtime = session_runtime.SessionRuntime(
+        "session-1", "owner-1", "MISSPELLED_TEAM"
+    )
     with pytest.raises(RuntimeError, match="team does not exist"):
         asyncio.run(runtime.initialize())
 
@@ -408,7 +415,7 @@ def test_session_runtime_preserves_database_task_not_found():
         async def on_get_task(self, _request, _context):
             raise TaskNotFoundError
 
-    runtime = session_runtime.SessionRuntime("session-1", "TEAM")
+    runtime = session_runtime.SessionRuntime("session-1", "owner-1", "TEAM")
     runtime.handler = Handler()
 
     result = asyncio.run(
@@ -486,7 +493,11 @@ def test_worker_client_forwards_and_parses_a2a_message(monkeypatch):
     monkeypatch.setattr(
         client,
         "_route_for",
-        lambda session_id: type("Route", (), {"endpoint": "http://worker"})(),
+        lambda owner, context_id: type(
+            "Route",
+            (),
+            {"endpoint": "http://worker", "session_id": "session-1"},
+        )(),
     )
 
     request = SendMessageRequest(
@@ -496,7 +507,7 @@ def test_worker_client_forwards_and_parses_a2a_message(monkeypatch):
             parts=[new_text_part("hello")],
         )
     )
-    result = client.send_message("context-1", request)
+    result = client.send_message("owner-1", "context-1", request)
 
     assert result is not None
     assert result.message_id == "m1"
@@ -687,7 +698,7 @@ def test_gateway_returns_connection_error_when_worker_rejects_opening():
 
     class Client:
         @staticmethod
-        def open_session(_context_id, _session_info):
+        def open_session(_owner, _context_id, _session_info):
             raise requests.HTTPError("worker rejected the connection")
 
     handler.worker_client = Client()
@@ -700,6 +711,7 @@ def test_gateway_returns_connection_error_when_worker_rejects_opening():
                 "password": "password",
                 "team_name": "TEAM",
             },
+            "owner-1",
             "context-1",
         )
     )
@@ -713,14 +725,15 @@ def test_gateway_bootstrap_is_transient_until_worker_session_opens():
             self.opened = False
             self.saved = None
 
-        def session_exists(self, _session_id):
+        def session_exists(self, _owner, _context_id):
             return self.opened
 
-        def open_session(self, session_id, session_info):
-            assert session_id == "context-1"
+        def open_session(self, owner, context_id, session_info):
+            assert owner == "local-development"
+            assert context_id == "context-1"
             assert session_info.team_name == "TEAM"
             self.opened = True
-            return session_id
+            return "session-1"
 
     client = Client()
     handler = GatewayRequestHandler.__new__(GatewayRequestHandler)
@@ -781,11 +794,11 @@ def test_gateway_replaces_bootstrap_task_with_worker_owned_task():
         calls = 0
 
         @staticmethod
-        def session_exists(_session_id):
+        def session_exists(_owner, _context_id):
             return True
 
-        def send_message(self, session_id, request):
-            assert session_id == "context-1"
+        def send_message(self, _owner, context_id, request):
+            assert context_id == "context-1"
             self.calls += 1
             if self.calls == 1:
                 assert request.message.task_id == (
@@ -795,7 +808,7 @@ def test_gateway_replaces_bootstrap_task_with_worker_owned_task():
             assert not request.message.task_id
             return Task(
                 id="worker-task",
-                context_id=session_id,
+                context_id=context_id,
                 status={"state": TaskState.TASK_STATE_COMPLETED},
             )
 
@@ -822,11 +835,11 @@ def test_gateway_replaces_bootstrap_task_with_worker_owned_task():
 def test_gateway_preserves_missing_worker_task_error():
     class Client:
         @staticmethod
-        def session_exists(_session_id):
+        def session_exists(_owner, _context_id):
             return True
 
         @staticmethod
-        def send_message(_session_id, _request):
+        def send_message(_owner, _context_id, _request):
             raise TaskNotFoundError
 
     handler = GatewayRequestHandler.__new__(GatewayRequestHandler)
@@ -848,8 +861,8 @@ def test_gateway_preserves_missing_worker_task_error():
 def test_gateway_bootstrap_without_context_returns_transient_form_task():
     class Client:
         @staticmethod
-        def session_exists(session_id):
-            assert session_id
+        def session_exists(_owner, context_id):
+            assert context_id
             return False
 
     handler = GatewayRequestHandler.__new__(GatewayRequestHandler)
@@ -881,7 +894,7 @@ def test_gateway_bootstrap_without_context_returns_transient_form_task():
 def test_gateway_returns_task_form_when_task_session_expires_before_send():
     class Client:
         @staticmethod
-        def get_task(_request):
+        def get_task(_owner, _request):
             raise ReconnectRequired(
                 "Database session ended; reconnect required.",
                 "context-1",
@@ -911,7 +924,7 @@ def test_gateway_returns_task_form_when_task_session_expires_before_send():
 def test_gateway_returns_task_form_when_task_route_is_missing_before_send():
     class Client:
         @staticmethod
-        def get_task(_request):
+        def get_task(_owner, _request):
             return None
 
     handler = GatewayRequestHandler.__new__(GatewayRequestHandler)
@@ -938,11 +951,11 @@ def test_gateway_returns_task_form_when_task_route_is_missing_before_send():
 def test_gateway_uses_task_form_for_expired_context_only_message():
     class Client:
         @staticmethod
-        def session_exists(_session_id):
+        def session_exists(_owner, _context_id):
             return True
 
         @staticmethod
-        def send_message(_session_id, _request):
+        def send_message(_owner, _context_id, _request):
             raise ReconnectRequired(
                 "Database session ended; reconnect required.",
                 "context-1",
@@ -972,7 +985,7 @@ def test_gateway_uses_task_form_for_expired_context_only_message():
 def test_gateway_uses_connection_form_when_get_task_session_expires():
     class Client:
         @staticmethod
-        def get_task(_request):
+        def get_task(_owner, _request):
             raise ReconnectRequired(
                 "Database session ended; reconnect required.",
                 "context-1",
@@ -998,7 +1011,7 @@ def test_gateway_uses_connection_form_when_get_task_session_expires():
 def test_gateway_uses_connection_form_when_get_task_route_is_missing():
     class Client:
         @staticmethod
-        def get_task(_request):
+        def get_task(_owner, _request):
             return None
 
     handler = GatewayRequestHandler.__new__(GatewayRequestHandler)
@@ -1021,7 +1034,7 @@ def test_gateway_uses_connection_form_when_get_task_route_is_missing():
 def test_gateway_uses_connection_form_when_cancel_task_session_expires():
     class Client:
         @staticmethod
-        def cancel_task(_task_id):
+        def cancel_task(_owner, _task_id):
             raise ReconnectRequired(
                 "Database session ended; reconnect required.",
                 "context-1",
@@ -1047,7 +1060,7 @@ def test_gateway_uses_connection_form_when_cancel_task_session_expires():
 def test_gateway_uses_connection_form_when_cancel_task_route_is_missing():
     class Client:
         @staticmethod
-        def cancel_task(_task_id):
+        def cancel_task(_owner, _task_id):
             return None
 
     handler = GatewayRequestHandler.__new__(GatewayRequestHandler)
@@ -1070,7 +1083,7 @@ def test_gateway_uses_connection_form_when_cancel_task_route_is_missing():
 def test_gateway_exposes_connection_form_data_when_list_session_expires():
     class Client:
         @staticmethod
-        def list_tasks(_context_id, _request):
+        def list_tasks(_owner, _context_id, _request):
             raise ReconnectRequired(
                 "Database session ended; reconnect required.",
                 "context-1",

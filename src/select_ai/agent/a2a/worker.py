@@ -41,6 +41,7 @@ class OpenSessionRequest(BaseModel):
     """Sensitive request accepted only on the internal worker interface."""
 
     session_id: str
+    owner: str = Field(min_length=1, max_length=512)
     dsn: str = Field(min_length=1, max_length=4_000)
     username: str = Field(min_length=1, max_length=128)
     password: SecretStr = Field(min_length=1, max_length=1_024)
@@ -50,6 +51,7 @@ class OpenSessionRequest(BaseModel):
         """Convert validated HTTP input to the backend-neutral contract."""
         return SessionSpec(
             session_id=self.session_id,
+            owner=self.owner,
             dsn=self.dsn,
             username=self.username,
             password=self.password.get_secret_value(),

@@ -10,11 +10,13 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import logging
 import time
 from threading import Lock
 from urllib.parse import quote
+from uuid import uuid4
 
 import requests
 from a2a.types.a2a_pb2 import (
@@ -69,12 +71,22 @@ class WorkerClient:
                 ),
             }
 
-    def open_session(self, session_id: str, session_info: SessionInfo) -> str:
+    def open_session(
+        self,
+        owner: str,
+        context_id: str,
+        session_info: SessionInfo,
+    ) -> str:
         """Open a session and save a non-secret route in Consul."""
+        session_id = str(uuid4())
         endpoint = self._select_worker()
         response = requests.post(
             f"{endpoint}/sessions",
-            json={"session_id": session_id, **session_info.__dict__},
+            json={
+                "session_id": session_id,
+                "owner": owner,
+                **session_info.__dict__,
+            },
             timeout=45,
             **self._worker_request_kwargs,
         )
@@ -82,34 +94,37 @@ class WorkerClient:
         route = SessionRoute(
             endpoint=endpoint,
             expires_at=time.time() + self.settings.session_ttl_seconds,
+            session_id=session_id,
         )
-        if not self._save_route(session_id, route):
+        if not self._save_route(owner, context_id, route):
             self._close_worker_session(route, session_id)
             raise RuntimeError("Could not create the database session.")
         return session_id
 
     def send_message(
         self,
-        session_id: str,
+        owner: str,
+        context_id: str,
         request: SendMessageRequest,
     ) -> Task | Message | None:
         """Forward one A2A message to the worker session."""
         result = self._dispatch(
-            session_id,
+            owner,
+            context_id,
             A2AMethod.SEND_MESSAGE,
             request,
         )
         value = decode_result(result)
         if isinstance(value, Task):
-            self._save_task_route(value.id, session_id)
+            self._save_task_route(owner, value.id, context_id)
         return value
 
-    def get_task(self, params: GetTaskRequest) -> Task | None:
+    def get_task(self, owner: str, params: GetTaskRequest) -> Task | None:
         """Retrieve a task from its owning worker session."""
-        session_id = self.task_session_id(params.id)
-        if session_id is None:
+        context_id = self.task_context_id(owner, params.id)
+        if context_id is None:
             return None
-        result = self._dispatch(session_id, A2AMethod.GET_TASK, params)
+        result = self._dispatch(owner, context_id, A2AMethod.GET_TASK, params)
         value = decode_result(result)
         if isinstance(value, Task):
             return value
@@ -117,56 +132,60 @@ class WorkerClient:
 
     def list_tasks(
         self,
-        session_id: str,
+        owner: str,
+        context_id: str,
         params: ListTasksRequest,
     ) -> ListTasksResponse:
         """Retrieve one session's database-paginated task response."""
         result = self._dispatch(
-            session_id,
+            owner,
+            context_id,
             A2AMethod.LIST_TASKS,
             params,
         )
         return decode_result(result) or ListTasksResponse()
 
-    def cancel_task(self, task_id: str) -> Task | None:
+    def cancel_task(self, owner: str, task_id: str) -> Task | None:
         """Cancel a task in the worker that owns it."""
-        session_id = self.task_session_id(task_id)
-        if session_id is None:
+        context_id = self.task_context_id(owner, task_id)
+        if context_id is None:
             return None
         result = self._dispatch(
-            session_id,
+            owner,
+            context_id,
             A2AMethod.CANCEL_TASK,
             CancelTaskRequest(id=task_id),
         )
         value = decode_result(result)
         return value if isinstance(value, Task) else None
 
-    def delete_task(self, task_id: str) -> None:
+    def delete_task(self, owner: str, task_id: str) -> None:
         """Delete a task and its routing metadata."""
-        session_id = self.task_session_id(task_id)
-        if session_id:
+        context_id = self.task_context_id(owner, task_id)
+        if context_id:
             try:
                 self._dispatch(
-                    session_id,
+                    owner,
+                    context_id,
                     A2AMethod.DELETE_TASK,
                     GetTaskRequest(id=task_id),
                 )
             except ReconnectRequired:
                 pass
-        self._delete_task_route(task_id)
+        self._delete_task_route(owner, task_id)
 
-    def session_exists(self, session_id: str) -> bool:
+    def session_exists(self, owner: str, context_id: str) -> bool:
         """Return whether Consul still has a live route for a session."""
         try:
-            self._route_for(session_id)
+            self._route_for(owner, context_id)
         except ReconnectRequired:
             return False
         return True
 
-    def task_session_id(self, task_id: str) -> str | None:
-        """Return the worker session recorded for a task, if any."""
+    def task_context_id(self, owner: str, task_id: str) -> str | None:
+        """Return the owner-scoped context recorded for a task, if any."""
         response = requests.get(
-            f"{self.settings.consul_url}/v1/kv/{_TASK_PREFIX}"
+            f"{self.settings.consul_url}/v1/kv/{_TASK_PREFIX}{_owner_key(owner)}/"
             f"{quote(task_id, safe='')}",
             timeout=10,
         )
@@ -180,14 +199,15 @@ class WorkerClient:
 
     def _dispatch(
         self,
-        session_id: str,
+        owner: str,
+        context_id: str,
         method: A2AMethod | str,
         message,
     ) -> WorkerResult:
         """Send one protobuf-serialized A2A operation to a worker session."""
-        route = self._route_for(session_id)
+        route = self._route_for(owner, context_id)
         response = requests.post(
-            f"{route.endpoint}/sessions/{quote(session_id, safe='')}/a2a",
+            f"{route.endpoint}/sessions/{quote(route.session_id, safe='')}/a2a",
             data=message.SerializeToString(),
             headers={
                 "content-type": PROTOBUF_CONTENT_TYPE,
@@ -197,10 +217,10 @@ class WorkerClient:
             **getattr(self, "_worker_request_kwargs", {}),
         )
         if response.status_code in (404, 502):
-            self._close_worker_session(route, session_id)
+            self._close_worker_session(route, context_id, owner)
             raise ReconnectRequired(
                 "Database session ended; reconnect required.",
-                session_id,
+                context_id,
             )
         response.raise_for_status()
         return WorkerResult(
@@ -213,13 +233,19 @@ class WorkerClient:
             payload=response.content,
         )
 
-    def _save_task_route(self, task_id: str, session_id: str) -> None:
+    def _save_task_route(
+        self,
+        owner: str,
+        task_id: str,
+        context_id: str,
+    ) -> None:
         """Save only task-to-session routing metadata in Consul."""
         try:
             response = requests.put(
                 f"{self.settings.consul_url}/v1/kv/{_TASK_PREFIX}"
+                f"{_owner_key(owner)}/"
                 f"{quote(task_id, safe='')}",
-                data=session_id,
+                data=context_id,
                 timeout=10,
             )
             response.raise_for_status()
@@ -228,21 +254,22 @@ class WorkerClient:
             # are required because workers may use different databases.
             LOGGER.warning("Could not save route for task %s", task_id)
 
-    def _delete_task_route(self, task_id: str) -> None:
+    def _delete_task_route(self, owner: str, task_id: str) -> None:
         requests.delete(
             f"{self.settings.consul_url}/v1/kv/{_TASK_PREFIX}"
+            f"{_owner_key(owner)}/"
             f"{quote(task_id, safe='')}",
             timeout=10,
         )
 
-    def close_session(self, session_id: str) -> None:
+    def close_session(self, owner: str, context_id: str) -> None:
         """Close the child process and remove the Consul route."""
         try:
-            route = self._route_for(session_id)
+            route = self._route_for(owner, context_id)
         except ReconnectRequired:
-            self._delete_route(session_id)
+            self._delete_route(owner, context_id)
             return
-        self._close_worker_session(route, session_id)
+        self._close_worker_session(route, context_id, owner)
 
     def _select_worker(self) -> str:
         response = requests.get(
@@ -279,52 +306,58 @@ class WorkerClient:
         address = service.get("Address") or worker["Node"]["Address"]
         return f"http://{address}:{service['Port']}"
 
-    def _route_for(self, session_id: str) -> SessionRoute:
+    def _route_for(self, owner: str, context_id: str) -> SessionRoute:
         response = requests.get(
             f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
-            f"{quote(session_id, safe='')}",
+            f"{_owner_key(owner)}/{quote(context_id, safe='')}",
             timeout=10,
         )
         if response.status_code == 404:
             raise ReconnectRequired(
                 "Database session expired; reconnect required.",
-                session_id,
+                context_id,
             )
         response.raise_for_status()
         value = response.json()[0]["Value"]
         route = SessionRoute(**json.loads(base64.b64decode(value).decode()))
         if route.expires_at <= time.time():
-            self._close_worker_session(route, session_id)
+            self._close_worker_session(route, context_id, owner)
             raise ReconnectRequired(
                 "Database session expired; reconnect required.",
-                session_id,
+                context_id,
             )
         return route
 
-    def _save_route(self, session_id: str, route: SessionRoute) -> bool:
+    def _save_route(
+        self,
+        owner: str,
+        context_id: str,
+        route: SessionRoute,
+    ) -> bool:
         response = requests.put(
             f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
-            f"{quote(session_id, safe='')}?cas=0",
+            f"{_owner_key(owner)}/{quote(context_id, safe='')}?cas=0",
             data=json.dumps(route.__dict__),
             timeout=10,
         )
         return response.ok and response.text.strip().lower() == "true"
 
-    def _delete_route(self, session_id: str) -> None:
+    def _delete_route(self, owner: str, context_id: str) -> None:
         requests.delete(
             f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
-            f"{quote(session_id, safe='')}",
+            f"{_owner_key(owner)}/{quote(context_id, safe='')}",
             timeout=10,
         )
 
     def _close_worker_session(
         self,
         route: SessionRoute,
-        session_id: str,
+        context_id: str,
+        owner: str | None = None,
     ) -> None:
         try:
             response = requests.delete(
-                f"{route.endpoint}/sessions/{quote(session_id, safe='')}",
+                f"{route.endpoint}/sessions/{quote(route.session_id, safe='')}",
                 timeout=10,
                 **getattr(self, "_worker_request_kwargs", {}),
             )
@@ -333,4 +366,10 @@ class WorkerClient:
         except requests.RequestException:
             pass
         finally:
-            self._delete_route(session_id)
+            if owner is not None:
+                self._delete_route(owner, context_id)
+
+
+def _owner_key(owner: str) -> str:
+    """Return a stable non-PII namespace for one authenticated owner."""
+    return hashlib.sha256(owner.encode("utf-8")).hexdigest()

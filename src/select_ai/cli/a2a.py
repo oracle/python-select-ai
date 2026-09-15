@@ -6,6 +6,7 @@
 # -----------------------------------------------------------------------------
 
 import getpass
+import ipaddress
 import json
 import os
 import socket
@@ -109,6 +110,11 @@ def a2a():
     type=click.Path(exists=True, dir_okay=False, readable=True),
     help="Custom A2UI connection-form JSON file.",
 )
+@click.option(
+    "--allow-unauthenticated",
+    is_flag=True,
+    help="Allow unauthenticated requests for local development only.",
+)
 @connection_options
 def serve(
     deployment,
@@ -125,6 +131,7 @@ def serve(
     worker_tls_cert_file,
     worker_tls_key_file,
     a2ui_form,
+    allow_unauthenticated,
     user,
     password,
     dsn,
@@ -140,6 +147,11 @@ def serve(
 
     if public_url is None:
         public_url = f"http://{host}:{port}"
+    if allow_unauthenticated and not _is_loopback_host(host):
+        raise click.ClickException(
+            "--allow-unauthenticated requires a loopback --host "
+            "(127.0.0.1, ::1, or localhost)"
+        )
 
     if deployment == "standalone":
         if create_app is None:
@@ -169,6 +181,7 @@ def serve(
             wallet_password=wallet_password,
             description=description,
             pool_max_size=pool_max_size,
+            allow_unauthenticated=allow_unauthenticated,
         )
     else:
         try:
@@ -209,6 +222,7 @@ def serve(
             worker_tls_key_file=worker_tls_key_file,
             connection=connection,
             connection_form_template=form_template,
+            allow_unauthenticated=allow_unauthenticated,
         )
         app = create_gateway_app(settings)
 
@@ -216,6 +230,16 @@ def serve(
         f"A2A Agent Card: {public_url.rstrip('/')}/.well-known/agent-card.json"
     )
     uvicorn.run(app, host=host, port=port)
+
+
+def _is_loopback_host(host: str) -> bool:
+    """Return whether a bind host is safe for unauthenticated development."""
+    if host.lower() == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 @a2a.command("worker")

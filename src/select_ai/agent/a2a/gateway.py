@@ -19,6 +19,7 @@ from a2a.helpers import (
     new_text_part,
 )
 from a2a.server.context import ServerCallContext
+from a2a.server.owner_resolver import resolve_user_scope
 from a2a.server.request_handlers import RequestHandler
 from a2a.server.routes import create_jsonrpc_routes
 from a2a.types import (
@@ -57,6 +58,10 @@ from select_ai.agent.a2a.a2ui import (
     a2ui_extension,
     a2ui_part,
     find_action,
+)
+from select_ai.agent.a2a.auth import (
+    add_bearer_security,
+    authentication_middleware,
 )
 from select_ai.agent.a2a.forms import (
     connection_form,
@@ -103,11 +108,13 @@ class GatewayRequestHandler(RequestHandler):
         agent_card: AgentCard,
         connection: ConnectionConfig | None = None,
         connection_form_template: tuple[dict, ...] | None = None,
+        allow_unauthenticated: bool = False,
     ):
         self.worker_client = worker_client
         self.agent_card = agent_card
         self.connection = connection or ConnectionConfig()
         self.connection_form_template = connection_form_template
+        self.allow_unauthenticated = allow_unauthenticated
 
     # RequestHandler requires every operation even when the Agent Card does
     # not advertise streaming or push notifications.
@@ -121,14 +128,15 @@ class GatewayRequestHandler(RequestHandler):
     async def on_message_send(
         self,
         params: SendMessageRequest,
-        _context: ServerCallContext,
+        context: ServerCallContext,
     ) -> Task | Message:
         """Handle connection bootstrap or forward the request to a worker."""
         message = params.message
+        owner = self._owner(context)
         if action := find_action(message, _CONNECTION_ACTION_NAME):
-            return await self._handle_connection_action(message, action)
+            return await self._handle_connection_action(message, action, owner)
 
-        response = await self._recover_task_context(message)
+        response = await self._recover_task_context(message, owner)
         if response is not None:
             return response
 
@@ -137,6 +145,7 @@ class GatewayRequestHandler(RequestHandler):
 
         if not await asyncio.to_thread(
             self.worker_client.session_exists,
+            owner,
             context_id,
         ):
             if self._connection_config.missing_fields:
@@ -145,19 +154,20 @@ class GatewayRequestHandler(RequestHandler):
                     context_id=context_id,
                     history=None if had_task_id else [message],
                 )
-            if await self._open_session({}, context_id) is None:
+            if await self._open_session({}, owner, context_id) is None:
                 return self._build_connection_failure_task(
                     task_id=message.task_id or None,
                     context_id=context_id,
                     history=None if had_task_id else [message],
                 )
 
-        return await self._forward_message(context_id, params)
+        return await self._forward_message(owner, context_id, params)
 
     async def _handle_connection_action(
         self,
         message: Message,
         action: dict,
+        owner: str,
     ) -> Task:
         """Open a database session from the submitted A2UI form."""
         if not message.context_id:
@@ -171,6 +181,7 @@ class GatewayRequestHandler(RequestHandler):
         )
         session_id = await self._open_session(
             action.get("context") or {},
+            owner,
             message.context_id,
         )
         if session_id is None:
@@ -184,7 +195,11 @@ class GatewayRequestHandler(RequestHandler):
             "database-session",
         )
 
-    async def _recover_task_context(self, message: Message) -> Task | None:
+    async def _recover_task_context(
+        self,
+        message: Message,
+        owner: str,
+    ) -> Task | None:
         """Recover a context when a client sends only a previous task ID."""
         if message.context_id or not message.task_id:
             return None
@@ -192,6 +207,7 @@ class GatewayRequestHandler(RequestHandler):
         try:
             existing_task = await asyncio.to_thread(
                 self.worker_client.get_task,
+                owner,
                 GetTaskRequest(id=message.task_id),
             )
         except ReconnectRequired as error:
@@ -224,6 +240,7 @@ class GatewayRequestHandler(RequestHandler):
 
     async def _forward_message(
         self,
+        owner: str,
         context_id: str,
         params: SendMessageRequest,
     ) -> Task | Message:
@@ -232,6 +249,7 @@ class GatewayRequestHandler(RequestHandler):
             try:
                 result = await asyncio.to_thread(
                     self.worker_client.send_message,
+                    owner,
                     context_id,
                     params,
                 )
@@ -247,6 +265,7 @@ class GatewayRequestHandler(RequestHandler):
                 params.message.ClearField("task_id")
                 result = await asyncio.to_thread(
                     self.worker_client.send_message,
+                    owner,
                     context_id,
                     params,
                 )
@@ -263,12 +282,14 @@ class GatewayRequestHandler(RequestHandler):
     async def _open_session(
         self,
         action_context: dict,
+        owner: str,
         context_id: str,
     ) -> str | None:
         try:
             session_info = self._connection_config.resolve(action_context)
             session_id = await asyncio.to_thread(
                 self.worker_client.open_session,
+                owner,
                 context_id,
                 session_info,
             )
@@ -279,11 +300,12 @@ class GatewayRequestHandler(RequestHandler):
     async def on_get_task(
         self,
         params: GetTaskRequest,
-        _context: ServerCallContext,
+        context: ServerCallContext,
     ) -> Task | None:
         try:
             task = await asyncio.to_thread(
                 self.worker_client.get_task,
+                self._owner(context),
                 params,
             )
         except ReconnectRequired as error:
@@ -303,7 +325,7 @@ class GatewayRequestHandler(RequestHandler):
     async def on_list_tasks(
         self,
         params: ListTasksRequest,
-        _context: ServerCallContext,
+        context: ServerCallContext,
     ) -> ListTasksResponse:
         if not params.context_id:
             raise InvalidParamsError(
@@ -312,6 +334,7 @@ class GatewayRequestHandler(RequestHandler):
         try:
             return await asyncio.to_thread(
                 self.worker_client.list_tasks,
+                self._owner(context),
                 params.context_id,
                 params,
             )
@@ -321,11 +344,12 @@ class GatewayRequestHandler(RequestHandler):
     async def on_cancel_task(
         self,
         params: CancelTaskRequest,
-        _context: ServerCallContext,
+        context: ServerCallContext,
     ) -> Task | None:
         try:
             task = await asyncio.to_thread(
                 self.worker_client.cancel_task,
+                self._owner(context),
                 params.id,
             )
         except ReconnectRequired as error:
@@ -454,6 +478,15 @@ class GatewayRequestHandler(RequestHandler):
     def _form_template(self) -> tuple[dict, ...] | None:
         return getattr(self, "connection_form_template", None)
 
+    def _owner(self, context: ServerCallContext) -> str:
+        """Resolve the SDK owner, allowing one explicit local-only scope."""
+        owner = resolve_user_scope(context)
+        if owner:
+            return owner
+        if getattr(self, "allow_unauthenticated", True):
+            return "local-development"
+        raise PermissionError("Bearer authentication is required.")
+
 
 def _new_bootstrap_task(
     *,
@@ -514,11 +547,14 @@ def create_gateway_app(settings: GatewaySettings) -> Starlette:
             )
         ],
     )
+    if not settings.allow_unauthenticated:
+        add_bearer_security(card)
     handler = GatewayRequestHandler(
         WorkerClient(settings),
         card,
         settings.connection,
         form_template,
+        settings.allow_unauthenticated,
     )
     compat_card = to_compat_agent_card(card).model_dump(
         by_alias=True,
@@ -538,4 +574,7 @@ def create_gateway_app(settings: GatewaySettings) -> Starlette:
             enable_v0_3_compat=True,
         )
     )
-    return Starlette(routes=routes)
+    return Starlette(
+        routes=routes,
+        middleware=authentication_middleware(settings.allow_unauthenticated),
+    )

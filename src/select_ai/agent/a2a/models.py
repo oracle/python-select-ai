@@ -100,6 +100,7 @@ class GatewaySettings:
     worker_tls_key_file: str | None = None
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
+    allow_unauthenticated: bool = False
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:
@@ -149,3 +150,4 @@ class SessionRoute:
 
     endpoint: str
     expires_at: float
+    session_id: str
