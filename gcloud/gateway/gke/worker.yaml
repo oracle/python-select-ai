@@ -26,14 +26,16 @@ spec:
             - 0.0.0.0
             - --port
             - "8080"
+            - --consul-url
+            - http://consul-server.select-ai-gateway.svc.cluster.local:8500
+            - --worker-id
+            - $(WORKER_ID)
             - --session-ttl-seconds
             - "SESSION_TTL_SECONDS"
           ports:
             - name: http
               containerPort: 8080
           env:
-            - name: CONSUL_HTTP_URL
-              value: http://consul-server.select-ai-gateway.svc.cluster.local:8500
             - name: WORKER_ID
               valueFrom:
                 fieldRef:
@@ -42,8 +44,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: WORKER_PORT
-              value: "8080"
           readinessProbe:
             httpGet:
               path: /health

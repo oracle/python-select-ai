@@ -20,7 +20,8 @@ the configured session TTL remain the limiting factors.
 ![Select AI A2A deployment architecture](../doc/source/image/a2a_architecture.svg)
 
 The A2A commands are cloud-neutral: `select-ai a2a serve`,
-`select-ai a2a gateway`, and `select-ai a2a worker` can run as processes or
+`select-ai a2a serve --deployment clustered`, and `select-ai a2a worker` can
+run as processes or
 containers on any cloud platform, a Kubernetes cluster, or self-managed
 infrastructure with the required Oracle and Consul connectivity. The scripts
 in this directory are optional Google Cloud automation for the Cloud Run/GKE

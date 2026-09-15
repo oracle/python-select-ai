@@ -50,11 +50,12 @@ Terminal 2, one worker:
 ```bash
 source .venv/bin/activate
 
-CONSUL_HTTP_URL=http://127.0.0.1:8500 \
-WORKER_ID=local-worker \
-WORKER_ADDRESS=127.0.0.1 \
-WORKER_PORT=8081 \
-select-ai a2a worker --host 127.0.0.1 --port 8081
+select-ai a2a worker \
+  --host 127.0.0.1 \
+  --port 8081 \
+  --consul-url http://127.0.0.1:8500 \
+  --worker-id local-worker \
+  --worker-endpoint http://127.0.0.1:8081
 ```
 
 Terminal 3, the gateway:
@@ -62,10 +63,11 @@ Terminal 3, the gateway:
 ```bash
 source .venv/bin/activate
 
-select-ai a2a gateway \
+select-ai a2a serve \
+  --deployment clustered \
   --host 127.0.0.1 \
   --port 8000 \
-  --agent-url http://127.0.0.1:8000 \
+  --public-url http://127.0.0.1:8000 \
   --consul-url http://127.0.0.1:8500
 ```
 

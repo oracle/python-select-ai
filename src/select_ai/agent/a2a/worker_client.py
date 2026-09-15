@@ -40,8 +40,8 @@ from select_ai.agent.a2a.worker_protocol import (
 
 LOGGER = logging.getLogger(__name__)
 
-_SESSION_PREFIX = "select-ai/sessions/"
-_TASK_PREFIX = "select-ai/tasks/"
+_SESSION_PREFIX = "select-ai-a2a/sessions/"
+_TASK_PREFIX = "select-ai-a2a/tasks/"
 
 
 class ReconnectRequired(RuntimeError):

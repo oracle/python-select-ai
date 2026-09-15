@@ -33,6 +33,7 @@ fi
 : "${SELECT_AI_POOL_MAX_SIZE:=10}"
 
 exec select-ai a2a serve \
+  --deployment standalone \
   --team "$SELECT_AI_A2A_TEAM" \
   --host 0.0.0.0 \
   --port "${PORT:-8080}" \

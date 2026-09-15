@@ -100,8 +100,9 @@ when a worker Pod is recreated. Cloud Build then:
 2. deploys the GKE namespace and internal Consul service;
 3. deploys the requested number of GKE worker replicas using
    `select-ai a2a worker`;
-4. deploys the same image to Cloud Run using `select-ai a2a gateway`;
-5. sets the final Cloud Run URL in `AGENT_URL` for the Agent Card.
+4. deploys the same image to Cloud Run using
+   `select-ai a2a serve --deployment clustered`;
+5. sets the final Cloud Run URL in `PUBLIC_URL` for the Agent Card.
 
 Common options:
 

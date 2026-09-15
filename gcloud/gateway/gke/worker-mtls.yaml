@@ -26,6 +26,12 @@ spec:
             - 0.0.0.0
             - --port
             - "8443"
+            - --consul-url
+            - http://consul-server.select-ai-gateway.svc.cluster.local:8500
+            - --worker-id
+            - $(WORKER_ID)
+            - --worker-endpoint
+            - https://$(POD_NAME).select-ai-worker.select-ai-gateway.svc.GKE_DNS_DOMAIN:8443
             - --session-ttl-seconds
             - "SESSION_TTL_SECONDS"
             - --tls-cert-file
@@ -38,8 +44,6 @@ spec:
             - name: https
               containerPort: 8443
           env:
-            - name: CONSUL_HTTP_URL
-              value: http://consul-server.select-ai-gateway.svc.cluster.local:8500
             - name: WORKER_ID
               valueFrom:
                 fieldRef:
@@ -52,10 +56,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: WORKER_PORT
-              value: "8443"
-            - name: WORKER_ENDPOINT
-              value: https://$(POD_NAME).select-ai-worker.select-ai-gateway.svc.GKE_DNS_DOMAIN:8443
           volumeMounts:
             - name: worker-server-tls
               mountPath: /var/run/select-ai-mtls/tls.crt

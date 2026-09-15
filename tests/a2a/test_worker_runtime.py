@@ -33,7 +33,12 @@ from a2a.utils.errors import (
     TaskNotFoundError,
     UnsupportedOperationError,
 )
-from select_ai.agent.a2a import GatewaySettings, session_runtime, worker
+from select_ai.agent.a2a import (
+    GatewaySettings,
+    session_process,
+    session_runtime,
+    worker,
+)
 from select_ai.agent.a2a.a2ui import (
     A2UI_CATALOG_ID,
     A2UI_EXTENSION_URI,
@@ -119,13 +124,17 @@ def test_worker_uses_pipe_process_and_dispatches_a2a(monkeypatch):
         return process
 
     monkeypatch.setattr(
-        worker.multiprocessing,
+        session_process.multiprocessing,
         "Pipe",
         lambda: (parent, child),
     )
-    monkeypatch.setattr(worker.multiprocessing, "Process", process_factory)
-    session_worker = worker.SessionWorker(60, 1)
-    request = worker.OpenSessionRequest(
+    monkeypatch.setattr(
+        session_process.multiprocessing,
+        "Process",
+        process_factory,
+    )
+    session_worker = session_process.ProcessSessionBackend(60, 1)
+    request = session_process.SessionSpec(
         session_id="session-1",
         username="user",
         password="password",
@@ -145,7 +154,7 @@ def test_worker_uses_pipe_process_and_dispatches_a2a(monkeypatch):
 
     assert result == WorkerResult(ResultKind.NONE)
     assert child.closed
-    assert processes[0].target is worker._session_process_main
+    assert processes[0].target is session_process._session_process_main
     assert processes[0].daemon is True
     assert parent.sent == [
         {
@@ -167,13 +176,17 @@ def test_expired_session_closes_the_process_and_pipe(monkeypatch):
         return process
 
     monkeypatch.setattr(
-        worker.multiprocessing,
+        session_process.multiprocessing,
         "Pipe",
         lambda: (parent, child),
     )
-    monkeypatch.setattr(worker.multiprocessing, "Process", process_factory)
-    session_worker = worker.SessionWorker(60, 1)
-    request = worker.OpenSessionRequest(
+    monkeypatch.setattr(
+        session_process.multiprocessing,
+        "Process",
+        process_factory,
+    )
+    session_worker = session_process.ProcessSessionBackend(60, 1)
+    request = session_process.SessionSpec(
         session_id="session-1",
         username="user",
         password="password",
@@ -183,7 +196,10 @@ def test_expired_session_closes_the_process_and_pipe(monkeypatch):
     asyncio.run(session_worker.open(request))
     session_worker.sessions["session-1"].expires_at = 0
 
-    with pytest.raises(worker.HTTPException, match="reconnect required"):
+    with pytest.raises(
+        session_process.SessionNotFound,
+        match="reconnect required",
+    ):
         asyncio.run(session_worker.get("session-1"))
 
     assert process is not None
@@ -203,14 +219,22 @@ def test_session_reaper_closes_idle_expired_process(monkeypatch):
         return process
 
     monkeypatch.setattr(
-        worker.multiprocessing,
+        session_process.multiprocessing,
         "Pipe",
         lambda: (parent, child),
     )
-    monkeypatch.setattr(worker.multiprocessing, "Process", process_factory)
-    monkeypatch.setattr(worker, "_SESSION_REAPER_INTERVAL_SECONDS", 0.01)
-    session_worker = worker.SessionWorker(60, 1)
-    request = worker.OpenSessionRequest(
+    monkeypatch.setattr(
+        session_process.multiprocessing,
+        "Process",
+        process_factory,
+    )
+    monkeypatch.setattr(
+        session_process,
+        "_SESSION_REAPER_INTERVAL_SECONDS",
+        0.01,
+    )
+    session_worker = session_process.ProcessSessionBackend(60, 1)
+    request = session_process.SessionSpec(
         session_id="session-1",
         username="user",
         password="password",
@@ -281,10 +305,10 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
     monkeypatch.setattr(select_ai, "async_connect", async_connect)
     monkeypatch.setattr(select_ai, "async_is_connected", connected)
     monkeypatch.setattr(select_ai, "async_disconnect", disconnect)
-    monkeypatch.setattr(worker, "SessionRuntime", Runtime)
+    monkeypatch.setattr(session_process, "SessionRuntime", Runtime)
 
     asyncio.run(
-        worker._run_session_process(
+        session_process._run_session_process(
             connection,
             {
                 "user": "user",
@@ -486,9 +510,9 @@ def test_worker_client_forwards_and_parses_a2a_message(monkeypatch):
 
 def test_worker_client_uses_consul_https_endpoint_with_mtls(monkeypatch):
     settings = GatewaySettings(
-        agent_url="https://gateway.example.com",
+        public_url="https://gateway.example.com",
         consul_url="http://consul:8500",
-        worker_service="select-ai-worker",
+        worker_service="select-ai-a2a-worker",
         session_ttl_seconds=60,
         worker_tls_ca_file="/tls/ca.pem",
         worker_tls_cert_file="/tls/gateway.pem",
@@ -527,9 +551,9 @@ def test_worker_client_uses_consul_https_endpoint_with_mtls(monkeypatch):
 def test_mtls_requires_all_three_gateway_files():
     with pytest.raises(ValueError, match="worker mTLS requires"):
         GatewaySettings(
-            agent_url="https://gateway.example.com",
+            public_url="https://gateway.example.com",
             consul_url="http://consul:8500",
-            worker_service="select-ai-worker",
+            worker_service="select-ai-a2a-worker",
             session_ttl_seconds=60,
             worker_tls_ca_file="/tls/ca.pem",
         )
@@ -569,6 +593,7 @@ def test_worker_registers_its_https_endpoint(monkeypatch):
     )
 
     assert registered["Meta"] == {"endpoint": "https://worker-0.internal"}
+    assert registered["Name"] == "select-ai-a2a-worker"
 
 
 def test_a2ui_operation_uses_a_metadata_marked_data_part():

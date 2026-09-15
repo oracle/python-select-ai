@@ -75,9 +75,9 @@ def test_discovery_route_serves_only_the_v03_agent_card():
 def test_gateway_card_advertises_a2ui_input_and_output():
     app = create_gateway_app(
         GatewaySettings(
-            agent_url="https://agent.example.com",
+            public_url="https://agent.example.com",
             consul_url="http://consul:8500",
-            worker_service="select-ai-worker",
+            worker_service="select-ai-a2a-worker",
             session_ttl_seconds=900,
         )
     )

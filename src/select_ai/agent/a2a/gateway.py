@@ -58,8 +58,11 @@ from select_ai.agent.a2a.a2ui import (
     a2ui_part,
     find_action,
 )
-from select_ai.agent.a2a.forms import connection_form
-from select_ai.agent.a2a.models import GatewaySettings, SessionInfo
+from select_ai.agent.a2a.forms import (
+    connection_form,
+    validate_connection_form,
+)
+from select_ai.agent.a2a.models import ConnectionConfig, GatewaySettings
 from select_ai.agent.a2a.worker_client import ReconnectRequired, WorkerClient
 from select_ai.version import __version__
 
@@ -94,9 +97,17 @@ def _unsupported_stream(*_args, **_kwargs):
 class GatewayRequestHandler(RequestHandler):
     """Proxy A2A requests to the Oracle-backed handler in a worker child."""
 
-    def __init__(self, worker_client: WorkerClient, agent_card: AgentCard):
+    def __init__(
+        self,
+        worker_client: WorkerClient,
+        agent_card: AgentCard,
+        connection: ConnectionConfig | None = None,
+        connection_form_template: tuple[dict, ...] | None = None,
+    ):
         self.worker_client = worker_client
         self.agent_card = agent_card
+        self.connection = connection or ConnectionConfig()
+        self.connection_form_template = connection_form_template
 
     # RequestHandler requires every operation even when the Agent Card does
     # not advertise streaming or push notifications.
@@ -128,11 +139,18 @@ class GatewayRequestHandler(RequestHandler):
             self.worker_client.session_exists,
             context_id,
         ):
-            return self._build_connection_form_task(
-                task_id=message.task_id or None,
-                context_id=context_id,
-                history=None if had_task_id else [message],
-            )
+            if self._connection_config.missing_fields:
+                return self._build_connection_form_task(
+                    task_id=message.task_id or None,
+                    context_id=context_id,
+                    history=None if had_task_id else [message],
+                )
+            if await self._open_session({}, context_id) is None:
+                return self._build_connection_failure_task(
+                    task_id=message.task_id or None,
+                    context_id=context_id,
+                    history=None if had_task_id else [message],
+                )
 
         return await self._forward_message(context_id, params)
 
@@ -155,14 +173,14 @@ class GatewayRequestHandler(RequestHandler):
             action.get("context") or {},
             message.context_id,
         )
-        text = (
-            _CONNECTION_SUCCESS_MESSAGE
-            if session_id is not None
-            else _CONNECTION_FAILURE_MESSAGE
-        )
+        if session_id is None:
+            return self._build_connection_failure_task(
+                task_id=task.id,
+                context_id=task.context_id,
+            )
         return self._complete_task(
             task,
-            [new_text_part(text)],
+            [new_text_part(_CONNECTION_SUCCESS_MESSAGE)],
             "database-session",
         )
 
@@ -248,7 +266,7 @@ class GatewayRequestHandler(RequestHandler):
         context_id: str,
     ) -> str | None:
         try:
-            session_info = SessionInfo.from_a2ui_event(action_context)
+            session_info = self._connection_config.resolve(action_context)
             session_id = await asyncio.to_thread(
                 self.worker_client.open_session,
                 context_id,
@@ -331,15 +349,17 @@ class GatewayRequestHandler(RequestHandler):
     ) -> AgentCardMessage:
         return self.agent_card
 
-    @staticmethod
-    def _session_expired_error(context_id: str) -> InvalidParamsError:
+    def _session_expired_error(self, context_id: str) -> InvalidParamsError:
         """Build the reconnect error returned by the task-list operation."""
         return InvalidParamsError(
             "Database session expired. Reconnect using contextId.",
             data={
                 "reason": "SESSION_EXPIRED",
                 "contextId": context_id,
-                "connectionForm": connection_form(),
+                "connectionForm": connection_form(
+                    missing_fields=self._connection_config.missing_fields,
+                    template=self._form_template,
+                ),
             },
         )
 
@@ -375,6 +395,12 @@ class GatewayRequestHandler(RequestHandler):
         history: list[Message] | None = None,
     ) -> Task:
         """Build a completed, transient task containing the connection form."""
+        if not self._connection_config.missing_fields:
+            return self._build_connection_failure_task(
+                task_id=task_id,
+                context_id=context_id,
+                history=history,
+            )
         task = _new_bootstrap_task(
             task_id=task_id,
             context_id=context_id,
@@ -382,13 +408,51 @@ class GatewayRequestHandler(RequestHandler):
         )
         return self._complete_task(
             task,
-            [
-                a2ui_part(item)
-                for item in connection_form(f"db-connect-{task.id}")
-            ],
+            self._connection_form_parts(task.id),
             "database-connection-form",
             [A2UI_EXTENSION_URI],
         )
+
+    def _build_connection_failure_task(
+        self,
+        *,
+        task_id: str | None,
+        context_id: str,
+        history: list[Message] | None = None,
+    ) -> Task:
+        """Return a safe failure and a fresh form when input is still needed."""
+        task = _new_bootstrap_task(
+            task_id=task_id,
+            context_id=context_id,
+            history=history,
+        )
+        parts = [new_text_part(_CONNECTION_FAILURE_MESSAGE)]
+        parts.extend(self._connection_form_parts(task.id))
+        extensions = [A2UI_EXTENSION_URI] if len(parts) > 1 else None
+        return self._complete_task(
+            task,
+            parts,
+            "database-connection-failure",
+            extensions,
+        )
+
+    def _connection_form_parts(self, task_id: str) -> list:
+        return [
+            a2ui_part(item)
+            for item in connection_form(
+                surface_id=f"db-connect-{task_id}",
+                missing_fields=self._connection_config.missing_fields,
+                template=self._form_template,
+            )
+        ]
+
+    @property
+    def _connection_config(self) -> ConnectionConfig:
+        return getattr(self, "connection", ConnectionConfig())
+
+    @property
+    def _form_template(self) -> tuple[dict, ...] | None:
+        return getattr(self, "connection_form_template", None)
 
 
 def _new_bootstrap_task(
@@ -408,8 +472,14 @@ def _new_bootstrap_task(
 
 def create_gateway_app(settings: GatewaySettings) -> Starlette:
     """Build a Gemini Enterprise-compatible A2A v0.3 gateway application."""
+    form_template = settings.connection_form_template
+    if form_template is not None:
+        form_template = validate_connection_form(
+            list(form_template),
+            settings.connection.missing_fields,
+        )
     description = "Connects a user to a temporary Select AI database session."
-    endpoint = f"{settings.agent_url}/a2a/jsonrpc/"
+    endpoint = f"{settings.public_url}/a2a/jsonrpc/"
     card = AgentCard(
         name="Select AI Database Gateway",
         description=description,
@@ -444,7 +514,12 @@ def create_gateway_app(settings: GatewaySettings) -> Starlette:
             )
         ],
     )
-    handler = GatewayRequestHandler(WorkerClient(settings), card)
+    handler = GatewayRequestHandler(
+        WorkerClient(settings),
+        card,
+        settings.connection,
+        form_template,
+    )
     compat_card = to_compat_agent_card(card).model_dump(
         by_alias=True,
         exclude_none=True,

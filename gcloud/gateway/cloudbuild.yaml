@@ -186,14 +186,14 @@ steps:
           --min-instances=1 \
           --port=8080 \
           --command=select-ai \
-          --args=a2a,gateway \
-          --set-env-vars="AGENT_URL=https://pending.invalid,CONSUL_HTTP_URL=http://$consul_ip:8500,WORKER_SERVICE=select-ai-worker,SESSION_TTL_SECONDS=${_SESSION_TTL_SECONDS}$mtls_env" \
+          --args=a2a,serve,--deployment,clustered,--host,0.0.0.0 \
+          --set-env-vars="PUBLIC_URL=https://pending.invalid,CONSUL_HTTP_URL=http://$consul_ip:8500,WORKER_SERVICE=select-ai-a2a-worker,SESSION_TTL_SECONDS=${_SESSION_TTL_SECONDS}$mtls_env" \
           "${mtls_args[@]}"
         gateway_url=$(gcloud run services describe "${_GATEWAY_SERVICE}" \
           --region="${_REGION}" --format='value(status.url)')
         gcloud run services update "${_GATEWAY_SERVICE}" \
           --region="${_REGION}" \
-          --update-env-vars="AGENT_URL=$gateway_url"
+          --update-env-vars="PUBLIC_URL=$gateway_url"
 
 images:
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
