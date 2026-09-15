@@ -98,6 +98,7 @@ class GatewaySettings:
     worker_tls_ca_file: str | None = None
     worker_tls_cert_file: str | None = None
     worker_tls_key_file: str | None = None
+    description: str | None = None
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
     allow_unauthenticated: bool = False
@@ -122,6 +123,28 @@ class GatewaySettings:
     def worker_mtls_enabled(self) -> bool:
         """Whether gateway-to-worker calls require mutual TLS."""
         return self.worker_tls_ca_file is not None
+
+
+@dataclass(frozen=True)
+class StandaloneSessionSettings:
+    """Configuration for dynamic sessions embedded in one server process."""
+
+    public_url: str
+    session_ttl_seconds: int
+    session_start_timeout_seconds: int = 30
+    description: str | None = None
+    connection: ConnectionConfig = field(default_factory=ConnectionConfig)
+    connection_form_template: tuple[dict, ...] | None = None
+    allow_unauthenticated: bool = False
+
+    def __post_init__(self) -> None:
+        if self.session_ttl_seconds < 1:
+            raise ValueError("session_ttl_seconds must be at least 1")
+        if self.session_start_timeout_seconds < 1:
+            raise ValueError(
+                "session_start_timeout_seconds must be at least 1"
+            )
+        object.__setattr__(self, "public_url", self.public_url.rstrip("/"))
 
 
 @dataclass(frozen=True)

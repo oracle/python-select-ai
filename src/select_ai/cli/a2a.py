@@ -5,7 +5,6 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-import getpass
 import ipaddress
 import json
 import os
@@ -43,7 +42,7 @@ def a2a():
     "--team",
     "team_name",
     envvar="SELECT_AI_A2A_TEAM",
-    help="Database AI team. Required for standalone deployment.",
+    help="Database AI team; otherwise collected by the connection form.",
 )
 @click.option("--host", default="127.0.0.1", show_default=True)
 @click.option(
@@ -153,24 +152,43 @@ def serve(
             "(127.0.0.1, ::1, or localhost)"
         )
 
-    if deployment == "standalone":
+    try:
+        from select_ai.agent.a2a import (
+            ConnectionConfig,
+            GatewaySettings,
+            StandaloneSessionSettings,
+            create_embedded_session_app,
+            create_gateway_app,
+        )
+        from select_ai.agent.a2a.forms import load_connection_form
+    except ImportError as error:
+        raise click.ClickException(
+            "A2A support requires the optional 'a2a' extra. "
+            "Install it with: pip install 'select_ai[a2a]'"
+        ) from error
+
+    connection = ConnectionConfig(
+        dsn=dsn,
+        username=user,
+        password=password,
+        team_name=team_name,
+    )
+    form_template = None
+    if a2ui_form:
+        try:
+            form_template = load_connection_form(
+                a2ui_form,
+                connection.missing_fields,
+            )
+        except ValueError as error:
+            raise click.ClickException(str(error)) from error
+
+    if deployment == "standalone" and not connection.missing_fields:
         if create_app is None:
             raise click.ClickException(
                 "Standalone A2A support requires the optional 'cli' extra. "
                 "Install it with: pip install 'select_ai[cli]'"
             )
-        if team_name is None:
-            raise click.ClickException(
-                "--team or SELECT_AI_A2A_TEAM is required for standalone "
-                "deployment"
-            )
-        if user is None or dsn is None:
-            raise click.ClickException(
-                "--user and --dsn (or their SELECT_AI_* environment "
-                "variables) are required for standalone deployment"
-            )
-        if password is None:
-            password = getpass.getpass("Database password: ")
         app = create_app(
             team_name=team_name,
             public_url=public_url,
@@ -183,35 +201,21 @@ def serve(
             pool_max_size=pool_max_size,
             allow_unauthenticated=allow_unauthenticated,
         )
-    else:
-        try:
-            from select_ai.agent.a2a import (
-                ConnectionConfig,
-                GatewaySettings,
-                create_gateway_app,
-            )
-            from select_ai.agent.a2a.forms import load_connection_form
-        except ImportError as error:
+    elif deployment == "standalone":
+        if os.environ.get("WEB_CONCURRENCY", "1") != "1":
             raise click.ClickException(
-                "Clustered A2A support requires the optional 'a2a' extra. "
-                "Install it with: pip install 'select_ai[a2a]'"
-            ) from error
-
-        connection = ConnectionConfig(
-            dsn=dsn,
-            username=user,
-            password=password,
-            team_name=team_name,
+                "Dynamic standalone deployment requires WEB_CONCURRENCY=1."
+            )
+        settings = StandaloneSessionSettings(
+            public_url=public_url,
+            session_ttl_seconds=session_ttl_seconds,
+            description=description,
+            connection=connection,
+            connection_form_template=form_template,
+            allow_unauthenticated=allow_unauthenticated,
         )
-        form_template = None
-        if a2ui_form:
-            try:
-                form_template = load_connection_form(
-                    a2ui_form,
-                    connection.missing_fields,
-                )
-            except ValueError as error:
-                raise click.ClickException(str(error)) from error
+        app = create_embedded_session_app(settings)
+    else:
         settings = GatewaySettings(
             public_url=public_url,
             consul_url=consul_url,
@@ -220,6 +224,7 @@ def serve(
             worker_tls_ca_file=worker_tls_ca_file,
             worker_tls_cert_file=worker_tls_cert_file,
             worker_tls_key_file=worker_tls_key_file,
+            description=description,
             connection=connection,
             connection_form_template=form_template,
             allow_unauthenticated=allow_unauthenticated,

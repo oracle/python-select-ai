@@ -12,6 +12,7 @@ from .models import (
     GatewaySettings,
     SessionInfo,
     SessionRoute,
+    StandaloneSessionSettings,
     WorkerSettings,
 )
 
@@ -30,12 +31,23 @@ def create_worker_app(settings: WorkerSettings):
     return factory(settings)
 
 
+def create_embedded_session_app(settings: StandaloneSessionSettings):
+    """Build a dynamic standalone A2A/A2UI application."""
+    from select_ai.agent.a2a.embedded import (
+        create_embedded_session_app as factory,
+    )
+
+    return factory(settings)
+
+
 __all__ = [
     "GatewaySettings",
     "ConnectionConfig",
     "SessionInfo",
     "SessionRoute",
+    "StandaloneSessionSettings",
     "WorkerSettings",
     "create_gateway_app",
+    "create_embedded_session_app",
     "create_worker_app",
 ]

@@ -511,10 +511,33 @@ def create_gateway_app(settings: GatewaySettings) -> Starlette:
             list(form_template),
             settings.connection.missing_fields,
         )
-    description = "Connects a user to a temporary Select AI database session."
-    endpoint = f"{settings.public_url}/a2a/jsonrpc/"
+    return create_session_app(
+        public_url=settings.public_url,
+        session_client=WorkerClient(settings),
+        connection=settings.connection,
+        connection_form_template=form_template,
+        allow_unauthenticated=settings.allow_unauthenticated,
+        description=settings.description,
+    )
+
+
+def create_session_app(
+    *,
+    public_url: str,
+    session_client,
+    connection: ConnectionConfig,
+    connection_form_template: tuple[dict, ...] | None,
+    allow_unauthenticated: bool,
+    description: str | None = None,
+    lifespan=None,
+) -> Starlette:
+    """Build the common dynamic-session A2A application."""
+    description = description or (
+        "Connects a user to a temporary Select AI database session."
+    )
+    endpoint = f"{public_url.rstrip('/')}/a2a/jsonrpc/"
     card = AgentCard(
-        name="Select AI Database Gateway",
+        name="Select AI Database Agent",
         description=description,
         version=__version__,
         default_input_modes=["text/plain", A2UI_MIME_TYPE],
@@ -547,14 +570,14 @@ def create_gateway_app(settings: GatewaySettings) -> Starlette:
             )
         ],
     )
-    if not settings.allow_unauthenticated:
+    if not allow_unauthenticated:
         add_bearer_security(card)
     handler = GatewayRequestHandler(
-        WorkerClient(settings),
+        session_client,
         card,
-        settings.connection,
-        form_template,
-        settings.allow_unauthenticated,
+        connection,
+        connection_form_template,
+        allow_unauthenticated,
     )
     compat_card = to_compat_agent_card(card).model_dump(
         by_alias=True,
@@ -576,5 +599,6 @@ def create_gateway_app(settings: GatewaySettings) -> Starlette:
     )
     return Starlette(
         routes=routes,
-        middleware=authentication_middleware(settings.allow_unauthenticated),
+        middleware=authentication_middleware(allow_unauthenticated),
+        lifespan=lifespan,
     )
