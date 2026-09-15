@@ -487,9 +487,9 @@ session routing metadata. The credentials remain in the worker child process
 for the lifetime of that session, so use TLS for client-to-gateway traffic and
 follow the security policies for any client that renders the form.
 
-The gateway samples perform this handshake automatically. They use the
+The dynamic-session samples perform this handshake automatically. They use the
 repository-local helper module
-`samples/a2a/gateway/_common.py <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/_common.py>`__;
+`samples/a2a/dynamic/_common.py <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/_common.py>`__;
 ``_common``
 is not a package that users install with ``pip``. Running the samples from the
 repository root as shown below makes that helper available automatically.
@@ -497,7 +497,7 @@ repository root as shown below makes that helper available automatically.
 The helper functions are:
 
 ``call(method, params)``
-   Sends one A2A v0.3 JSON-RPC request to the configured gateway endpoint.
+   Sends one A2A v0.3 JSON-RPC request to the configured server endpoint.
 
 ``connect(prompt)``
    Sends the initial prompt, reads the A2UI connection form, submits the
@@ -506,26 +506,26 @@ The helper functions are:
    A2A context ID for the connected session.
 
 ``send_prompt(prompt, context_id, blocking=None)``
-   Sends a database prompt in an existing gateway context. Passing
+   Sends a database prompt in an existing dynamic session. Passing
    ``blocking=False`` adds the non-blocking request option.
 
 ``print_task_summary(task)``
    Prints the task state, result artifact name, and text parts without dumping
    the connection-form details.
 
-If you copy a gateway sample into another directory, copy the
-`_common.py helper <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/_common.py>`__
+If you copy a dynamic-session sample into another directory, copy the
+`_common.py helper <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/_common.py>`__
 with it, or replace these helpers with an A2A client implementation of your
 own.
 
-The complete gateway setup is also documented in the
-`gateway sample README <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/README.md>`__.
+The complete dynamic-session setup is also documented in the
+`dynamic sample README <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/README.md>`__.
 The examples below are the
-`blocking_task.py sample <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/blocking_task.py>`__
+`blocking_task.py sample <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/blocking_task.py>`__
 and the
-`task_poll.py sample <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/task_poll.py>`__.
+`task_poll.py sample <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/task_poll.py>`__.
 
-.. literalinclude:: ../../../samples/a2a/gateway/blocking_task.py
+.. literalinclude:: ../../../samples/a2a/dynamic/blocking_task.py
    :language: python
    :lines: 8-
 
@@ -542,7 +542,7 @@ Run it with:
 
 .. code-block:: bash
 
-   python samples/a2a/gateway/blocking_task.py
+   python samples/a2a/dynamic/blocking_task.py
 
 Representative output is:
 
@@ -552,10 +552,10 @@ Representative output is:
    Artifact: database-agent-result
    The database contains ...
 
-The gateway polling sample uses the same connection-form handshake, then
+The dynamic polling sample uses the same connection-form handshake, then
 passes ``configuration.blocking: false`` and polls ``tasks/get``:
 
-.. literalinclude:: ../../../samples/a2a/gateway/task_poll.py
+.. literalinclude:: ../../../samples/a2a/dynamic/task_poll.py
    :language: python
    :lines: 8-
 

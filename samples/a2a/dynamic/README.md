@@ -19,13 +19,13 @@ The server accepts both versions, but streaming is disabled in both.
 
 The sample scripts import `call`, `connect`, `send_prompt`, and
 `print_task_summary` from the adjacent
-[`_common.py`](https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/_common.py)
+[`_common.py`](https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/_common.py)
 file. This is a
 repository-local sample helper, not an additional Python dependency. It sends
 the JSON-RPC requests, reads the fields requested by the returned A2UI form,
 submits only those fields from the environment variables below, and formats
 the final task result. If you copy a script elsewhere, copy
-[`_common.py`](https://github.com/oracle/python-select-ai/blob/main/samples/a2a/gateway/_common.py)
+[`_common.py`](https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/_common.py)
 with it or replace those helpers with your own A2A client code.
 
 ## Local setup
@@ -83,7 +83,7 @@ select-ai a2a worker \
   --worker-endpoint http://127.0.0.1:8081
 ```
 
-Terminal 3, the gateway:
+Terminal 3, the dynamic server:
 
 ```bash
 source .venv/bin/activate
@@ -127,7 +127,7 @@ First inspect the exact A2UI artifact and requested fields without submitting
 credentials:
 
 ```bash
-python samples/a2a/gateway/inspect_form.py
+python samples/a2a/dynamic/inspect_form.py
 ```
 
 The task samples perform the connection-form handshake automatically and
@@ -137,13 +137,13 @@ validate that the final artifact is
 Blocking database task:
 
 ```bash
-python samples/a2a/gateway/blocking_task.py
+python samples/a2a/dynamic/blocking_task.py
 ```
 
 Non-blocking database task with polling:
 
 ```bash
-python samples/a2a/gateway/task_poll.py
+python samples/a2a/dynamic/task_poll.py
 ```
 
 Expected task output is similar to:

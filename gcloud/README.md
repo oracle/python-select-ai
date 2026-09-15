@@ -103,7 +103,7 @@ Both deployments expose the public A2A endpoint at:
 
 Both accept A2A 1.0 method names and the A2A v0.3 compatibility method names.
 The gateway client flow is documented in the
-[gateway samples](../samples/a2a/gateway/README.md).
+[dynamic-session samples](../samples/a2a/dynamic/README.md).
 
 ## Which deployment should you choose?
 

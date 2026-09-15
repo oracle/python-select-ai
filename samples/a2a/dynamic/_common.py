@@ -148,7 +148,7 @@ def send_prompt(
     context_id: str,
     blocking: bool | None = None,
 ) -> dict:
-    """Send a normal database prompt through an existing gateway session."""
+    """Send a normal database prompt through an existing dynamic session."""
     params = {"message": _message(prompt, context_id)}
     if blocking is False:
         params["configuration"] = {"blocking": False}
