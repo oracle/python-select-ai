@@ -5,7 +5,6 @@
 # http://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-import ipaddress
 import json
 import os
 import socket
@@ -110,9 +109,13 @@ def a2a():
     help="Custom A2UI connection-form JSON file.",
 )
 @click.option(
-    "--allow-unauthenticated",
+    "--require-oauth",
     is_flag=True,
-    help="Allow unauthenticated requests for local development only.",
+    envvar="SELECT_AI_A2A_REQUIRE_OAUTH",
+    help=(
+        "Require an end-user OAuth bearer token. Without this option, "
+        "sessions are separated only by the A2A conversation."
+    ),
 )
 @connection_options
 def serve(
@@ -130,7 +133,7 @@ def serve(
     worker_tls_cert_file,
     worker_tls_key_file,
     a2ui_form,
-    allow_unauthenticated,
+    require_oauth,
     user,
     password,
     dsn,
@@ -146,11 +149,6 @@ def serve(
 
     if public_url is None:
         public_url = f"http://{host}:{port}"
-    if allow_unauthenticated and not _is_loopback_host(host):
-        raise click.ClickException(
-            "--allow-unauthenticated requires a loopback --host "
-            "(127.0.0.1, ::1, or localhost)"
-        )
 
     try:
         from select_ai.agent.a2a import (
@@ -199,7 +197,7 @@ def serve(
             wallet_password=wallet_password,
             description=description,
             pool_max_size=pool_max_size,
-            allow_unauthenticated=allow_unauthenticated,
+            require_oauth=require_oauth,
         )
     elif deployment == "standalone":
         if os.environ.get("WEB_CONCURRENCY", "1") != "1":
@@ -212,7 +210,7 @@ def serve(
             description=description,
             connection=connection,
             connection_form_template=form_template,
-            allow_unauthenticated=allow_unauthenticated,
+            require_oauth=require_oauth,
         )
         app = create_embedded_session_app(settings)
     else:
@@ -227,7 +225,7 @@ def serve(
             description=description,
             connection=connection,
             connection_form_template=form_template,
-            allow_unauthenticated=allow_unauthenticated,
+            require_oauth=require_oauth,
         )
         app = create_gateway_app(settings)
 
@@ -235,16 +233,6 @@ def serve(
         f"A2A Agent Card: {public_url.rstrip('/')}/.well-known/agent-card.json"
     )
     uvicorn.run(app, host=host, port=port)
-
-
-def _is_loopback_host(host: str) -> bool:
-    """Return whether a bind host is safe for unauthenticated development."""
-    if host.lower() == "localhost":
-        return True
-    try:
-        return ipaddress.ip_address(host).is_loopback
-    except ValueError:
-        return False
 
 
 @a2a.command("worker")

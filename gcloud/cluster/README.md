@@ -1,8 +1,9 @@
-# Dynamic gateway
+# Clustered Select AI A2A deployment
 
-Dynamic gateway mode exposes one public A2A endpoint. Each user dynamically
-selects an Oracle database connection and Select AI team through the A2UI
-connection form. A session remains available for 15 minutes by default. Set a
+Clustered mode exposes one public A2A server. The deployment fixes the Oracle
+database DSN and Select AI team; each user supplies a database username and
+password through the generated A2UI form. A session remains available for 15
+minutes by default. Set a
 different lifetime in seconds with `--session-ttl-seconds`; for example,
 `--session-ttl-seconds 1800` keeps sessions for 30 minutes.
 
@@ -10,7 +11,7 @@ different lifetime in seconds with `--session-ttl-seconds`; for example,
 
 ```text
 ┌──────────────┐  A2A JSON-RPC/HTTP  ┌──────────────────┐                                     ┌────────────────────────────┐
-│ A2A client   │────────────────────►│ Gateway instances│──── route lookup/update ──────────► │ Service Registry           │
+│ A2A client   │────────────────────►│ Server instances │──── route lookup/update ──────────► │ Service Registry           │
 └──────────────┘                     │ Public A2A API   │                                     │ Service discovery          │
                                      │ A2UI bootstrap   │                                     │ Session routes             │
                                      └────────┬─────────┘                                     │ Task routes                │
@@ -36,7 +37,7 @@ different lifetime in seconds with `--session-ttl-seconds`; for example,
                                      └──────────────────┘
 ```
 
-The gateway is the only public A2A application. It selects a worker through
+The Cloud Run server is the only public A2A application. It selects a worker through
 the Service Registry, opens a session there, and proxies subsequent A2A calls
 using the internal protobuf protocol. The selected worker starts one child
 runtime for that session. The child owns the database connection,
@@ -44,13 +45,13 @@ runtime for that session. The child owns the database connection,
 
 The session connection path currently accepts a DSN, username, and password.
 Oracle Database wallet-based mTLS is not yet supported for these dynamic
-sessions. The optional worker mTLS mode below protects the gateway-to-worker
+sessions. The optional worker mTLS mode below protects the server-to-worker
 HTTP connection; it does not provide database mTLS.
 
 The Service Registry stores only service-discovery and non-secret
 session/task-to-worker metadata. Task payloads and context mappings remain in
 Oracle. Connection-form tasks are response-only bootstrap tasks: they are
-created by the gateway before a database session exists and are not persisted
+created by the server before a database session exists and are not persisted
 or routed.
 
 ## GCP deployment
@@ -64,7 +65,7 @@ The protocol architecture above is implemented on GCP as follows:
             │ public A2A
             v
  ┌────────────────────────────┐
- │ Cloud Run gateway          │
+ │ Cloud Run A2A server       │
  │ A2A proxy + form bootstrap │
  └──────┬───────────┬─────────┘
         │       │ private VPC: mTLS request to worker hostname
@@ -88,15 +89,68 @@ The protocol architecture above is implemented on GCP as follows:
 Run this from the repository root:
 
 ```bash
-gcloud/gateway/deploy.sh --project PROJECT_ID
+gcloud/cluster/deploy.sh --project PROJECT_ID
 ```
+
+That command builds a new image. To reuse the newest existing Select AI image
+from Artifact Registry, resolve its immutable digest URI first:
+
+```bash
+PROJECT_ID=PROJECT_ID
+REGION=us-central1
+REPOSITORY=select-ai
+IMAGE_NAME=select-ai
+
+IMAGE_RECORD="$(gcloud artifacts docker images list \
+  "$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME" \
+  --project "$PROJECT_ID" \
+  --include-tags \
+  --sort-by='~UPDATE_TIME' \
+  --limit=1 \
+  --format='csv[no-heading](package,version)')"
+
+if [[ -z "$IMAGE_RECORD" ]]; then
+  echo "No Select AI image exists in Artifact Registry." >&2
+  exit 1
+fi
+
+IMAGE_URI="${IMAGE_RECORD/,/@}"
+
+gcloud/cluster/deploy.sh \
+  --project "$PROJECT_ID" \
+  --region "$REGION" \
+  --repository "$REPOSITORY" \
+  --a2a-team ORACLE_AI_DATABASE_AGENT \
+  --db-dsn-secret select-ai-a2a-cluster-db-connect-string \
+  --image-uri "$IMAGE_URI"
+```
+
+The first deployment prompts for the Connection URL, creates the GKE Autopilot
+cluster and service-specific secret, and uses the same pinned image for the
+GKE workers and Cloud Run server. Add `--require-oauth` to the final command
+only when Gemini Enterprise end-user OAuth is configured for this clustered
+agent.
+
+By default, Cloud Run IAM authenticates Gemini Enterprise and database
+sessions are separated by A2A conversation; the server does not verify the
+human user who owns a conversation. Add `--require-oauth` when the deployment
+requires authenticated end-user ownership. Gemini Enterprise must then be
+configured with end-user OAuth and every request must carry its separate
+`Authorization: Bearer ...` token. Requests without it receive HTTP 401.
+
+On the first deployment, the script prompts for the fixed database DSN and
+stores it in Secret Manager. Override the default secret name with
+`--db-dsn-secret` to reuse an existing DSN secret. The team defaults to
+`ORACLE_AI_DATABASE_AGENT` and can be changed with `--a2a-team`. Because DSN
+and team are fixed by deployment, the generated A2UI form asks each user for
+only username and password.
 
 The script creates the Artifact Registry repository and GKE Autopilot cluster
 when they do not already exist. The cluster is created with
 GKE additive VPC DNS: GKE owns the worker DNS records and keeps them current
 when a worker Pod is recreated. Cloud Build then:
 
-1. builds the existing `docker/Dockerfile` image once;
+1. builds and publishes `docker/Dockerfile`, or reuses `--image-uri`;
 2. deploys the GKE namespace and internal Consul service;
 3. deploys the requested number of GKE worker replicas using
    `select-ai a2a worker`;
@@ -107,43 +161,42 @@ when a worker Pod is recreated. Cloud Build then:
 Common options:
 
 ```bash
-gcloud/gateway/deploy.sh \
+gcloud/cluster/deploy.sh \
   --project PROJECT_ID \
   --region us-central1 \
-  --cluster select-ai-a2a-gateway \
-  --gke-dns-domain select-ai-a2a-gateway.internal \
+  --cluster select-ai-a2a-cluster \
+  --gke-dns-domain select-ai-a2a-cluster.internal \
   --worker-replicas 3 \
   --network default \
   --subnet default
 ```
 
-The Cloud Run gateway uses direct VPC egress to reach the internal Consul load
-balancer and GKE worker pod addresses. The gateway keeps only the connection
+The Cloud Run server uses direct VPC egress to reach the internal Consul load
+balancer and GKE worker pod addresses. The server keeps only the connection
 form task transiently, before a database session exists. Connected task and
 context state is stored in Oracle on the selected worker. Workers, rather
-than the gateway, provide the clustered capacity for dynamic sessions.
-The deployment currently keeps one gateway instance as an operational default;
-the gateway does not cache forms or connected task/context state. Gateway
+than the public server, provide the clustered capacity for dynamic sessions.
+The public server does not cache forms or connected task/context state. Server
 scaling does not change session affinity because Consul stores the session and
 task routes.
 
 `cloudbuild.yaml` is the complete build and deployment workflow. It supplies
-the generated image and Consul endpoint values to the Cloud Run gateway at
-deployment time.
+the selected image and Consul endpoint values to both the GKE workers and the
+Cloud Run server at deployment time.
 
 ## Optional worker mTLS test mode
 
 Local testing does not use mTLS. The default GCloud deployment also keeps the
 current private-VPC HTTP worker transport.
 
-This mTLS mode applies only between the Cloud Run gateway and GKE workers. It
+This mTLS mode applies only between the Cloud Run server and GKE workers. It
 is independent of Oracle Database authentication, and does not enable wallet-
-based database mTLS for gateway sessions.
+based database mTLS for dynamic sessions.
 
 For a short-lived GCloud mTLS test:
 
 ```bash
-gcloud/gateway/deploy.sh \
+gcloud/cluster/deploy.sh \
   --project PROJECT_ID \
   --enable-worker-mtls \
   --mtls-cert-validity-days 365
@@ -157,7 +210,7 @@ first stored in Google Secret Manager. Cloud Build then creates the Kubernetes
 Secrets used by the workers.
 
 Set `--mtls-cert-validity-days DAYS` to choose the lifetime for both leaf
-certificates: the gateway client certificate and the worker server certificate.
+certificates: the server client certificate and the worker server certificate.
 The CA is issued for one additional day.
 
 The first mTLS deployment creates these certificates. Later mTLS deployments
@@ -165,10 +218,10 @@ reuse them, including when changing `--worker-replicas`. To deliberately
 replace the CA and both leaf certificates, add `--rotate-worker-mtls`. Rotation
 recreates the worker StatefulSet and ends active worker sessions.
 
-Workers run as a StatefulSet. The `select-ai-worker` headless Service gives
+Workers run as a StatefulSet. The `select-ai-a2a-worker` headless Service gives
 each worker a stable name, for example
-`select-ai-worker-0.select-ai-worker.select-ai-gateway.svc.select-ai-a2a-gateway.internal`.
-Consul registers that name, so the gateway reaches the exact worker that owns a
+`select-ai-a2a-worker-0.select-ai-a2a-worker.select-ai-a2a.svc.select-ai-a2a-cluster.internal`.
+Consul registers that name, so the server reaches the exact worker that owns a
 session. GKE Cloud DNS updates its Pod-IP record automatically after a worker
 is recreated. There is no worker load balancer, custom Cloud DNS zone, or
 deployment-time Pod-IP snapshot.
@@ -193,12 +246,13 @@ GKE gives a StatefulSet Pod a DNS name using this form:
 For this deployment, worker 0 is:
 
 ```text
-select-ai-worker-0.select-ai-worker.select-ai-gateway.svc.select-ai-a2a-gateway.internal
+select-ai-a2a-worker-0.select-ai-a2a-worker.select-ai-a2a.svc.select-ai-a2a-cluster.internal
 ```
 
-`select-ai-worker-0` is the StatefulSet Pod name, `select-ai-worker` is the
-headless Service, `select-ai-gateway` is the Kubernetes namespace, and
-`select-ai-a2a-gateway.internal` is the `--gke-dns-domain` value. GKE updates
+`select-ai-a2a-worker-0` is the StatefulSet Pod name,
+`select-ai-a2a-worker` is the headless Service, `select-ai-a2a` is the
+Kubernetes namespace, and `select-ai-a2a-cluster.internal` is the
+`--gke-dns-domain` value. GKE updates
 the resulting record when the Pod IP changes.
 
 ### Certificate mounts
@@ -207,11 +261,11 @@ Worker certificate files are mounted from Kubernetes Secrets:
 
 | Container file | Kubernetes Secret | Secret key | Used for |
 | --- | --- | --- | --- |
-| `/var/run/select-ai-mtls/tls.crt` | `select-ai-worker-server-tls` | `tls.crt` | worker HTTPS server certificate |
-| `/var/run/select-ai-mtls/tls.key` | `select-ai-worker-server-tls` | `tls.key` | worker HTTPS private key |
-| `/var/run/select-ai-mtls/gateway-ca.crt` | `select-ai-gateway-client-ca` | `ca.crt` | validates the gateway client certificate |
+| `/var/run/select-ai-mtls/tls.crt` | `select-ai-a2a-worker-server-tls` | `tls.crt` | worker HTTPS server certificate |
+| `/var/run/select-ai-mtls/tls.key` | `select-ai-a2a-worker-server-tls` | `tls.key` | worker HTTPS private key |
+| `/var/run/select-ai-mtls/server-ca.crt` | `select-ai-a2a-server-client-ca` | `ca.crt` | validates the server client certificate |
 
-The Cloud Run gateway certificate files are mounted from Google Secret Manager.
+The Cloud Run server certificate files are mounted from Google Secret Manager.
 
 The identity that submits Cloud Build needs permission to use GKE, Cloud Run,
 and Secret Manager. GKE maintains the managed worker DNS records.

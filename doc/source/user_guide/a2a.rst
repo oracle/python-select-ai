@@ -181,6 +181,34 @@ The server prints the discovery URL when it starts:
 
 The exact Uvicorn startup lines vary by version and configuration.
 
+End-user OAuth and session ownership
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, ``select-ai a2a serve`` does not require an application OAuth
+token. It gives each A2A conversation its own database session. A hosting
+platform such as private Cloud Run can still authenticate the calling service,
+but the A2A server does not verify which human user owns the conversation.
+
+Add ``--require-oauth`` when verified end-user ownership is required:
+
+.. code-block:: bash
+
+   select-ai a2a serve \
+       --require-oauth \
+       --team ORACLE_AI_DATABASE_AGENT \
+       --host 0.0.0.0 \
+       --port 8000 \
+       --public-url https://a2a.example.com
+
+Every A2A request must then contain ``Authorization: Bearer ...``. The server
+uses both the authenticated owner and the A2A conversation to isolate
+sessions, tasks, and conversation state. It accepts an OpenID Connect ID token
+or an opaque OAuth 2.0 access token. ID-token ownership remains stable across
+refreshes through the ``iss`` and ``sub`` claims; refreshing an opaque access
+token starts a new owner and session scope. Tokens are never stored or logged.
+
+The Agent Card advertises bearer security only with ``--require-oauth``.
+
 Agent Card discovery
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -384,7 +412,7 @@ The ``-dev`` agent below is intentionally for local development only. It uses
 an in-memory, single-node Consul server bound to loopback. For the Google
 Cloud deployment, do not install or run a local agent: the deployment creates
 Consul in GKE from the
-`Consul manifest <https://github.com/oracle/python-select-ai/blob/main/gcloud/gateway/gke/consul.yaml>`__.
+`Consul manifest <https://github.com/oracle/python-select-ai/blob/main/gcloud/cluster/gke/consul.yaml>`__.
 
 Start the three local components in separate terminals:
 
@@ -447,14 +475,14 @@ type. It contains only the values not configured on the server:
 
    * - Field
      - Purpose
-   * - ``dsn``
+   * - ``connection_url``
      - Oracle connect descriptor, simplified connect string, or TNS alias
        available to the worker.
    * - ``username``
      - Database user for this session.
    * - ``password``
      - Database password. The form renders this field as obscured input.
-   * - ``team_name``
+   * - ``ai_agent``
      - Select AI Agent Team to run in this session.
    * - ``submit_database_connection``
      - A2UI action that submits exactly the displayed values.
@@ -468,8 +496,9 @@ Use ``--a2ui-form PATH`` to replace the generated form. The file must be a
 top-level JSON array of A2UI v0.9 operations using the advertised catalog and
 one consistent template ``surfaceId``. It must contain exactly one
 ``submit_database_connection`` action whose context submits exactly the
-missing canonical properties: ``dsn``, ``username``, ``password``, and/or
-``team_name``. A collected password must use an obscured ``TextField`` and the
+missing canonical properties: ``connection_url``, ``username``, ``password``,
+and/or ``ai_agent``. A collected password must use an obscured ``TextField``
+and the
 template must not contain a password default. The server validates the file at
 startup and replaces its template surface ID with a fresh ID every time the
 form is displayed.
@@ -643,21 +672,25 @@ Standalone Google Cloud deployment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `gcloud/standalone/deploy.sh <https://github.com/oracle/python-select-ai/blob/main/gcloud/standalone/deploy.sh>`__
-deploys one private Cloud Run service for one
-database and team:
+deploys one private Cloud Run service. Select its connection provisioning
+explicitly:
 
 .. code-block:: bash
 
    gcloud/standalone/deploy.sh \
        --project PROJECT_ID \
-       --a2a-team ORACLE_AI_DATABASE_AGENT \
+       --connection-mode dynamic \
        --build
 
 The script creates or reuses an Artifact Registry repository, runtime service
-account, Secret Manager secrets, and Cloud Run service. On the first run it
-prompts for the database user, password, and connect descriptor. It injects
-them into the service as ``SELECT_AI_USER``, ``SELECT_AI_PASSWORD``, and
-``SELECT_AI_DB_CONNECT_STRING``. The service is private; the script grants
+account, any requested Secret Manager secrets, and Cloud Run service. With no
+database options, dynamic mode fixes neither the Connection URL nor AI Agent;
+its A2UI form requests Connection URL, username, password, and AI Agent. Pass
+``--db-dsn-secret`` or ``--a2a-team`` to fix either value independently, or
+``--rotate-db-config`` to configure the deployment's Connection URL. Fixed
+mode prompts for Connection URL, username, and password, requires
+``--a2a-team``, and creates the shared startup pool. The service is private; the
+script grants
 ``run.routes.invoke`` to the active deployment identity and the Gemini
 Enterprise Discovery Engine service agent.
 
@@ -671,13 +704,20 @@ already deployed and only updates Cloud Run configuration or secrets.
 
 Important standalone options include:
 
+* ``--connection-mode``: required ``fixed`` or ``dynamic`` provisioning.
 * ``--service``: Cloud Run service name; use a different service for each
-  fixed team/database deployment.
-* ``--a2a-team``: team installed in Oracle Database.
+  deployment profile.
+* ``--a2a-team``: fix the AI Agent in the deployment; required in fixed mode.
+* ``--require-oauth``: require a Gemini Enterprise end-user OAuth bearer token
+  and scope state by verified owner as well as A2A conversation.
 * ``--pool-max-size``: maximum Oracle connections per Cloud Run instance.
-* ``--max-instances``: Cloud Run instance limit.
-* ``--wallet-archive``: upload or replace an Autonomous Database wallet ZIP.
-* ``--rotate-db-credentials``: prompt for and rotate the database secrets.
+* ``--max-instances``: Cloud Run instance limit; dynamic mode requires one.
+* ``--wallet-archive``: upload or replace an Autonomous Database wallet ZIP
+  in fixed mode.
+* ``--db-dsn-secret``: fix the Connection URL using an existing Secret Manager
+  secret.
+* ``--rotate-db-config``: prompt for and create or rotate the deployment's
+  database values.
 
 For a wallet deployment, ``--wallet-archive`` stores the ZIP and wallet
 password in service-specific Secret Manager secrets. Cloud Run mounts the ZIP
@@ -689,42 +729,50 @@ The standalone script prints the deployed Agent Card JSON at the end. The
 service is ready for a client when the printed card points to the final Cloud
 Run URL and the client can invoke the private service.
 
-Dynamic gateway Google Cloud deployment
+The Google Cloud scripts do not require end-user OAuth by default. Cloud Run
+IAM authenticates Gemini Enterprise, and ``a2a serve`` separates database
+sessions by A2A conversation without asserting a verified human owner. Add
+``--require-oauth`` to the deployment command when verified user ownership is
+required. Gemini Enterprise must then be configured with end-user OAuth rather
+than **Skip & Finish**. It uses ``X-Serverless-Authorization`` for Cloud Run
+IAM and sends the user token separately in ``Authorization``.
+
+Clustered Google Cloud deployment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`gcloud/gateway/deploy.sh <https://github.com/oracle/python-select-ai/blob/main/gcloud/gateway/deploy.sh>`__
-deploys the gateway topology: Cloud Run for the
-public gateway, GKE Autopilot for worker replicas, and Consul for discovery and
+`gcloud/cluster/deploy.sh <https://github.com/oracle/python-select-ai/blob/main/gcloud/cluster/deploy.sh>`__
+deploys the clustered topology: Cloud Run for the
+public server, GKE Autopilot for worker replicas, and Consul for discovery and
 routing.
 
 .. code-block:: bash
 
-   gcloud/gateway/deploy.sh \
+   gcloud/cluster/deploy.sh \
        --project PROJECT_ID \
        --region us-central1 \
        --worker-replicas 3
 
 The script and
-`gcloud/gateway/cloudbuild.yaml <https://github.com/oracle/python-select-ai/blob/main/gcloud/gateway/cloudbuild.yaml>`__
+`gcloud/cluster/cloudbuild.yaml <https://github.com/oracle/python-select-ai/blob/main/gcloud/cluster/cloudbuild.yaml>`__
 perform these steps:
 
 1. Enable the required Google Cloud APIs and create or reuse Artifact Registry
    and a GKE Autopilot cluster.
 2. Configure additive VPC DNS so StatefulSet worker names resolve to current
    Pod IPs after a worker is recreated.
-3. Deploy the gateway namespace, internal Consul service, and worker service.
+3. Deploy the A2A namespace, internal Consul service, and worker service.
 4. Build and publish the image with Cloud Build.
 5. Deploy the requested worker replicas with ``select-ai a2a worker`` and the
    selected session TTL.
 6. Deploy Cloud Run with ``select-ai a2a serve --deployment clustered`` and
    set ``PUBLIC_URL`` to the final Cloud Run URL.
 
-The Cloud Run gateway uses direct VPC egress to reach the internal Consul
+The Cloud Run server uses direct VPC egress to reach the internal Consul
 load-balancer address and worker endpoints. The GKE worker service is headless
 service discovery, not a public load balancer. Consul selects a healthy worker
 when a session opens; the route is then pinned to that worker.
 
-Important gateway options include:
+Important clustered options include:
 
 * ``--cluster`` and ``--gke-dns-domain``: GKE Autopilot cluster and immutable
   additive DNS domain.
@@ -732,18 +780,18 @@ Important gateway options include:
   internal worker infrastructure.
 * ``--worker-replicas``: number of worker runtimes available for new sessions.
 * ``--session-ttl-seconds``: lifetime of temporary database sessions.
-* ``--enable-worker-mtls``: create and use gateway-to-worker certificates.
+* ``--enable-worker-mtls``: create and use server-to-worker certificates.
 * ``--rotate-worker-mtls``: replace the existing test certificates and restart
   the worker workload.
 
-The default gateway deployment uses private-VPC HTTP between Cloud Run and
+The default clustered deployment uses private-VPC HTTP between Cloud Run and
 GKE. With ``--enable-worker-mtls``, the script creates short-lived test PKI
 material in Secret Manager, creates the Kubernetes TLS secrets, deploys the
-worker StatefulSet variant, and mounts the gateway client certificate into
+worker StatefulSet variant, and mounts the server client certificate into
 Cloud Run. The worker certificate uses the GKE StatefulSet DNS name, so the
 ``--gke-dns-domain`` value must remain consistent with the cluster.
 
-The gateway deployment does not upload an Oracle wallet because the dynamic
+The clustered deployment does not upload an Oracle wallet because the dynamic
 worker session path currently accepts only DSN/user/password. If database mTLS
 is required, use the standalone deployment or provide a separate database
 connection mechanism to the worker implementation.
@@ -763,15 +811,15 @@ The deployment files are intended to be read together:
      - Builds and publishes the standalone container image.
    * - `gcloud/standalone/README.md <https://github.com/oracle/python-select-ai/blob/main/gcloud/standalone/README.md>`__
      - Documents IAM, secrets, wallet archives, and update behavior.
-   * - `gcloud/gateway/deploy.sh <https://github.com/oracle/python-select-ai/blob/main/gcloud/gateway/deploy.sh>`__
-     - Creates or reuses the gateway GKE/Cloud Run topology and supplies build
+   * - `gcloud/cluster/deploy.sh <https://github.com/oracle/python-select-ai/blob/main/gcloud/cluster/deploy.sh>`__
+     - Creates or reuses the clustered GKE/Cloud Run topology and supplies build
        substitutions.
-   * - `gcloud/gateway/cloudbuild.yaml <https://github.com/oracle/python-select-ai/blob/main/gcloud/gateway/cloudbuild.yaml>`__
+   * - `gcloud/cluster/cloudbuild.yaml <https://github.com/oracle/python-select-ai/blob/main/gcloud/cluster/cloudbuild.yaml>`__
      - Builds the image, deploys Consul and workers, and deploys Cloud Run.
-   * - `gcloud/gateway/gke manifests <https://github.com/oracle/python-select-ai/tree/main/gcloud/gateway/gke>`__
+   * - `gcloud/cluster/gke manifests <https://github.com/oracle/python-select-ai/tree/main/gcloud/cluster/gke>`__
      - Namespace, Consul, headless worker service, and HTTP or mTLS worker
        workloads.
-   * - `gcloud/gateway/README.md <https://github.com/oracle/python-select-ai/blob/main/gcloud/gateway/README.md>`__
+   * - `gcloud/cluster/README.md <https://github.com/oracle/python-select-ai/blob/main/gcloud/cluster/README.md>`__
      - Explains the topology, DNS, mTLS test mode, and operational details.
 
 Troubleshooting and security notes

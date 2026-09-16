@@ -257,6 +257,12 @@ Important options are ``--team`` (required), ``--host``, ``--port``,
 wallet for this standalone path. If no password is provided, the command
 prompts for it.
 
+By default, ``a2a serve`` does not require an application OAuth token and
+separates database sessions by A2A conversation. Add ``--require-oauth`` to
+require ``Authorization: Bearer ...`` and scope sessions by authenticated
+owner as well as conversation. The Agent Card advertises bearer security only
+in that mode.
+
 Dynamic gateway and worker
 --------------------------
 
@@ -297,7 +303,8 @@ The clustered serve options are ``--public-url`` (or ``PUBLIC_URL``),
 ``SESSION_TTL_SECONDS``). ``--dsn``, ``--user``, ``--password``, and ``--team``
 fix any supplied connection values; the generated A2UI form contains only the
 missing values. ``--a2ui-form`` loads a custom A2UI JSON form that must submit
-exactly those missing values. The optional
+exactly those missing values. ``--require-oauth`` has the same ownership
+behavior in standalone and clustered deployments. The optional
 ``--worker-tls-ca-file``, ``--worker-tls-cert-file``, and
 ``--worker-tls-key-file`` options configure the gateway's client side of
 gateway-to-worker mTLS. These TLS settings protect the internal HTTP hop and

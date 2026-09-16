@@ -32,11 +32,11 @@ from starlette.responses import JSONResponse
 
 
 class TrustedBearerAuthenticationBackend(AuthenticationBackend):
-    """Map an upstream-validated bearer JWT's ``sub`` to a Starlette user.
+    """Map an upstream-validated OAuth bearer token to a Starlette user.
 
     Signature and claims validation belongs to the deployment's authenticating
-    proxy (for example Gemini Enterprise plus Cloud Run IAM). This backend only
-    establishes the SDK user object from the already trusted token.
+    proxy (for example Gemini Enterprise). This backend only establishes the
+    SDK user object from the already trusted token.
     """
 
     async def authenticate(self, connection):
@@ -46,22 +46,20 @@ class TrustedBearerAuthenticationBackend(AuthenticationBackend):
         scheme, separator, token = header.partition(" ")
         if separator != " " or scheme.lower() != "bearer" or not token:
             raise AuthenticationError("Authorization must use Bearer syntax.")
-        owner = _jwt_owner(token)
+        owner = _bearer_owner(token)
         return AuthCredentials(["authenticated"]), SimpleUser(owner)
 
 
 class RequireA2AAuthenticationMiddleware:
     """Require an SDK-visible user on the JSON-RPC endpoint."""
 
-    def __init__(self, app, allow_unauthenticated: bool = False) -> None:
+    def __init__(self, app) -> None:
         self.app = app
-        self.allow_unauthenticated = allow_unauthenticated
 
     async def __call__(self, scope, receive, send) -> None:
         if (
             scope["type"] == "http"
             and scope.get("path", "").rstrip("/") == "/a2a/jsonrpc"
-            and not self.allow_unauthenticated
             and not scope["user"].is_authenticated
         ):
             response = JSONResponse(
@@ -74,10 +72,10 @@ class RequireA2AAuthenticationMiddleware:
         await self.app(scope, receive, send)
 
 
-def authentication_middleware(
-    allow_unauthenticated: bool,
-) -> list[Middleware]:
-    """Return middleware ordered so authentication precedes enforcement."""
+def authentication_middleware(require_oauth: bool) -> list[Middleware]:
+    """Enable bearer authentication only when explicitly requested."""
+    if not require_oauth:
+        return []
     return [
         Middleware(
             AuthenticationMiddleware,
@@ -86,7 +84,6 @@ def authentication_middleware(
         ),
         Middleware(
             RequireA2AAuthenticationMiddleware,
-            allow_unauthenticated=allow_unauthenticated,
         ),
     ]
 
@@ -96,9 +93,11 @@ def add_bearer_security(agent_card: AgentCard) -> None:
     agent_card.security_schemes["bearer"].CopyFrom(
         SecurityScheme(
             http_auth_security_scheme=HTTPAuthSecurityScheme(
-                description="Upstream-validated user identity token.",
+                description=(
+                    "Upstream-validated end-user OAuth 2.0 access token or "
+                    "OpenID Connect ID token."
+                ),
                 scheme="bearer",
-                bearer_format="JWT",
             )
         )
     )
@@ -114,11 +113,20 @@ def _authentication_error(_connection, error):
     )
 
 
-def _jwt_owner(token: str) -> str:
-    """Derive a stable opaque owner from an upstream-validated JWT."""
+def _bearer_owner(token: str) -> str:
+    """Derive an opaque owner from a trusted JWT or OAuth access token."""
+    jwt_owner = _jwt_owner(token)
+    if jwt_owner is not None:
+        return jwt_owner
+    digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    return f"oauth:{digest}"
+
+
+def _jwt_owner(token: str) -> str | None:
+    """Return the issuer/subject owner when the bearer value is a JWT."""
     parts = token.split(".")
     if len(parts) != 3:
-        raise AuthenticationError("Bearer token must be a JWT.")
+        return None
     try:
         encoded = parts[1] + "=" * (-len(parts[1]) % 4)
         payload = json.loads(base64.urlsafe_b64decode(encoded))
@@ -127,15 +135,13 @@ def _jwt_owner(token: str) -> str:
         UnicodeDecodeError,
         ValueError,
         TypeError,
-    ) as error:
-        raise AuthenticationError(
-            "Bearer token has an invalid payload."
-        ) from error
+    ):
+        return None
     subject = payload.get("sub") if isinstance(payload, dict) else None
     issuer = payload.get("iss") if isinstance(payload, dict) else None
     if not isinstance(subject, str) or not subject:
-        raise AuthenticationError("Bearer token has no subject.")
+        return None
     if not isinstance(issuer, str) or not issuer:
-        raise AuthenticationError("Bearer token has no issuer.")
+        return None
     digest = hashlib.sha256(f"{issuer}\0{subject}".encode("utf-8")).hexdigest()
     return f"jwt:{digest}"

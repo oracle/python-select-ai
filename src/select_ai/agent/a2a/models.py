@@ -10,6 +10,15 @@
 from dataclasses import dataclass, field
 
 CONNECTION_FIELDS = ("dsn", "username", "password", "team_name")
+CONNECTION_FORM_FIELDS = (
+    "connection_url",
+    "username",
+    "password",
+    "ai_agent",
+)
+FORM_FIELD_TO_CONNECTION_FIELD = dict(
+    zip(CONNECTION_FORM_FIELDS, CONNECTION_FIELDS)
+)
 
 
 @dataclass(frozen=True)
@@ -29,30 +38,33 @@ class ConnectionConfig:
 
     @property
     def missing_fields(self) -> tuple[str, ...]:
-        """Return canonical properties that must come from the form."""
+        """Return canonical A2UI properties that must come from the form."""
         return tuple(
-            name for name in CONNECTION_FIELDS if getattr(self, name) is None
+            form_name
+            for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
+            if getattr(self, connection_name) is None
         )
 
     def resolve(self, submitted: dict) -> "SessionInfo":
         """Merge validated submitted values with immutable server values."""
         if not isinstance(submitted, dict):
             raise ValueError("Connection form context must be an object.")
-        unknown = set(submitted) - set(CONNECTION_FIELDS)
+        unknown = set(submitted) - set(CONNECTION_FORM_FIELDS)
         if unknown:
             raise ValueError("Connection form contains unsupported fields.")
         configured = {
-            name
-            for name in CONNECTION_FIELDS
-            if getattr(self, name) is not None
+            form_name
+            for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
+            if getattr(self, connection_name) is not None
         }
         if configured.intersection(submitted):
             raise ValueError(
                 "Configured connection fields cannot be overridden."
             )
         values = {
-            name: getattr(self, name, None) or submitted.get(name)
-            for name in CONNECTION_FIELDS
+            connection_name: getattr(self, connection_name, None)
+            or submitted.get(form_name)
+            for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
         }
         return SessionInfo.from_values(values)
 
@@ -101,7 +113,7 @@ class GatewaySettings:
     description: str | None = None
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
-    allow_unauthenticated: bool = False
+    require_oauth: bool = False
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:
@@ -135,7 +147,7 @@ class StandaloneSessionSettings:
     description: str | None = None
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
-    allow_unauthenticated: bool = False
+    require_oauth: bool = False
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:

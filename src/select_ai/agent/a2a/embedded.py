@@ -287,7 +287,7 @@ def create_embedded_session_app(
         session_client=client,
         connection=settings.connection,
         connection_form_template=form_template,
-        allow_unauthenticated=settings.allow_unauthenticated,
+        require_oauth=settings.require_oauth,
         description=settings.description,
         lifespan=lifespan,
     )

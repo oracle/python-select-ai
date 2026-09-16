@@ -16,14 +16,14 @@ from pathlib import Path
 from uuid import uuid4
 
 from select_ai.agent.a2a.a2ui import A2UI_CATALOG_ID, A2UI_VERSION
-from select_ai.agent.a2a.models import CONNECTION_FIELDS
+from select_ai.agent.a2a.models import CONNECTION_FORM_FIELDS
 
 _ACTION_NAME = "submit_database_connection"
 _FIELD_COMPONENTS = {
-    "dsn": ("Database DSN", "shortText"),
+    "connection_url": ("Connection URL", "shortText"),
     "username": ("Database username", "shortText"),
     "password": ("Database password", "obscured"),
-    "team_name": ("Select AI team name", "shortText"),
+    "ai_agent": ("AI Agent", "shortText"),
 }
 
 
@@ -34,13 +34,13 @@ def connection_form(
 ) -> list[dict]:
     """Return a fresh form containing only missing connection properties."""
     fields = (
-        tuple(CONNECTION_FIELDS)
+        tuple(CONNECTION_FORM_FIELDS)
         if missing_fields is None
         else tuple(missing_fields)
     )
     if not fields:
         return []
-    if set(fields) - set(CONNECTION_FIELDS):
+    if set(fields) - set(CONNECTION_FORM_FIELDS):
         raise ValueError("Connection form contains unsupported fields.")
     surface_id = surface_id or f"db-connect-{uuid4().hex}"
     if template is not None:

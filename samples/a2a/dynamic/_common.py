@@ -18,10 +18,10 @@ ENDPOINT = os.environ.get(
 )
 TEAM_NAME = os.environ.get("SELECT_AI_A2A_TEAM", "ORACLE_AI_DATABASE_AGENT")
 _CONNECTION_ENV = {
-    "dsn": "SELECT_AI_DB_CONNECT_STRING",
+    "connection_url": "SELECT_AI_DB_CONNECT_STRING",
     "username": "SELECT_AI_USER",
     "password": "SELECT_AI_PASSWORD",
-    "team_name": "SELECT_AI_A2A_TEAM",
+    "ai_agent": "SELECT_AI_A2A_TEAM",
 }
 
 
@@ -68,7 +68,7 @@ def connect(prompt: str) -> str:
     for field in fields:
         env_name = _CONNECTION_ENV[field]
         value = os.environ.get(env_name)
-        if field == "team_name" and not value:
+        if field == "ai_agent" and not value:
             value = TEAM_NAME
         if not value:
             raise RuntimeError(

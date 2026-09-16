@@ -87,14 +87,14 @@ def create_app(  # noqa: PLR0913
     wallet_password: Optional[str] = None,
     description: Optional[str] = None,
     pool_max_size: int = 10,
-    allow_unauthenticated: bool = False,
+    require_oauth: bool = False,
 ) -> Starlette:
     """Build an A2A JSON-RPC application for one database AI Agent Team."""
     if pool_max_size < 1:
         raise ValueError("pool_max_size must be at least 1")
 
     agent_card = _build_agent_card(team_name, public_url, description)
-    if not allow_unauthenticated:
+    if require_oauth:
         add_bearer_security(agent_card)
     compat_agent_card = _build_v03_agent_card(agent_card)
     task_store = OracleTaskStore()
@@ -148,7 +148,7 @@ def create_app(  # noqa: PLR0913
     return Starlette(
         routes=routes,
         lifespan=lifespan,
-        middleware=authentication_middleware(allow_unauthenticated),
+        middleware=authentication_middleware(require_oauth),
     )
 
 

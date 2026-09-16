@@ -51,7 +51,6 @@ env -u SELECT_AI_USER -u SELECT_AI_PASSWORD \
   --host 127.0.0.1 \
   --port 8000 \
   --public-url http://127.0.0.1:8000 \
-  --allow-unauthenticated \
   --dsn '<database DSN>' \
   --team ORACLE_AI_DATABASE_AGENT
 ```
@@ -93,7 +92,6 @@ select-ai a2a serve \
   --host 127.0.0.1 \
   --port 8000 \
   --public-url http://127.0.0.1:8000 \
-  --allow-unauthenticated \
   --consul-url http://127.0.0.1:8500
 ```
 
@@ -112,11 +110,11 @@ For a TNS-alias DSN, set `TNS_ADMIN` in the worker terminal before starting
 the clustered worker, or in the standalone server terminal. Wallet-based
 Oracle Database mTLS is not currently supported by the dynamic session path.
 
-To call an authenticated server, set its bearer JWT without changing the
-scripts:
+To require OAuth, start the server with `--require-oauth`. Then set its bearer
+token without changing the scripts:
 
 ```bash
-export SELECT_AI_A2A_BEARER_TOKEN='<JWT>'
+export SELECT_AI_A2A_BEARER_TOKEN='<OAuth bearer token>'
 ```
 
 Override the default endpoint with `SELECT_AI_A2A_ENDPOINT`.

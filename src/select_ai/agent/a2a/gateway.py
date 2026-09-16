@@ -108,13 +108,13 @@ class GatewayRequestHandler(RequestHandler):
         agent_card: AgentCard,
         connection: ConnectionConfig | None = None,
         connection_form_template: tuple[dict, ...] | None = None,
-        allow_unauthenticated: bool = False,
+        require_oauth: bool = False,
     ):
         self.worker_client = worker_client
         self.agent_card = agent_card
         self.connection = connection or ConnectionConfig()
         self.connection_form_template = connection_form_template
-        self.allow_unauthenticated = allow_unauthenticated
+        self.require_oauth = require_oauth
 
     # RequestHandler requires every operation even when the Agent Card does
     # not advertise streaming or push notifications.
@@ -479,12 +479,12 @@ class GatewayRequestHandler(RequestHandler):
         return getattr(self, "connection_form_template", None)
 
     def _owner(self, context: ServerCallContext) -> str:
-        """Resolve the SDK owner, allowing one explicit local-only scope."""
+        """Resolve an OAuth owner or the conversation-only session scope."""
         owner = resolve_user_scope(context)
         if owner:
             return owner
-        if getattr(self, "allow_unauthenticated", True):
-            return "local-development"
+        if not getattr(self, "require_oauth", False):
+            return "a2a-conversation"
         raise PermissionError("Bearer authentication is required.")
 
 
@@ -516,7 +516,7 @@ def create_gateway_app(settings: GatewaySettings) -> Starlette:
         session_client=WorkerClient(settings),
         connection=settings.connection,
         connection_form_template=form_template,
-        allow_unauthenticated=settings.allow_unauthenticated,
+        require_oauth=settings.require_oauth,
         description=settings.description,
     )
 
@@ -527,7 +527,7 @@ def create_session_app(
     session_client,
     connection: ConnectionConfig,
     connection_form_template: tuple[dict, ...] | None,
-    allow_unauthenticated: bool,
+    require_oauth: bool,
     description: str | None = None,
     lifespan=None,
 ) -> Starlette:
@@ -570,14 +570,14 @@ def create_session_app(
             )
         ],
     )
-    if not allow_unauthenticated:
+    if require_oauth:
         add_bearer_security(card)
     handler = GatewayRequestHandler(
         session_client,
         card,
         connection,
         connection_form_template,
-        allow_unauthenticated,
+        require_oauth,
     )
     compat_card = to_compat_agent_card(card).model_dump(
         by_alias=True,
@@ -599,6 +599,6 @@ def create_session_app(
     )
     return Starlette(
         routes=routes,
-        middleware=authentication_middleware(allow_unauthenticated),
+        middleware=authentication_middleware(require_oauth),
         lifespan=lifespan,
     )

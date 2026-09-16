@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: select-ai-worker
-  namespace: select-ai-gateway
+  name: select-ai-a2a-worker
+  namespace: select-ai-a2a
 spec:
   replicas: WORKER_REPLICAS
   selector:
     matchLabels:
-      app: select-ai-worker
+      app: select-ai-a2a-worker
   template:
     metadata:
       labels:
-        app: select-ai-worker
+        app: select-ai-a2a-worker
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - name: worker
+        - name: select-ai-a2a-worker
           image: WORKER_IMAGE
           command:
             - select-ai
@@ -27,9 +27,11 @@ spec:
             - --port
             - "8080"
             - --consul-url
-            - http://consul-server.select-ai-gateway.svc.cluster.local:8500
+            - http://consul-server.select-ai-a2a.svc.cluster.local:8500
             - --worker-id
             - $(WORKER_ID)
+            - --worker-endpoint
+            - http://$(WORKER_ADDRESS):8080
             - --session-ttl-seconds
             - "SESSION_TTL_SECONDS"
           ports:

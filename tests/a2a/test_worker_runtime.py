@@ -678,7 +678,7 @@ def test_connection_action_accepts_gemini_unmarked_data_part():
                         "version": "v0.9",
                         "action": {
                             "name": "submit_database_connection",
-                            "context": {"team_name": "TEAM"},
+                            "context": {"ai_agent": "TEAM"},
                         },
                     }
                 )
@@ -689,7 +689,7 @@ def test_connection_action_accepts_gemini_unmarked_data_part():
 
     assert action == {
         "name": "submit_database_connection",
-        "context": {"team_name": "TEAM"},
+        "context": {"ai_agent": "TEAM"},
     }
 
 
@@ -706,10 +706,10 @@ def test_gateway_returns_connection_error_when_worker_rejects_opening():
     session_id = asyncio.run(
         handler._open_session(
             {
-                "dsn": "database",
+                "connection_url": "database",
                 "username": "user",
                 "password": "password",
-                "team_name": "TEAM",
+                "ai_agent": "TEAM",
             },
             "owner-1",
             "context-1",
@@ -729,7 +729,7 @@ def test_gateway_bootstrap_is_transient_until_worker_session_opens():
             return self.opened
 
         def open_session(self, owner, context_id, session_info):
-            assert owner == "local-development"
+            assert owner == "a2a-conversation"
             assert context_id == "context-1"
             assert session_info.team_name == "TEAM"
             self.opened = True
@@ -769,10 +769,10 @@ def test_gateway_bootstrap_is_transient_until_worker_session_opens():
                         "action": {
                             "name": "submit_database_connection",
                             "context": {
-                                "dsn": "database",
+                                "connection_url": "database",
                                 "username": "user",
                                 "password": "password",
-                                "team_name": "TEAM",
+                                "ai_agent": "TEAM",
                             },
                         },
                     }
