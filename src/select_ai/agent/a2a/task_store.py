@@ -27,16 +27,16 @@ from select_ai.db import async_get_connection
 _CREATE_TABLE = """
     BEGIN
         EXECUTE IMMEDIATE '
-            CREATE TABLE SELECT_AI_A2A_TASKS (
+            CREATE TABLE DBMS_AI_A2A_TASKS$ (
                 owner VARCHAR2(512) NOT NULL,
                 task_id VARCHAR2(255) NOT NULL,
                 context_id VARCHAR2(255),
                 task_json CLOB NOT NULL CHECK (task_json IS JSON),
                 updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-                CONSTRAINT select_ai_a2a_tasks_pk PRIMARY KEY (owner, task_id)
+                CONSTRAINT dbms_ai_a2a_tasks_pk PRIMARY KEY (owner, task_id)
             )';
         EXECUTE IMMEDIATE '
-            COMMENT ON TABLE SELECT_AI_A2A_TASKS
+            COMMENT ON TABLE DBMS_AI_A2A_TASKS$
             IS ''Managed by select_ai.a2a.task_store''';
     EXCEPTION
         WHEN OTHERS THEN
@@ -44,6 +44,13 @@ _CREATE_TABLE = """
                 RAISE;
             END IF;
     END;
+"""
+
+_CREATE_VIEW = """
+    CREATE OR REPLACE VIEW DBMS_AI_A2A_TASKS AS
+    SELECT owner, task_id, context_id, task_json, updated_at
+    FROM DBMS_AI_A2A_TASKS$
+    WITH READ ONLY
 """
 
 
@@ -66,6 +73,7 @@ class OracleTaskStore(TaskStore):
             if self.initialized:
                 return
             await self._execute(_CREATE_TABLE)
+            await self._execute(_CREATE_VIEW)
             self.initialized = True
 
     async def save(self, task: Task, context: ServerCallContext) -> None:
@@ -73,7 +81,7 @@ class OracleTaskStore(TaskStore):
         await self.initialize()
         await self._execute(
             """
-                MERGE INTO SELECT_AI_A2A_TASKS target
+                MERGE INTO DBMS_AI_A2A_TASKS$ target
                 USING (
                     SELECT :owner AS owner, :task_id AS task_id FROM dual
                 ) source
@@ -104,7 +112,7 @@ class OracleTaskStore(TaskStore):
         row = await self._fetchone(
             """
                 SELECT task_json
-                FROM SELECT_AI_A2A_TASKS
+                FROM DBMS_AI_A2A_TASKS$
                 WHERE owner = :owner AND task_id = :task_id
             """,
             owner=self._owner(context),
@@ -124,7 +132,7 @@ class OracleTaskStore(TaskStore):
         rows = await self._fetchall(
             """
                 SELECT task_json
-                FROM SELECT_AI_A2A_TASKS
+                FROM DBMS_AI_A2A_TASKS$
                 WHERE owner = :owner
                   AND (
                       :context_id IS NULL OR context_id = :context_id
@@ -166,7 +174,7 @@ class OracleTaskStore(TaskStore):
         await self.initialize()
         await self._execute(
             """
-                DELETE FROM SELECT_AI_A2A_TASKS
+                DELETE FROM DBMS_AI_A2A_TASKS$
                 WHERE owner = :owner AND task_id = :task_id
             """,
             owner=self._owner(context),

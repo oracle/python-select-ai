@@ -43,8 +43,8 @@ _METHOD_HANDLERS = {
 class SessionUser(User):
     """Internal A2A user used to scope one worker session's database rows."""
 
-    def __init__(self, session_id: str) -> None:
-        self.session_id = session_id
+    def __init__(self, owner: str) -> None:
+        self.owner = owner
 
     @property
     def is_authenticated(self) -> bool:
@@ -52,14 +52,15 @@ class SessionUser(User):
 
     @property
     def user_name(self) -> str:
-        return self.session_id
+        return self.owner
 
 
 class SessionRuntime:
     """Own the A2A handler and Oracle stores for one connected database."""
 
-    def __init__(self, session_id: str, team_name: str) -> None:
+    def __init__(self, session_id: str, owner: str, team_name: str) -> None:
         self.session_id = session_id
+        self.owner = owner
         self.team_name = team_name
         self.task_store = OracleTaskStore()
         self.context_store = OracleContextStore()
@@ -96,7 +97,7 @@ class SessionRuntime:
             raise RuntimeError("A2A session runtime is not initialized.")
 
         operation = A2AMethod(method)
-        context = ServerCallContext(user=SessionUser(self.session_id))
+        context = ServerCallContext(user=SessionUser(self.owner))
         if operation == A2AMethod.DELETE_TASK:
             request = parse_request(GetTaskRequest, payload)
             await self.task_store.delete(request.id, context)

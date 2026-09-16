@@ -23,13 +23,15 @@ Options:
   --project PROJECT              Google Cloud project (defaults to gcloud config project)
   --region REGION                Cloud Run and Artifact Registry region (default: us-central1)
   --repository REPOSITORY        Docker repository name (default: select-ai)
-  --service SERVICE              Cloud Run service name (default: oracle-a2a-agent)
-  --a2a-team TEAM                Agent Team installed in Oracle Database (default: ORACLE_AI_DATABASE_AGENT)
+  --connection-mode MODE         Required: fixed or dynamic
+  --require-oauth                Require end-user OAuth bearer authentication
+  --service SERVICE              Cloud Run service name (defaults from connection mode)
+  --a2a-team TEAM                Fix the AI Agent in the deployment
   --runtime-sa EMAIL             Runtime service-account email
   --runtime-sa-name NAME         Default runtime service-account name (default: oracle-a2a-runtime)
-  --db-user-secret NAME          Secret name for the ADB user
-  --db-password-secret NAME      Secret name for the ADB password
-  --db-dsn-secret NAME           Secret name for the ADB connect descriptor
+  --db-user-secret NAME          Secret name for the fixed-mode ADB user
+  --db-password-secret NAME      Secret name for the fixed-mode ADB password
+  --db-dsn-secret NAME           Fix the Connection URL using this secret
   --wallet-secret NAME           Secret name for the wallet archive
   --wallet-password-secret NAME  Secret name for the wallet password
   --wallet-archive PATH          Wallet ZIP to upload or replace
@@ -40,7 +42,7 @@ Options:
   --image-uri URI                Deploy this container image
   --build                        Build the current checkout before deploying
   --image-tag TAG                Tag for --build (default: git SHA plus UTC timestamp)
-  --rotate-db-credentials        Prompt for and rotate ADB credentials
+  --rotate-db-config             Prompt for and rotate the configured database values
   -h, --help                     Show this help
 EOF
 }
@@ -49,14 +51,17 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 project_id=""
 region="us-central1"
 repository="select-ai"
-service="oracle-a2a-agent"
-a2a_team="ORACLE_AI_DATABASE_AGENT"
+connection_mode=""
+require_oauth=false
+service=""
+a2a_team=""
 runtime_sa=""
 runtime_sa_name="oracle-a2a-runtime"
 runtime_sa_explicit=false
 db_user_secret=""
 db_password_secret=""
 db_dsn_secret=""
+db_dsn_secret_explicit=false
 wallet_secret=""
 wallet_password_secret=""
 wallet_archive=""
@@ -67,20 +72,22 @@ pool_max_size="10"
 image_uri=""
 image_tag=""
 build_image=false
-rotate_db_credentials=false
+rotate_db_config=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --project) project_id="${2:?--project requires a value}"; shift 2 ;;
     --region) region="${2:?--region requires a value}"; shift 2 ;;
     --repository) repository="${2:?--repository requires a value}"; shift 2 ;;
+    --connection-mode) connection_mode="${2:?--connection-mode requires a value}"; shift 2 ;;
+    --require-oauth) require_oauth=true; shift ;;
     --service) service="${2:?--service requires a value}"; shift 2 ;;
     --a2a-team) a2a_team="${2:?--a2a-team requires a value}"; shift 2 ;;
     --runtime-sa) runtime_sa="${2:?--runtime-sa requires a value}"; runtime_sa_explicit=true; shift 2 ;;
     --runtime-sa-name) runtime_sa_name="${2:?--runtime-sa-name requires a value}"; shift 2 ;;
     --db-user-secret) db_user_secret="${2:?--db-user-secret requires a value}"; shift 2 ;;
     --db-password-secret) db_password_secret="${2:?--db-password-secret requires a value}"; shift 2 ;;
-    --db-dsn-secret) db_dsn_secret="${2:?--db-dsn-secret requires a value}"; shift 2 ;;
+    --db-dsn-secret) db_dsn_secret="${2:?--db-dsn-secret requires a value}"; db_dsn_secret_explicit=true; shift 2 ;;
     --wallet-secret) wallet_secret="${2:?--wallet-secret requires a value}"; shift 2 ;;
     --wallet-password-secret) wallet_password_secret="${2:?--wallet-password-secret requires a value}"; shift 2 ;;
     --wallet-archive) wallet_archive="${2:?--wallet-archive requires a value}"; shift 2 ;;
@@ -91,7 +98,7 @@ while [[ $# -gt 0 ]]; do
     --image-uri) image_uri="${2:?--image-uri requires a value}"; shift 2 ;;
     --build) build_image=true; shift ;;
     --image-tag) image_tag="${2:?--image-tag requires a value}"; shift 2 ;;
-    --rotate-db-credentials) rotate_db_credentials=true; shift ;;
+    --rotate-db-config) rotate_db_config=true; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -106,10 +113,56 @@ if [[ -z "$project_id" || "$project_id" == "(unset)" ]]; then
   exit 1
 fi
 
+case "$connection_mode" in
+  fixed)
+    service="${service:-select-ai-a2a-standalone-fixed}"
+    if [[ -z "$a2a_team" ]]; then
+      echo "Fixed standalone requires --a2a-team." >&2
+      exit 2
+    fi
+    ;;
+  dynamic)
+    service="${service:-select-ai-a2a-standalone-dynamic}"
+    if [[ "$max_instances" != "1" ]]; then
+      echo "Dynamic standalone requires --max-instances 1 because session routing is in memory." >&2
+      exit 2
+    fi
+    if [[ -n "$wallet_archive" ]]; then
+      echo "Dynamic standalone does not currently support --wallet-archive." >&2
+      exit 2
+    fi
+    ;;
+  *)
+    echo "--connection-mode must be fixed or dynamic." >&2
+    exit 2
+    ;;
+esac
+
+form_summary=""
+if [[ "$connection_mode" == "dynamic" ]]; then
+  append_form_field() {
+    if [[ -n "$form_summary" ]]; then
+      form_summary+=", "
+    fi
+    form_summary+="$1"
+  }
+  if [[ -z "$db_dsn_secret" && "$rotate_db_config" == false ]]; then
+    append_form_field "Connection URL"
+  fi
+  append_form_field "Database username"
+  append_form_field "Database password"
+  if [[ -z "$a2a_team" ]]; then
+    append_form_field "AI Agent"
+  fi
+fi
+form_summary="${form_summary:-none}"
+
 runtime_sa="${runtime_sa:-${runtime_sa_name}@${project_id}.iam.gserviceaccount.com}"
 db_user_secret="${db_user_secret:-${service}-db-user}"
 db_password_secret="${db_password_secret:-${service}-db-password}"
-db_dsn_secret="${db_dsn_secret:-${service}-db-connect-string}"
+if [[ "$connection_mode" == "fixed" || "$db_dsn_secret_explicit" == true || "$rotate_db_config" == true ]]; then
+  db_dsn_secret="${db_dsn_secret:-${service}-db-connect-string}"
+fi
 wallet_secret="${wallet_secret:-${service}-wallet}"
 wallet_password_secret="${wallet_password_secret:-${service}-wallet-password}"
 
@@ -150,23 +203,30 @@ if gcloud run services describe "$service" --project="$project_id" --region="$re
 fi
 
 create_or_rotate_secrets=false
-if [[ "$rotate_db_credentials" == true ]]; then
+if [[ "$rotate_db_config" == true ]]; then
   create_or_rotate_secrets=true
-else
+elif [[ "$connection_mode" == "fixed" ]]; then
   for secret in "$db_user_secret" "$db_password_secret" "$db_dsn_secret"; do
     if ! gcloud secrets describe "$secret" --project="$project_id" >/dev/null 2>&1; then
       create_or_rotate_secrets=true
       break
     fi
   done
+elif [[ -n "$db_dsn_secret" ]] \
+  && ! gcloud secrets describe "$db_dsn_secret" --project="$project_id" >/dev/null 2>&1; then
+  create_or_rotate_secrets=true
 fi
 
 if [[ "$create_or_rotate_secrets" == true ]]; then
-  echo "Creating or rotating ADB credentials for Cloud Run service: $service"
-  read -r -p "ADB user: " db_user
-  read -r -s -p "ADB password: " db_password
-  echo
+  echo "Creating or rotating database configuration for Cloud Run service: $service"
   read -r -p "ADB connect descriptor: " db_dsn
+  db_user=""
+  db_password=""
+  if [[ "$connection_mode" == "fixed" ]]; then
+    read -r -p "ADB user: " db_user
+    read -r -s -p "ADB password: " db_password
+    echo
+  fi
   trap 'unset db_user db_password db_dsn' EXIT
 
   add_secret() {
@@ -177,20 +237,33 @@ if [[ "$create_or_rotate_secrets" == true ]]; then
     else
       printf %s "$value" | gcloud secrets create "$name" --project="$project_id" --replication-policy=automatic --data-file=- >/dev/null
     fi
-    gcloud secrets add-iam-policy-binding "$name" --project="$project_id" \
-      --member="serviceAccount:$runtime_sa" --role="roles/secretmanager.secretAccessor" >/dev/null
   }
 
-  add_secret "$db_user_secret" "$db_user"
-  add_secret "$db_password_secret" "$db_password"
   add_secret "$db_dsn_secret" "$db_dsn"
+  if [[ "$connection_mode" == "fixed" ]]; then
+    add_secret "$db_user_secret" "$db_user"
+    add_secret "$db_password_secret" "$db_password"
+  fi
+fi
+
+if [[ "$connection_mode" == "fixed" ]]; then
+  for secret in "$db_user_secret" "$db_password_secret" "$db_dsn_secret"; do
+    gcloud secrets add-iam-policy-binding "$secret" --project="$project_id" \
+      --member="serviceAccount:$runtime_sa" \
+      --role="roles/secretmanager.secretAccessor" >/dev/null
+  done
+elif [[ -n "$db_dsn_secret" ]]; then
+  gcloud secrets add-iam-policy-binding "$db_dsn_secret" --project="$project_id" \
+    --member="serviceAccount:$runtime_sa" \
+    --role="roles/secretmanager.secretAccessor" >/dev/null
 fi
 
 # An Oracle mTLS wallet is a ZIP archive containing several files, so it is
 # mounted as a Secret Manager volume rather than exposed as an environment
 # variable. Pass --wallet-archive to enable or replace this optional configuration.
 wallet_enabled=false
-if gcloud secrets describe "$wallet_secret" --project="$project_id" >/dev/null 2>&1 \
+if [[ "$connection_mode" == "fixed" ]] \
+  && gcloud secrets describe "$wallet_secret" --project="$project_id" >/dev/null 2>&1 \
   && gcloud secrets describe "$wallet_password_secret" --project="$project_id" >/dev/null 2>&1; then
   wallet_enabled=true
 fi
@@ -239,25 +312,44 @@ fi
 
 # Cloud Run needs a URL before the server can construct its Agent Card. Deploy
 # once with a placeholder, then update PUBLIC_URL with the assigned URL.
-secret_mappings=(
-  "SELECT_AI_USER=$db_user_secret:latest"
-  "SELECT_AI_PASSWORD=$db_password_secret:latest"
-  "SELECT_AI_DB_CONNECT_STRING=$db_dsn_secret:latest"
-)
-if [[ "$wallet_enabled" == true ]]; then
-  secret_mappings+=(
-    "/var/run/secrets/select-ai-wallet/wallet.zip=$wallet_secret:latest"
-    "SELECT_AI_WALLET_PASSWORD=$wallet_password_secret:latest"
-  )
+secret_mappings_csv=""
+append_secret_mapping() {
+  if [[ -n "$secret_mappings_csv" ]]; then
+    secret_mappings_csv+=","
+  fi
+  secret_mappings_csv+="$1"
+}
+if [[ -n "$db_dsn_secret" ]]; then
+  append_secret_mapping "SELECT_AI_DB_CONNECT_STRING=$db_dsn_secret:latest"
 fi
-secret_mappings_csv="$(IFS=,; echo "${secret_mappings[*]}")"
+if [[ "$connection_mode" == "fixed" ]]; then
+  append_secret_mapping "SELECT_AI_USER=$db_user_secret:latest"
+  append_secret_mapping "SELECT_AI_PASSWORD=$db_password_secret:latest"
+fi
+if [[ "$wallet_enabled" == true ]]; then
+  append_secret_mapping "/var/run/secrets/select-ai-wallet/wallet.zip=$wallet_secret:latest"
+  append_secret_mapping "SELECT_AI_WALLET_PASSWORD=$wallet_password_secret:latest"
+fi
+secret_option="--clear-secrets"
+if [[ -n "$secret_mappings_csv" ]]; then
+  secret_option="--set-secrets=$secret_mappings_csv"
+fi
+
+env_vars_csv="PUBLIC_URL=https://pending.invalid,SELECT_AI_POOL_MAX_SIZE=$pool_max_size"
+if [[ -n "$a2a_team" ]]; then
+  env_vars_csv+=",SELECT_AI_A2A_TEAM=$a2a_team"
+fi
+if [[ "$require_oauth" == true ]]; then
+  env_vars_csv+=",SELECT_AI_A2A_REQUIRE_OAUTH=true"
+fi
 
 gcloud run deploy "$service" --image="$image_uri" --project="$project_id" --region="$region" \
   --service-account="$runtime_sa" --no-allow-unauthenticated --port=8080 \
   --command="/app/docker/a2a-entrypoint.sh" \
-  --memory="$memory" --timeout="$timeout" --max-instances="$max_instances" \
-  --set-env-vars="SELECT_AI_A2A_TEAM=$a2a_team,PUBLIC_URL=https://pending.invalid,SELECT_AI_POOL_MAX_SIZE=$pool_max_size" \
-  --update-secrets="$secret_mappings_csv"
+  --memory="$memory" --timeout="$timeout" --min-instances=1 \
+  --max-instances="$max_instances" \
+  --set-env-vars="$env_vars_csv" \
+  "$secret_option"
 
 service_url="$(gcloud run services describe "$service" --project="$project_id" --region="$region" --format='value(status.url)')"
 gcloud run services update "$service" --project="$project_id" --region="$region" --update-env-vars="PUBLIC_URL=$service_url"
@@ -301,7 +393,26 @@ Deployment complete.
 
 Cloud Run URL: $service_url
 Gemini Enterprise invoker: $gemini_sa
+Connection mode: $connection_mode
+End-user OAuth required: $require_oauth
+A2UI connection fields: $form_summary
 
-Paste this A2A v0.3 Agent Card into Gemini Enterprise:
-  select-ai a2a agent-card --team "$a2a_team" --public-url "$service_url"
+Agent Card endpoint:
+  $service_url/.well-known/agent-card.json
+
 EOF
+if [[ "$require_oauth" == true ]]; then
+  cat <<'EOF'
+
+Gemini Enterprise must be configured with end-user OAuth so it sends an
+Authorization bearer token in addition to its automatic
+X-Serverless-Authorization Cloud Run identity token.
+EOF
+else
+  cat <<'EOF'
+
+End-user OAuth is not required. Cloud Run IAM authenticates Gemini Enterprise,
+and database sessions are separated by A2A conversation rather than by a
+verified human-user identity.
+EOF
+fi

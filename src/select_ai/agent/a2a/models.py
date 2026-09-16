@@ -7,20 +7,113 @@
 
 """Configuration and transient request models for the A2A runtime."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+CONNECTION_FIELDS = ("dsn", "username", "password", "team_name")
+CONNECTION_FORM_FIELDS = (
+    "connection_url",
+    "username",
+    "password",
+    "ai_agent",
+)
+FORM_FIELD_TO_CONNECTION_FIELD = dict(
+    zip(CONNECTION_FORM_FIELDS, CONNECTION_FIELDS)
+)
+
+
+@dataclass(frozen=True)
+class ConnectionConfig:
+    """Deployment-provided values for a database session."""
+
+    dsn: str | None = None
+    username: str | None = None
+    password: str | None = None
+    team_name: str | None = None
+
+    def __post_init__(self) -> None:
+        for name in CONNECTION_FIELDS:
+            value = getattr(self, name)
+            if value is not None and (not isinstance(value, str) or not value):
+                raise ValueError(f"{name} must be a non-empty string")
+
+    @property
+    def missing_fields(self) -> tuple[str, ...]:
+        """Return canonical A2UI properties that must come from the form."""
+        return tuple(
+            form_name
+            for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
+            if getattr(self, connection_name) is None
+        )
+
+    def resolve(self, submitted: dict) -> "SessionInfo":
+        """Merge validated submitted values with immutable server values."""
+        if not isinstance(submitted, dict):
+            raise ValueError("Connection form context must be an object.")
+        unknown = set(submitted) - set(CONNECTION_FORM_FIELDS)
+        if unknown:
+            raise ValueError("Connection form contains unsupported fields.")
+        configured = {
+            form_name
+            for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
+            if getattr(self, connection_name) is not None
+        }
+        if configured.intersection(submitted):
+            raise ValueError(
+                "Configured connection fields cannot be overridden."
+            )
+        values = {
+            connection_name: getattr(self, connection_name, None)
+            or submitted.get(form_name)
+            for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
+        }
+        return SessionInfo.from_values(values)
+
+
+@dataclass(frozen=True)
+class WorkerSettings:
+    """Configuration for the internal session worker."""
+
+    consul_url: str
+    worker_id: str
+    worker_address: str
+    worker_port: int
+    session_ttl_seconds: int
+    session_start_timeout_seconds: int
+    worker_endpoint: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.worker_port < 1 or self.worker_port > 65_535:
+            raise ValueError("worker_port must be between 1 and 65535")
+        if self.session_ttl_seconds < 1:
+            raise ValueError("session_ttl_seconds must be at least 1")
+        if self.session_start_timeout_seconds < 1:
+            raise ValueError(
+                "session_start_timeout_seconds must be at least 1"
+            )
+        object.__setattr__(self, "consul_url", self.consul_url.rstrip("/"))
+        if self.worker_endpoint:
+            object.__setattr__(
+                self,
+                "worker_endpoint",
+                self.worker_endpoint.rstrip("/"),
+            )
 
 
 @dataclass(frozen=True)
 class GatewaySettings:
     """Configuration for the public gateway process."""
 
-    agent_url: str
+    public_url: str
     consul_url: str
     worker_service: str
     session_ttl_seconds: int
     worker_tls_ca_file: str | None = None
     worker_tls_cert_file: str | None = None
     worker_tls_key_file: str | None = None
+    description: str | None = None
+    connection: ConnectionConfig = field(default_factory=ConnectionConfig)
+    connection_form_template: tuple[dict, ...] | None = None
+    require_oauth: bool = False
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:
@@ -35,13 +128,35 @@ class GatewaySettings:
                 "worker mTLS requires a CA file, client certificate, and "
                 "client key."
             )
-        object.__setattr__(self, "agent_url", self.agent_url.rstrip("/"))
+        object.__setattr__(self, "public_url", self.public_url.rstrip("/"))
         object.__setattr__(self, "consul_url", self.consul_url.rstrip("/"))
 
     @property
     def worker_mtls_enabled(self) -> bool:
         """Whether gateway-to-worker calls require mutual TLS."""
         return self.worker_tls_ca_file is not None
+
+
+@dataclass(frozen=True)
+class StandaloneSessionSettings:
+    """Configuration for dynamic sessions embedded in one server process."""
+
+    public_url: str
+    session_ttl_seconds: int
+    session_start_timeout_seconds: int = 30
+    description: str | None = None
+    connection: ConnectionConfig = field(default_factory=ConnectionConfig)
+    connection_form_template: tuple[dict, ...] | None = None
+    require_oauth: bool = False
+
+    def __post_init__(self) -> None:
+        if self.session_ttl_seconds < 1:
+            raise ValueError("session_ttl_seconds must be at least 1")
+        if self.session_start_timeout_seconds < 1:
+            raise ValueError(
+                "session_start_timeout_seconds must be at least 1"
+            )
+        object.__setattr__(self, "public_url", self.public_url.rstrip("/"))
 
 
 @dataclass(frozen=True)
@@ -54,13 +169,14 @@ class SessionInfo:
     team_name: str
 
     @classmethod
-    def from_a2ui_event(cls, event: dict) -> "SessionInfo":
-        required = ("dsn", "username", "password", "team_name")
+    def from_values(cls, values: dict) -> "SessionInfo":
+        """Build a complete connection after resolution."""
         if not all(
-            isinstance(event.get(key), str) and event[key] for key in required
+            isinstance(values.get(key), str) and values[key]
+            for key in CONNECTION_FIELDS
         ):
             raise ValueError("All database connection fields are required.")
-        return cls(**{key: event[key] for key in required})
+        return cls(**{key: values[key] for key in CONNECTION_FIELDS})
 
 
 @dataclass(frozen=True)
@@ -69,3 +185,4 @@ class SessionRoute:
 
     endpoint: str
     expires_at: float
+    session_id: str

@@ -20,15 +20,15 @@ from select_ai.db import async_get_connection
 _CREATE_TABLE = """
     BEGIN
         EXECUTE IMMEDIATE '
-            CREATE TABLE SELECT_AI_A2A_CONTEXTS (
+            CREATE TABLE DBMS_AI_A2A_CONTEXTS$ (
                 owner VARCHAR2(512) NOT NULL,
                 context_id VARCHAR2(255) NOT NULL,
                 conversation_id VARCHAR2(255) NOT NULL,
                 created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-                CONSTRAINT select_ai_a2a_contexts_pk PRIMARY KEY (owner, context_id)
+                CONSTRAINT dbms_ai_a2a_contexts_pk PRIMARY KEY (owner, context_id)
             )';
         EXECUTE IMMEDIATE '
-            COMMENT ON TABLE SELECT_AI_A2A_CONTEXTS
+            COMMENT ON TABLE DBMS_AI_A2A_CONTEXTS$
             IS ''Managed by select_ai.a2a.context_store''';
     EXCEPTION
         WHEN OTHERS THEN
@@ -36,6 +36,13 @@ _CREATE_TABLE = """
                 RAISE;
             END IF;
     END;
+"""
+
+_CREATE_VIEW = """
+    CREATE OR REPLACE VIEW DBMS_AI_A2A_CONTEXTS AS
+    SELECT owner, context_id, conversation_id, created_at
+    FROM DBMS_AI_A2A_CONTEXTS$
+    WITH READ ONLY
 """
 
 
@@ -58,6 +65,7 @@ class OracleContextStore:
             if self.initialized:
                 return
             await self._execute(_CREATE_TABLE)
+            await self._execute(_CREATE_VIEW)
             self.initialized = True
 
     async def get_or_create(
@@ -83,7 +91,7 @@ class OracleContextStore:
         try:
             await self._execute(
                 """
-                    INSERT INTO SELECT_AI_A2A_CONTEXTS (
+                    INSERT INTO DBMS_AI_A2A_CONTEXTS$ (
                         owner, context_id, conversation_id, created_at
                     ) VALUES (
                         :owner, :context_id, :conversation_id, SYSTIMESTAMP
@@ -106,7 +114,7 @@ class OracleContextStore:
         row = await self._fetchone(
             """
                 SELECT conversation_id
-                FROM SELECT_AI_A2A_CONTEXTS
+                FROM DBMS_AI_A2A_CONTEXTS$
                 WHERE owner = :owner AND context_id = :context_id
             """,
             owner=owner,

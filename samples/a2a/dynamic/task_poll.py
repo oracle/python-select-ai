@@ -5,7 +5,7 @@
 # https://oss.oracle.com/licenses/upl.
 # -----------------------------------------------------------------------------
 
-"""Connect to a dynamic A2A gateway, then poll a database task."""
+"""Connect to a dynamic A2A server, then poll a database task."""
 
 import time
 

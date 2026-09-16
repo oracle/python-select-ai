@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: select-ai-worker
-  namespace: select-ai-gateway
+  name: select-ai-a2a-worker
+  namespace: select-ai-a2a
 spec:
-  serviceName: select-ai-worker
+  serviceName: select-ai-a2a-worker
   replicas: WORKER_REPLICAS
   selector:
     matchLabels:
-      app: select-ai-worker
+      app: select-ai-a2a-worker
   template:
     metadata:
       labels:
-        app: select-ai-worker
+        app: select-ai-a2a-worker
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - name: worker
+        - name: select-ai-a2a-worker
           image: WORKER_IMAGE
           command: [select-ai]
           args:
@@ -26,6 +26,12 @@ spec:
             - 0.0.0.0
             - --port
             - "8443"
+            - --consul-url
+            - http://consul-server.select-ai-a2a.svc.cluster.local:8500
+            - --worker-id
+            - $(WORKER_ID)
+            - --worker-endpoint
+            - https://$(POD_NAME).select-ai-a2a-worker.select-ai-a2a.svc.GKE_DNS_DOMAIN:8443
             - --session-ttl-seconds
             - "SESSION_TTL_SECONDS"
             - --tls-cert-file
@@ -33,13 +39,11 @@ spec:
             - --tls-key-file
             - /var/run/select-ai-mtls/tls.key
             - --tls-ca-file
-            - /var/run/select-ai-mtls/gateway-ca.crt
+            - /var/run/select-ai-mtls/server-ca.crt
           ports:
             - name: https
               containerPort: 8443
           env:
-            - name: CONSUL_HTTP_URL
-              value: http://consul-server.select-ai-gateway.svc.cluster.local:8500
             - name: WORKER_ID
               valueFrom:
                 fieldRef:
@@ -52,10 +56,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: WORKER_PORT
-              value: "8443"
-            - name: WORKER_ENDPOINT
-              value: https://$(POD_NAME).select-ai-worker.select-ai-gateway.svc.GKE_DNS_DOMAIN:8443
           volumeMounts:
             - name: worker-server-tls
               mountPath: /var/run/select-ai-mtls/tls.crt
@@ -65,8 +65,8 @@ spec:
               mountPath: /var/run/select-ai-mtls/tls.key
               subPath: tls.key
               readOnly: true
-            - name: gateway-client-ca
-              mountPath: /var/run/select-ai-mtls/gateway-ca.crt
+            - name: server-client-ca
+              mountPath: /var/run/select-ai-mtls/server-ca.crt
               subPath: ca.crt
               readOnly: true
           readinessProbe:
@@ -78,7 +78,7 @@ spec:
       volumes:
         - name: worker-server-tls
           secret:
-            secretName: select-ai-worker-server-tls
-        - name: gateway-client-ca
+            secretName: select-ai-a2a-worker-server-tls
+        - name: server-client-ca
           secret:
-            secretName: select-ai-gateway-client-ca
+            secretName: select-ai-a2a-server-client-ca

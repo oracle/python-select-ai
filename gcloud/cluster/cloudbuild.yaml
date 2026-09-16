@@ -1,27 +1,25 @@
-# Build one Select AI image, deploy Consul and workers to GKE, then deploy the
-# public dynamic gateway to Cloud Run.
+# Build or reuse one Select AI image, deploy Consul and workers to GKE, then
+# deploy the public clustered server to Cloud Run.
 steps:
   - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
     args:
-      - build
-      - --file
-      - docker/Dockerfile
-      - --tag
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
-      - .
-
-  # GKE and Cloud Run consume the image during this build, so publish it before
-  # deploying either workload. The top-level images: field publishes only after
-  # every build step succeeds, which is too late for the worker rollout.
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
+      - -ceu
+      - |
+        if [[ -n "${_IMAGE_URI}" ]]; then
+          echo "Reusing existing image: ${_IMAGE_URI}"
+          exit 0
+        fi
+        image="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}"
+        docker build --file docker/Dockerfile --tag "$image" .
+        # GKE and Cloud Run consume the image in later steps, so publish it
+        # before deploying either workload.
+        docker push "$image"
 
   - name: gcr.io/cloud-builders/gke-deploy
     args:
       - run
-      - --filename=gcloud/gateway/gke/namespace.yaml
+      - --filename=gcloud/cluster/gke/namespace.yaml
       - --location=${_REGION}
       - --cluster=${_CLUSTER}
 
@@ -36,7 +34,7 @@ steps:
   - name: gcr.io/cloud-builders/gke-deploy
     args:
       - run
-      - --filename=gcloud/gateway/gke/worker-service.yaml
+      - --filename=gcloud/cluster/gke/worker-service.yaml
       - --location=${_REGION}
       - --cluster=${_CLUSTER}
 
@@ -57,12 +55,12 @@ steps:
       - -ceu
       - |
         if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
-          kubectl delete --namespace select-ai-gateway deployment/select-ai-worker --ignore-not-found
+          kubectl delete --namespace select-ai-a2a deployment/select-ai-a2a-worker --ignore-not-found
           if [[ "${_ROTATE_WORKER_MTLS}" == "true" ]]; then
-            kubectl delete --namespace select-ai-gateway statefulset/select-ai-worker --ignore-not-found --wait=true
+            kubectl delete --namespace select-ai-a2a statefulset/select-ai-a2a-worker --ignore-not-found --wait=true
           fi
         else
-          kubectl delete --namespace select-ai-gateway statefulset/select-ai-worker --ignore-not-found
+          kubectl delete --namespace select-ai-a2a statefulset/select-ai-a2a-worker --ignore-not-found
         fi
 
   - name: gcr.io/cloud-builders/gcloud
@@ -73,9 +71,9 @@ steps:
         if [[ "${_ENABLE_WORKER_MTLS}" != "true" ]]; then
           exit 0
         fi
-        gcloud secrets versions access latest --secret=select-ai-worker-mtls-cert > /workspace/worker.crt
-        gcloud secrets versions access latest --secret=select-ai-worker-mtls-key > /workspace/worker.key
-        gcloud secrets versions access latest --secret=select-ai-gateway-mtls-ca > /workspace/gateway-ca.crt
+        gcloud secrets versions access latest --secret=select-ai-a2a-worker-mtls-cert > /workspace/worker.crt
+        gcloud secrets versions access latest --secret=select-ai-a2a-worker-mtls-key > /workspace/worker.key
+        gcloud secrets versions access latest --secret=select-ai-a2a-mtls-ca > /workspace/server-ca.crt
 
   - name: gcr.io/cloud-builders/kubectl
     entrypoint: bash
@@ -88,17 +86,17 @@ steps:
         if [[ "${_ENABLE_WORKER_MTLS}" != "true" ]]; then
           exit 0
         fi
-        kubectl -n select-ai-gateway create secret tls select-ai-worker-server-tls \
+        kubectl -n select-ai-a2a create secret tls select-ai-a2a-worker-server-tls \
           --cert=/workspace/worker.crt --key=/workspace/worker.key \
           --dry-run=client -o yaml | kubectl apply -f -
-        kubectl -n select-ai-gateway create secret generic select-ai-gateway-client-ca \
-          --from-file=ca.crt=/workspace/gateway-ca.crt \
+        kubectl -n select-ai-a2a create secret generic select-ai-a2a-server-client-ca \
+          --from-file=ca.crt=/workspace/server-ca.crt \
           --dry-run=client -o yaml | kubectl apply -f -
 
   - name: gcr.io/cloud-builders/gke-deploy
     args:
       - run
-      - --filename=gcloud/gateway/gke/consul.yaml
+      - --filename=gcloud/cluster/gke/consul.yaml
       - --location=${_REGION}
       - --cluster=${_CLUSTER}
 
@@ -110,10 +108,10 @@ steps:
     args:
       - -ceu
       - |
-        kubectl wait --namespace select-ai-gateway \
+        kubectl wait --namespace select-ai-a2a \
           --for=jsonpath='{.status.loadBalancer.ingress[0].ip}' \
           service/consul-server --timeout=300s
-        kubectl get --namespace select-ai-gateway service/consul-server \
+        kubectl get --namespace select-ai-a2a service/consul-server \
           -o jsonpath='{.status.loadBalancer.ingress[0].ip}' \
           > /workspace/consul-ip
 
@@ -122,10 +120,13 @@ steps:
     args:
       - -ceu
       - |
-        image="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}"
-        worker_manifest=gcloud/gateway/gke/worker.yaml
+        image="${_IMAGE_URI}"
+        if [[ -z "$image" ]]; then
+          image="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}"
+        fi
+        worker_manifest=gcloud/cluster/gke/worker.yaml
         if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
-          worker_manifest=gcloud/gateway/gke/worker-mtls.yaml
+          worker_manifest=gcloud/cluster/gke/worker-mtls.yaml
         fi
         sed -e "s|WORKER_IMAGE|$image|" \
           -e "s|WORKER_REPLICAS|${_WORKER_REPLICAS}|" \
@@ -155,9 +156,9 @@ steps:
       - -ceu
       - |
         if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
-          kubectl rollout status --namespace select-ai-gateway statefulset/select-ai-worker --timeout=300s
+          kubectl rollout status --namespace select-ai-a2a statefulset/select-ai-a2a-worker --timeout=300s
         else
-          kubectl rollout status --namespace select-ai-gateway deployment/select-ai-worker --timeout=300s
+          kubectl rollout status --namespace select-ai-a2a deployment/select-ai-a2a-worker --timeout=300s
         fi
 
   - name: gcr.io/cloud-builders/gcloud
@@ -166,51 +167,64 @@ steps:
       - -ceu
       - |
         consul_ip=$(cat /workspace/consul-ip)
-        image="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}"
-        mtls_args=()
+        image="${_IMAGE_URI}"
+        if [[ -z "$image" ]]; then
+          image="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}"
+        fi
+        secret_mappings=("SELECT_AI_DB_CONNECT_STRING=${_DB_DSN_SECRET}:latest")
         mtls_env=""
         if [[ "${_ENABLE_WORKER_MTLS}" == "true" ]]; then
-          mtls_args=(
-            "--update-secrets=/var/run/select-ai-mtls-ca/ca.pem=select-ai-gateway-mtls-ca:latest,/var/run/select-ai-mtls-cert/tls.crt=select-ai-gateway-mtls-cert:latest,/var/run/select-ai-mtls-key/tls.key=select-ai-gateway-mtls-key:latest"
+          secret_mappings+=(
+            "/var/run/select-ai-mtls-ca/ca.pem=select-ai-a2a-mtls-ca:latest"
+            "/var/run/select-ai-mtls-cert/tls.crt=select-ai-a2a-server-mtls-cert:latest"
+            "/var/run/select-ai-mtls-key/tls.key=select-ai-a2a-server-mtls-key:latest"
           )
           mtls_env=",WORKER_TLS_CA_FILE=/var/run/select-ai-mtls-ca/ca.pem,WORKER_TLS_CERT_FILE=/var/run/select-ai-mtls-cert/tls.crt,WORKER_TLS_KEY_FILE=/var/run/select-ai-mtls-key/tls.key"
         fi
-        gcloud run deploy "${_GATEWAY_SERVICE}" \
+        secret_mappings_csv=$(IFS=,; echo "${secret_mappings[*]}")
+        oauth_arg=""
+        if [[ "${_REQUIRE_OAUTH}" == "true" ]]; then
+          oauth_arg=",--require-oauth"
+        fi
+        gcloud run deploy "${_SERVER_SERVICE}" \
           --image="$image" \
           --region="${_REGION}" \
+          --service-account="${_SERVER_RUNTIME_SA}" \
           --no-allow-unauthenticated \
           --network="${_NETWORK}" \
           --subnet="${_SUBNET}" \
           --vpc-egress=all-traffic \
-          --max-instances=1 \
+          --max-instances=20 \
           --min-instances=1 \
           --port=8080 \
           --command=select-ai \
-          --args=a2a,gateway \
-          --set-env-vars="AGENT_URL=https://pending.invalid,CONSUL_HTTP_URL=http://$consul_ip:8500,WORKER_SERVICE=select-ai-worker,SESSION_TTL_SECONDS=${_SESSION_TTL_SECONDS}$mtls_env" \
-          "${mtls_args[@]}"
-        gateway_url=$(gcloud run services describe "${_GATEWAY_SERVICE}" \
+          --args=a2a,serve,--deployment,clustered,--host,0.0.0.0$oauth_arg \
+          --set-env-vars="PUBLIC_URL=https://pending.invalid,SELECT_AI_A2A_TEAM=${_A2A_TEAM},CONSUL_HTTP_URL=http://$consul_ip:8500,WORKER_SERVICE=select-ai-a2a-worker,SESSION_TTL_SECONDS=${_SESSION_TTL_SECONDS}$mtls_env" \
+          --set-secrets="$secret_mappings_csv"
+        server_url=$(gcloud run services describe "${_SERVER_SERVICE}" \
           --region="${_REGION}" --format='value(status.url)')
-        gcloud run services update "${_GATEWAY_SERVICE}" \
+        gcloud run services update "${_SERVER_SERVICE}" \
           --region="${_REGION}" \
-          --update-env-vars="AGENT_URL=$gateway_url"
-
-images:
-  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/select-ai:${_IMAGE_TAG}
+          --update-env-vars="PUBLIC_URL=$server_url"
 
 substitutions:
   _REGION: us-central1
-  _CLUSTER: select-ai-a2a-gateway
+  _CLUSTER: select-ai-a2a-cluster
   _REPOSITORY: select-ai
   _IMAGE_TAG: dev
-  _GATEWAY_SERVICE: select-ai-a2a-gateway
+  _IMAGE_URI: ""
+  _SERVER_SERVICE: select-ai-a2a-cluster
+  _SERVER_RUNTIME_SA: unused@example.invalid
+  _REQUIRE_OAUTH: "false"
+  _A2A_TEAM: ORACLE_AI_DATABASE_AGENT
+  _DB_DSN_SECRET: select-ai-a2a-cluster-db-connect-string
   _NETWORK: default
   _SUBNET: default
   _WORKER_REPLICAS: "2"
   _SESSION_TTL_SECONDS: "900"
   _ENABLE_WORKER_MTLS: "false"
   _ROTATE_WORKER_MTLS: "false"
-  _GKE_DNS_DOMAIN: select-ai-a2a-gateway.internal
+  _GKE_DNS_DOMAIN: select-ai-a2a-cluster.internal
 
 options:
   logging: CLOUD_LOGGING_ONLY

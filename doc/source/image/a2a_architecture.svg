@@ -56,8 +56,8 @@
 
   <rect x="360" y="535" width="250" height="128" rx="12" class="database"/>
   <text x="485" y="568" text-anchor="middle" class="box-title">Oracle Database</text>
-  <text x="485" y="592" text-anchor="middle" class="box-text">SELECT_AI_A2A_TASKS</text>
-  <text x="485" y="613" text-anchor="middle" class="box-text">SELECT_AI_A2A_CONTEXTS</text>
+  <text x="485" y="592" text-anchor="middle" class="box-text">DBMS_AI_A2A_TASKS[$]</text>
+  <text x="485" y="613" text-anchor="middle" class="box-text">DBMS_AI_A2A_CONTEXTS[$]</text>
   <text x="485" y="634" text-anchor="middle" class="box-text">conversation history</text>
   <line x1="485" y1="473" x2="485" y2="535" stroke="#4b5563" stroke-width="2.5"/>
   <polygon points="485,535 480,525 490,525" fill="#4b5563"/>
@@ -72,7 +72,7 @@
   <text x="882" y="260" text-anchor="middle" class="box-text">A2UI-capable client</text>
 
   <rect x="1035" y="190" width="280" height="112" rx="12" class="service"/>
-  <text x="1175" y="220" text-anchor="middle" class="box-title">select-ai a2a gateway</text>
+  <text x="1175" y="220" text-anchor="middle" class="box-title">a2a serve --deployment clustered</text>
   <text x="1175" y="244" text-anchor="middle" class="box-text">public Agent Card and A2UI</text>
   <text x="1175" y="265" text-anchor="middle" class="box-text">A2A JSON-RPC, no streaming</text>
   <text x="1175" y="286" text-anchor="middle" class="box-text">session/task proxy</text>

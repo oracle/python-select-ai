@@ -7,7 +7,14 @@
 
 """A2A support for Select AI Agent Teams and temporary sessions."""
 
-from .models import GatewaySettings, SessionInfo, SessionRoute
+from .models import (
+    ConnectionConfig,
+    GatewaySettings,
+    SessionInfo,
+    SessionRoute,
+    StandaloneSessionSettings,
+    WorkerSettings,
+)
 
 
 def create_gateway_app(settings):
@@ -17,20 +24,30 @@ def create_gateway_app(settings):
     return factory(settings)
 
 
-def create_worker_app(
-    session_ttl_seconds: int = 900,
-    session_start_timeout_seconds: int = 30,
-):
+def create_worker_app(settings: WorkerSettings):
     """Build the internal worker application."""
     from select_ai.agent.a2a.worker import create_worker_app as factory
 
-    return factory(session_ttl_seconds, session_start_timeout_seconds)
+    return factory(settings)
+
+
+def create_embedded_session_app(settings: StandaloneSessionSettings):
+    """Build a dynamic standalone A2A/A2UI application."""
+    from select_ai.agent.a2a.embedded import (
+        create_embedded_session_app as factory,
+    )
+
+    return factory(settings)
 
 
 __all__ = [
     "GatewaySettings",
+    "ConnectionConfig",
     "SessionInfo",
     "SessionRoute",
+    "StandaloneSessionSettings",
+    "WorkerSettings",
     "create_gateway_app",
+    "create_embedded_session_app",
     "create_worker_app",
 ]

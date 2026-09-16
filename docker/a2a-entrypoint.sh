@@ -28,13 +28,21 @@ if [ -f "$wallet_archive" ]; then
   export SELECT_AI_WALLET_LOCATION="$(dirname "$wallet_file")"
 fi
 
-: "${SELECT_AI_A2A_TEAM:?SELECT_AI_A2A_TEAM is required}"
 : "${PUBLIC_URL:?PUBLIC_URL is required}"
 : "${SELECT_AI_POOL_MAX_SIZE:=10}"
 
-exec select-ai a2a serve \
-  --team "$SELECT_AI_A2A_TEAM" \
-  --host 0.0.0.0 \
-  --port "${PORT:-8080}" \
-  --pool-max-size "$SELECT_AI_POOL_MAX_SIZE" \
+serve_args=(
+  --deployment standalone
+  --host 0.0.0.0
+  --port "${PORT:-8080}"
+  --pool-max-size "$SELECT_AI_POOL_MAX_SIZE"
   --public-url "$PUBLIC_URL"
+)
+if [ -n "${SELECT_AI_A2A_TEAM:-}" ]; then
+  serve_args+=(--team "$SELECT_AI_A2A_TEAM")
+fi
+if [ "${SELECT_AI_A2A_REQUIRE_OAUTH:-false}" = "true" ]; then
+  serve_args+=(--require-oauth)
+fi
+
+exec select-ai a2a serve "${serve_args[@]}"

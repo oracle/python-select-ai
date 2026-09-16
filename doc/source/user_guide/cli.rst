@@ -206,7 +206,6 @@ current defaults:
 
     select-ai a2a --help
     select-ai a2a serve --help
-    select-ai a2a gateway --help
     select-ai a2a worker --help
     select-ai a2a agent-card --help
 
@@ -218,11 +217,9 @@ current defaults:
    * - Command
      - Purpose
    * - ``select-ai a2a serve``
-     - Start a standalone A2A HTTP server for one configured database AI Agent
-       Team. It accepts the database connection and optional wallet options.
-   * - ``select-ai a2a gateway``
-     - Start the public dynamic A2A/A2UI gateway. It uses Consul to discover
-       workers and does not connect to Oracle directly.
+     - Start the public A2A HTTP server in standalone or clustered deployment
+       mode. Standalone accepts database connection and wallet options;
+       clustered uses Consul to discover workers.
    * - ``select-ai a2a worker``
      - Start the internal worker that registers with Consul and creates an
        isolated database-bearing child process for each submitted connection.
@@ -260,6 +257,12 @@ Important options are ``--team`` (required), ``--host``, ``--port``,
 wallet for this standalone path. If no password is provided, the command
 prompts for it.
 
+By default, ``a2a serve`` does not require an application OAuth token and
+separates database sessions by A2A conversation. Add ``--require-oauth`` to
+require ``Authorization: Bearer ...`` and scope sessions by authenticated
+owner as well as conversation. The Agent Card advertises bearer security only
+in that mode.
+
 Dynamic gateway and worker
 --------------------------
 
@@ -270,29 +273,38 @@ passing the A2UI form values to the worker.
 
 .. code-block:: bash
 
-    CONSUL_HTTP_URL=http://127.0.0.1:8500 \
-    WORKER_ID=local-worker \
-    WORKER_ADDRESS=127.0.0.1 \
-    WORKER_PORT=8081 \
-    select-ai a2a worker --host 127.0.0.1 --port 8081
+    select-ai a2a worker \
+        --host 127.0.0.1 \
+        --port 8081 \
+        --consul-url http://127.0.0.1:8500 \
+        --worker-id local-worker \
+        --worker-endpoint http://127.0.0.1:8081
 
-    select-ai a2a gateway \
+    select-ai a2a serve \
+        --deployment clustered \
         --host 127.0.0.1 \
         --port 8000 \
-        --agent-url http://127.0.0.1:8000 \
+        --public-url http://127.0.0.1:8000 \
         --consul-url http://127.0.0.1:8500
 
-The worker options are ``--host``, ``--port``, ``--session-ttl-seconds``, and
-``--session-start-timeout-seconds``. Its registration can be configured with
-the ``CONSUL_HTTP_URL``, ``WORKER_ID``, ``WORKER_ADDRESS``, ``WORKER_PORT``,
-and optional ``WORKER_ENDPOINT`` environment variables. The worker's
-``--tls-cert-file``, ``--tls-key-file``, and ``--tls-ca-file`` options enable
-gateway-to-worker mTLS; provide all three together.
+The worker options are ``--host``, ``--port``, ``--worker-id``,
+``--consul-url``, ``--worker-endpoint``, ``--session-ttl-seconds``, and
+``--session-start-timeout-seconds``. ``WORKER_ID``, ``CONSUL_HTTP_URL``, and
+``WORKER_ENDPOINT`` are environment fallbacks; explicit command-line values
+take precedence. ``--port`` is also the port registered with Consul. Cluster
+manifests can set ``WORKER_ADDRESS`` to the pod IP when no endpoint is
+supplied. The worker's ``--tls-cert-file``, ``--tls-key-file``, and
+``--tls-ca-file`` options enable gateway-to-worker mTLS; provide all three
+together.
 
-The gateway options are ``--agent-url`` (required, or ``AGENT_URL``),
+The clustered serve options are ``--public-url`` (or ``PUBLIC_URL``),
 ``--consul-url`` (or ``CONSUL_HTTP_URL``), ``--worker-service`` (or
 ``WORKER_SERVICE``), and ``--session-ttl-seconds`` (or
-``SESSION_TTL_SECONDS``). The optional
+``SESSION_TTL_SECONDS``). ``--dsn``, ``--user``, ``--password``, and ``--team``
+fix any supplied connection values; the generated A2UI form contains only the
+missing values. ``--a2ui-form`` loads a custom A2UI JSON form that must submit
+exactly those missing values. ``--require-oauth`` has the same ownership
+behavior in standalone and clustered deployments. The optional
 ``--worker-tls-ca-file``, ``--worker-tls-cert-file``, and
 ``--worker-tls-key-file`` options configure the gateway's client side of
 gateway-to-worker mTLS. These TLS settings protect the internal HTTP hop and
@@ -341,9 +353,7 @@ Command summary
    * - ``select-ai profile translate``
      - Translate text with a saved profile.
    * - ``select-ai a2a serve``
-     - Start the standalone A2A server.
-   * - ``select-ai a2a gateway``
-     - Start the public dynamic A2A gateway.
+     - Start the public A2A server in standalone or clustered mode.
    * - ``select-ai a2a worker``
      - Start the internal dynamic-session worker.
    * - ``select-ai a2a agent-card``
