@@ -347,6 +347,9 @@ def test_session_runtime_builds_oracle_backed_default_handler(monkeypatch):
             initialized.append("team")
 
     class Store:
+        def __init__(self, retention_days=7):
+            self.retention_days = retention_days
+
         async def initialize(self):
             initialized.append(self)
 
@@ -393,6 +396,9 @@ def test_session_runtime_rejects_unknown_team_before_initializing_stores(
             raise RuntimeError("team does not exist")
 
     class Store:
+        def __init__(self, retention_days=7):
+            self.retention_days = retention_days
+
         async def initialize(self):
             initialized.append(self)
 

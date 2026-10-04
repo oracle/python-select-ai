@@ -349,7 +349,7 @@ async def _run_session_process(
     session_id: str,
     owner: str,
     team_name: str,
-    conversation_retention_days: int,
+    conversation_retention_days: int = 7,
 ) -> None:
     """Open one async connection and execute A2A operations."""
     import select_ai
