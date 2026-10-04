@@ -101,9 +101,11 @@ class ProcessSessionBackend:
         self,
         session_ttl_seconds: int,
         session_start_timeout_seconds: int,
+        conversation_retention_days: int = 7,
     ) -> None:
         self.session_ttl_seconds = session_ttl_seconds
         self.session_start_timeout_seconds = session_start_timeout_seconds
+        self.conversation_retention_days = conversation_retention_days
         self.sessions: dict[str, ChildSession] = {}
 
     async def open(self, spec: SessionSpec) -> None:
@@ -122,6 +124,7 @@ class ProcessSessionBackend:
                 spec.session_id,
                 spec.owner,
                 spec.team_name,
+                self.conversation_retention_days,
             ),
             daemon=True,
         )
@@ -322,6 +325,7 @@ def _session_process_main(
     session_id: str,
     owner: str,
     team_name: str,
+    conversation_retention_days: int,
 ) -> None:
     """Entrypoint for a child that owns one Select AI database session."""
     try:
@@ -332,6 +336,7 @@ def _session_process_main(
                 session_id,
                 owner,
                 team_name,
+                conversation_retention_days,
             )
         )
     finally:
@@ -344,6 +349,7 @@ async def _run_session_process(
     session_id: str,
     owner: str,
     team_name: str,
+    conversation_retention_days: int,
 ) -> None:
     """Open one async connection and execute A2A operations."""
     import select_ai
@@ -358,7 +364,12 @@ async def _run_session_process(
         )
         if not await select_ai.async_is_connected():
             raise RuntimeError("Database login failed.")
-        runtime = SessionRuntime(session_id, owner, team_name)
+        runtime = SessionRuntime(
+            session_id,
+            owner,
+            team_name,
+            conversation_retention_days,
+        )
         await runtime.initialize()
         connection.send({"type": PipeMessageType.READY.value})
         ready = True

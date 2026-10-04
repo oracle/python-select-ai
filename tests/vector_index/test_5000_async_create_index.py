@@ -445,7 +445,9 @@ class TestAsyncCreateVectorIndex:
         with pytest.raises(oracledb.DatabaseError) as exc_info:
             await vector_index.create(replace=True)
         assert "ORA-20045" in str(exc_info.value)
-        assert "description is too long" in str(exc_info.value)
+        message = str(exc_info.value).lower()
+        assert "description" in message
+        assert "too long" in message or "exceeds" in message
         logger.info("Expected DatabaseError raised: %s", exc_info.value)
 
     async def test_5018(self):

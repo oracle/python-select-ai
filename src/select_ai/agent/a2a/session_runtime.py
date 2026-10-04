@@ -58,12 +58,20 @@ class SessionUser(User):
 class SessionRuntime:
     """Own the A2A handler and Oracle stores for one connected database."""
 
-    def __init__(self, session_id: str, owner: str, team_name: str) -> None:
+    def __init__(
+        self,
+        session_id: str,
+        owner: str,
+        team_name: str,
+        conversation_retention_days: int = 7,
+    ) -> None:
         self.session_id = session_id
         self.owner = owner
         self.team_name = team_name
         self.task_store = OracleTaskStore()
-        self.context_store = OracleContextStore()
+        self.context_store = OracleContextStore(
+            retention_days=conversation_retention_days,
+        )
         self.handler: DefaultRequestHandler | None = None
 
     async def initialize(self) -> None:

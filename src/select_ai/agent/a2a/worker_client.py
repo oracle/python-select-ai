@@ -430,7 +430,7 @@ class WorkerClient:
         response = requests.put(
             f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
             f"{_owner_key(owner)}/{quote(context_id, safe='')}",
-            params={"cas": 0, "acquire": consul_session_id},
+            params={"acquire": consul_session_id},
             data=json.dumps(route.__dict__),
             timeout=10,
         )
