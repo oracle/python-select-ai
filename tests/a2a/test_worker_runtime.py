@@ -284,10 +284,13 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
     connection_arguments = {}
 
     class Runtime:
-        def __init__(self, session_id, owner, team_name):
+        def __init__(
+            self, session_id, owner, team_name, conversation_retention_days
+        ):
             assert session_id == "session-1"
             assert owner == "owner-1"
             assert team_name == "TEAM"
+            assert conversation_retention_days == 7
 
         async def initialize(self):
             return None
