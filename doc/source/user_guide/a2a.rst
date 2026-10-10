@@ -780,6 +780,8 @@ Important clustered options include:
   internal worker infrastructure.
 * ``--worker-replicas``: number of worker runtimes available for new sessions.
 * ``--session-ttl-seconds``: lifetime of temporary database sessions.
+* ``--conversation-retention-days``: number of days to retain Oracle
+  conversations (default 7; use 0 to disable automatic removal).
 * ``--enable-worker-mtls``: create and use server-to-worker certificates.
 * ``--rotate-worker-mtls``: replace the existing test certificates and restart
   the worker workload.

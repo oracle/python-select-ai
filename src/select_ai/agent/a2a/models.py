@@ -80,6 +80,7 @@ class WorkerSettings:
     session_ttl_seconds: int
     session_start_timeout_seconds: int
     worker_endpoint: str | None = None
+    conversation_retention_days: int = 7
 
     def __post_init__(self) -> None:
         if self.worker_port < 1 or self.worker_port > 65_535:
@@ -89,6 +90,10 @@ class WorkerSettings:
         if self.session_start_timeout_seconds < 1:
             raise ValueError(
                 "session_start_timeout_seconds must be at least 1"
+            )
+        if self.conversation_retention_days < 0:
+            raise ValueError(
+                "conversation_retention_days must be non-negative"
             )
         object.__setattr__(self, "consul_url", self.consul_url.rstrip("/"))
         if self.worker_endpoint:

@@ -14,6 +14,7 @@ import hashlib
 import json
 import logging
 import time
+from dataclasses import dataclass
 from threading import Lock
 from urllib.parse import quote
 from uuid import uuid4
@@ -44,6 +45,14 @@ LOGGER = logging.getLogger(__name__)
 
 _SESSION_PREFIX = "select-ai-a2a/sessions/"
 _TASK_PREFIX = "select-ai-a2a/tasks/"
+
+
+@dataclass(frozen=True)
+class _ConsulSessionRoute:
+    """A worker route and the Consul session that owns its KV entries."""
+
+    route: SessionRoute
+    consul_session_id: str
 
 
 class ReconnectRequired(RuntimeError):
@@ -79,26 +88,35 @@ class WorkerClient:
     ) -> str:
         """Open a session and save a non-secret route in Consul."""
         session_id = str(uuid4())
-        endpoint = self._select_worker()
-        response = requests.post(
-            f"{endpoint}/sessions",
-            json={
-                "session_id": session_id,
-                "owner": owner,
-                **session_info.__dict__,
-            },
-            timeout=45,
-            **self._worker_request_kwargs,
-        )
-        response.raise_for_status()
+        worker = self._select_worker_record()
+        endpoint = self._worker_endpoint(worker)
+        expires_at = time.time() + self.settings.session_ttl_seconds
+        consul_session_id = self._create_consul_session(worker)
         route = SessionRoute(
             endpoint=endpoint,
-            expires_at=time.time() + self.settings.session_ttl_seconds,
+            expires_at=expires_at,
             session_id=session_id,
         )
-        if not self._save_route(owner, context_id, route):
+        try:
+            response = requests.post(
+                f"{endpoint}/sessions",
+                json={
+                    "session_id": session_id,
+                    "owner": owner,
+                    **session_info.__dict__,
+                },
+                timeout=45,
+                **self._worker_request_kwargs,
+            )
+            response.raise_for_status()
+            if not self._save_route(
+                owner, context_id, route, consul_session_id
+            ):
+                raise RuntimeError("Could not create the database session.")
+        except Exception:
             self._close_worker_session(route, session_id)
-            raise RuntimeError("Could not create the database session.")
+            self._destroy_consul_session(consul_session_id)
+            raise
         return session_id
 
     def send_message(
@@ -195,7 +213,11 @@ class WorkerClient:
         values = response.json() or []
         if not values or not values[0].get("Value"):
             return None
-        return base64.b64decode(values[0]["Value"]).decode()
+        entry = values[0]
+        if not entry.get("Session"):
+            self._delete_task_route(owner, task_id)
+            return None
+        return base64.b64decode(entry["Value"]).decode()
 
     def _dispatch(
         self,
@@ -239,17 +261,21 @@ class WorkerClient:
         task_id: str,
         context_id: str,
     ) -> None:
-        """Save only task-to-session routing metadata in Consul."""
+        """Save task routing metadata under its worker session's lease."""
         try:
+            routed_session = self._route_with_consul_session(owner, context_id)
             response = requests.put(
                 f"{self.settings.consul_url}/v1/kv/{_TASK_PREFIX}"
                 f"{_owner_key(owner)}/"
                 f"{quote(task_id, safe='')}",
+                params={"acquire": routed_session.consul_session_id},
                 data=context_id,
                 timeout=10,
             )
             response.raise_for_status()
-        except requests.RequestException:
+            if response.text.strip().lower() != "true":
+                LOGGER.warning("Could not acquire route for task %s", task_id)
+        except (ReconnectRequired, requests.RequestException):
             # The task itself is already durable in Oracle, but task routes
             # are required because workers may use different databases.
             LOGGER.warning("Could not save route for task %s", task_id)
@@ -272,6 +298,11 @@ class WorkerClient:
         self._close_worker_session(route, context_id, owner)
 
     def _select_worker(self) -> str:
+        """Return a healthy worker endpoint, preserving the public contract."""
+        return self._worker_endpoint(self._select_worker_record())
+
+    def _select_worker_record(self) -> dict:
+        """Return the selected Consul catalog record for a healthy worker."""
         response = requests.get(
             f"{self.settings.consul_url}/v1/health/service/"
             f"{self.settings.worker_service}",
@@ -285,6 +316,10 @@ class WorkerClient:
         with self._selection_lock:
             worker = workers[self._next_worker % len(workers)]
             self._next_worker += 1
+        return worker
+
+    def _worker_endpoint(self, worker: dict) -> str:
+        """Resolve a selected Consul worker record to its HTTP endpoint."""
         service = worker["Service"]
         metadata = service.get("Meta") or {}
         endpoint = metadata.get("endpoint")
@@ -307,6 +342,15 @@ class WorkerClient:
         return f"http://{address}:{service['Port']}"
 
     def _route_for(self, owner: str, context_id: str) -> SessionRoute:
+        """Return a live worker route backed by a Consul session."""
+        return self._route_with_consul_session(owner, context_id).route
+
+    def _route_with_consul_session(
+        self,
+        owner: str,
+        context_id: str,
+    ) -> _ConsulSessionRoute:
+        """Read a route and its Consul lock/session metadata."""
         response = requests.get(
             f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
             f"{_owner_key(owner)}/{quote(context_id, safe='')}",
@@ -318,7 +362,22 @@ class WorkerClient:
                 context_id,
             )
         response.raise_for_status()
-        value = response.json()[0]["Value"]
+        entries = response.json() or []
+        if not entries or not entries[0].get("Value"):
+            raise ReconnectRequired(
+                "Database session expired; reconnect required.",
+                context_id,
+            )
+        entry = entries[0]
+        consul_session_id = entry.get("Session")
+        if not consul_session_id:
+            # Discard an old, unleased route rather than treating it as live.
+            self._delete_route_key(owner, context_id)
+            raise ReconnectRequired(
+                "Database session expired; reconnect required.",
+                context_id,
+            )
+        value = entry["Value"]
         route = SessionRoute(**json.loads(base64.b64decode(value).decode()))
         if route.expires_at <= time.time():
             self._close_worker_session(route, context_id, owner)
@@ -326,28 +385,97 @@ class WorkerClient:
                 "Database session expired; reconnect required.",
                 context_id,
             )
-        return route
+        return _ConsulSessionRoute(route, consul_session_id)
+
+    def _create_consul_session(self, worker: dict) -> str:
+        """Create a delete-on-expiry Consul session for one worker route."""
+        ttl = self.settings.session_ttl_seconds
+        if ttl < 10 or ttl > 86_400:
+            raise ValueError(
+                "Consul session TTL must be between 10 and 86400 seconds."
+            )
+
+        node = (worker.get("Node") or {}).get("Node")
+        service_id = (worker.get("Service") or {}).get("ID")
+        if not node or not service_id:
+            raise RuntimeError(
+                "Consul worker record is missing its node or service ID."
+            )
+
+        response = requests.put(
+            f"{self.settings.consul_url}/v1/session/create",
+            json={
+                "Name": "select-ai-a2a-worker-session",
+                "Node": node,
+                "NodeChecks": ["serfHealth"],
+                "ServiceChecks": [{"ID": f"service:{service_id}"}],
+                "TTL": f"{ttl}s",
+                "Behavior": "delete",
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
+        consul_session_id = (response.json() or {}).get("ID")
+        if not consul_session_id:
+            raise RuntimeError("Consul did not return a session ID.")
+        return consul_session_id
 
     def _save_route(
         self,
         owner: str,
         context_id: str,
         route: SessionRoute,
+        consul_session_id: str,
     ) -> bool:
         response = requests.put(
             f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
-            f"{_owner_key(owner)}/{quote(context_id, safe='')}?cas=0",
+            f"{_owner_key(owner)}/{quote(context_id, safe='')}",
+            params={"acquire": consul_session_id},
             data=json.dumps(route.__dict__),
             timeout=10,
         )
         return response.ok and response.text.strip().lower() == "true"
 
     def _delete_route(self, owner: str, context_id: str) -> None:
+        """Destroy the owning Consul session, then remove the route key."""
+        key_url = (
+            f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
+            f"{_owner_key(owner)}/{quote(context_id, safe='')}"
+        )
+        try:
+            response = requests.get(key_url, timeout=10)
+            if response.status_code == 404:
+                return
+            response.raise_for_status()
+            entries = response.json() or []
+            consul_session_id = entries[0].get("Session") if entries else None
+            if consul_session_id:
+                self._destroy_consul_session(consul_session_id)
+        except requests.RequestException:
+            LOGGER.warning("Could not read Consul session for route cleanup")
+        self._delete_route_key(owner, context_id)
+
+    def _delete_route_key(self, owner: str, context_id: str) -> None:
+        """Delete only the session route KV entry."""
         requests.delete(
             f"{self.settings.consul_url}/v1/kv/{_SESSION_PREFIX}"
             f"{_owner_key(owner)}/{quote(context_id, safe='')}",
             timeout=10,
         )
+
+    def _destroy_consul_session(self, consul_session_id: str) -> None:
+        """Destroy a Consul session; its acquired KV entries are deleted."""
+        try:
+            response = requests.put(
+                f"{self.settings.consul_url}/v1/session/destroy/"
+                f"{quote(consul_session_id, safe='')}",
+                timeout=10,
+            )
+            response.raise_for_status()
+        except requests.RequestException:
+            LOGGER.warning(
+                "Could not destroy Consul session %s", consul_session_id
+            )
 
     def _close_worker_session(
         self,

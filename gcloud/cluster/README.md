@@ -6,6 +6,10 @@ password through the generated A2UI form. A session remains available for 15
 minutes by default. Set a
 different lifetime in seconds with `--session-ttl-seconds`; for example,
 `--session-ttl-seconds 1800` keeps sessions for 30 minutes.
+Oracle conversation history is retained for 7 days by default. Set
+`--conversation-retention-days` to change this, or use 0 to keep
+conversations until they are
+manually deleted.
 
 ## Protocol architecture
 

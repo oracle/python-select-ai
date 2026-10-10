@@ -7,6 +7,7 @@
 
 """Oracle Database storage for A2A-to-Oracle conversation mappings."""
 
+import datetime
 from asyncio import Lock
 from typing import Optional
 
@@ -52,8 +53,12 @@ class OracleContextStore:
     def __init__(
         self,
         owner_resolver: OwnerResolver = resolve_user_scope,
+        retention_days: int = 7,
     ) -> None:
+        if retention_days < 0:
+            raise ValueError("retention_days must be non-negative")
         self.owner_resolver = owner_resolver
+        self.retention_days = retention_days
         self.initialized = False
         self.initialize_lock = Lock()
 
@@ -85,6 +90,7 @@ class OracleContextStore:
             attributes=select_ai.ConversationAttributes(
                 title=f"A2A {team_name}",
                 description=f"A2A context {context_id}",
+                retention_days=datetime.timedelta(days=self.retention_days),
             )
         )
         conversation_id = await conversation.create()
