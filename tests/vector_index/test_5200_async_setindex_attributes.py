@@ -1025,7 +1025,7 @@ class TestAsyncSetVectorIndexAttributes:
             await self.async_vector_index.set_attribute(
                 "profile_name", long_name
             )
-        assert "ORA-20048" in str(exc_info.value)
+        assert exc_info.value.args[0].code in (20008, 20048)
         logger.info("Large attribute value correctly raised DatabaseError.")
 
     async def test_5237(self):

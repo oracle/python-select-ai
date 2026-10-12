@@ -130,6 +130,7 @@ def create_worker_app(settings: WorkerSettings) -> FastAPI:
     backend = ProcessSessionBackend(
         settings.session_ttl_seconds,
         settings.session_start_timeout_seconds,
+        settings.conversation_retention_days,
     )
 
     @asynccontextmanager

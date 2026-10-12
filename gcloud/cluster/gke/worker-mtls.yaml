@@ -34,6 +34,8 @@ spec:
             - https://$(POD_NAME).select-ai-a2a-worker.select-ai-a2a.svc.GKE_DNS_DOMAIN:8443
             - --session-ttl-seconds
             - "SESSION_TTL_SECONDS"
+            - --conversation-retention-days
+            - "CONVERSATION_RETENTION_DAYS"
             - --tls-cert-file
             - /var/run/select-ai-mtls/tls.crt
             - --tls-key-file
