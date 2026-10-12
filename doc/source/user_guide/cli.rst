@@ -288,10 +288,13 @@ passing the A2UI form values to the worker.
         --consul-url http://127.0.0.1:8500
 
 The worker options are ``--host``, ``--port``, ``--worker-id``,
-``--consul-url``, ``--worker-endpoint``, ``--session-ttl-seconds``, and
-``--session-start-timeout-seconds``. ``WORKER_ID``, ``CONSUL_HTTP_URL``, and
-``WORKER_ENDPOINT`` are environment fallbacks; explicit command-line values
-take precedence. ``--port`` is also the port registered with Consul. Cluster
+``--consul-url``, ``--worker-endpoint``, ``--session-ttl-seconds``,
+``--conversation-retention-days``, and ``--session-start-timeout-seconds``.
+``WORKER_ID``, ``CONSUL_HTTP_URL``, ``WORKER_ENDPOINT``, and
+``CONVERSATION_RETENTION_DAYS`` are environment fallbacks; explicit
+command-line values take precedence. Conversation retention defaults to 7 days;
+use 0 to keep conversations until manually deleted. ``--port`` is also the port registered with Consul.
+Cluster
 manifests can set ``WORKER_ADDRESS`` to the pod IP when no endpoint is
 supplied. The worker's ``--tls-cert-file``, ``--tls-key-file``, and
 ``--tls-ca-file`` options enable gateway-to-worker mTLS; provide all three

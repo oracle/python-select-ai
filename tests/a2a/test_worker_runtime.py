@@ -284,10 +284,13 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
     connection_arguments = {}
 
     class Runtime:
-        def __init__(self, session_id, owner, team_name):
+        def __init__(
+            self, session_id, owner, team_name, conversation_retention_days
+        ):
             assert session_id == "session-1"
             assert owner == "owner-1"
             assert team_name == "TEAM"
+            assert conversation_retention_days == 7
 
         async def initialize(self):
             return None
@@ -347,6 +350,9 @@ def test_session_runtime_builds_oracle_backed_default_handler(monkeypatch):
             initialized.append("team")
 
     class Store:
+        def __init__(self, retention_days=7):
+            self.retention_days = retention_days
+
         async def initialize(self):
             initialized.append(self)
 
@@ -393,6 +399,9 @@ def test_session_runtime_rejects_unknown_team_before_initializing_stores(
             raise RuntimeError("team does not exist")
 
     class Store:
+        def __init__(self, retention_days=7):
+            self.retention_days = retention_days
+
         async def initialize(self):
             initialized.append(self)
 

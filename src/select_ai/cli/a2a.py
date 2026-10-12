@@ -269,6 +269,17 @@ def serve(
     type=click.IntRange(min=1),
 )
 @click.option(
+    "--conversation-retention-days",
+    default=7,
+    show_default=True,
+    type=click.IntRange(min=0),
+    envvar="CONVERSATION_RETENTION_DAYS",
+    help=(
+        "Days to retain Oracle conversations. Use 0 to keep them until "
+        "manually deleted."
+    ),
+)
+@click.option(
     "--session-start-timeout-seconds",
     default=30,
     show_default=True,
@@ -296,6 +307,7 @@ def worker(
     consul_url,
     worker_endpoint,
     session_ttl_seconds,
+    conversation_retention_days,
     session_start_timeout_seconds,
     tls_cert_file,
     tls_key_file,
@@ -317,6 +329,7 @@ def worker(
         worker_port=port,
         session_ttl_seconds=session_ttl_seconds,
         session_start_timeout_seconds=session_start_timeout_seconds,
+        conversation_retention_days=conversation_retention_days,
         worker_endpoint=worker_endpoint,
     )
     app = create_worker_app(settings)
