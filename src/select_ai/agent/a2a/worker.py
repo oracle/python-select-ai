@@ -46,6 +46,9 @@ class OpenSessionRequest(BaseModel):
     username: str = Field(min_length=1, max_length=128)
     password: SecretStr = Field(min_length=1, max_length=1_024)
     team_name: str = Field(min_length=1, max_length=128)
+    tls_ca_certificate_pem: str | None = Field(
+        default=None, min_length=1, max_length=64_000
+    )
 
     def to_session_spec(self) -> SessionSpec:
         """Convert validated HTTP input to the backend-neutral contract."""
@@ -56,6 +59,7 @@ class OpenSessionRequest(BaseModel):
             username=self.username,
             password=self.password.get_secret_value(),
             team_name=self.team_name,
+            tls_ca_certificate_pem=self.tls_ca_certificate_pem,
         )
 
 

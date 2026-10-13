@@ -39,6 +39,7 @@ class SessionSpec:
     username: str
     password: str
     team_name: str
+    tls_ca_certificate_pem: str | None = None
 
 
 @dataclass
@@ -116,6 +117,8 @@ class ProcessSessionBackend:
             "password": spec.password,
             "dsn": spec.dsn,
         }
+        if spec.tls_ca_certificate_pem is not None:
+            credentials["tls_ca_certificate_pem"] = spec.tls_ca_certificate_pem
         process = multiprocessing.Process(
             target=_session_process_main,
             args=(
@@ -275,7 +278,10 @@ class ProcessSessionBackend:
             return
         detail = response.get("detail", "Database login failed.")
         for secret in (spec.password, spec.username, spec.dsn):
-            detail = detail.replace(secret, "[REDACTED]")
+            if secret:
+                detail = detail.replace(secret, "[REDACTED]")
+        if spec.tls_ca_certificate_pem:
+            detail = detail.replace(spec.tls_ca_certificate_pem, "[REDACTED]")
         LOGGER.error("Select AI session startup failed: %s", detail[-2_000:])
         raise SessionLoginError("Database login failed.")
 
@@ -357,10 +363,22 @@ async def _run_session_process(
     runtime: SessionRuntime | None = None
     ready = False
     try:
+        connection_options = {}
+        tls_ca_certificate_pem = credentials.get("tls_ca_certificate_pem")
+        if tls_ca_certificate_pem:
+            import ssl
+
+            connection_options = {
+                "protocol": "tcps",
+                "ssl_context": ssl.create_default_context(
+                    cadata=tls_ca_certificate_pem
+                ),
+            }
         await select_ai.async_connect(
             user=credentials["user"],
             password=credentials["password"],
             dsn=credentials["dsn"],
+            **connection_options,
         )
         if not await select_ai.async_is_connected():
             raise RuntimeError("Database login failed.")

@@ -15,18 +15,28 @@ import click
 from select_ai.cli.common import connection_options
 from select_ai.version import __version__
 
-try:
-    import uvicorn
 
-    from select_ai.agent.a2a.server import create_app
-except ImportError:
-    create_app = None
-    uvicorn = None
+def _require_a2a_support():
+    """Load optional A2A server dependencies when an A2A runtime is used."""
+    try:
+        import uvicorn
+
+        from select_ai.agent.a2a.server import create_app
+    except ImportError as error:
+        raise click.ClickException(
+            "A2A dependencies are missing. Install them with: "
+            "pip install 'select_ai[a2a]'"
+        ) from error
+    return uvicorn, create_app
 
 
-@click.group()
-def a2a():
+@click.group(invoke_without_command=True)
+@click.pass_context
+def a2a(context):
     """Serve Select AI database agent teams through A2A."""
+    if context.invoked_subcommand is None:
+        _require_a2a_support()
+        click.echo(context.get_help())
 
 
 @a2a.command()
@@ -141,11 +151,7 @@ def serve(
     wallet_password,
 ):
     """Start the public A2A server in standalone or clustered mode."""
-    if uvicorn is None:
-        raise click.ClickException(
-            "A2A server support requires the optional 'cli' extra. "
-            "Install it with: pip install 'select_ai[cli]'"
-        )
+    uvicorn, create_app = _require_a2a_support()
 
     if public_url is None:
         public_url = f"http://{host}:{port}"
@@ -314,6 +320,7 @@ def worker(
     tls_ca_file,
 ):
     """Start the internal Select AI session worker."""
+    uvicorn, _ = _require_a2a_support()
     try:
         from select_ai.agent.a2a import WorkerSettings, create_worker_app
     except ImportError as error:

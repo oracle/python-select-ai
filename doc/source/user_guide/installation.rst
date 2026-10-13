@@ -72,8 +72,15 @@ are isolated from your system Python installation.
 
       python -m pip install --upgrade "select_ai[cli]"
 
-   This installs the ``select-ai`` command and its A2A server support. See
-   :ref:`Command Line Interface <cli>`.
+   This installs the ``select-ai`` command with profile, SQL, and chat
+   commands. To use the A2A server and worker commands, install the separate
+   ``a2a`` extra:
+
+   .. code-block:: shell
+
+      python -m pip install --upgrade "select_ai[a2a]"
+
+   See :ref:`Command Line Interface <cli>` and :ref:`A2A Integration <a2a>`.
 
 6. If you are behind a proxy, use the ``--proxy`` option. For example:
 
