@@ -228,17 +228,50 @@ class WorkerClient:
     ) -> WorkerResult:
         """Send one protobuf-serialized A2A operation to a worker session."""
         route = self._route_for(owner, context_id)
-        response = requests.post(
-            f"{route.endpoint}/sessions/{quote(route.session_id, safe='')}/a2a",
-            data=message.SerializeToString(),
-            headers={
-                "content-type": PROTOBUF_CONTENT_TYPE,
-                WORKER_A2A_METHOD_HEADER: A2AMethod(method).value,
-            },
-            timeout=130,
-            **getattr(self, "_worker_request_kwargs", {}),
+        started_at = time.monotonic()
+        LOGGER.debug(
+            "Worker request started: session_id=%s method=%s",
+            route.session_id,
+            A2AMethod(method).value,
+        )
+        try:
+            response = requests.post(
+                f"{route.endpoint}/sessions/{quote(route.session_id, safe='')}/a2a",
+                data=message.SerializeToString(),
+                headers={
+                    "content-type": PROTOBUF_CONTENT_TYPE,
+                    WORKER_A2A_METHOD_HEADER: A2AMethod(method).value,
+                },
+                # Leave time for the 120-second database call timeout to return.
+                timeout=130,
+                **getattr(self, "_worker_request_kwargs", {}),
+            )
+        except requests.RequestException as error:
+            LOGGER.warning(
+                "Worker request failed: session_id=%s method=%s elapsed_ms=%s "
+                "error_type=%s",
+                route.session_id,
+                A2AMethod(method).value,
+                int((time.monotonic() - started_at) * 1000),
+                type(error).__name__,
+            )
+            raise
+        elapsed_ms = int((time.monotonic() - started_at) * 1000)
+        LOGGER.debug(
+            "Worker response received: session_id=%s method=%s "
+            "status_code=%s elapsed_ms=%s",
+            route.session_id,
+            A2AMethod(method).value,
+            response.status_code,
+            elapsed_ms,
         )
         if response.status_code in (404, 502):
+            LOGGER.warning(
+                "Worker marked session unavailable: session_id=%s "
+                "status_code=%s; removing route",
+                route.session_id,
+                response.status_code,
+            )
             self._close_worker_session(route, context_id, owner)
             raise ReconnectRequired(
                 "Database session ended; reconnect required.",

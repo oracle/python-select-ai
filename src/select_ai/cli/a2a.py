@@ -6,6 +6,7 @@
 # -----------------------------------------------------------------------------
 
 import json
+import logging
 import os
 import socket
 import ssl
@@ -292,6 +293,16 @@ def serve(
     type=click.IntRange(min=1),
 )
 @click.option(
+    "--log-level",
+    type=click.Choice(
+        ("critical", "error", "warning", "info", "debug"),
+        case_sensitive=False,
+    ),
+    default="info",
+    show_default=True,
+    help="Logging level for Select AI worker and Uvicorn logs.",
+)
+@click.option(
     "--tls-cert-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
     help="Worker TLS server certificate. Requires all --tls-* options.",
@@ -315,6 +326,7 @@ def worker(
     session_ttl_seconds,
     conversation_retention_days,
     session_start_timeout_seconds,
+    log_level,
     tls_cert_file,
     tls_key_file,
     tls_ca_file,
@@ -346,6 +358,11 @@ def worker(
             "Worker mTLS requires --tls-cert-file, --tls-key-file, and "
             "--tls-ca-file."
         )
+    logging.basicConfig(level=logging.INFO, force=True)
+    logging.getLogger("select_ai").setLevel(log_level.upper())
+
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
     uvicorn_options = {}
     if tls_cert_file:
         uvicorn_options = {
@@ -354,7 +371,13 @@ def worker(
             "ssl_ca_certs": tls_ca_file,
             "ssl_cert_reqs": ssl.CERT_REQUIRED,
         }
-    uvicorn.run(app, host=host, port=port, **uvicorn_options)
+    uvicorn.run(
+        app,
+        host=host,
+        port=port,
+        log_level=log_level.lower(),
+        **uvicorn_options,
+    )
 
 
 @a2a.command("agent-card")

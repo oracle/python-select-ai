@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import logging
 import time
 from contextlib import asynccontextmanager
 
@@ -35,6 +36,8 @@ from select_ai.agent.a2a.worker_protocol import (
     WORKER_A2A_METHOD_HEADER,
     WORKER_RESULT_KIND_HEADER,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 
 class OpenSessionRequest(BaseModel):
@@ -202,7 +205,21 @@ def create_worker_app(settings: WorkerSettings) -> FastAPI:
                 await request.body(),
             )
         except SessionBackendError as error:
-            raise _http_error(error) from error
+            http_error = _http_error(error)
+            log = (
+                LOGGER.warning
+                if isinstance(error, SessionUnavailable)
+                else LOGGER.debug
+            )
+            log(
+                "Worker A2A request failed: session_id=%s method=%s "
+                "error_type=%s status_code=%s",
+                session_id,
+                method,
+                type(error).__name__,
+                http_error.status_code,
+            )
+            raise http_error from error
         return Response(
             content=result.payload,
             media_type=PROTOBUF_CONTENT_TYPE,
