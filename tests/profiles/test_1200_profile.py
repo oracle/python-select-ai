@@ -233,12 +233,13 @@ def test_1207_profile_attributes_set_provider_attribute_without_provider():
     assert attributes.provider.model == "meta.llama-3.1-70b-instruct"
 
 
-def test_1208(oci_credential, oci_compartment_id):
+def test_1208(oci_credential, oci_compartment_id, profile_attributes):
     """Set multiple attributes for a Profile"""
     profile = Profile(PYSAI_1200_PROFILE)
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         provider=select_ai.OCIGenAIProvider(
+            embedding_model=profile_attributes.provider.embedding_model,
             model="meta.llama-4-maverick-17b-128e-instruct-fp8",
             region="us-chicago-1",
             oci_compartment_id=oci_compartment_id,

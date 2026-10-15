@@ -277,7 +277,7 @@ async def test_1307():
     assert profile.attributes.provider.model == "meta.llama-3.1-70b-instruct"
 
 
-async def test_1308(oci_credential, oci_compartment_id):
+async def test_1308(oci_credential, oci_compartment_id, profile_attributes):
     """Set multiple attributes for a Profile"""
     logger.info(
         "Setting multiple attributes for async profile %s",
@@ -287,6 +287,7 @@ async def test_1308(oci_credential, oci_compartment_id):
     profile_attrs = ProfileAttributes(
         credential_name=oci_credential["credential_name"],
         provider=select_ai.OCIGenAIProvider(
+            embedding_model=profile_attributes.provider.embedding_model,
             model="meta.llama-4-maverick-17b-128e-instruct-fp8",
             region="us-chicago-1",
             oci_apiformat="GENERIC",
