@@ -12,6 +12,7 @@ import select_ai
 @pytest.fixture(scope="module")
 def provider(oci_compartment_id):
     return select_ai.OCIGenAIProvider(
+        embedding_model="cohere.embed-v4.0",
         region="us-chicago-1",
         oci_apiformat="GENERIC",
         oci_compartment_id=oci_compartment_id,
