@@ -19,6 +19,7 @@ CONNECTION_FORM_FIELDS = (
 FORM_FIELD_TO_CONNECTION_FIELD = dict(
     zip(CONNECTION_FORM_FIELDS, CONNECTION_FIELDS)
 )
+DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS = 120
 
 
 @dataclass(frozen=True)
@@ -92,6 +93,7 @@ class WorkerSettings:
     session_start_timeout_seconds: int
     worker_endpoint: str | None = None
     conversation_retention_days: int = 7
+    database_call_timeout_seconds: int = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
 
     def __post_init__(self) -> None:
         if self.worker_port < 1 or self.worker_port > 65_535:
@@ -105,6 +107,10 @@ class WorkerSettings:
         if self.conversation_retention_days < 0:
             raise ValueError(
                 "conversation_retention_days must be non-negative"
+            )
+        if self.database_call_timeout_seconds < 1:
+            raise ValueError(
+                "database_call_timeout_seconds must be at least 1"
             )
         object.__setattr__(self, "consul_url", self.consul_url.rstrip("/"))
         if self.worker_endpoint:
@@ -130,10 +136,15 @@ class GatewaySettings:
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
     require_oauth: bool = False
+    database_call_timeout_seconds: int = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:
             raise ValueError("session_ttl_seconds must be at least 1")
+        if self.database_call_timeout_seconds < 1:
+            raise ValueError(
+                "database_call_timeout_seconds must be at least 1"
+            )
         tls_files = (
             self.worker_tls_ca_file,
             self.worker_tls_cert_file,
@@ -164,6 +175,7 @@ class StandaloneSessionSettings:
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
     require_oauth: bool = False
+    database_call_timeout_seconds: int = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:
@@ -171,6 +183,10 @@ class StandaloneSessionSettings:
         if self.session_start_timeout_seconds < 1:
             raise ValueError(
                 "session_start_timeout_seconds must be at least 1"
+            )
+        if self.database_call_timeout_seconds < 1:
+            raise ValueError(
+                "database_call_timeout_seconds must be at least 1"
             )
         object.__setattr__(self, "public_url", self.public_url.rstrip("/"))
 

@@ -13,6 +13,9 @@ import ssl
 
 import click
 
+from select_ai.agent.a2a.models import (
+    DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+)
 from select_ai.cli.common import connection_options
 from select_ai.version import __version__
 
@@ -97,6 +100,15 @@ def a2a(context):
     envvar="SESSION_TTL_SECONDS",
 )
 @click.option(
+    "--database-call-timeout-seconds",
+    default=DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+    show_default=True,
+    type=click.IntRange(min=1),
+    help=(
+        "Oracle call timeout; clustered gateway deadline uses the same value."
+    ),
+)
+@click.option(
     "--worker-tls-ca-file",
     envvar="WORKER_TLS_CA_FILE",
     type=click.Path(exists=True, dir_okay=False, readable=True),
@@ -113,6 +125,12 @@ def a2a(context):
     envvar="WORKER_TLS_KEY_FILE",
     type=click.Path(exists=True, dir_okay=False, readable=True),
     help="Client private key presented to clustered workers.",
+)
+@click.option(
+    "--database-tls-ca-file",
+    envvar="SELECT_AI_DATABASE_TLS_CA_FILE",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="PEM CA certificate file used to validate the Oracle Database server.",
 )
 @click.option(
     "--a2ui-form",
@@ -140,9 +158,11 @@ def serve(
     consul_url,
     worker_service,
     session_ttl_seconds,
+    database_call_timeout_seconds,
     worker_tls_ca_file,
     worker_tls_cert_file,
     worker_tls_key_file,
+    database_tls_ca_file,
     a2ui_form,
     require_oauth,
     user,
@@ -172,11 +192,23 @@ def serve(
             "Install it with: pip install 'select_ai[a2a]'"
         ) from error
 
+    tls_ca_certificate_pem = None
+    if database_tls_ca_file:
+        try:
+            with open(database_tls_ca_file, encoding="utf-8") as ca_file:
+                tls_ca_certificate_pem = ca_file.read()
+        except (OSError, UnicodeError) as error:
+            raise click.ClickException(
+                "Could not read database CA certificate file: "
+                f"{database_tls_ca_file}"
+            ) from error
+
     connection = ConnectionConfig(
         dsn=dsn,
         username=user,
         password=password,
         team_name=team_name,
+        tls_ca_certificate_pem=tls_ca_certificate_pem,
     )
     form_template = None
     if a2ui_form:
@@ -205,6 +237,8 @@ def serve(
             description=description,
             pool_max_size=pool_max_size,
             require_oauth=require_oauth,
+            tls_ca_certificate_pem=tls_ca_certificate_pem,
+            database_call_timeout_seconds=database_call_timeout_seconds,
         )
     elif deployment == "standalone":
         if os.environ.get("WEB_CONCURRENCY", "1") != "1":
@@ -215,6 +249,7 @@ def serve(
             public_url=public_url,
             session_ttl_seconds=session_ttl_seconds,
             description=description,
+            database_call_timeout_seconds=database_call_timeout_seconds,
             connection=connection,
             connection_form_template=form_template,
             require_oauth=require_oauth,
@@ -226,6 +261,7 @@ def serve(
             consul_url=consul_url,
             worker_service=worker_service,
             session_ttl_seconds=session_ttl_seconds,
+            database_call_timeout_seconds=database_call_timeout_seconds,
             worker_tls_ca_file=worker_tls_ca_file,
             worker_tls_cert_file=worker_tls_cert_file,
             worker_tls_key_file=worker_tls_key_file,
@@ -293,6 +329,13 @@ def serve(
     type=click.IntRange(min=1),
 )
 @click.option(
+    "--database-call-timeout-seconds",
+    default=DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+    show_default=True,
+    type=click.IntRange(min=1),
+    help="Maximum duration of an individual Oracle Database call.",
+)
+@click.option(
     "--log-level",
     type=click.Choice(
         ("critical", "error", "warning", "info", "debug"),
@@ -326,6 +369,7 @@ def worker(
     session_ttl_seconds,
     conversation_retention_days,
     session_start_timeout_seconds,
+    database_call_timeout_seconds,
     log_level,
     tls_cert_file,
     tls_key_file,
@@ -348,6 +392,7 @@ def worker(
         worker_port=port,
         session_ttl_seconds=session_ttl_seconds,
         session_start_timeout_seconds=session_start_timeout_seconds,
+        database_call_timeout_seconds=database_call_timeout_seconds,
         conversation_retention_days=conversation_retention_days,
         worker_endpoint=worker_endpoint,
     )
