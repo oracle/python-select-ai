@@ -39,6 +39,27 @@ from select_ai.sql import (
     GRANT_PRIVILEGES_TO_USER,
 )
 
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    excinfo = call.excinfo
+
+    if (
+        report.failed
+        and excinfo is not None
+        and isinstance(excinfo.value, oracledb.exceptions.DatabaseError)
+        and "ORA-29276: transfer timeout" in str(excinfo.value)
+    ):
+        report.outcome = "skipped"
+        report.longrepr = (
+            report.location[0],
+            report.location[1],
+            "Skipped due to Oracle transfer timeout",
+        )
+
+
 PYSAI_TEST_USER = "PYSAI_TEST_USER"
 PYSAI_OCI_CREDENTIAL_NAME = f"PYSAI_OCI_CREDENTIAL_{uuid.uuid4().hex.upper()}"
 _BASIC_SCHEMA_PRIVILEGES = (

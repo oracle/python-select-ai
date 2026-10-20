@@ -29,12 +29,20 @@ class ConnectionConfig:
     username: str | None = None
     password: str | None = None
     team_name: str | None = None
+    tls_ca_certificate_pem: str | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
         for name in CONNECTION_FIELDS:
             value = getattr(self, name)
             if value is not None and (not isinstance(value, str) or not value):
                 raise ValueError(f"{name} must be a non-empty string")
+        if self.tls_ca_certificate_pem is not None and (
+            not isinstance(self.tls_ca_certificate_pem, str)
+            or not self.tls_ca_certificate_pem.strip()
+        ):
+            raise ValueError(
+                "tls_ca_certificate_pem must be a non-empty string"
+            )
 
     @property
     def missing_fields(self) -> tuple[str, ...]:
@@ -66,7 +74,10 @@ class ConnectionConfig:
             or submitted.get(form_name)
             for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
         }
-        return SessionInfo.from_values(values)
+        return SessionInfo.from_values(
+            values,
+            tls_ca_certificate_pem=self.tls_ca_certificate_pem,
+        )
 
 
 @dataclass(frozen=True)
@@ -172,16 +183,34 @@ class SessionInfo:
     username: str
     password: str
     team_name: str
+    tls_ca_certificate_pem: str | None = field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self.tls_ca_certificate_pem is not None and (
+            not isinstance(self.tls_ca_certificate_pem, str)
+            or not self.tls_ca_certificate_pem.strip()
+        ):
+            raise ValueError(
+                "tls_ca_certificate_pem must be a non-empty string"
+            )
 
     @classmethod
-    def from_values(cls, values: dict) -> "SessionInfo":
+    def from_values(
+        cls,
+        values: dict,
+        *,
+        tls_ca_certificate_pem: str | None = None,
+    ) -> "SessionInfo":
         """Build a complete connection after resolution."""
         if not all(
             isinstance(values.get(key), str) and values[key]
             for key in CONNECTION_FIELDS
         ):
             raise ValueError("All database connection fields are required.")
-        return cls(**{key: values[key] for key in CONNECTION_FIELDS})
+        return cls(
+            **{key: values[key] for key in CONNECTION_FIELDS},
+            tls_ca_certificate_pem=tls_ca_certificate_pem,
+        )
 
 
 @dataclass(frozen=True)

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import logging
 import time
 from contextlib import asynccontextmanager
 
@@ -36,6 +37,8 @@ from select_ai.agent.a2a.worker_protocol import (
     WORKER_RESULT_KIND_HEADER,
 )
 
+LOGGER = logging.getLogger(__name__)
+
 
 class OpenSessionRequest(BaseModel):
     """Sensitive request accepted only on the internal worker interface."""
@@ -46,6 +49,9 @@ class OpenSessionRequest(BaseModel):
     username: str = Field(min_length=1, max_length=128)
     password: SecretStr = Field(min_length=1, max_length=1_024)
     team_name: str = Field(min_length=1, max_length=128)
+    tls_ca_certificate_pem: str | None = Field(
+        default=None, min_length=1, max_length=64_000
+    )
 
     def to_session_spec(self) -> SessionSpec:
         """Convert validated HTTP input to the backend-neutral contract."""
@@ -56,6 +62,7 @@ class OpenSessionRequest(BaseModel):
             username=self.username,
             password=self.password.get_secret_value(),
             team_name=self.team_name,
+            tls_ca_certificate_pem=self.tls_ca_certificate_pem,
         )
 
 
@@ -198,7 +205,21 @@ def create_worker_app(settings: WorkerSettings) -> FastAPI:
                 await request.body(),
             )
         except SessionBackendError as error:
-            raise _http_error(error) from error
+            http_error = _http_error(error)
+            log = (
+                LOGGER.warning
+                if isinstance(error, SessionUnavailable)
+                else LOGGER.debug
+            )
+            log(
+                "Worker A2A request failed: session_id=%s method=%s "
+                "error_type=%s status_code=%s",
+                session_id,
+                method,
+                type(error).__name__,
+                http_error.status_code,
+            )
+            raise http_error from error
         return Response(
             content=result.payload,
             media_type=PROTOBUF_CONTENT_TYPE,

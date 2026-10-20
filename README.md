@@ -36,7 +36,16 @@ Install the optional command line interface:
 python3 -m pip install 'select_ai[cli]'
 ```
 
-The CLI extra includes A2A server support.
+The `cli` extra installs the command line interface. Install the separate
+`a2a` extra to enable the A2A server and worker commands:
+
+```bash
+python3 -m pip install 'select_ai[a2a]'
+```
+
+Without the A2A dependencies, the other `select-ai` commands remain available;
+invoking `select-ai a2a` or an A2A server or worker command prints the A2A
+installation instructions.
 
 ## Documentation
 

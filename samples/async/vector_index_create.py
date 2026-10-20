@@ -27,7 +27,7 @@ async def main():
     provider = select_ai.OCIGenAIProvider(
         region="us-chicago-1",
         oci_apiformat="GENERIC",
-        embedding_model="cohere.embed-english-v3.0",
+        embedding_model="cohere.embed-v4.0",
     )
     profile_attributes = select_ai.ProfileAttributes(
         credential_name="my_oci_ai_profile_key",

@@ -8,6 +8,7 @@
 """Unit tests for the private multiprocessing session runtime."""
 
 import asyncio
+from contextlib import asynccontextmanager
 
 import pytest
 import requests
@@ -86,6 +87,7 @@ class FakeProcess:
         self.target = target
         self.args = args
         self.daemon = daemon
+        self.pid = 1234
         self.started = False
         self.alive = True
 
@@ -309,9 +311,20 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
     async def disconnect():
         return None
 
+    database_connection = type("DatabaseConnection", (), {})()
+
+    @asynccontextmanager
+    async def async_get_connection():
+        yield database_connection
+
     monkeypatch.setattr(select_ai, "async_connect", async_connect)
     monkeypatch.setattr(select_ai, "async_is_connected", connected)
     monkeypatch.setattr(select_ai, "async_disconnect", disconnect)
+    monkeypatch.setattr(
+        select_ai.db,
+        "async_get_connection",
+        async_get_connection,
+    )
     monkeypatch.setattr(session_process, "SessionRuntime", Runtime)
 
     asyncio.run(
@@ -333,6 +346,10 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
         "password": "password",
         "dsn": "database",
     }
+    assert (
+        database_connection.call_timeout
+        == session_process._DATABASE_CALL_TIMEOUT_MS
+    )
     assert connection.sent[0] == {"type": "ready"}
     assert connection.sent[1] == {
         "type": "result",

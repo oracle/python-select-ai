@@ -33,13 +33,15 @@ index.
       :width: 100%
 
 The package provides an optional ``select-ai`` command line tool. Install the
-CLI extra to use profile, SQL, chat, and A2A commands. The ``a2a`` extra is an
-alias that makes the A2A dependency set explicit:
+CLI extra to use profile, SQL, and chat commands. Install the separate ``a2a``
+extra for the A2A server and worker commands. If A2A dependencies are missing,
+invoking the A2A command group or a server or worker command reports how to
+install them; the other CLI commands remain available:
 
 .. code-block:: bash
 
     pip install 'select_ai[cli]'
-    # Equivalent installation for an A2A deployment:
+    # Install A2A support:
     pip install 'select_ai[a2a]'
 
 Use ``select-ai --help`` to view the available command groups and

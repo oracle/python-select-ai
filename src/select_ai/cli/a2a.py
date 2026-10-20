@@ -6,6 +6,7 @@
 # -----------------------------------------------------------------------------
 
 import json
+import logging
 import os
 import socket
 import ssl
@@ -15,18 +16,28 @@ import click
 from select_ai.cli.common import connection_options
 from select_ai.version import __version__
 
-try:
-    import uvicorn
 
-    from select_ai.agent.a2a.server import create_app
-except ImportError:
-    create_app = None
-    uvicorn = None
+def _require_a2a_support():
+    """Load optional A2A server dependencies when an A2A runtime is used."""
+    try:
+        import uvicorn
+
+        from select_ai.agent.a2a.server import create_app
+    except ImportError as error:
+        raise click.ClickException(
+            "A2A dependencies are missing. Install them with: "
+            "pip install 'select_ai[a2a]'"
+        ) from error
+    return uvicorn, create_app
 
 
-@click.group()
-def a2a():
+@click.group(invoke_without_command=True)
+@click.pass_context
+def a2a(context):
     """Serve Select AI database agent teams through A2A."""
+    if context.invoked_subcommand is None:
+        _require_a2a_support()
+        click.echo(context.get_help())
 
 
 @a2a.command()
@@ -141,11 +152,7 @@ def serve(
     wallet_password,
 ):
     """Start the public A2A server in standalone or clustered mode."""
-    if uvicorn is None:
-        raise click.ClickException(
-            "A2A server support requires the optional 'cli' extra. "
-            "Install it with: pip install 'select_ai[cli]'"
-        )
+    uvicorn, create_app = _require_a2a_support()
 
     if public_url is None:
         public_url = f"http://{host}:{port}"
@@ -286,6 +293,16 @@ def serve(
     type=click.IntRange(min=1),
 )
 @click.option(
+    "--log-level",
+    type=click.Choice(
+        ("critical", "error", "warning", "info", "debug"),
+        case_sensitive=False,
+    ),
+    default="info",
+    show_default=True,
+    help="Logging level for Select AI worker and Uvicorn logs.",
+)
+@click.option(
     "--tls-cert-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
     help="Worker TLS server certificate. Requires all --tls-* options.",
@@ -309,11 +326,13 @@ def worker(
     session_ttl_seconds,
     conversation_retention_days,
     session_start_timeout_seconds,
+    log_level,
     tls_cert_file,
     tls_key_file,
     tls_ca_file,
 ):
     """Start the internal Select AI session worker."""
+    uvicorn, _ = _require_a2a_support()
     try:
         from select_ai.agent.a2a import WorkerSettings, create_worker_app
     except ImportError as error:
@@ -339,6 +358,11 @@ def worker(
             "Worker mTLS requires --tls-cert-file, --tls-key-file, and "
             "--tls-ca-file."
         )
+    logging.basicConfig(level=logging.INFO, force=True)
+    logging.getLogger("select_ai").setLevel(log_level.upper())
+
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
     uvicorn_options = {}
     if tls_cert_file:
         uvicorn_options = {
@@ -347,7 +371,13 @@ def worker(
             "ssl_ca_certs": tls_ca_file,
             "ssl_cert_reqs": ssl.CERT_REQUIRED,
         }
-    uvicorn.run(app, host=host, port=port, **uvicorn_options)
+    uvicorn.run(
+        app,
+        host=host,
+        port=port,
+        log_level=log_level.lower(),
+        **uvicorn_options,
+    )
 
 
 @a2a.command("agent-card")
