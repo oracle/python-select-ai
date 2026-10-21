@@ -7,6 +7,7 @@
 
 """A2A HTTP server for Oracle Database AI Agent Teams."""
 
+import ssl
 from contextlib import asynccontextmanager
 from typing import Optional
 
@@ -29,6 +30,7 @@ from select_ai.agent.a2a.auth import (
     authentication_middleware,
 )
 from select_ai.agent.a2a.context_store import OracleContextStore
+from select_ai.agent.a2a.models import DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
 from select_ai.agent.a2a.results import add_team_result
 from select_ai.agent.a2a.task_store import OracleTaskStore
 from select_ai.version import __version__
@@ -88,10 +90,16 @@ def create_app(  # noqa: PLR0913
     description: Optional[str] = None,
     pool_max_size: int = 10,
     require_oauth: bool = False,
+    tls_ca_certificate_pem: Optional[str] = None,
+    database_call_timeout_seconds: int = (
+        DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
+    ),
 ) -> Starlette:
     """Build an A2A JSON-RPC application for one database AI Agent Team."""
     if pool_max_size < 1:
         raise ValueError("pool_max_size must be at least 1")
+    if database_call_timeout_seconds < 1:
+        raise ValueError("database_call_timeout_seconds must be at least 1")
 
     agent_card = _build_agent_card(team_name, public_url, description)
     if require_oauth:
@@ -107,18 +115,27 @@ def create_app(  # noqa: PLR0913
 
     @asynccontextmanager
     async def lifespan(app):
+        async def set_database_call_timeout(connection, _requested_tag):
+            connection.call_timeout = database_call_timeout_seconds * 1_000
+
         connect_args = {
             "user": user,
             "password": password,
             "dsn": dsn,
             "min_size": 1,
             "max_size": pool_max_size,
+            "session_callback": set_database_call_timeout,
         }
         if wallet_location:
             connect_args["wallet_location"] = wallet_location
             connect_args["config_dir"] = wallet_location
         if wallet_password:
             connect_args["wallet_password"] = wallet_password
+        if tls_ca_certificate_pem:
+            connect_args["protocol"] = "tcps"
+            connect_args["ssl_context"] = ssl.create_default_context(
+                cadata=tls_ca_certificate_pem
+            )
         select_ai.create_pool_async(**connect_args)
         try:
             await task_store.initialize()

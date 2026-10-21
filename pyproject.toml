@@ -7,7 +7,7 @@ name = "select_ai"
 dynamic = ["version"]
 description = "Select AI for Python"
 readme = {file = "README.md", content-type = "text/markdown"}
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
     {name="Abhishek Singh", email="abhishek.o.singh@oracle.com"}
 ]
@@ -28,7 +28,6 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -40,7 +39,7 @@ classifiers = [
 ]
 dependencies = [
     "oracledb>=2.0.0",
-    "pandas==2.2.3"
+    "pandas==3.0.3"
 ]
 
 [project.optional-dependencies]

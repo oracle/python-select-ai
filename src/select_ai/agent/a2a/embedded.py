@@ -51,6 +51,9 @@ class EmbeddedSessionClient:
         self.backend = ProcessSessionBackend(
             settings.session_ttl_seconds,
             settings.session_start_timeout_seconds,
+            database_call_timeout_seconds=(
+                settings.database_call_timeout_seconds
+            ),
         )
         self._bindings: dict[tuple[str, str], str] = {}
         self._tasks: dict[tuple[str, str], str] = {}
@@ -120,6 +123,9 @@ class EmbeddedSessionClient:
                     username=session_info.username,
                     password=session_info.password,
                     team_name=session_info.team_name,
+                    tls_ca_certificate_pem=(
+                        session_info.tls_ca_certificate_pem
+                    ),
                 )
             )
         )

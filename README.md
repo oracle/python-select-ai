@@ -128,6 +128,10 @@ directory containing the unzipped wallet and set `SELECT_AI_WALLET_PASSWORD`.
 The CLI passes both values to the Select AI SDK as `wallet_location` and
 `wallet_password`.
 
+For a database using a server certificate signed by a private CA, pass the PEM
+certificate file with `--database-tls-ca-file` or set
+`SELECT_AI_DATABASE_TLS_CA_FILE`. The CLI reads the certificate from the file.
+
 The server accepts both A2A 1.x and the A2A v0.3 JSON-RPC streaming protocol
 for compatibility with Gemini Enterprise.
 

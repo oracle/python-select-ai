@@ -242,8 +242,8 @@ class WorkerClient:
                     "content-type": PROTOBUF_CONTENT_TYPE,
                     WORKER_A2A_METHOD_HEADER: A2AMethod(method).value,
                 },
-                # Leave time for the 120-second database call timeout to return.
-                timeout=130,
+                # Allow the worker deadline and child-process cleanup to finish.
+                timeout=self.settings.database_call_timeout_seconds + 20,
                 **getattr(self, "_worker_request_kwargs", {}),
             )
         except requests.RequestException as error:

@@ -516,6 +516,13 @@ def test_worker_client_forwards_and_parses_a2a_message(monkeypatch):
         post,
     )
     client = WorkerClient.__new__(WorkerClient)
+    client.settings = GatewaySettings(
+        public_url="http://gateway",
+        consul_url="http://consul:8500",
+        worker_service="select-ai-a2a-worker",
+        session_ttl_seconds=60,
+        database_call_timeout_seconds=45,
+    )
     monkeypatch.setattr(
         client,
         "_route_for",
@@ -543,6 +550,7 @@ def test_worker_client_forwards_and_parses_a2a_message(monkeypatch):
         "x-select-ai-a2a-method": "SendMessage",
     }
     assert sent["data"] == request.SerializeToString()
+    assert sent["timeout"] == 65
 
 
 def test_worker_client_uses_consul_https_endpoint_with_mtls(monkeypatch):

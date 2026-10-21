@@ -18,6 +18,9 @@ from dataclasses import dataclass
 from multiprocessing.connection import Connection
 from typing import Protocol
 
+from select_ai.agent.a2a.models import (
+    DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+)
 from select_ai.agent.a2a.session_runtime import SessionRuntime
 from select_ai.agent.a2a.worker_protocol import (
     PipeMessageType,
@@ -27,7 +30,7 @@ from select_ai.agent.a2a.worker_protocol import (
 
 LOGGER = logging.getLogger(__name__)
 _SESSION_REAPER_INTERVAL_SECONDS = 1
-_DATABASE_CALL_TIMEOUT_MS = 120_000
+_DATABASE_CALL_TIMEOUT_MS = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS * 1_000
 
 
 @dataclass(frozen=True)
@@ -104,10 +107,21 @@ class ProcessSessionBackend:
         session_ttl_seconds: int,
         session_start_timeout_seconds: int,
         conversation_retention_days: int = 7,
+        database_call_timeout_seconds: int = (
+            DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
+        ),
     ) -> None:
         self.session_ttl_seconds = session_ttl_seconds
         self.session_start_timeout_seconds = session_start_timeout_seconds
         self.conversation_retention_days = conversation_retention_days
+        if database_call_timeout_seconds < 1:
+            raise ValueError(
+                "database_call_timeout_seconds must be at least 1"
+            )
+        self.database_call_timeout_seconds = database_call_timeout_seconds
+        self.worker_dispatch_timeout_seconds = (
+            database_call_timeout_seconds + 5
+        )
         self.sessions: dict[str, ChildSession] = {}
 
     async def open(self, spec: SessionSpec) -> None:
@@ -129,6 +143,7 @@ class ProcessSessionBackend:
                 spec.owner,
                 spec.team_name,
                 self.conversation_retention_days,
+                self.database_call_timeout_seconds,
             ),
             daemon=True,
         )
@@ -197,12 +212,12 @@ class ProcessSessionBackend:
                             "payload": payload,
                         },
                     )
-                    # Let the database call timeout reach the worker response.
+                    # Leave time for the database call timeout to return.
                     response = await self._receive(
                         session,
-                        timeout_seconds=None,
+                        timeout_seconds=self.worker_dispatch_timeout_seconds,
                     )
-                except (EOFError, OSError) as error:
+                except (EOFError, OSError, TimeoutError) as error:
                     failure = error
         if failure is not None:
             LOGGER.warning(
@@ -386,6 +401,9 @@ def _session_process_main(
     owner: str,
     team_name: str,
     conversation_retention_days: int,
+    database_call_timeout_seconds: int = (
+        DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
+    ),
 ) -> None:
     """Entrypoint for a child that owns one Select AI database session."""
     try:
@@ -397,6 +415,7 @@ def _session_process_main(
                 owner,
                 team_name,
                 conversation_retention_days,
+                database_call_timeout_seconds,
             )
         )
     finally:
@@ -410,6 +429,9 @@ async def _run_session_process(
     owner: str,
     team_name: str,
     conversation_retention_days: int = 7,
+    database_call_timeout_seconds: int = (
+        DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
+    ),
 ) -> None:
     """Open one async connection and execute A2A operations."""
     import select_ai
@@ -436,7 +458,9 @@ async def _run_session_process(
             **connection_options,
         )
         async with async_get_connection() as database_connection:
-            database_connection.call_timeout = _DATABASE_CALL_TIMEOUT_MS
+            database_connection.call_timeout = (
+                database_call_timeout_seconds * 1_000
+            )
         if not await select_ai.async_is_connected():
             raise RuntimeError("Database login failed.")
         runtime = SessionRuntime(
