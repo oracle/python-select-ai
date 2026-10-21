@@ -18,6 +18,9 @@ from dataclasses import dataclass
 from multiprocessing.connection import Connection
 from typing import Protocol
 
+from select_ai.agent.a2a.models import (
+    DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+)
 from select_ai.agent.a2a.session_runtime import SessionRuntime
 from select_ai.agent.a2a.worker_protocol import (
     PipeMessageType,
@@ -27,6 +30,7 @@ from select_ai.agent.a2a.worker_protocol import (
 
 LOGGER = logging.getLogger(__name__)
 _SESSION_REAPER_INTERVAL_SECONDS = 1
+_DATABASE_CALL_TIMEOUT_MS = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS * 1_000
 
 
 @dataclass(frozen=True)
@@ -39,6 +43,7 @@ class SessionSpec:
     username: str
     password: str
     team_name: str
+    tls_ca_certificate_pem: str | None = None
 
 
 @dataclass
@@ -101,9 +106,22 @@ class ProcessSessionBackend:
         self,
         session_ttl_seconds: int,
         session_start_timeout_seconds: int,
+        conversation_retention_days: int = 7,
+        database_call_timeout_seconds: int = (
+            DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
+        ),
     ) -> None:
         self.session_ttl_seconds = session_ttl_seconds
         self.session_start_timeout_seconds = session_start_timeout_seconds
+        self.conversation_retention_days = conversation_retention_days
+        if database_call_timeout_seconds < 1:
+            raise ValueError(
+                "database_call_timeout_seconds must be at least 1"
+            )
+        self.database_call_timeout_seconds = database_call_timeout_seconds
+        self.worker_dispatch_timeout_seconds = (
+            database_call_timeout_seconds + 5
+        )
         self.sessions: dict[str, ChildSession] = {}
 
     async def open(self, spec: SessionSpec) -> None:
@@ -114,6 +132,8 @@ class ProcessSessionBackend:
             "password": spec.password,
             "dsn": spec.dsn,
         }
+        if spec.tls_ca_certificate_pem is not None:
+            credentials["tls_ca_certificate_pem"] = spec.tls_ca_certificate_pem
         process = multiprocessing.Process(
             target=_session_process_main,
             args=(
@@ -122,6 +142,8 @@ class ProcessSessionBackend:
                 spec.session_id,
                 spec.owner,
                 spec.team_name,
+                self.conversation_retention_days,
+                self.database_call_timeout_seconds,
             ),
             daemon=True,
         )
@@ -172,6 +194,13 @@ class ProcessSessionBackend:
         session = await self.get(session_id)
         response = None
         failure = None
+        started_at = time.monotonic()
+        LOGGER.debug(
+            "Worker command started: session_id=%s method=%s pid=%s",
+            session_id,
+            method,
+            session.process.pid,
+        )
         async with session.lock:
             if session.process.is_alive():
                 try:
@@ -183,28 +212,57 @@ class ProcessSessionBackend:
                             "payload": payload,
                         },
                     )
+                    # Leave time for the database call timeout to return.
                     response = await self._receive(
                         session,
-                        timeout_seconds=120,
+                        timeout_seconds=self.worker_dispatch_timeout_seconds,
                     )
                 except (EOFError, OSError, TimeoutError) as error:
                     failure = error
         if failure is not None:
+            LOGGER.warning(
+                "Worker command pipe failed: session_id=%s method=%s "
+                "elapsed_ms=%s error_type=%s; discarding session",
+                session_id,
+                method,
+                int((time.monotonic() - started_at) * 1000),
+                type(failure).__name__,
+            )
             await self._discard(session_id, session)
             raise SessionUnavailable(
                 "Database session is unavailable; reconnect required."
             ) from failure
         if response is None:
+            LOGGER.warning(
+                "Worker session returned no response: session_id=%s method=%s "
+                "elapsed_ms=%s",
+                session_id,
+                method,
+                int((time.monotonic() - started_at) * 1000),
+            )
             await self._discard(session_id, session)
             raise SessionNotFound(
                 "Database session expired; reconnect required."
             )
         if response.get("type") == PipeMessageType.RESULT.value:
+            LOGGER.debug(
+                "Worker command completed: session_id=%s method=%s elapsed_ms=%s",
+                session_id,
+                method,
+                int((time.monotonic() - started_at) * 1000),
+            )
             return response.get(
                 "result",
                 WorkerResult(ResultKind.NONE),
             )
         if response.get("type") == PipeMessageType.A2A_ERROR.value:
+            LOGGER.debug(
+                "Worker command returned an A2A error: session_id=%s "
+                "method=%s elapsed_ms=%s",
+                session_id,
+                method,
+                int((time.monotonic() - started_at) * 1000),
+            )
             raise SessionCommandError(
                 response.get("detail", "A2A request failed.")
             )
@@ -242,7 +300,18 @@ class ProcessSessionBackend:
             for session_id, session in self.sessions.items()
             if session.expires_at <= now or not session.process.is_alive()
         ]
-        for session_id, _session in expired:
+        for session_id, session in expired:
+            reason = (
+                "ttl_expired"
+                if session.expires_at <= now
+                else "process_exited"
+            )
+            LOGGER.info(
+                "Reaping worker session: session_id=%s reason=%s pid=%s",
+                session_id,
+                reason,
+                session.process.pid,
+            )
             self.sessions.pop(session_id, None)
 
         for session_id, session in expired:
@@ -272,15 +341,19 @@ class ProcessSessionBackend:
             return
         detail = response.get("detail", "Database login failed.")
         for secret in (spec.password, spec.username, spec.dsn):
-            detail = detail.replace(secret, "[REDACTED]")
+            if secret:
+                detail = detail.replace(secret, "[REDACTED]")
+        if spec.tls_ca_certificate_pem:
+            detail = detail.replace(spec.tls_ca_certificate_pem, "[REDACTED]")
         LOGGER.error("Select AI session startup failed: %s", detail[-2_000:])
         raise SessionLoginError("Database login failed.")
 
     @staticmethod
     async def _receive(
         session: ChildSession,
-        timeout_seconds: float,
+        timeout_seconds: float | None,
     ) -> dict:
+        """Read a child response, optionally waiting without a deadline."""
         available = await asyncio.to_thread(
             session.connection.poll,
             timeout_seconds,
@@ -296,6 +369,11 @@ class ProcessSessionBackend:
 
     @staticmethod
     async def _terminate(session: ChildSession) -> None:
+        LOGGER.debug(
+            "Terminating worker session process: pid=%s alive=%s",
+            session.process.pid,
+            session.process.is_alive(),
+        )
         async with session.lock:
             try:
                 with contextlib.suppress(OSError):
@@ -322,6 +400,10 @@ def _session_process_main(
     session_id: str,
     owner: str,
     team_name: str,
+    conversation_retention_days: int,
+    database_call_timeout_seconds: int = (
+        DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
+    ),
 ) -> None:
     """Entrypoint for a child that owns one Select AI database session."""
     try:
@@ -332,6 +414,8 @@ def _session_process_main(
                 session_id,
                 owner,
                 team_name,
+                conversation_retention_days,
+                database_call_timeout_seconds,
             )
         )
     finally:
@@ -344,21 +428,47 @@ async def _run_session_process(
     session_id: str,
     owner: str,
     team_name: str,
+    conversation_retention_days: int = 7,
+    database_call_timeout_seconds: int = (
+        DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
+    ),
 ) -> None:
     """Open one async connection and execute A2A operations."""
     import select_ai
+    from select_ai.db import async_get_connection
 
     runtime: SessionRuntime | None = None
     ready = False
     try:
+        connection_options = {}
+        tls_ca_certificate_pem = credentials.get("tls_ca_certificate_pem")
+        if tls_ca_certificate_pem:
+            import ssl
+
+            connection_options = {
+                "protocol": "tcps",
+                "ssl_context": ssl.create_default_context(
+                    cadata=tls_ca_certificate_pem
+                ),
+            }
         await select_ai.async_connect(
             user=credentials["user"],
             password=credentials["password"],
             dsn=credentials["dsn"],
+            **connection_options,
         )
+        async with async_get_connection() as database_connection:
+            database_connection.call_timeout = (
+                database_call_timeout_seconds * 1_000
+            )
         if not await select_ai.async_is_connected():
             raise RuntimeError("Database login failed.")
-        runtime = SessionRuntime(session_id, owner, team_name)
+        runtime = SessionRuntime(
+            session_id,
+            owner,
+            team_name,
+            conversation_retention_days,
+        )
         await runtime.initialize()
         connection.send({"type": PipeMessageType.READY.value})
         ready = True
@@ -412,7 +522,11 @@ async def _handle_a2a_command(
             command.get("payload", b""),
         )
     except Exception as error:
-        LOGGER.exception("Select AI session A2A command failed")
+        LOGGER.exception(
+            "Select AI session A2A command failed: session_id=%s method=%s",
+            runtime.session_id,
+            command.get("method"),
+        )
         connection.send(
             {"type": PipeMessageType.A2A_ERROR.value, "detail": str(error)}
         )

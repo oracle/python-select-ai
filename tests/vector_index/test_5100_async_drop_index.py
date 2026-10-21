@@ -156,7 +156,7 @@ class TestAsyncDeleteVectorIndex:
         provider = select_ai.OCIGenAIProvider(
             oci_compartment_id=params["oci_compartment_id"],
             oci_apiformat="GENERIC",
-            embedding_model="cohere.embed-english-v3.0",
+            embedding_model="cohere.embed-v4.0",
         )
         profile_attributes = select_ai.ProfileAttributes(
             credential_name=cls.genai_cred,

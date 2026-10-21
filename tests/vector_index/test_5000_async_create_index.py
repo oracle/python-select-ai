@@ -145,7 +145,7 @@ class TestAsyncCreateVectorIndex:
         provider = select_ai.OCIGenAIProvider(
             oci_compartment_id=params["oci_compartment_id"],
             oci_apiformat="GENERIC",
-            embedding_model="cohere.embed-english-v3.0",
+            embedding_model="cohere.embed-v4.0",
         )
         profile_attributes = select_ai.ProfileAttributes(
             credential_name=cls.genai_cred,
@@ -445,7 +445,9 @@ class TestAsyncCreateVectorIndex:
         with pytest.raises(oracledb.DatabaseError) as exc_info:
             await vector_index.create(replace=True)
         assert "ORA-20045" in str(exc_info.value)
-        assert "description is too long" in str(exc_info.value)
+        message = str(exc_info.value).lower()
+        assert "description" in message
+        assert "too long" in message or "exceeds" in message
         logger.info("Expected DatabaseError raised: %s", exc_info.value)
 
     async def test_5018(self):

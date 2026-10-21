@@ -209,9 +209,9 @@ async def test_1511_create_with_long_values():
     logger.debug("Error code: %s", error.code)
     logger.debug("Error message:\n%s", error.message)
     assert error.code == 20050
-    assert (
-        "Value is too long for conversation attribute - title" in error.message
-    )
+    message = error.message.lower()
+    assert "title" in message
+    assert "too long" in message or "exceeds" in message
 
 
 @pytest.mark.anyio

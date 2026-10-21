@@ -26,7 +26,7 @@ select_ai.connect(user=user, password=password, dsn=dsn)
 provider = select_ai.OCIGenAIProvider(
     region="us-chicago-1",
     oci_apiformat="GENERIC",
-    embedding_model="cohere.embed-english-v3.0",
+    embedding_model="cohere.embed-v4.0",
 )
 
 # Create an AI profile to use the Vector index with
