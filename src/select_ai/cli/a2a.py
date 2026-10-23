@@ -34,6 +34,33 @@ def _require_a2a_support():
     return uvicorn, create_app
 
 
+def _uvicorn_tls_options(cert_file, key_file, ca_file):
+    """Build Uvicorn TLS settings; a CA enables client certificate checks."""
+    if cert_file and key_file:
+        options = {
+            "ssl_certfile": cert_file,
+            "ssl_keyfile": key_file,
+        }
+        if ca_file:
+            options.update(
+                {
+                    "ssl_ca_certs": ca_file,
+                    "ssl_cert_reqs": ssl.CERT_REQUIRED,
+                }
+            )
+        return options
+
+    if cert_file or key_file:
+        raise click.ClickException(
+            "--tls-cert-file and --tls-key-file must be supplied together."
+        )
+    if ca_file:
+        raise click.ClickException(
+            "--tls-ca-file requires --tls-cert-file and --tls-key-file."
+        )
+    return {}
+
+
 @click.group(invoke_without_command=True)
 @click.pass_context
 def a2a(context):
@@ -64,6 +91,21 @@ def a2a(context):
     show_default=True,
     envvar="PORT",
     type=click.IntRange(min=1, max=65_535),
+)
+@click.option(
+    "--tls-cert-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="A2A server TLS certificate. Requires --tls-key-file.",
+)
+@click.option(
+    "--tls-key-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="A2A server TLS private key. Requires --tls-cert-file.",
+)
+@click.option(
+    "--tls-ca-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="CA used to require and validate client certificates (mTLS).",
 )
 @click.option(
     "--public-url",
@@ -112,7 +154,7 @@ def a2a(context):
     "--worker-tls-ca-file",
     envvar="WORKER_TLS_CA_FILE",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="CA bundle used to validate clustered workers.",
+    help="CA bundle for worker certificates; omit to use system trust.",
 )
 @click.option(
     "--worker-tls-cert-file",
@@ -152,6 +194,9 @@ def serve(
     team_name,
     host,
     port,
+    tls_cert_file,
+    tls_key_file,
+    tls_ca_file,
     public_url,
     description,
     pool_max_size,
@@ -173,9 +218,15 @@ def serve(
 ):
     """Start the public A2A server in standalone or clustered mode."""
     uvicorn, create_app = _require_a2a_support()
+    uvicorn_options = _uvicorn_tls_options(
+        tls_cert_file,
+        tls_key_file,
+        tls_ca_file,
+    )
 
     if public_url is None:
-        public_url = f"http://{host}:{port}"
+        scheme = "https" if tls_cert_file else "http"
+        public_url = f"{scheme}://{host}:{port}"
 
     try:
         from select_ai.agent.a2a import (
@@ -275,7 +326,7 @@ def serve(
     click.echo(
         f"A2A Agent Card: {public_url.rstrip('/')}/.well-known/agent-card.json"
     )
-    uvicorn.run(app, host=host, port=port)
+    uvicorn.run(app, host=host, port=port, **uvicorn_options)
 
 
 @a2a.command("worker")
@@ -348,17 +399,17 @@ def serve(
 @click.option(
     "--tls-cert-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="Worker TLS server certificate. Requires all --tls-* options.",
+    help="Worker TLS server certificate. Requires --tls-key-file.",
 )
 @click.option(
     "--tls-key-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="Worker TLS server private key. Requires all --tls-* options.",
+    help="Worker TLS server private key. Requires --tls-cert-file.",
 )
 @click.option(
     "--tls-ca-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="CA used to validate the gateway client certificate.",
+    help="Optional CA used to require and validate client certificates (mTLS).",
 )
 def worker(
     host,
@@ -385,6 +436,12 @@ def worker(
             "Install it with: pip install 'select_ai[a2a]'"
         ) from error
 
+    uvicorn_options = _uvicorn_tls_options(
+        tls_cert_file,
+        tls_key_file,
+        tls_ca_file,
+    )
+
     settings = WorkerSettings(
         consul_url=consul_url,
         worker_id=worker_id,
@@ -397,25 +454,11 @@ def worker(
         worker_endpoint=worker_endpoint,
     )
     app = create_worker_app(settings)
-    tls_files = (tls_cert_file, tls_key_file, tls_ca_file)
-    if any(tls_files) and not all(tls_files):
-        raise click.ClickException(
-            "Worker mTLS requires --tls-cert-file, --tls-key-file, and "
-            "--tls-ca-file."
-        )
     logging.basicConfig(level=logging.INFO, force=True)
     logging.getLogger("select_ai").setLevel(log_level.upper())
 
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    uvicorn_options = {}
-    if tls_cert_file:
-        uvicorn_options = {
-            "ssl_certfile": tls_cert_file,
-            "ssl_keyfile": tls_key_file,
-            "ssl_ca_certs": tls_ca_file,
-            "ssl_cert_reqs": ssl.CERT_REQUIRED,
-        }
     uvicorn.run(
         app,
         host=host,

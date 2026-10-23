@@ -391,12 +391,38 @@ supervisor workflow, and inspects the generated supervisor task and team
 metadata. ``Team.run()`` starts the team workflow; the configured supervisor
 agent coordinates the worker agent as part of that call.
 
+Set the common database connection variables and ``SELECT_AI_PROFILE_NAME``
+(default ``oci_ai_profile``) to an existing profile. Run
+``python samples/agent/team_supervisor_inspect.py`` from the repository root.
+The script removes the objects and conversation it creates during cleanup.
+
+.. latex:clearpage::
+
+First, configure the connection and define the task and worker agent:
+
 .. literalinclude:: ../../../samples/agent/team_supervisor_inspect.py
    :language: python
-   :lines: 14-
+   :start-at: import os
+   :end-before: supervisor = Agent(
 
-The generated names and returned JSON metadata vary between runs. Representative
-output is:
+.. latex:clearpage::
+
+Append the supervisor, team, and conversation definitions:
+
+.. literalinclude:: ../../../samples/agent/team_supervisor_inspect.py
+   :language: python
+   :start-at: supervisor = Agent(
+   :end-before: created_objects = []
+
+.. latex:clearpage::
+
+Finally, create the objects, run the team, inspect its metadata, and clean up:
+
+.. literalinclude:: ../../../samples/agent/team_supervisor_inspect.py
+   :language: python
+   :start-at: created_objects = []
+
+Example output (generated names, model responses, and JSON metadata vary):
 
 output::
 
@@ -585,7 +611,7 @@ async definition samples for a complete create, inspect, and cleanup flow.
    :lines: 14-
 
 The task name and exact PL/SQL formatting vary between runs and database
-versions. Representative output is:
+versions. Example output (generated IDs and model responses vary):
 
 output::
 

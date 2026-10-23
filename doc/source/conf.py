@@ -11,6 +11,7 @@ import sys
 import sphinx_prompt
 
 sys.modules["sphinx-prompt"] = sphinx_prompt
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.insert(0, os.path.join("..", "..", "src", "select_ai"))
 
@@ -30,6 +31,7 @@ author = "Oracle"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx_toolbox.latex",
+    "sphinx_toolbox_latex_compat",
     "sphinx.ext.autosectionlabel",
 ]
 
@@ -59,7 +61,11 @@ release = local_vars["__version__"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "python_docs_theme"
-html_static_path = ["_static"]
+html_static_path = (
+    ["_static"]
+    if os.path.isdir(os.path.join(os.path.dirname(__file__), "_static"))
+    else []
+)
 
 pygments_style = "sphinx"
 

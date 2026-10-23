@@ -46,7 +46,10 @@ async def main():
         for prompt in prompts:
             print(f"Prompt {prompt.conversation_prompt_id}: {prompt.prompt}")
 
-        await conversation.delete_prompt(prompts[-1].conversation_prompt_id)
+        if prompts:
+            await conversation.delete_prompt(
+                prompts[-1].conversation_prompt_id
+            )
         prompts = [prompt async for prompt in conversation.list_prompts()]
         print("Prompts after deletion:", prompts)
         await conversation.remove_tag("PROJECT")

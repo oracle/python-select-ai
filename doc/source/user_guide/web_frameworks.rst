@@ -95,6 +95,8 @@ For production deployments, store these values in your deployment platform's
 secret manager or environment configuration. Do not hard-code database
 passwords, wallet passwords, or provider credentials in application source.
 
+.. latex:clearpage::
+
 FastAPI synchronous endpoints
 =============================
 
@@ -166,6 +168,8 @@ This example creates the ``Profile`` proxy inside each handler. The proxy is
 lightweight; the database connection is acquired from the pool only when the
 profile method calls the database.
 
+.. latex:clearpage::
+
 FastAPI asynchronous endpoints
 ==============================
 
@@ -219,6 +223,8 @@ Start and stop the server the same way:
 
 Press ``Ctrl+C`` to stop it.
 
+.. latex:clearpage::
+
 Flask example
 =============
 
@@ -260,6 +266,8 @@ synchronous Select AI pool when the application is created.
 
        return app
 
+.. latex:clearpage::
+
 Django example
 ==============
 
@@ -290,6 +298,10 @@ pool once per process, then call ``Profile`` APIs inside views.
                    max_size=int(os.getenv("SELECT_AI_POOL_MAX", "4")),
                    increment=int(os.getenv("SELECT_AI_POOL_INCREMENT", "1")),
                )
+
+.. latex:clearpage::
+
+Add the view in ``myapp/views.py``:
 
 .. code-block:: python
 

@@ -14,26 +14,38 @@ Python ecosystem. It gives Python applications a higher-level API for working
 with AI providers, credentials, profiles, natural language prompts, vector
 indexes, conversations, summarization, synthetic data, and AI agent workflows.
 
+.. only:: html
+
+   .. figure:: /image/select_ai_a2a_server_demo.gif
+      :alt: Select AI A2A server demo from the project README
+      :width: 100%
+
+      Connect an A2A client to a Select AI agent team. Follow the
+      :ref:`A2A guide <a2a>` to run the server.
+
 What you can build
 ==================
 
-Use ``select_ai`` to:
+Start with the workflow you want to build:
 
-* Ask questions about database objects in natural language and generate SQL.
-* Run generated SQL and return results as Python objects such as pandas data
-  frames.
-* Generate narrative answers, explanations, prompt previews, translations, and
-  summaries.
-* Use Retrieval Augmented Generation (RAG) with vector indexes over documents
-  and object storage content.
-* Create synthetic data for database tables.
-* Build context-aware chat sessions with database-backed conversations.
-* Register tools, tasks, agents, and teams for database-backed AI agent
-  workflows.
-* Use the optional ``select-ai`` command line interface for interactive chat
-  and SQL workflows.
-* Use synchronous APIs, asynchronous APIs, and connection pools in scripts,
-  services, and web applications.
+* **Natural language data apps:** generate SQL, return query results as pandas
+  DataFrames, or explain results in plain language with :ref:`Profiles <profile>`
+  and :ref:`Async Profiles <async_profile>`.
+* **RAG and chat assistants:** ground answers in your documents with
+  :ref:`Vector Indexes <vector_index>` and keep chat context with
+  :ref:`Conversations <conversation>`.
+* **AI agent workflows:** compose tools, tasks, and agents into
+  :ref:`Teams <agent>`, then expose a team to other AI applications through
+  an :ref:`Agent2Agent (A2A) server <a2a>`.
+* **Python web services:** add Select AI endpoints to FastAPI, Flask, or Django
+  using the pool lifecycle patterns in :ref:`Web Frameworks <web_frameworks>`.
+* **Concurrent prompt processing:** use threads, async tasks, queues, or a
+  database pipeline with the :ref:`Concurrency Guides <concurrent_prompt_processing>`.
+* **Content and test-data tools:** :ref:`summarize content <summary>`,
+  :ref:`translate text <user_guide/profile:Translate>`, or generate
+  :ref:`Synthetic Data <synthetic_data>` for database tables.
+* **Terminal workflows:** chat, generate SQL, and run an A2A server with the
+  optional :ref:`Command Line Interface <cli>`.
 
 Core concepts
 =============
@@ -80,6 +92,11 @@ Most workflows use the same building blocks:
    * - Agent
      - Define tools, tasks, agents, and teams for multi-step AI workflows.
      - :ref:`Agent <agent>`
+
+   * - Agent2Agent (A2A)
+     - Expose an agent team as a discoverable service for A2A clients. Choose
+       standalone or clustered deployment and fixed or dynamic connections.
+     - :ref:`A2A server <a2a>`
 
 Synchronous and asynchronous APIs
 =================================

@@ -594,32 +594,131 @@ output::
 
 .. latex:clearpage::
 
+******************************
+Share a profile asynchronously
+******************************
+
+While connected as the profile owner, grant access to an existing profile:
+
+.. code-block:: python
+
+   profile = await select_ai.AsyncProfile.fetch("OCI_AI_PROFILE")
+   await profile.grant_access("APP_USER")
+
+The recipient can fetch the profile with ``owner="APP_OWNER"`` in a separate
+connection. When access should end, run
+``await profile.revoke_access("APP_USER")`` as the owner. See
+:ref:`Sharing and ownership <sharing>` for the complete owner and recipient
+sequence.
+
+.. raw:: latex
+
+   \Needspace{25\baselineskip}
+
+************************************
+Give async feedback on generated SQL
+************************************
+
+Use feedback after reviewing the SQL produced for a prompt. Identify the
+request with a ``(prompt, Action)`` tuple or a ``sql_id`` from
+``V$MAPPED_SQL``. The example below assumes an open async connection and an
+existing profile over the ``SH`` schema:
+
+.. code-block:: python
+
+   profile = await select_ai.AsyncProfile.fetch("OCI_AI_PROFILE")
+   prompt = "How many promotions?"
+   sql = await profile.show_sql(prompt=prompt)
+   print(sql)
+
+After inspecting the SQL, record positive feedback if it answers the question:
+
+.. code-block:: python
+
+   await profile.add_positive_feedback(
+       prompt_spec=(prompt, select_ai.Action.SHOWSQL)
+   )
+
+For an incorrect answer, use ``add_negative_feedback()`` with the same request
+identifier, ``response`` containing the expected SQL, and ``feedback_content``
+explaining the correction. Remove obsolete feedback with
+``delete_feedback()`` and the same request identifier.
+Await these methods when using ``AsyncProfile``.
+
+.. latex:clearpage::
+
 ****************************
 List profiles asynchronously
 ****************************
 
-Profile listing returns profiles visible to the connected database user. Pass
-``owner`` to list profiles from a specific schema, including a profile shared
-with the connected user. Returned objects include ``owner`` and the
-owner-qualified ``qualified_name`` property. The async list API returns an
-async iterator.
+Use ``AsyncProfile.list()`` to discover saved profiles in the current schema.
+Call it on the class; you do not need to create an empty profile first.
+Each returned object includes ``profile_name``, ``owner``, and the
+owner-qualified ``qualified_name``.
+
+Connect and list your profiles
+++++++++++++++++++++++++++++++
+
+Set ``SELECT_AI_USER``, ``SELECT_AI_PASSWORD``, and
+``SELECT_AI_DB_CONNECT_STRING`` before running this complete script. It prints
+one qualified name per profile and closes the connection afterward:
+
+.. literalinclude:: ../../../samples/async/profiles_list.py
+   :language: python
+   :start-at: import
+
+For a schema named ``APP_OWNER`` containing two profiles, the output could be:
+
+.. code-block:: text
+
+   APP_OWNER.OCI_AI_PROFILE
+   APP_OWNER.OCI_VECTOR_AI_PROFILE
+
+Your results depend on the profiles visible in your schema; result order is
+not guaranteed. An empty result means no profiles match the requested scope.
+
+Filter by name
+++++++++++++++
+
+With a connection open, use ``profile_name_pattern`` to match names with a
+regular expression. This example lists names starting with ``OCI_``:
 
 .. code-block:: python
 
-   profile = await select_ai.AsyncProfile.fetch(
-       "OCI_AI_PROFILE",
-       owner="APP_OWNER",
-   )
-   print(profile.qualified_name)
+   async for profile in select_ai.AsyncProfile.list(profile_name_pattern="^OCI_"):
+       print(profile.qualified_name)
+
+``AsyncProfile.list()`` returns an async iterator. Use ``async for``
+directly; do not await the iterator. Put these snippets inside your async
+function before disconnecting.
+
+.. raw:: latex
+
+   \Needspace{27\baselineskip}
+
+Find and reuse a shared profile
++++++++++++++++++++++++++++++++
+
+Pass ``owner`` to list profiles in another schema. The connected user must
+have access to those profiles; specifying an owner does not grant access.
+While connected as the recipient, list the profiles shared by ``APP_OWNER``:
+
+.. code-block:: python
 
    async for profile in select_ai.AsyncProfile.list(owner="APP_OWNER"):
        print(profile.qualified_name)
 
-.. literalinclude:: ../../../samples/async/profiles_list.py
-   :language: python
-   :lines: 14-
+Once you know the profile name, fetch that profile with the same owner and
+use the returned object directly:
 
-output::
+.. code-block:: python
 
-    OCI_VECTOR_AI_PROFILE
-    OCI_AI_PROFILE
+   profile = await select_ai.AsyncProfile.fetch(
+       "OCI_AI_PROFILE", owner="APP_OWNER"
+   )
+   print(profile.qualified_name)  # APP_OWNER.OCI_AI_PROFILE
+   response = await profile.chat(prompt="What is retrieval augmented generation?")
+   print(response)
+
+See :ref:`Sharing and ownership <sharing>` for the owner's grant and revoke
+steps.

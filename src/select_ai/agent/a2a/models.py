@@ -145,23 +145,29 @@ class GatewaySettings:
             raise ValueError(
                 "database_call_timeout_seconds must be at least 1"
             )
-        tls_files = (
-            self.worker_tls_ca_file,
-            self.worker_tls_cert_file,
-            self.worker_tls_key_file,
-        )
-        if any(tls_files) and not all(tls_files):
+        if self.worker_tls_cert_file:
+            if self.worker_tls_key_file is None:
+                raise ValueError(
+                    "worker client certificate and key must be supplied "
+                    "together."
+                )
+        elif self.worker_tls_key_file:
             raise ValueError(
-                "worker mTLS requires a CA file, client certificate, and "
-                "client key."
+                "worker client certificate and key must be supplied together."
             )
         object.__setattr__(self, "public_url", self.public_url.rstrip("/"))
         object.__setattr__(self, "consul_url", self.consul_url.rstrip("/"))
 
     @property
-    def worker_mtls_enabled(self) -> bool:
-        """Whether gateway-to-worker calls require mutual TLS."""
-        return self.worker_tls_ca_file is not None
+    def worker_connection_tls_configured(self) -> bool:
+        """Whether gateway-to-worker calls have explicit TLS settings."""
+        return any(
+            (
+                self.worker_tls_ca_file,
+                self.worker_tls_cert_file,
+                self.worker_tls_key_file,
+            )
+        )
 
 
 @dataclass(frozen=True)

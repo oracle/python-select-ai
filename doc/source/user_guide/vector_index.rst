@@ -436,3 +436,35 @@ output::
       - myrenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/myrenv-manifest.json)
       - fully-loaded-mlenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/fully-loaded-mlenv-manifest.json)
       - graphenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/graphenv-manifest.json)
+
+
+.. latex:clearpage::
+
+Share a vector index
+====================
+
+While connected as the index owner, grant access to an existing index:
+
+.. code-block:: python
+
+   index = select_ai.VectorIndex.fetch("PRODUCT_DOCS")
+   index.grant_access("APP_USER")
+
+In a separate connection as the recipient, use
+``VectorIndex.fetch("PRODUCT_DOCS", owner="APP_OWNER")``. It returns an object
+whose ``qualified_name`` is ``APP_OWNER.PRODUCT_DOCS``. When access should end,
+run ``index.revoke_access("APP_USER")`` as the owner.
+
+For an async application, use ``AsyncVectorIndex`` and await each operation:
+
+.. code-block:: python
+
+   # Run as the index owner.
+   index = await select_ai.AsyncVectorIndex.fetch("PRODUCT_DOCS")
+   await index.grant_access("APP_USER")
+
+   # Run later as the index owner, when access should end.
+   await index.revoke_access("APP_USER")
+
+See :ref:`Sharing and ownership <sharing>` for the recipient's async fetch
+example and connection setup.

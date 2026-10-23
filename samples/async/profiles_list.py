@@ -16,19 +16,18 @@ import os
 
 import select_ai
 
-user = os.getenv("SELECT_AI_USER")
-password = os.getenv("SELECT_AI_PASSWORD")
-dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
-
 
 async def main():
-    await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile()
-    # matches the start of string
-    async for fetched_profile in async_profile.list(
-        profile_name_pattern="^oci"
-    ):
-        print(fetched_profile.profile_name)
+    await select_ai.async_connect(
+        user=os.environ["SELECT_AI_USER"],
+        password=os.environ["SELECT_AI_PASSWORD"],
+        dsn=os.environ["SELECT_AI_DB_CONNECT_STRING"],
+    )
+    try:
+        async for profile in select_ai.AsyncProfile.list():
+            print(profile.qualified_name)
+    finally:
+        await select_ai.async_disconnect()
 
 
 asyncio.run(main())

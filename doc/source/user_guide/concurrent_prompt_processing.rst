@@ -63,6 +63,10 @@ The recipes use the same connection environment variables as the other samples:
    export SELECT_AI_PASSWORD=<select_ai_db_password>
    export SELECT_AI_DB_CONNECT_STRING=<db_connect_string>
 
+.. raw:: latex
+
+   \Needspace{10\baselineskip}
+
 Optional environment variables control pool sizing and profile names:
 
 .. code-block:: sh
@@ -75,6 +79,8 @@ Optional environment variables control pool sizing and profile names:
 Use ``SELECT_AI_PROFILE_NAME=async_oci_ai_profile`` for the async recipes if
 that is the async profile name in your environment.
 
+.. latex:clearpage::
+
 .. _sync_thread_pool_recipe:
 
 ``sync_thread_pool.py``
@@ -83,9 +89,23 @@ that is the async profile name in your environment.
 This recipe uses ``ThreadPoolExecutor`` and ``as_completed()``. Results are
 printed in the order they finish.
 
+Set up the imports, connection values, prompts, and any helper functions:
+
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/sync_thread_pool.py
    :language: python
-   :lines: 14-
+   :start-at: import
+   :end-before: select_ai.create_pool(
+
+.. latex:clearpage::
+
+The following code creates the connection pool, processes the prompts, and
+closes the pool in a ``finally`` block:
+
+.. literalinclude:: ../../../recipes/concurrent_prompt_processing/sync_thread_pool.py
+   :language: python
+   :start-at: select_ai.create_pool(
+
+.. latex:clearpage::
 
 .. _sync_ordered_results_recipe:
 
@@ -95,9 +115,23 @@ printed in the order they finish.
 This recipe uses ``ThreadPoolExecutor.map()``. Prompts run concurrently, but
 results are printed in the same order as the input list.
 
+Set up the imports, connection values, prompts, and any helper functions:
+
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/sync_ordered_results.py
    :language: python
-   :lines: 14-
+   :start-at: import
+   :end-before: select_ai.create_pool(
+
+.. latex:clearpage::
+
+The following code creates the connection pool, processes the prompts, and
+closes the pool in a ``finally`` block:
+
+.. literalinclude:: ../../../recipes/concurrent_prompt_processing/sync_ordered_results.py
+   :language: python
+   :start-at: select_ai.create_pool(
+
+.. latex:clearpage::
 
 .. _sync_queue_workers_recipe:
 
@@ -107,9 +141,23 @@ results are printed in the same order as the input list.
 This recipe uses worker threads and ``queue.Queue``. It is useful when prompt
 producers and prompt processors are separate parts of an application.
 
+Set up the imports, connection values, prompts, and any helper functions:
+
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/sync_queue_workers.py
    :language: python
-   :lines: 14-
+   :start-at: import
+   :end-before: select_ai.create_pool(
+
+.. latex:clearpage::
+
+The following code creates the connection pool, processes the prompts, and
+closes the pool in a ``finally`` block:
+
+.. literalinclude:: ../../../recipes/concurrent_prompt_processing/sync_queue_workers.py
+   :language: python
+   :start-at: select_ai.create_pool(
+
+.. latex:clearpage::
 
 .. _async_gather_recipe:
 
@@ -119,9 +167,23 @@ producers and prompt processors are separate parts of an application.
 This recipe uses ``asyncio.gather()``. Prompts run concurrently, and results
 are returned in the same order as the input task list.
 
+Set up the imports, connection values, prompts, and any helper functions:
+
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_gather.py
    :language: python
-   :lines: 14-
+   :start-at: import
+   :end-before: async def main():
+
+.. latex:clearpage::
+
+The following code creates the connection pool, processes the prompts, and
+closes the pool in a ``finally`` block:
+
+.. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_gather.py
+   :language: python
+   :start-at: async def main():
+
+.. latex:clearpage::
 
 .. _async_as_completed_recipe:
 
@@ -131,9 +193,23 @@ are returned in the same order as the input task list.
 This recipe uses ``asyncio.as_completed()``. It is useful for command-line
 tools or services that can forward each answer as soon as it is ready.
 
+Set up the imports, connection values, prompts, and any helper functions:
+
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_as_completed.py
    :language: python
-   :lines: 14-
+   :start-at: import
+   :end-before: async def main():
+
+.. latex:clearpage::
+
+The following code creates the connection pool, processes the prompts, and
+closes the pool in a ``finally`` block:
+
+.. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_as_completed.py
+   :language: python
+   :start-at: async def main():
+
+.. latex:clearpage::
 
 .. _async_pipeline_recipe:
 
@@ -146,9 +222,23 @@ task concurrency: the application submits a batch and receives the batch
 results when the pipeline completes. Pass ``attributes=...`` to apply the
 same request-level profile overrides to every item in the pipeline.
 
+Set up the imports, connection values, prompts, and any helper functions:
+
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_pipeline.py
    :language: python
-   :lines: 14-
+   :start-at: import
+   :end-before: async def main():
+
+.. latex:clearpage::
+
+The following code creates the connection pool, processes the prompts, and
+closes the pool in a ``finally`` block:
+
+.. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_pipeline.py
+   :language: python
+   :start-at: async def main():
+
+.. latex:clearpage::
 
 .. _async_queue_workers_recipe:
 
@@ -158,9 +248,21 @@ same request-level profile overrides to every item in the pipeline.
 This recipe uses ``asyncio.Queue`` and async worker tasks. It is useful for
 long-running async applications that receive prompts over time.
 
+Set up the imports, connection values, prompts, and any helper functions:
+
 .. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_queue_workers.py
    :language: python
-   :lines: 14-
+   :start-at: import
+   :end-before: async def main():
+
+.. latex:clearpage::
+
+The following code creates the connection pool, processes the prompts, and
+closes the pool in a ``finally`` block:
+
+.. literalinclude:: ../../../recipes/concurrent_prompt_processing/async_queue_workers.py
+   :language: python
+   :start-at: async def main():
 
 Pool sizing
 ===========
