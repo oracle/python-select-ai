@@ -9,23 +9,123 @@ Select AI for Python can expose an Oracle Database AI Agent Team through the
 discover the team from an Agent Card, submit database prompts, and retrieve
 task results through the same JSON-RPC endpoint.
 
-Choose a deployment topology and decide how database connection values are
-provided. These are separate choices:
+Make two independent choices: **where the server runs** (topology) and
+**when database connection values are supplied** (fixed or dynamic).
+For example, a clustered deployment can use fixed credentials, and a
+standalone deployment can ask each client for credentials.
 
-* **Standalone** runs one public A2A server. It does not need Consul or a
-  separate worker.
-* **Clustered** runs a public gateway plus one or more database workers. It
-  requires Consul so the gateway can find workers.
-* **Fixed connection** means the server is given the DSN, username, password,
-  and team at startup.
-* **Dynamic connection** means the A2A client supplies any connection values
-  not configured at startup through the A2UI connection form.
+.. only:: html
 
-Dynamic connections do not require a clustered deployment. In standalone
-topology, the server starts an isolated child process for each dynamic session
-itself. In clustered topology, a separate worker starts that child process.
-See :ref:`A2A CLI examples <a2a-cli-examples>` for copy-ready commands, and
-:ref:`Command line interface <cli>` for the full CLI reference.
+   .. figure:: /image/select_ai_a2a_server_demo.gif
+      :alt: Select AI A2A server demo from the project README
+      :width: 100%
+
+      A Select AI agent team accessed through an A2A client.
+
+Choose a topology
+=================
+
+* **Standalone:** run one public ``select-ai a2a serve`` process. It handles
+  A2A requests and database work locally. Start here for a single server;
+  Consul and a separate worker are not required.
+* **Clustered:** run a public gateway with
+  ``select-ai a2a serve --deployment clustered`` and one or more
+  ``select-ai a2a worker`` processes. Consul lets the gateway discover healthy
+  workers and route each session back to its worker. Use this when database
+  sessions need to run across multiple workers. See
+  :ref:`Why clustered deployments use Consul <a2a-why-consul>` for the role of
+  this additional service.
+
+.. _a2a-why-consul:
+
+Why clustered deployments use Consul
+====================================
+
+Consul is a separate service that keeps a directory of running workers and
+records which worker owns each A2A session. The gateway consults this directory
+to answer two questions: "Where can I start a new session?" and "Where should I
+send the next request for an existing session?"
+
+This matters because each database session runs in a child process on one
+worker. That process holds the session's database connection and credentials.
+Later prompts, task-status requests, and cancellation requests must reach that
+same worker. A different worker cannot continue using its live connection.
+
+Consul provides three things for the gateway:
+
+* **Worker discovery:** each worker registers its address when it starts. The
+  gateway can find workers without a manually maintained list of addresses.
+* **Worker health:** workers send regular heartbeats to Consul to report that
+  they are running. The gateway selects a worker whose health check is passing
+  when opening a new session.
+* **Session and task routing:** the gateway records the worker assigned to a
+  session and the session associated with each task. Subsequent requests can
+  reach the worker that owns them, even when other workers are available.
+
+For example, suppose two workers, A and B, are running. The gateway opens your
+session on worker A and records that assignment in Consul. Your next prompt
+and a request to check your task's status both go to A. Another client's new
+session can run on B. If A stops, the gateway cannot move its live database
+connection to B; the client must reconnect to open a new session. See
+:ref:`Session isolation, routing, and cleanup <user_guide/a2a:Session isolation, routing, and cleanup>`
+for expiry and reconnection behavior.
+
+Consul stores worker addresses and temporary routing records. Database
+passwords are not stored in Consul; task results and conversation history are
+stored in Oracle Database. See :ref:`Persistent Oracle-backed state <persistent-oracle-backed-state>`
+for the database storage details.
+
+**When do you need it?** The current clustered implementation requires Consul,
+even with only one worker or fixed database credentials. Standalone deployment
+handles sessions locally and does not require Consul. For a first deployment,
+use standalone unless you need separate worker processes across machines.
+
+Choose how connections are configured
+=====================================
+
+Each session needs four values: a database DSN, username, password, and an
+existing AI Agent Team name. Configure these on ``a2a serve`` with ``--dsn``,
+``--user``, ``--password``, and ``--team``, or their environment fallbacks.
+
+* **Fixed:** configure all four values before starting the server. Clients
+  send prompts without completing a connection form. In standalone topology,
+  the server uses a shared connection pool. In clustered topology, the gateway
+  automatically opens a session on a worker using the configured values.
+* **Dynamic:** leave one or more values unset. The client's first message
+  receives an A2UI connection form asking for those missing values. After the
+  client submits the form, the server opens an isolated database session and
+  the client can send prompts using that A2A context ID. The client must
+  support the A2UI handshake; see the runnable samples below.
+
+For example, configure ``--dsn`` and ``--team`` for an application that always
+uses one database and one team, but lets each user connect with their own
+username and password. The form then asks only for username and password.
+Leave all four values unset to let the client choose the database and team
+as well. Values configured on the server cannot be changed by the client.
+
+"Dynamic" describes collecting connection values when a session starts.
+Changing a database or user requires a new session. It does not switch the
+connection underneath an existing session.
+
+.. list-table:: Supported combinations
+   :header-rows: 1
+   :widths: 25 37 38
+
+   * - Topology
+     - Fixed connection
+     - Dynamic connection
+   * - Standalone
+     - Shared async pool; streaming supported.
+     - Local child process per session; task polling supported.
+   * - Clustered
+     - Worker session opened automatically; task polling supported.
+     - Worker session opened after form submission; task polling supported.
+
+Dynamic standalone and all clustered sessions do not support streaming.
+Standalone dynamic mode requires one Uvicorn process. Clustered mode requires
+Consul and at least one worker even when the connection is fixed.
+See :ref:`A2A CLI examples <a2a-cli-examples>` for commands and
+:ref:`Command Line Interface <cli>` for options.
 
 .. only:: html
 
@@ -54,52 +154,18 @@ a virtual machine, a container platform, or a Kubernetes service in any cloud
 that can reach the required Oracle Database. Clustered deployments also need
 Consul; standalone deployments do not.
 
-The ``--deployment`` option selects the topology. It defaults to
-``standalone``. Whether a connection is fixed or dynamic depends on which
-connection values are supplied:
-
-.. list-table:: A2A runtime choices
-   :header-rows: 1
-   :widths: 24 28 28 20
-   :align: left
-
-   * - Choice
-     - Start command and components
-     - Database connection values
-     - A2A behavior
-   * - Fixed standalone
-     - ``select-ai a2a serve``; one public server and a shared connection
-       pool. No worker or Consul.
-     - Supply ``--dsn``, ``--user``, ``--password``, and ``--team`` at
-       startup.
-     - Supports streaming.
-   * - Dynamic standalone
-     - ``select-ai a2a serve``; one public server starts a child process for
-       each session. No worker or Consul.
-     - Leave one or more connection values unset; the A2UI form asks for
-       those values when a session starts.
-     - Isolates sessions; supports task polling, not streaming.
-   * - Clustered
-     - ``select-ai a2a serve --deployment clustered`` plus one or more
-       ``select-ai a2a worker`` processes and Consul.
-     - The gateway can preconfigure values; the A2UI form asks for any that
-       remain unset. The worker opens each session.
-     - Supports task polling, not streaming.
-
-In standalone topology, omitting one or more of the four connection values
-selects dynamic standalone sessions. Keep the server to one Uvicorn process
-for this mode. In clustered topology, Consul and at least one worker are
-required even when all connection values are preconfigured.
-
-For complete commands, including database host, port, TLS CA file, and
-credentials, see :ref:`A2A CLI examples <a2a-cli-examples>`.
+The ``--deployment`` option defaults to ``standalone``. Set it to
+``clustered`` to use a gateway and workers. There is no separate connection-mode
+CLI flag: the connection is fixed when all four connection values are supplied
+and dynamic when any are missing. Environment values count as supplied values.
+See :ref:`A2A CLI examples <a2a-cli-examples>` for complete commands.
 
 The commands can be packaged into the platform's preferred container or
 process deployment. The Google Cloud scripts documented below are convenience
 automation for a Cloud Run/GKE deployment; they are not required to use the
 A2A CLI commands on another cloud or on self-managed infrastructure.
 
-The public routes are the same in all three runtime choices:
+The public routes are the same in all supported combinations:
 
 ``/.well-known/agent-card.json``
     Agent Card discovery endpoint.
@@ -113,6 +179,10 @@ Installation and prerequisites
 
 Install the A2A dependencies before running the server, gateway, or worker:
 
+.. raw:: latex
+
+   \Needspace{5\baselineskip}
+
 .. code-block:: bash
 
    python -m pip install 'select_ai[a2a]'
@@ -122,6 +192,17 @@ All modes require:
 * an Oracle Database where the Select AI Agent Team is installed;
 * a database user with the privileges required by Select AI and the team; and
 * network access from the process to Oracle Database.
+
+The database user also needs ``CREATE TABLE``, ``CREATE VIEW``, and sufficient
+quota in its default tablespace for A2A task and context storage. Ask a database
+administrator to grant these privileges to each database user that will open
+an A2A session. The SDK's ``grant_privileges()`` helper grants package execute
+privileges; it does not grant these storage privileges or tablespace quota.
+
+At initialization, the runtime creates missing internal tables and executes
+``CREATE OR REPLACE VIEW`` for its read-only views. ``CREATE VIEW`` is therefore
+required even when the tables already exist. See
+:ref:`Persistent Oracle-backed state <persistent-oracle-backed-state>`.
 
 The fixed standalone server needs all database values at startup. Dynamic
 standalone and clustered sessions can collect missing values through A2UI.
@@ -177,6 +258,10 @@ Replace the example values with your database username, password, host, port,
 service name, team, and CA-file path. Supply all four connection values to
 use fixed standalone mode; omitting any value selects dynamic standalone mode.
 
+.. raw:: latex
+
+   \Needspace{14\baselineskip}
+
 .. code-block:: bash
 
    select-ai a2a serve \
@@ -197,6 +282,10 @@ Agent Card; set it when a proxy or load balancer sits in front of the process.
 
 The server prints the discovery URL when it starts:
 
+.. raw:: latex
+
+   \Needspace{6\baselineskip}
+
 .. code-block:: text
 
    A2A Agent Card: https://a2a.example.com/.well-known/agent-card.json
@@ -214,6 +303,10 @@ is still standalone: it needs no Consul service and no ``a2a worker`` process.
 Run one Uvicorn process for this mode. Dynamic standalone sessions support
 task polling but do not support streaming.
 
+.. raw:: latex
+
+   \Needspace{9\baselineskip}
+
 .. code-block:: bash
 
    select-ai a2a serve \
@@ -230,12 +323,18 @@ End-user OAuth and session ownership
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 By default, ``select-ai a2a serve`` does not require an application OAuth
-token. Each A2A context maps to its own Select AI conversation, while A2A task
-and context records use the shared anonymous owner. A hosting platform such as
+token. Each A2A context maps to its own Select AI conversation, while records
+use a shared owner scope (``anonymous`` in fixed standalone mode and
+``a2a-conversation`` in session-based modes). A hosting platform such as
 private Cloud Run can authenticate the calling service, but the A2A server
 does not verify which human user owns the conversation.
 
-Add ``--require-oauth`` when verified end-user ownership is required:
+Add ``--require-oauth`` to require a bearer token and derive the owner scope
+from it. Configure a trusted upstream service to validate the token first:
+
+.. raw:: latex
+
+   \Needspace{15\baselineskip}
 
 .. code-block:: bash
 
@@ -251,12 +350,23 @@ Add ``--require-oauth`` when verified end-user ownership is required:
        --port 8000 \
        --public-url https://a2a.example.com
 
-Every A2A request must then contain ``Authorization: Bearer ...``. The server
-uses the authenticated owner and A2A context to scope task and context records
-and the Select AI conversation. It accepts an OpenID Connect ID token or an
-opaque OAuth 2.0 access token. ID-token ownership remains stable across
-refreshes through the ``iss`` and ``sub`` claims; refreshing an opaque access
-token starts a new owner scope. Tokens are never stored or logged.
+Every request to the A2A JSON-RPC endpoint must then contain
+``Authorization: Bearer ...``. Agent Card discovery remains public. The SDK
+requires bearer syntax and derives an owner scope, but does not validate token
+signatures, expiration, issuer, or audience. It accepts arbitrary nonempty
+bearer values. This flag alone does not establish a verified end-user identity.
+
+The deployment must validate tokens in a trusted authenticating proxy or
+service before forwarding them, and prevent callers from reaching the A2A
+listener through a path that bypasses that validation. Cloud Run IAM validation
+of a calling service is separate from validation of the end-user token.
+
+The server uses the derived owner and A2A context to scope task and context
+records and the Select AI conversation. For an upstream-validated JWT with
+``iss`` and ``sub`` claims, ownership remains stable across token refreshes.
+For an opaque access token, ownership is derived from a hash of the token;
+refreshing it starts a new owner scope. Tokens are not persisted by this
+authentication backend.
 
 The Agent Card advertises bearer security only with ``--require-oauth``.
 
@@ -264,6 +374,10 @@ Agent Card discovery
 ~~~~~~~~~~~~~~~~~~~~
 
 Fetch the card after starting the server:
+
+.. raw:: latex
+
+   \Needspace{5\baselineskip}
 
 .. code-block:: bash
 
@@ -277,6 +391,10 @@ JSON-RPC 1.0 interface and a JSON-RPC v0.3 interface at that same endpoint.
 When a service has a public URL, the portable v0.3 card can also be printed
 without starting the server:
 
+.. raw:: latex
+
+   \Needspace{7\baselineskip}
+
 .. code-block:: bash
 
    select-ai a2a agent-card \
@@ -284,6 +402,10 @@ without starting the server:
        --public-url https://a2a.example.com
 
 This command prints JSON similar to:
+
+.. raw:: latex
+
+   \Needspace{12\baselineskip}
 
 .. code-block:: json
 
@@ -324,11 +446,17 @@ The repository includes the
 and the
 `task_poll.py sample <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/task_poll.py>`__:
 
+.. latex:clearpage::
+
 .. literalinclude:: ../../../samples/a2a/blocking_task.py
    :language: python
-   :lines: 8-
+   :start-at: import json
 
-The blocking sample omits ``configuration``. Representative output is:
+The blocking sample omits ``configuration``. Example output (task IDs and model responses vary):
+
+.. raw:: latex
+
+   \Needspace{10\baselineskip}
 
 .. code-block:: text
 
@@ -341,11 +469,28 @@ The blocking sample omits ``configuration``. Representative output is:
 
 The task ID, timestamp, and database answer vary for each run.
 
+.. latex:clearpage::
+
+First, define the endpoint, prompt, terminal states, and JSON-RPC helper:
+
 .. literalinclude:: ../../../samples/a2a/task_poll.py
    :language: python
-   :lines: 8-
+   :start-at: import json
+   :end-before: # blocking=False
+
+.. latex:clearpage::
+
+Append the send-and-poll loop to that setup:
+
+.. literalinclude:: ../../../samples/a2a/task_poll.py
+   :language: python
+   :start-at: # blocking=False
 
 The polling sample sends a non-blocking request and then calls ``tasks/get``:
+
+.. raw:: latex
+
+   \Needspace{12\baselineskip}
 
 .. code-block:: text
 
@@ -388,10 +533,12 @@ When a request starts a new context, Select AI creates an
 ``AsyncConversation`` and passes its ID to ``AsyncTeam.run``. Later messages in
 the same A2A context reuse that conversation, so the team can use the
 conversation history. In standalone modes, task and context ownership is
-resolved from the A2A request context; an absent owner is stored as
-``anonymous``. In gateway mode, the worker scopes the rows to the temporary
-session ID, which is the A2A context ID used to route requests back to that
-worker session.
+resolved from the A2A request context in fixed standalone mode; an absent owner
+is stored as ``anonymous``. Dynamic standalone and clustered runtimes pass the
+gateway's derived owner scope to the child runtime, using ``a2a-conversation``
+when OAuth is not required. Routing binds the owner and A2A context ID to an
+internal session ID. That internal ID identifies the child process; it is
+separate from the client-visible A2A context ID.
 
 The tables hold task and context metadata, while the conversation prompts and
 responses remain in the regular Select AI conversation storage. This means a
@@ -411,6 +558,10 @@ Wallet-based connections apply to the fixed standalone
 ``select-ai a2a serve`` path. Dynamic standalone sessions and clustered worker
 sessions do not currently accept wallet settings. Pass the unzipped wallet
 directory and password with CLI options:
+
+.. raw:: latex
+
+   \Needspace{15\baselineskip}
 
 .. code-block:: bash
 
@@ -480,6 +631,10 @@ instructions in the `Consul installation guide
 <https://developer.hashicorp.com/consul/docs/fundamentals/install>`__.
 After installation, verify that the binary is on ``PATH``:
 
+.. raw:: latex
+
+   \Needspace{5\baselineskip}
+
 .. code-block:: bash
 
    consul version
@@ -491,6 +646,10 @@ Consul in GKE from the
 `Consul manifest <https://github.com/oracle/python-select-ai/blob/main/gcloud/cluster/gke/consul.yaml>`__.
 
 Start the three local components in separate terminals:
+
+.. raw:: latex
+
+   \Needspace{22\baselineskip}
 
 .. code-block:: bash
 
@@ -536,6 +695,46 @@ tasks, non-blocking tasks, task retrieval/listing, and cancellation by
 forwarding the request to the worker session. Streaming and push-notification
 operations are rejected because the gateway does not proxy a live stream.
 
+.. _a2a-clustered-fixed:
+
+Clustered deployment with a fixed connection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Yes, a clustered deployment can use fixed connection information. Start
+Consul and the worker as shown above, then run this gateway command in place
+of the dynamic gateway command. Supply the connection values on the gateway;
+the gateway passes them to the selected worker when opening each session:
+
+.. raw:: latex
+
+   \Needspace{14\baselineskip}
+
+.. code-block:: bash
+
+   select-ai a2a serve \
+       --deployment clustered \
+       --host 127.0.0.1 \
+       --port 8000 \
+       --public-url http://127.0.0.1:8000 \
+       --consul-url http://127.0.0.1:8500 \
+       --dsn 'dbhost.example.com:1521/db_service' \
+       --user APP_USER \
+       --password "$SELECT_AI_PASSWORD" \
+       --team ORACLE_AI_DATABASE_AGENT
+
+Set ``SELECT_AI_PASSWORD`` to the database password before running the
+command. The client sends an ordinary A2A prompt; the gateway skips the form
+and creates the worker session automatically. Workers still isolate sessions
+in child processes. All clients use the configured database identity and
+team. Fixed clustered connections retain the clustered restrictions: no
+streaming and no wallet parameters for the database session.
+
+To collect each user's credentials instead, remove ``--user`` and
+``--password`` and unset their environment fallbacks ``SELECT_AI_USER`` and
+``SELECT_AI_PASSWORD`` in the gateway environment. Keep ``--dsn`` and
+``--team``. The same gateway and workers now serve dynamic sessions whose
+forms ask only for username and password.
+
 A2UI database-connection form
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -579,8 +778,9 @@ template must not contain a password default. The server validates the file at
 startup and replaces its template surface ID with a fresh ID every time the
 form is displayed.
 
-After the action is submitted, the gateway selects a healthy worker through
-Consul and opens a session. The worker starts a child process, calls
+After the action is submitted in clustered mode, the gateway selects a healthy
+worker through Consul and opens a session. In dynamic standalone mode, the
+server opens the session locally. The worker starts a child process, calls
 ``select_ai.async_connect`` with the supplied DSN/user/password, validates the
 team, initializes the Oracle task and context stores, and returns a
 ``database-session`` artifact. The client can then send ordinary database
@@ -630,11 +830,19 @@ The examples below are the
 and the
 `task_poll.py sample <https://github.com/oracle/python-select-ai/blob/main/samples/a2a/dynamic/task_poll.py>`__.
 
+.. raw:: latex
+
+   \Needspace{18\baselineskip}
+
 .. literalinclude:: ../../../samples/a2a/dynamic/blocking_task.py
    :language: python
-   :lines: 8-
+   :start-at: from _common
 
 Set the database values before running the sample:
+
+.. raw:: latex
+
+   \Needspace{8\baselineskip}
 
 .. code-block:: bash
 
@@ -645,11 +853,19 @@ Set the database values before running the sample:
 
 Run it with:
 
+.. raw:: latex
+
+   \Needspace{5\baselineskip}
+
 .. code-block:: bash
 
    python samples/a2a/dynamic/blocking_task.py
 
-Representative output is:
+Example output (task IDs and model responses vary):
+
+.. raw:: latex
+
+   \Needspace{7\baselineskip}
 
 .. code-block:: text
 
@@ -660,9 +876,17 @@ Representative output is:
 The dynamic polling sample uses the same connection-form handshake, then
 passes ``configuration.blocking: false`` and polls ``tasks/get``:
 
+.. raw:: latex
+
+   \Needspace{30\baselineskip}
+
 .. literalinclude:: ../../../samples/a2a/dynamic/task_poll.py
    :language: python
-   :lines: 8-
+   :start-at: import time
+
+.. raw:: latex
+
+   \Needspace{9\baselineskip}
 
 .. code-block:: text
 
@@ -675,8 +899,9 @@ passes ``configuration.blocking: false`` and polls ``tasks/get``:
 Session isolation, routing, and cleanup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each successful connection action creates one worker session identified by the
-A2A context ID. The worker owns an operating-system child process for that
+Each successful connection action binds the owner and A2A context ID to one
+worker session with its own internal session ID. The worker owns an
+operating-system child process for that
 session. The child process owns its Select AI asynchronous connection, A2A
 handler, task store, context store, and database conversation access. Requests
 for different sessions therefore do not share database credentials or a
@@ -703,23 +928,98 @@ in Oracle by the selected worker. A worker registers a health check and sends
 heartbeats; it deregisters on shutdown. The gateway selects healthy workers
 round-robin when opening new sessions.
 
-Gateway-to-worker mTLS
-~~~~~~~~~~~~~~~~~~~~~~
+Public gateway HTTPS
+~~~~~~~~~~~~~~~~~~~~
 
-Local development uses ordinary HTTP. For an internal deployment, the gateway
-can authenticate workers and workers can require a gateway client certificate.
-All three gateway files are required together:
+The ``--tls-*`` options on ``select-ai a2a serve`` configure the public A2A
+listener. They do not configure gateway-to-worker traffic.
+
+* With no TLS options, Uvicorn listens over HTTP.
+* Supply ``--tls-cert-file`` and ``--tls-key-file`` together to serve HTTPS.
+  Clients verify the gateway certificate using their configured trust store.
+* Add ``--tls-ca-file`` to require clients to present a certificate signed by
+  that CA. This enables mTLS on the public connection. The CA file requires
+  the certificate and key.
+
+For example, this command serves HTTPS without requiring client certificates:
 
 .. code-block:: bash
 
    select-ai a2a serve \
-       --deployment clustered \
-       --public-url https://gateway.example.com \
-       --worker-tls-ca-file /run/secrets/worker-ca.pem \
-       --worker-tls-cert-file /run/secrets/gateway-client.crt \
-       --worker-tls-key-file /run/secrets/gateway-client.key
+       --team ORACLE_AI_DATABASE_AGENT \
+       --user DB_USERNAME \
+       --password DB_PASSWORD \
+       --dsn 'dbhost.example.com:1521/db_service' \
+       --host 0.0.0.0 \
+       --port 8000 \
+       --public-url https://a2a.example.com \
+       --tls-cert-file /run/secrets/gateway.crt \
+       --tls-key-file /run/secrets/gateway.key
 
-Start the worker with the matching server certificate, key, and CA:
+Add ``--tls-ca-file /run/secrets/client-ca.pem`` when public clients must
+authenticate with client certificates. ``--public-url`` controls the URL
+advertised in the Agent Card; the TLS options control Uvicorn's listener.
+
+Gateway-to-worker HTTP and TLS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The gateway-to-worker connection is independent of the public A2A listener.
+The public listener can use HTTPS while workers use HTTP, or the gateway can
+use HTTPS to workers while its public listener uses HTTP.
+
+.. list-table:: Gateway-to-worker TLS options
+   :header-rows: 1
+   :widths: 28 36 36
+
+   * - Option
+     - Process
+     - Purpose
+   * - ``--tls-cert-file`` and ``--tls-key-file``
+     - Worker
+     - Enable HTTPS on the worker. Supply both together.
+   * - ``--tls-ca-file``
+     - Worker
+     - Optional CA for requiring and verifying gateway client certificates.
+       Supplying it enables the worker side of mTLS.
+   * - ``--worker-tls-ca-file``
+     - Gateway
+     - Optional CA bundle for verifying the worker's server certificate.
+       Supply it alone for HTTPS with a private CA and no mTLS. If omitted,
+       Requests uses its default CA bundle (which can be overridden with
+       ``REQUESTS_CA_BUNDLE``).
+   * - ``--worker-tls-cert-file`` and ``--worker-tls-key-file``
+     - Gateway
+     - Optional gateway client certificate and key. Supply both together;
+       the worker must require and trust this client certificate for mTLS.
+
+Whenever a gateway ``--worker-tls-*`` option is supplied, register the worker
+with an HTTPS URL using ``--worker-endpoint``. If no gateway worker TLS option
+is supplied, Requests still verifies an HTTPS worker certificate against its
+default CA bundle. When the worker has no advertised endpoint, the gateway
+builds an HTTP URL from the worker address and port in the Consul record.
+
+For HTTPS without mTLS, configure the worker's certificate and key, then
+advertise its HTTPS URL. If the certificate uses a private CA, give that CA
+to the gateway with ``--worker-tls-ca-file``. Do not set the gateway client
+certificate or the worker's ``--tls-ca-file`` in this mode:
+
+.. code-block:: bash
+
+   select-ai a2a worker \
+       --worker-endpoint https://worker.example.com:8443 \
+       --tls-cert-file /run/secrets/worker.crt \
+       --tls-key-file /run/secrets/worker.key
+
+   select-ai a2a serve \
+       --deployment clustered \
+       --worker-tls-ca-file /run/secrets/private-worker-ca.pem
+
+For mTLS, the worker requires a client certificate with ``--tls-ca-file``.
+The gateway presents its certificate and key with ``--worker-tls-cert-file``
+and ``--worker-tls-key-file``. The gateway also needs
+``--worker-tls-ca-file`` when the worker certificate is signed by a private
+CA; omit it when the Requests default CA bundle trusts the worker certificate.
+The two directions can use the same CA or different CAs:
 
 .. code-block:: bash
 
@@ -729,11 +1029,16 @@ Start the worker with the matching server certificate, key, and CA:
        --tls-key-file /run/secrets/worker.key \
        --tls-ca-file /run/secrets/gateway-client-ca.pem
 
-The worker must register an HTTPS endpoint through ``--worker-endpoint`` when
-mTLS is enabled. The gateway verifies the worker certificate with the CA and
-presents its client certificate. This mTLS option protects only the
-gateway-to-worker HTTP hop. It does not add wallet-based mTLS to the gateway's
-database connection path.
+   select-ai a2a serve \
+       --deployment clustered \
+       --worker-tls-ca-file /run/secrets/worker-server-ca.pem \
+       --worker-tls-cert-file /run/secrets/gateway-client.crt \
+       --worker-tls-key-file /run/secrets/gateway-client.key
+
+The worker CA validates the gateway's client certificate. The gateway CA
+validates the worker's server certificate. This protects only the
+gateway-to-worker connection; it does not configure TLS for the public A2A
+listener or Oracle Database connections.
 
 Google Cloud deployment
 =======================
@@ -750,6 +1055,10 @@ Standalone Google Cloud deployment
 `gcloud/standalone/deploy.sh <https://github.com/oracle/python-select-ai/blob/main/gcloud/standalone/deploy.sh>`__
 deploys one private Cloud Run service. Select its connection provisioning
 explicitly:
+
+.. raw:: latex
+
+   \Needspace{8\baselineskip}
 
 .. code-block:: bash
 
@@ -785,8 +1094,9 @@ Important standalone options include:
 * ``--service``: Cloud Run service name; use a different service for each
   deployment profile.
 * ``--a2a-team``: fix the AI Agent in the deployment; required in fixed mode.
-* ``--require-oauth``: require a Gemini Enterprise end-user OAuth bearer token
-  and scope state by verified owner as well as A2A conversation.
+* ``--require-oauth``: require an upstream-validated end-user bearer token
+  and derive an owner scope as well as the A2A conversation scope. The SDK
+  does not validate the token itself; see `End-user OAuth and session ownership`_.
 * ``--pool-max-size``: maximum Oracle connections per Cloud Run instance.
 * ``--max-instances``: Cloud Run instance limit; dynamic standalone mode
   requires one.
@@ -810,8 +1120,9 @@ Run URL and the client can invoke the private service.
 The Google Cloud scripts do not require end-user OAuth by default. Cloud Run
 IAM authenticates Gemini Enterprise, and ``a2a serve`` separates database
 sessions by A2A conversation without asserting a verified human owner. Add
-``--require-oauth`` to the deployment command when verified user ownership is
-required. Gemini Enterprise must then be configured with end-user OAuth rather
+``--require-oauth`` to the deployment command when user ownership is required,
+and ensure a trusted upstream service validates the end-user token. The flag
+alone does not verify identity. Gemini Enterprise must then be configured with end-user OAuth rather
 than **Skip & Finish**. It uses ``X-Serverless-Authorization`` for Cloud Run
 IAM and sends the user token separately in ``Authorization``.
 
@@ -822,6 +1133,10 @@ Clustered Google Cloud deployment
 deploys the clustered topology: Cloud Run for the
 public server, GKE Autopilot for worker replicas, and Consul for discovery and
 routing.
+
+.. raw:: latex
+
+   \Needspace{8\baselineskip}
 
 .. code-block:: bash
 

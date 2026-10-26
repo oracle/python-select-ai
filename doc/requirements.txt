@@ -1,4 +1,4 @@
-sphinx
+sphinx==9.1.0
 sphinx-rtd-theme
 sphinx_toolbox
 python_docs_theme

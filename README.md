@@ -49,7 +49,9 @@ installation instructions.
 
 ## Documentation
 
-See [Select AI for Python documentation][documentation]
+See [Select AI for Python documentation][documentation], the
+[complete first-query walkthrough](doc/source/user_guide/quickstart.rst), and
+[1.5.0 release notes](doc/source/release_notes.rst).
 
 ## Getting Started
 

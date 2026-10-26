@@ -277,3 +277,39 @@ Cloud deployment explanation are in the
     ```bash
     export SELECT_AI_DB_CONNECT_STRING="tcps://adb.<region>.oraclecloud.com:1521/db2025adb_medium.adb.oraclecloud.com?retry_count=2&retry_delay=3"
     ```
+
+## First query and document RAG
+
+Run `python samples/quickstart.py` after completing the administrator setup in
+[Run your first SQL query](../doc/source/user_guide/quickstart.rst).
+Set `OPENAI_API_KEY`, `SELECT_AI_MODEL` (for example `gpt-4.1`), and the common
+database connection variables. Each run creates a temporary credential from
+that environment variable; replace `OPENAI_API_KEY` to try a different key.
+Existing database credentials are not changed.
+
+To grant package privileges and OpenAI HTTP access first, set
+`SELECT_AI_ADMIN_USER` and `SELECT_AI_ADMIN_PASSWORD`, then run
+`python samples/quickstart.py --setup`. It disconnects the administrator before
+running as the application user. Subsequent runs do not need `--setup`.
+The script removes its temporary table, profile, and credential, prints progress,
+and sets a 120-second timeout per database round trip.
+
+For RAG, upload [refund-policy.txt](data/refund-policy.txt) to your object store.
+Set `SELECT_AI_DOCUMENT_URI` to that object's URI and
+`SELECT_AI_OBJECT_STORAGE_CREDENTIAL` to a database credential that can read it.
+The provider credential defaults to `my_oci_ai_profile_key`; override it with
+`SELECT_AI_PROVIDER_CREDENTIAL`. See the [vector-index guide](../doc/source/user_guide/vector_index.rst)
+for region and model settings before running:
+
+```bash
+python samples/vector_index_create.py
+python samples/vector_index_rag.py
+# Or use the async workflow in its own schema:
+python samples/async/vector_index_create.py
+python samples/async/vector_index_rag.py
+```
+
+These workflows replace `test_vector_index` and their named RAG profiles, and
+leave them available after closing the connection. Delete the sample index and
+profile when finished. The policy answer should give a 30-calendar-day refund
+window; model wording can vary.

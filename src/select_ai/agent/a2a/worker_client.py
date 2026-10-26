@@ -71,14 +71,13 @@ class WorkerClient:
         self._selection_lock = Lock()
         self._next_worker = 0
         self._worker_request_kwargs: dict[str, object] = {}
-        if settings.worker_mtls_enabled:
-            self._worker_request_kwargs = {
-                "verify": settings.worker_tls_ca_file,
-                "cert": (
-                    settings.worker_tls_cert_file,
-                    settings.worker_tls_key_file,
-                ),
-            }
+        if settings.worker_tls_ca_file:
+            self._worker_request_kwargs["verify"] = settings.worker_tls_ca_file
+        if settings.worker_tls_cert_file:
+            self._worker_request_kwargs["cert"] = (
+                settings.worker_tls_cert_file,
+                settings.worker_tls_key_file,
+            )
 
     def open_session(
         self,
@@ -352,27 +351,25 @@ class WorkerClient:
         return worker
 
     def _worker_endpoint(self, worker: dict) -> str:
-        """Resolve a selected Consul worker record to its HTTP endpoint."""
+        """Resolve a selected Consul worker record to its endpoint."""
         service = worker["Service"]
         metadata = service.get("Meta") or {}
         endpoint = metadata.get("endpoint")
-        if endpoint:
+        if not endpoint:
+            address = service.get("Address") or worker["Node"]["Address"]
+            endpoint = f"http://{address}:{service['Port']}"
+        else:
             endpoint = endpoint.rstrip("/")
-            if self.settings.worker_mtls_enabled and not endpoint.startswith(
-                "https://"
-            ):
-                raise RuntimeError(
-                    "A worker registered a non-HTTPS endpoint while mTLS is "
-                    "required."
-                )
-            return endpoint
-        if self.settings.worker_mtls_enabled:
+
+        if (
+            self.settings.worker_connection_tls_configured
+            and not endpoint.startswith("https://")
+        ):
             raise RuntimeError(
-                "Workers must register an HTTPS endpoint while mTLS is "
-                "required."
+                "Worker endpoint must use HTTPS when gateway-to-worker TLS "
+                "options are configured."
             )
-        address = service.get("Address") or worker["Node"]["Address"]
-        return f"http://{address}:{service['Port']}"
+        return endpoint
 
     def _route_for(self, owner: str, context_id: str) -> SessionRoute:
         """Return a live worker route backed by a Consul session."""

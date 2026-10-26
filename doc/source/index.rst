@@ -21,6 +21,9 @@ Getting Started
     user_guide/introduction.rst
     user_guide/installation.rst
     user_guide/connection.rst
+    user_guide/quickstart.rst
+    user_guide/compatibility.rst
+    release_notes.rst
 
 
 Actions
@@ -187,3 +190,11 @@ Concurrent Prompt Processing
     :maxdepth: 3
 
     user_guide/concurrent_prompt_processing.rst
+
+API Reference
+=============
+
+.. toctree::
+    :maxdepth: 3
+
+    user_guide/api_reference.rst

@@ -105,6 +105,26 @@ Create credential
 In this example, we create a credential object to authenticate to OCI Gen AI
 service provider:
 
+The synchronous and asynchronous samples below use the OCI Python SDK to read
+an existing API-signing configuration. Install this sample-specific dependency:
+
+.. code-block:: shell
+
+   python -m pip install oci
+
+Configure the ``DEFAULT`` profile in ``~/.oci/config`` with ``user``,
+``tenancy``, ``fingerprint``, ``region``, and ``key_file``. The ``key_file``
+must point to a readable private key whose public key is registered with the
+OCI user. See `OCI SDK configuration
+<https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm>`__.
+The samples call ``oci.config.from_file()`` with its default path and profile;
+edit that call if you use another configuration. Keep the configuration and
+private key outside your source repository.
+
+The ``oci`` package is needed only to load this configuration in the samples.
+The Select AI credential API itself accepts the credential dictionary shown
+above without requiring the OCI SDK.
+
 Pass ``replace=True`` when you want to recreate an existing credential with the
 same name. Without ``replace=True``, creating a credential that already exists
 raises a database error.

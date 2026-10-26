@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Using select_ai with Python web frameworks &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Using select_ai with Python web frameworks &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
 
-    <script src="../_static/documentation_options.js?v=9172181d"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -116,12 +116,15 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="concurrent_prompt_processing.html" title="1. Concurrent prompt processing"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="cli.html" title="1. Command line interface"
              accesskey="P">previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -129,7 +132,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a></li>
@@ -249,13 +252,13 @@ passwords, wallet passwords, or provider credentials in application source.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
 
-<span class="n">pool_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">))</span>
-<span class="n">pool_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MAX&quot;</span><span class="p">,</span> <span class="s2">&quot;10&quot;</span><span class="p">))</span>
-<span class="n">pool_increment</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_INCREMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">))</span>
+<span class="n">pool_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_MIN"</span><span class="p">,</span> <span class="s2">"5"</span><span class="p">))</span>
+<span class="n">pool_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_MAX"</span><span class="p">,</span> <span class="s2">"10"</span><span class="p">))</span>
+<span class="n">pool_increment</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_INCREMENT"</span><span class="p">,</span> <span class="s2">"5"</span><span class="p">))</span>
 
 
 <span class="nd">@asynccontextmanager</span>
@@ -275,16 +278,16 @@ passwords, wallet passwords, or provider credentials in application source.</p>
 <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
 
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/chat&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/chat"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"response"</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
 
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/show_sql&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/show_sql"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"sql"</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
 </pre></div>
 </div>
 <p>Start the server:</p>
@@ -292,15 +295,18 @@ passwords, wallet passwords, or provider credentials in application source.</p>
 </pre></div>
 </div>
 <p>Call the service:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8000/chat?prompt=What%20is%20OCI%3F&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span><span class="s2">"http://localhost:8000/chat?prompt=What%20is%20OCI%3F"</span>
 </pre></div>
 </div>
 <p>Stop the server by pressing <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> in the terminal where <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> is
 running. FastAPI runs the lifespan shutdown hook and <code class="docutils literal notranslate"><span class="pre">select_ai.disconnect()</span></code>
 closes the pool.</p>
-<p>This example creates the <code class="docutils literal notranslate"><span class="pre">Profile</span></code> proxy inside each handler. The proxy is
-lightweight; the database connection is acquired from the pool only when the
-profile method calls the database.</p>
+<p>This example constructs <code class="docutils literal notranslate"><span class="pre">Profile</span></code> inside each handler. Construction reads
+the saved profile description and attributes from the database, acquiring
+connections from the pool before the action itself runs. This keeps metadata
+current but adds database calls to each request. Reusing an initialized profile
+avoids those reads; refresh it when saved profile settings change, and avoid
+mutating a shared profile object while requests are using it.</p>
 </section>
 <section id="fastapi-asynchronous-endpoints">
 <h2><span class="section-number">1.4. </span>FastAPI asynchronous endpoints<a class="headerlink" href="#fastapi-asynchronous-endpoints" title="Link to this heading">¶</a></h2>
@@ -314,9 +320,9 @@ profile method calls the database.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
 
 
 <span class="nd">@asynccontextmanager</span>
@@ -336,12 +342,12 @@ profile method calls the database.</p>
 <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
 
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/chat&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/chat"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
-        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">"async_oci_ai_profile"</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"response"</span><span class="p">:</span> <span class="k">await</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)}</span>
 </pre></div>
 </div>
 <p>Start and stop the server the same way:</p>
@@ -366,19 +372,19 @@ synchronous Select AI pool when the application is created.</p>
     <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
-        <span class="n">user</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">),</span>
-        <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">),</span>
-        <span class="n">dsn</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">),</span>
-        <span class="n">min_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
-        <span class="n">max_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MAX&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">)),</span>
-        <span class="n">increment</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_INCREMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">),</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">),</span>
+        <span class="n">dsn</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">),</span>
+        <span class="n">min_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_MIN"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)),</span>
+        <span class="n">max_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_MAX"</span><span class="p">,</span> <span class="s2">"4"</span><span class="p">)),</span>
+        <span class="n">increment</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_INCREMENT"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)),</span>
     <span class="p">)</span>
 
-    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/show_sql&quot;</span><span class="p">)</span>
+    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/show_sql"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">show_sql</span><span class="p">():</span>
-        <span class="n">prompt</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span>
-        <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)})</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s2">"prompt"</span><span class="p">]</span>
+        <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">"sql"</span><span class="p">:</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">)})</span>
 
     <span class="nd">@atexit</span><span class="o">.</span><span class="n">register</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">close_select_ai_pool</span><span class="p">():</span>
@@ -403,20 +409,21 @@ pool once per process, then call <code class="docutils literal notranslate"><spa
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyAppConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;myapp&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"myapp"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
             <span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
-                <span class="n">user</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">),</span>
-                <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">),</span>
-                <span class="n">dsn</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">),</span>
-                <span class="n">min_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
-                <span class="n">max_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_MAX&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">)),</span>
-                <span class="n">increment</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_POOL_INCREMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)),</span>
+                <span class="n">user</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">),</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">),</span>
+                <span class="n">dsn</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">),</span>
+                <span class="n">min_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_MIN"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)),</span>
+                <span class="n">max_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_MAX"</span><span class="p">,</span> <span class="s2">"4"</span><span class="p">)),</span>
+                <span class="n">increment</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_POOL_INCREMENT"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)),</span>
             <span class="p">)</span>
 </pre></div>
 </div>
+<p>Add the view in <code class="docutils literal notranslate"><span class="pre">myapp/views.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># myapp/views.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonResponse</span>
 
@@ -424,9 +431,9 @@ pool once per process, then call <code class="docutils literal notranslate"><spa
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">show_sql</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
-    <span class="n">sql</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">sql</span><span class="p">})</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s2">"prompt"</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">"sql"</span><span class="p">:</span> <span class="n">sql</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>When using Django’s development autoreloader, startup hooks may run more than
@@ -457,17 +464,25 @@ workers, reduce <code class="docutils literal notranslate"><span class="pre">SEL
 <p><code class="docutils literal notranslate"><span class="pre">select_ai.create_pool()</span></code> and <code class="docutils literal notranslate"><span class="pre">select_ai.create_pool_async()</span></code> pass pool
 options through to <code class="docutils literal notranslate"><span class="pre">python-oracledb</span></code>. Use <code class="docutils literal notranslate"><span class="pre">wait_timeout</span></code> and <code class="docutils literal notranslate"><span class="pre">getmode</span></code> to
 control what happens when all pooled connections are busy.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">oracledb</span>
+
+<span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
     <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
     <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
     <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">,</span>
     <span class="n">min_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">max_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
     <span class="n">increment</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">wait_timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">getmode</span><span class="o">=</span><span class="n">oracledb</span><span class="o">.</span><span class="n">POOL_GETMODE_TIMEDWAIT</span><span class="p">,</span>
+    <span class="n">wait_timeout</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">wait_timeout</span></code> is in milliseconds and takes effect only with
+<code class="docutils literal notranslate"><span class="pre">getmode=oracledb.POOL_GETMODE_TIMEDWAIT</span></code>. The example waits up to ten seconds
+for a connection. The default <code class="docutils literal notranslate"><span class="pre">POOL_GETMODE_WAIT</span></code> waits without this limit.
+Pool acquisition timeouts do not limit SQL execution or model generation time.
+See the <a class="reference external" href="https://python-oracledb.readthedocs.io/en/stable/api_manual/pool_params.html">python-oracledb pool parameters</a>.</p>
 <p>Choose a timeout that matches your API latency budget. For public HTTP APIs,
 it is usually better to fail fast and return an application error than to let
 requests pile up until every worker is blocked.</p>
@@ -552,12 +567,15 @@ pool matches the route style.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="concurrent_prompt_processing.html" title="1. Concurrent prompt processing"
              >next</a> |</li>
         <li class="right" >
           <a href="cli.html" title="1. Command line interface"
              >previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -565,7 +583,7 @@ pool matches the route style.</p>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Using <code class="docutils literal notranslate"><span class="pre">select_ai</span></code> with Python web frameworks</a></li>
@@ -610,7 +628,7 @@ pool matches the route style.</p>
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

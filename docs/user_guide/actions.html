@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Supported Actions &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Supported Actions &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
 
-    <script src="../_static/documentation_options.js?v=9172181d"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -116,7 +116,7 @@
         <li class="right" >
           <a href="connection.html" title="3. Connecting to Oracle Database"
              accesskey="P">previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -124,7 +124,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Supported Actions</a></li>
@@ -223,6 +223,19 @@ default action for <code class="docutils literal notranslate"><span class="pre">
 </table>
 <section id="action-methods">
 <h2><span class="section-number">1.1. </span>Action methods<a class="headerlink" href="#action-methods" title="Link to this heading">¶</a></h2>
+<p>Request-specific profile attributes can be supplied with the optional
+<code class="docutils literal notranslate"><span class="pre">attributes</span></code> mapping. For example, override <code class="docutils literal notranslate"><span class="pre">additional_instructions</span></code> for
+a single chat request:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">"Write sample Python code to build and test a regression model"</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"additional_instructions"</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s2">"Return executable code as plain text without Markdown fences."</span>
+        <span class="p">)</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <table class="docutils align-left" id="id2">
 <caption><span class="caption-text">Action to method mapping</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -283,28 +296,28 @@ attributes, object lists, comments, constraints, or feedback.</p>
 <section id="examples">
 <h2><span class="section-number">1.3. </span>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
 <p>Use a convenience method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
-<span class="n">sql</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions?&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
+<span class="n">sql</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s2">"How many promotions?"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Use <code class="docutils literal notranslate"><span class="pre">generate</span></code> with an explicit action:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
 
 <span class="n">sql</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
-    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions?&quot;</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">"How many promotions?"</span><span class="p">,</span>
     <span class="n">action</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">Action</span><span class="o">.</span><span class="n">SHOWSQL</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
-    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions?&quot;</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">"How many promotions?"</span><span class="p">,</span>
     <span class="n">action</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">Action</span><span class="o">.</span><span class="n">RUNSQL</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Use an action selected at runtime:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">action</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Action</span><span class="p">(</span><span class="s2">&quot;showsql&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">action</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Action</span><span class="p">(</span><span class="s2">"showsql"</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
-    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;How many promotions?&quot;</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">"How many promotions?"</span><span class="p">,</span>
     <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -317,12 +330,12 @@ attributes, object lists, comments, constraints, or feedback.</p>
 Streaming is not supported for <code class="docutils literal notranslate"><span class="pre">RUNSQL</span></code> because it returns a
 <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">profile</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
-    <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;What is OCI?&quot;</span><span class="p">,</span>
+    <span class="n">prompt</span><span class="o">=</span><span class="s2">"What is OCI?"</span><span class="p">,</span>
     <span class="n">action</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">Action</span><span class="o">.</span><span class="n">CHAT</span><span class="p">,</span>
     <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">chunk_size</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -391,7 +404,7 @@ Streaming is not supported for <code class="docutils literal notranslate"><span 
         <li class="right" >
           <a href="connection.html" title="3. Connecting to Oracle Database"
              >previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -399,7 +412,7 @@ Streaming is not supported for <code class="docutils literal notranslate"><span 
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Supported Actions</a></li>
@@ -444,7 +457,7 @@ Streaming is not supported for <code class="docutils literal notranslate"><span 
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

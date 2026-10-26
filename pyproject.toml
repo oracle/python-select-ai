@@ -20,7 +20,7 @@ keywords = [
     "adbs",
     "autonomous database serverless"
 ]
-license = " UPL-1.0"
+license = "UPL-1.0"
 license-files = ["LICENSE.txt"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

@@ -23,20 +23,36 @@ dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
 
 
 async def main():
-    await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_ai_profile",
+    select_ai.create_pool_async(
+        user=user,
+        password=password,
+        dsn=dsn,
+        min_size=1,
+        max_size=3,
+        increment=1,
     )
-    sql_tasks = [
-        async_profile.show_sql(prompt="How many customers?"),
-        async_profile.run_sql(prompt="How many promotions?"),
-        async_profile.explain_sql(prompt="How many promotions?"),
-    ]
-
-    # Collect results from multiple asynchronous tasks
-    for sql_task in asyncio.as_completed(sql_tasks):
-        result = await sql_task
-        print(result)
+    tasks = []
+    try:
+        async_profile = await select_ai.AsyncProfile(
+            profile_name="async_oci_ai_profile",
+        )
+        # Each operation acquires its own connection from the pool.
+        tasks = [
+            asyncio.create_task(async_profile.show_sql("How many customers?")),
+            asyncio.create_task(async_profile.run_sql("How many promotions?")),
+            asyncio.create_task(
+                async_profile.explain_sql("How many promotions?")
+            ),
+        ]
+        for task in asyncio.as_completed(tasks):
+            print(await task)
+    finally:
+        # Finish cancellation before closing connections, including on errors.
+        for task in tasks:
+            if not task.done():
+                task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        await select_ai.async_disconnect()
 
 
 asyncio.run(main())

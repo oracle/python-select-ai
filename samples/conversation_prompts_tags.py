@@ -39,7 +39,8 @@ try:
     for prompt in prompts:
         print(f"Prompt {prompt.conversation_prompt_id}: {prompt.prompt}")
 
-    conversation.delete_prompt(prompts[-1].conversation_prompt_id)
+    if prompts:
+        conversation.delete_prompt(prompts[-1].conversation_prompt_id)
     print("Prompts after deletion:", list(conversation.list_prompts()))
     conversation.remove_tag("PROJECT")
 finally:

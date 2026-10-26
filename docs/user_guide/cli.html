@@ -5,21 +5,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Command line interface &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Command line interface &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
 
-    <script src="../_static/documentation_options.js?v=9172181d"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Using select_ai with Python web frameworks" href="web_frameworks.html" />
-    <link rel="prev" title="1. AsyncTool" href="async_agent.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="prev" title="1. Agent2Agent (A2A)" href="a2a.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
             <script type="text/javascript" src="../_static/menu.js"></script>
@@ -68,7 +68,25 @@
 <li><a class="reference internal" href="#interactive-chat">1.2. Interactive chat</a></li>
 <li><a class="reference internal" href="#sql-commands">1.3. SQL commands</a></li>
 <li><a class="reference internal" href="#profile-commands">1.4. Profile commands</a></li>
-<li><a class="reference internal" href="#command-summary">1.5. Command summary</a></li>
+<li><a class="reference internal" href="#a2a-commands">1.5. A2A commands</a><ul>
+<li><a class="reference internal" href="#a2a-deployment-examples">1.5.1. A2A deployment examples</a><ul>
+<li><a class="reference internal" href="#fixed-standalone-connection">1.5.1.1. Fixed standalone connection</a></li>
+<li><a class="reference internal" href="#dynamic-standalone-connection">1.5.1.2. Dynamic standalone connection</a></li>
+<li><a class="reference internal" href="#clustered-gateway-and-worker">1.5.1.3. Clustered gateway and worker</a></li>
+<li><a class="reference internal" href="#clustered-option-reference">1.5.1.4. Clustered option reference</a><ul>
+<li><a class="reference internal" href="#gateway-discovery">1.5.1.4.1. Gateway discovery</a></li>
+<li><a class="reference internal" href="#worker-registration">1.5.1.4.2. Worker registration</a></li>
+<li><a class="reference internal" href="#connection-values-and-forms">1.5.1.4.3. Connection values and forms</a></li>
+<li><a class="reference internal" href="#session-lifetime-and-timeouts">1.5.1.4.4. Session lifetime and timeouts</a></li>
+<li><a class="reference internal" href="#authentication-and-tls">1.5.1.4.5. Authentication and TLS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#agent-card-generation">1.5.2. Agent Card generation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-summary">1.6. Command summary</a></li>
 </ul>
 </li>
 </ul>
@@ -76,8 +94,8 @@
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="async_agent.html"
-                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
+    <p class="topless"><a href="a2a.html"
+                          title="previous chapter"><span class="section-number">1. </span>Agent2Agent (A2A)</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -112,12 +130,15 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="web_frameworks.html" title="1. Using select_ai with Python web frameworks"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="async_agent.html" title="1. AsyncTool"
+          <a href="a2a.html" title="1. Agent2Agent (A2A)"
              accesskey="P">previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -125,7 +146,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Command line interface</a></li>
@@ -169,28 +190,39 @@ non-developers who are comfortable running terminal commands but do not want to
 write Python code. It can help users check whether a profile is configured
 correctly, inspect generated SQL, try prompts during development, or interact
 with a curated profile through a simple command.</p>
-<p>The CLI works with Select AI profiles. RAG is supported when the selected
-profile is already configured with a vector index. Additional CLI options and
-workflows will be added in upcoming releases as the CLI evolves.</p>
+<p>The CLI works with Select AI profiles and can also run the Select AI A2A
+server, clustered gateway and worker, and Agent Card generator. RAG is
+supported when the selected profile is already configured with a vector
+index. The <a class="reference internal" href="a2a.html#a2a"><span class="std std-ref">A2A guide</span></a> explains the difference between fixed and
+dynamic connections and standalone and clustered topologies; this page gives
+the corresponding CLI commands.</p>
 <a class="reference internal image-reference" href="../_images/select_ai_cli_demo.gif"><img alt="Select AI CLI demo" src="../_images/select_ai_cli_demo.gif" style="width: 100%;" />
 </a>
 <p>The package provides an optional <code class="docutils literal notranslate"><span class="pre">select-ai</span></code> command line tool. Install the
-CLI extra to use it:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;select_ai[cli]&#39;</span>
+CLI extra to use profile, SQL, and chat commands. Install the separate <code class="docutils literal notranslate"><span class="pre">a2a</span></code>
+extra for the A2A server and worker commands. If A2A dependencies are missing,
+invoking the A2A command group or a server or worker command reports how to
+install them; the other CLI commands remain available:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'select_ai[cli]'</span>
+<span class="c1"># Install A2A support:</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'select_ai[a2a]'</span>
 </pre></div>
 </div>
 <p>Use <code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">--help</span></code> to view the available command groups and
 <code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">&lt;command&gt;</span> <span class="pre">--help</span></code> to view options for a specific command.</p>
-<p>Set the database connection details as environment variables, or pass them as
-command line options:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_USER</span><span class="o">=</span>&lt;db_user&gt;
-<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_PASSWORD</span><span class="o">=</span>&lt;db_password&gt;
-<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_DB_CONNECT_STRING</span><span class="o">=</span>&lt;db_connect_string&gt;
-</pre></div>
-</div>
+<p>The A2A examples below pass database credentials with CLI options so the
+commands are easy to copy and adapt. Environment-variable equivalents are
+listed in the connection-options table.</p>
 <section id="connection-options">
 <h2><span class="section-number">1.1. </span>Connection options<a class="headerlink" href="#connection-options" title="Link to this heading">¶</a></h2>
-<p>All CLI commands accept the same database connection options:</p>
+<p>Database-backed commands accept the following connection options. The
+<code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">serve</span></code> command accepts these options directly. In standalone
+mode, providing all four connection values at startup selects the fixed
+connection path; omitting values opens a dynamic A2UI form for them. In
+clustered mode, the gateway can preconfigure any values and the form collects
+the rest. The worker receives the resolved values when it opens a session.
+For a private database CA, use <code class="docutils literal notranslate"><span class="pre">--database-tls-ca-file</span></code>; the CLI reads PEM
+from the specified file.</p>
 <table class="docutils align-left" id="id1">
 <caption><span class="caption-text">Connection options</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
 <colgroup>
@@ -218,11 +250,19 @@ command line options:</p>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--wallet-password</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">SELECT_AI_WALLET_PASSWORD</span></code></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--database-tls-ca-file</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SELECT_AI_DATABASE_TLS_CA_FILE</span></code></p></td>
+</tr>
 </tbody>
 </table>
-<p>If <code class="docutils literal notranslate"><span class="pre">--password</span></code> and <code class="docutils literal notranslate"><span class="pre">SELECT_AI_PASSWORD</span></code> are not set, the CLI prompts for
-the database password. Wallet options are optional and are only needed for
-wallet-based database connections.</p>
+<p>Profile, SQL, and chat commands prompt for the database password when neither
+<code class="docutils literal notranslate"><span class="pre">--password</span></code> nor <code class="docutils literal notranslate"><span class="pre">SELECT_AI_PASSWORD</span></code> is set. For <code class="docutils literal notranslate"><span class="pre">a2a</span> <span class="pre">serve</span></code>, omitting
+any connection value selects dynamic mode, and the A2A client supplies the
+missing values through an A2UI form. Supply <code class="docutils literal notranslate"><span class="pre">--dsn</span></code>, <code class="docutils literal notranslate"><span class="pre">--user</span></code>,
+<code class="docutils literal notranslate"><span class="pre">--password</span></code>, and <code class="docutils literal notranslate"><span class="pre">--team</span></code> for fixed standalone mode. Wallet options apply
+to fixed standalone A2A connections; dynamic sessions do not currently
+support Oracle wallet authentication. The A2A CLI examples below include a
+host, port, service name, credentials, and optional database CA file.</p>
 </section>
 <section id="interactive-chat">
 <h2><span class="section-number">1.2. </span>Interactive chat<a class="headerlink" href="#interactive-chat" title="Link to this heading">¶</a></h2>
@@ -230,7 +270,7 @@ wallet-based database connections.</p>
 Read-Eval-Print Loop (REPL). A REPL is a terminal session that reads each
 prompt you type, evaluates it, prints the response, and then waits for the next
 prompt. Pass an existing Select AI profile with <code class="docutils literal notranslate"><span class="pre">--profile</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">select</span>-ai<span class="w"> </span>chat<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>select-ai<span class="w"> </span>chat<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE
 </pre></div>
 </div>
 <p>The REPL uses <code class="docutils literal notranslate"><span class="pre">Profile.chat_session()</span></code> so prompts in the same terminal session
@@ -282,10 +322,10 @@ select_ai&gt; /exit
 <section id="sql-commands">
 <h2><span class="section-number">1.3. </span>SQL commands<a class="headerlink" href="#sql-commands" title="Link to this heading">¶</a></h2>
 <p>SQL operations are one-shot subcommands instead of a REPL:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>show<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
-<span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>run<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
-<span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>explain<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
-<span class="k">select</span>-ai<span class="w"> </span>sql<span class="w"> </span>narrate<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;count movies by genre&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>select-ai<span class="w"> </span>sql<span class="w"> </span>show<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">"count movies by genre"</span>
+select-ai<span class="w"> </span>sql<span class="w"> </span>run<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">"count movies by genre"</span>
+select-ai<span class="w"> </span>sql<span class="w"> </span>explain<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">"count movies by genre"</span>
+select-ai<span class="w"> </span>sql<span class="w"> </span>narrate<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">"count movies by genre"</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">explain</span></code>, and <code class="docutils literal notranslate"><span class="pre">narrate</span></code> stream text output by default. Use
@@ -298,24 +338,24 @@ does not support streaming.</p>
 <section id="profile-commands">
 <h2><span class="section-number">1.4. </span>Profile commands<a class="headerlink" href="#profile-commands" title="Link to this heading">¶</a></h2>
 <p>Summarize and translate are available under the <code class="docutils literal notranslate"><span class="pre">profile</span></code> command group:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>list
-<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>list<span class="w"> </span>--pattern<span class="w"> </span><span class="s2">&quot;OCI.*&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>select-ai<span class="w"> </span>profile<span class="w"> </span>list
+select-ai<span class="w"> </span>profile<span class="w"> </span>list<span class="w"> </span>--pattern<span class="w"> </span><span class="s2">"OCI.*"</span>
 
-<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">&quot;Text to summarize&quot;</span>
-<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span>--file<span class="w"> </span>notes.txt
-<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span><span class="se">\</span>
+select-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="s2">"Text to summarize"</span>
+select-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span>--file<span class="w"> </span>notes.txt
+select-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--location-uri<span class="w"> </span>https://example.com/article.txt
-<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span><span class="se">\</span>
+select-ai<span class="w"> </span>profile<span class="w"> </span>summarize<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--location-uri<span class="w"> </span>https://objectstorage.example.com/n/namespace/b/bucket/o/file.txt<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--credential-name<span class="w"> </span>OBJECT_STORE_CRED
 
-<span class="k">select</span>-ai<span class="w"> </span>profile<span class="w"> </span>translate<span class="w"> </span><span class="se">\</span>
+select-ai<span class="w"> </span>profile<span class="w"> </span>translate<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--profile<span class="w"> </span>OCI_AI_PROFILE<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--source-language<span class="w"> </span>English<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--target-language<span class="w"> </span>German<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="s2">&quot;Thank you&quot;</span>
+<span class="w">    </span><span class="s2">"Thank you"</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">profile</span> <span class="pre">list</span></code> prints profile names visible to the connected database user.
@@ -325,10 +365,262 @@ Use <code class="docutils literal notranslate"><span class="pre">--pattern</span
 <code class="docutils literal notranslate"><span class="pre">--credential-name</span></code> when the location URI requires an object storage
 credential.</p>
 </section>
-<section id="command-summary">
-<h2><span class="section-number">1.5. </span>Command summary<a class="headerlink" href="#command-summary" title="Link to this heading">¶</a></h2>
+<section id="a2a-commands">
+<h2><span class="section-number">1.5. </span>A2A commands<a class="headerlink" href="#a2a-commands" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">a2a</span></code> command group exposes the cloud-neutral A2A runtimes. Use
+<code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">--help</span></code> or a command-specific <code class="docutils literal notranslate"><span class="pre">--help</span></code> option to see the
+current defaults:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>select-ai<span class="w"> </span>a2a<span class="w"> </span>--help
+select-ai<span class="w"> </span>a2a<span class="w"> </span>serve<span class="w"> </span>--help
+select-ai<span class="w"> </span>a2a<span class="w"> </span>worker<span class="w"> </span>--help
+select-ai<span class="w"> </span>a2a<span class="w"> </span>agent-card<span class="w"> </span>--help
+</pre></div>
+</div>
 <table class="docutils align-left" id="id3">
-<caption><span class="caption-text">CLI command summary</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<caption><span class="caption-text">A2A CLI commands</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 34.0%" />
+<col style="width: 66.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">serve</span></code></p></td>
+<td><p>Start the public A2A HTTP server. The default standalone topology needs
+no worker or Consul. Add <code class="docutils literal notranslate"><span class="pre">--deployment</span> <span class="pre">clustered</span></code> to use a gateway,
+workers, and Consul.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">worker</span></code></p></td>
+<td><p>Start an internal database worker for clustered topology. Standalone
+topology does not use this command.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">agent-card</span></code></p></td>
+<td><p>Print a Gemini Enterprise-compatible A2A v0.3 Agent Card without
+starting a server.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="a2a-deployment-examples">
+<span id="a2a-cli-examples"></span><h3><span class="section-number">1.5.1. </span>A2A deployment examples<a class="headerlink" href="#a2a-deployment-examples" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="a2a.html#a2a"><span class="std std-ref">A2A guide</span></a> explains how fixed and dynamic connections differ
+from standalone and clustered topologies. These examples use CLI options for
+the database settings. Replace the placeholder credentials and connection
+string with your values.</p>
+<section id="fixed-standalone-connection">
+<h4><span class="section-number">1.5.1.1. </span>Fixed standalone connection<a class="headerlink" href="#fixed-standalone-connection" title="Link to this heading">¶</a></h4>
+<p>Pass all four connection values at startup to use the standalone server’s
+shared connection pool. This needs no Consul or worker and supports streaming:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>select-ai<span class="w"> </span>a2a<span class="w"> </span>serve<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--deployment<span class="w"> </span>standalone<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--team<span class="w"> </span>ORACLE_AI_DATABASE_AGENT<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--user<span class="w"> </span>DB_USERNAME<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--password<span class="w"> </span><span class="s1">'DB_PASSWORD'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--dsn<span class="w"> </span><span class="s1">'dbhost.example.com:1521/db_service'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--database-tls-ca-file<span class="w"> </span>/run/secrets/database-ca.pem<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--database-call-timeout-seconds<span class="w"> </span><span class="m">120</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--public-url<span class="w"> </span>https://a2a.example.com
+</pre></div>
+</div>
+<p>The database CA file is optional when the server certificate is already
+trusted by the operating system. <code class="docutils literal notranslate"><span class="pre">--wallet-location</span></code> and
+<code class="docutils literal notranslate"><span class="pre">--wallet-password</span></code> are also available for fixed standalone connections
+that use an Oracle wallet.</p>
+<a class="reference internal image-reference" href="../_images/select_ai_a2a_server_demo.gif"><img alt="Select AI A2A server CLI demo" src="../_images/select_ai_a2a_server_demo.gif" style="width: 100%;" />
+</a>
+</section>
+<section id="dynamic-standalone-connection">
+<h4><span class="section-number">1.5.1.2. </span>Dynamic standalone connection<a class="headerlink" href="#dynamic-standalone-connection" title="Link to this heading">¶</a></h4>
+<p>Omit one or more of <code class="docutils literal notranslate"><span class="pre">--dsn</span></code>, <code class="docutils literal notranslate"><span class="pre">--user</span></code>, <code class="docutils literal notranslate"><span class="pre">--password</span></code>, and <code class="docutils literal notranslate"><span class="pre">--team</span></code> to
+have the A2A client supply those values through an A2UI form. The server runs
+the session child processes itself, so this mode needs no Consul or separate
+worker. Run a single Uvicorn process. Dynamic standalone supports task polling,
+not streaming:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>select-ai<span class="w"> </span>a2a<span class="w"> </span>serve<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--deployment<span class="w"> </span>standalone<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--database-tls-ca-file<span class="w"> </span>/run/secrets/database-ca.pem<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--public-url<span class="w"> </span>https://a2a.example.com
+</pre></div>
+</div>
+<p>Remove <code class="docutils literal notranslate"><span class="pre">--database-tls-ca-file</span></code> when the database server certificate is
+already trusted by the operating system. Any connection values provided on
+the command line are fixed; the form asks only for the values that are
+missing.</p>
+</section>
+<section id="clustered-gateway-and-worker">
+<h4><span class="section-number">1.5.1.3. </span>Clustered gateway and worker<a class="headerlink" href="#clustered-gateway-and-worker" title="Link to this heading">¶</a></h4>
+<p>Clustered topology requires Consul and at least one worker. Consul is the
+worker directory and session-routing service: it helps the gateway find a
+healthy worker for a new session and send later requests back to that worker.
+See <a class="reference internal" href="a2a.html#a2a-why-consul"><span class="std std-ref">Why clustered deployments use Consul</span></a> for a worked
+example. Point the gateway and all workers at the same Consul service with
+<code class="docutils literal notranslate"><span class="pre">--consul-url</span></code>.</p>
+<p>The gateway can run without database credentials; by default, the A2A client supplies them
+through the connection form. For local development, start Consul and then run
+the worker and gateway in separate terminals:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Terminal 1: local development Consul agent</span>
+consul<span class="w"> </span>agent<span class="w"> </span>-dev<span class="w"> </span>-bind<span class="o">=</span><span class="m">127</span>.0.0.1<span class="w"> </span>-client<span class="o">=</span><span class="m">127</span>.0.0.1
+
+<span class="c1"># Terminal 2: database worker</span>
+select-ai<span class="w"> </span>a2a<span class="w"> </span>worker<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--port<span class="w"> </span><span class="m">8081</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--consul-url<span class="w"> </span>http://127.0.0.1:8500<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--worker-id<span class="w"> </span>local-worker<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--worker-endpoint<span class="w"> </span>http://127.0.0.1:8081<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--database-call-timeout-seconds<span class="w"> </span><span class="m">120</span>
+
+<span class="c1"># Terminal 3: public gateway</span>
+select-ai<span class="w"> </span>a2a<span class="w"> </span>serve<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--deployment<span class="w"> </span>clustered<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--public-url<span class="w"> </span>http://127.0.0.1:8000<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--consul-url<span class="w"> </span>http://127.0.0.1:8500<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--database-tls-ca-file<span class="w"> </span>/run/secrets/database-ca.pem<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--database-call-timeout-seconds<span class="w"> </span><span class="m">120</span>
+</pre></div>
+</div>
+<p>The local Consul command is for development only. In a deployment, point the
+gateway and workers at the existing Consul service and use network-reachable
+worker addresses. The database CA option is needed only for a private database
+CA; the gateway passes its PEM contents to the worker when opening a session.
+Set the same <code class="docutils literal notranslate"><span class="pre">--database-call-timeout-seconds</span></code> value on the gateway and
+worker. See the A2A guide for Consul setup and clustered deployment details.</p>
+<p>Important <code class="docutils literal notranslate"><span class="pre">serve</span></code> options include <code class="docutils literal notranslate"><span class="pre">--team</span></code>, <code class="docutils literal notranslate"><span class="pre">--host</span></code>, <code class="docutils literal notranslate"><span class="pre">--port</span></code>,
+<code class="docutils literal notranslate"><span class="pre">--public-url</span></code>, <code class="docutils literal notranslate"><span class="pre">--description</span></code>, <code class="docutils literal notranslate"><span class="pre">--pool-max-size</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">--database-call-timeout-seconds</span></code>. The default database call timeout is 120
+seconds. On the clustered gateway, this value sets the request deadline basis;
+the worker applies it to Oracle calls and derives its child-process deadline.</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">a2a</span> <span class="pre">serve</span></code> does not require an application OAuth token. A2A
+task and context records use a shared owner scope, and each A2A context maps
+to its own Select AI conversation. Add <code class="docutils literal notranslate"><span class="pre">--require-oauth</span></code> to require
+<code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">...</span></code> and derive an owner scope as well as context.
+The SDK does not validate token signatures or claims. A trusted upstream
+service must validate the end-user token and prevent direct access that
+bypasses validation. See <a class="reference internal" href="a2a.html#end-user-oauth-and-session-ownership"><span class="std std-ref">the A2A authentication contract</span></a>.
+The Agent Card advertises bearer security only in that mode.</p>
+</section>
+<section id="clustered-option-reference">
+<h4><span class="section-number">1.5.1.4. </span>Clustered option reference<a class="headerlink" href="#clustered-option-reference" title="Link to this heading">¶</a></h4>
+<p>Configure discovery first, then connection values and session limits. Explicit
+CLI values take precedence over environment fallbacks. For a fixed clustered
+connection, see the <a class="reference internal" href="a2a.html#a2a-clustered-fixed"><span class="std std-ref">complete gateway command</span></a>.</p>
+<section id="gateway-discovery">
+<h5><span class="section-number">1.5.1.4.1. </span>Gateway discovery<a class="headerlink" href="#gateway-discovery" title="Link to this heading">¶</a></h5>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--public-url</span></code> (<code class="docutils literal notranslate"><span class="pre">PUBLIC_URL</span></code>)</dt><dd><p>Client-visible base URL advertised in the Agent Card.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--consul-url</span></code> (<code class="docutils literal notranslate"><span class="pre">CONSUL_HTTP_URL</span></code>)</dt><dd><p>Consul HTTP API URL. Use the same Consul service as the workers.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--worker-service</span></code> (<code class="docutils literal notranslate"><span class="pre">WORKER_SERVICE</span></code>)</dt><dd><p>Consul service to discover. Default: <code class="docutils literal notranslate"><span class="pre">select-ai-a2a-worker</span></code>.</p>
+</dd>
+</dl>
+</section>
+<section id="worker-registration">
+<h5><span class="section-number">1.5.1.4.2. </span>Worker registration<a class="headerlink" href="#worker-registration" title="Link to this heading">¶</a></h5>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--host</span></code> and <code class="docutils literal notranslate"><span class="pre">--port</span></code></dt><dd><p>Worker listen address and port. The port is also registered with Consul.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--worker-id</span></code> (<code class="docutils literal notranslate"><span class="pre">WORKER_ID</span></code>)</dt><dd><p>Unique worker identifier. Defaults to the host name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--consul-url</span></code> (<code class="docutils literal notranslate"><span class="pre">CONSUL_HTTP_URL</span></code>)</dt><dd><p>Consul HTTP API URL used to register the worker and send heartbeats.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--worker-endpoint</span></code> (<code class="docutils literal notranslate"><span class="pre">WORKER_ENDPOINT</span></code>)</dt><dd><p>Worker URL reachable by the gateway. In cluster manifests,
+<code class="docutils literal notranslate"><span class="pre">WORKER_ADDRESS</span></code> can supply the pod IP when no endpoint is given.</p>
+</dd>
+</dl>
+</section>
+<section id="connection-values-and-forms">
+<h5><span class="section-number">1.5.1.4.3. </span>Connection values and forms<a class="headerlink" href="#connection-values-and-forms" title="Link to this heading">¶</a></h5>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--dsn</span></code>, <code class="docutils literal notranslate"><span class="pre">--user</span></code>, <code class="docutils literal notranslate"><span class="pre">--password</span></code>, and <code class="docutils literal notranslate"><span class="pre">--team</span></code> (gateway)</dt><dd><p>Fix the supplied values at startup. Set all four for a fixed connection;
+otherwise the A2UI form asks only for the missing values. The environment
+fallbacks are <code class="docutils literal notranslate"><span class="pre">SELECT_AI_DB_CONNECT_STRING</span></code>, <code class="docutils literal notranslate"><span class="pre">SELECT_AI_USER</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SELECT_AI_PASSWORD</span></code>, and <code class="docutils literal notranslate"><span class="pre">SELECT_AI_A2A_TEAM</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--a2ui-form</span></code> (gateway)</dt><dd><p>Path to a custom A2UI JSON form. It must submit exactly the missing
+connection values. See <a class="reference internal" href="a2a.html#a2a"><span class="std std-ref">A2A Integration</span></a> for the form contract.</p>
+</dd>
+</dl>
+</section>
+<section id="session-lifetime-and-timeouts">
+<h5><span class="section-number">1.5.1.4.4. </span>Session lifetime and timeouts<a class="headerlink" href="#session-lifetime-and-timeouts" title="Link to this heading">¶</a></h5>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--session-ttl-seconds</span></code> (gateway and worker)</dt><dd><p>Lifetime of a temporary database session; default 900 seconds.
+The gateway also reads <code class="docutils literal notranslate"><span class="pre">SESSION_TTL_SECONDS</span></code>. Configure the same lifetime
+on both processes.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--conversation-retention-days</span></code> (worker)</dt><dd><p>Days to retain Oracle conversations; default 7. Environment fallback:
+<code class="docutils literal notranslate"><span class="pre">CONVERSATION_RETENTION_DAYS</span></code>. Use 0 to retain until manually deleted.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--session-start-timeout-seconds</span></code> (worker)</dt><dd><p>Maximum wait for a child process to initialize its database session.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--database-call-timeout-seconds</span></code> (gateway and worker)</dt><dd><p>Database call timeout; default 120 seconds. Set the same value on both
+processes. The worker applies it to Oracle calls; both processes derive
+their request deadlines from it.</p>
+</dd>
+</dl>
+</section>
+<section id="authentication-and-tls">
+<h5><span class="section-number">1.5.1.4.5. </span>Authentication and TLS<a class="headerlink" href="#authentication-and-tls" title="Link to this heading">¶</a></h5>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--require-oauth</span></code> (gateway)</dt><dd><p>Require a bearer token and derive an owner scope for task and context
+records. Token validation must occur upstream. Uses the same ownership
+behavior as standalone mode.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--tls-cert-file</span></code> and <code class="docutils literal notranslate"><span class="pre">--tls-key-file</span></code> (gateway)</dt><dd><p>Enable HTTPS on the public A2A listener. Supply both together; without
+them, the listener uses HTTP.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--tls-ca-file</span></code> (gateway)</dt><dd><p>Optional CA that makes the public listener require and verify client
+certificates (mTLS). Requires <code class="docutils literal notranslate"><span class="pre">--tls-cert-file</span></code> and <code class="docutils literal notranslate"><span class="pre">--tls-key-file</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--worker-tls-ca-file</span></code>, <code class="docutils literal notranslate"><span class="pre">--worker-tls-cert-file</span></code>, <code class="docutils literal notranslate"><span class="pre">--worker-tls-key-file</span></code></dt><dd><p>Gateway TLS options for worker connections. The CA verifies the worker’s
+server certificate; it can be supplied alone for HTTPS without mTLS. If
+omitted, Requests uses its default CA bundle. The client certificate and
+key are optional, but must be supplied together; the worker must require
+and trust them for mTLS. When any <code class="docutils literal notranslate"><span class="pre">--worker-tls-*</span></code> option is used, set
+<code class="docutils literal notranslate"><span class="pre">--worker-endpoint</span></code> to an HTTPS URL.
+Environment fallbacks are <code class="docutils literal notranslate"><span class="pre">WORKER_TLS_CA_FILE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WORKER_TLS_CERT_FILE</span></code>, and <code class="docutils literal notranslate"><span class="pre">WORKER_TLS_KEY_FILE</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--tls-ca-file</span></code>, <code class="docutils literal notranslate"><span class="pre">--tls-cert-file</span></code>, <code class="docutils literal notranslate"><span class="pre">--tls-key-file</span></code> (worker)</dt><dd><p>The certificate and key enable HTTPS on the worker and must be supplied
+together. <code class="docutils literal notranslate"><span class="pre">--tls-ca-file</span></code> is optional; when supplied, the worker
+requires and verifies client certificates for mTLS. Set
+<code class="docutils literal notranslate"><span class="pre">--worker-endpoint</span></code> to an HTTPS URL so the gateway connects over TLS.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--database-tls-ca-file</span></code> (gateway)</dt><dd><p>CA for verifying the Oracle database certificate. The gateway passes the
+PEM contents to the worker session. This is separate from the certificates
+for the gateway-to-worker HTTP connection and from Oracle wallet mTLS.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="agent-card-generation">
+<h3><span class="section-number">1.5.2. </span>Agent Card generation<a class="headerlink" href="#agent-card-generation" title="Link to this heading">¶</a></h3>
+<p>Print the portable A2A v0.3 card for a standalone public service:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>select-ai<span class="w"> </span>a2a<span class="w"> </span>agent-card<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--team<span class="w"> </span>ORACLE_AI_DATABASE_AGENT<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--public-url<span class="w"> </span>https://a2a.example.com
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--team</span></code> and <code class="docutils literal notranslate"><span class="pre">--public-url</span></code> are required; use <code class="docutils literal notranslate"><span class="pre">--description</span></code> to replace
+the default description. See <a class="reference internal" href="a2a.html#a2a"><span class="std std-ref">A2A Integration</span></a> for protocol
+compatibility, persistent state, gateway session behavior, wallet support, and
+Google Cloud deployment details.</p>
+</section>
+</section>
+<section id="command-summary">
+<h2><span class="section-number">1.6. </span>Command summary<a class="headerlink" href="#command-summary" title="Link to this heading">¶</a></h2>
+<table class="docutils align-left" id="id4">
+<caption><span class="caption-text">CLI command summary</span><a class="headerlink" href="#id4" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 35.0%" />
 <col style="width: 65.0%" />
@@ -363,6 +655,18 @@ credential.</p>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">profile</span> <span class="pre">translate</span></code></p></td>
 <td><p>Translate text with a saved profile.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">serve</span></code></p></td>
+<td><p>Start the public A2A server. The default is standalone; use
+<code class="docutils literal notranslate"><span class="pre">--deployment</span> <span class="pre">clustered</span></code> for a gateway and workers. Omitted
+connection values are collected through A2UI.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">worker</span></code></p></td>
+<td><p>Start a database worker for clustered topology. Standalone deployments
+do not use a worker.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select-ai</span> <span class="pre">a2a</span> <span class="pre">agent-card</span></code></p></td>
+<td><p>Print an A2A v0.3 Agent Card.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -383,7 +687,25 @@ credential.</p>
 <li><a class="reference internal" href="#interactive-chat">1.2. Interactive chat</a></li>
 <li><a class="reference internal" href="#sql-commands">1.3. SQL commands</a></li>
 <li><a class="reference internal" href="#profile-commands">1.4. Profile commands</a></li>
-<li><a class="reference internal" href="#command-summary">1.5. Command summary</a></li>
+<li><a class="reference internal" href="#a2a-commands">1.5. A2A commands</a><ul>
+<li><a class="reference internal" href="#a2a-deployment-examples">1.5.1. A2A deployment examples</a><ul>
+<li><a class="reference internal" href="#fixed-standalone-connection">1.5.1.1. Fixed standalone connection</a></li>
+<li><a class="reference internal" href="#dynamic-standalone-connection">1.5.1.2. Dynamic standalone connection</a></li>
+<li><a class="reference internal" href="#clustered-gateway-and-worker">1.5.1.3. Clustered gateway and worker</a></li>
+<li><a class="reference internal" href="#clustered-option-reference">1.5.1.4. Clustered option reference</a><ul>
+<li><a class="reference internal" href="#gateway-discovery">1.5.1.4.1. Gateway discovery</a></li>
+<li><a class="reference internal" href="#worker-registration">1.5.1.4.2. Worker registration</a></li>
+<li><a class="reference internal" href="#connection-values-and-forms">1.5.1.4.3. Connection values and forms</a></li>
+<li><a class="reference internal" href="#session-lifetime-and-timeouts">1.5.1.4.4. Session lifetime and timeouts</a></li>
+<li><a class="reference internal" href="#authentication-and-tls">1.5.1.4.5. Authentication and TLS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#agent-card-generation">1.5.2. Agent Card generation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-summary">1.6. Command summary</a></li>
 </ul>
 </li>
 </ul>
@@ -391,8 +713,8 @@ credential.</p>
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="async_agent.html"
-                          title="previous chapter"><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">AsyncTool</span></code></a></p>
+    <p class="topless"><a href="a2a.html"
+                          title="previous chapter"><span class="section-number">1. </span>Agent2Agent (A2A)</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -427,12 +749,15 @@ credential.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="web_frameworks.html" title="1. Using select_ai with Python web frameworks"
              >next</a> |</li>
         <li class="right" >
-          <a href="async_agent.html" title="1. AsyncTool"
+          <a href="a2a.html" title="1. Agent2Agent (A2A)"
              >previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -440,7 +765,7 @@ credential.</p>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Command line interface</a></li>
@@ -485,7 +810,7 @@ credential.</p>
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

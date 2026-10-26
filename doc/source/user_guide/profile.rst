@@ -338,6 +338,22 @@ Streaming is supported by ``generate()``, ``chat()``, ``narrate()``,
 ``explain_sql()``, ``show_sql()``, and ``show_prompt()``. It is not supported
 for ``run_sql()``, which returns a ``pandas.DataFrame``.
 
+The SDK calls the database function before reading the returned CLOB in
+chunks. This is CLOB consumption, rather than a guarantee that model tokens
+arrive while generation is in progress. The first chunk is available only
+after the database function returns. A partially consumed iterator keeps its
+cursor and connection open. Close it if you stop early, and consume session
+streams before leaving ``chat_session()``:
+
+.. code-block:: python
+
+   from contextlib import closing
+
+   with closing(profile.chat("Explain connection pooling.", stream=True)) as chunks:
+       for chunk in chunks:
+           print(chunk, end="")
+           # Breaking here also closes the iterator on context exit.
+
 .. _request-profile-attributes:
 
 *****************************************
@@ -503,35 +519,127 @@ output::
 
 .. latex:clearpage::
 
+***************
+Share a profile
+***************
+
+While connected as the profile owner, grant access to an existing profile:
+
+.. code-block:: python
+
+   profile = select_ai.Profile.fetch("OCI_AI_PROFILE")
+   profile.grant_access("APP_USER")
+
+The recipient can fetch the profile with ``owner="APP_OWNER"`` in a separate
+connection. When access should end, run
+``profile.revoke_access("APP_USER")`` as the owner. See
+:ref:`Sharing and ownership <sharing>` for the complete owner and recipient
+sequence.
+
+.. raw:: latex
+
+   \Needspace{25\baselineskip}
+
+******************************
+Give feedback on generated SQL
+******************************
+
+Use feedback after reviewing the SQL produced for a prompt. Identify the
+request with a ``(prompt, Action)`` tuple or a ``sql_id`` from
+``V$MAPPED_SQL``. The example below assumes an open connection and an
+existing profile over the ``SH`` schema:
+
+.. code-block:: python
+
+   profile = select_ai.Profile.fetch("OCI_AI_PROFILE")
+   prompt = "How many promotions?"
+   sql = profile.show_sql(prompt=prompt)
+   print(sql)
+
+After inspecting the SQL, record positive feedback if it answers the question:
+
+.. code-block:: python
+
+   profile.add_positive_feedback(
+       prompt_spec=(prompt, select_ai.Action.SHOWSQL)
+   )
+
+For an incorrect answer, use ``add_negative_feedback()`` with the same request
+identifier, ``response`` containing the expected SQL, and ``feedback_content``
+explaining the correction. Remove obsolete feedback with
+``delete_feedback()`` and the same request identifier.
+
+
+.. latex:clearpage::
+
 **************************
 List profiles
 **************************
 
-Profile listing returns profiles visible to the connected database user.
-Pass ``owner`` to list profiles from a specific schema, including a profile
-shared with the connected user. Each returned object includes ``owner`` and
-the owner-qualified ``qualified_name`` property. Instantiate ``Profile`` with
-one of the returned names to reuse the saved profile.
+Use ``Profile.list()`` to discover saved profiles in the current schema.
+Call it on the class; you do not need to create an empty profile first.
+Each returned object includes ``profile_name``, ``owner``, and the
+owner-qualified ``qualified_name``.
+
+Connect and list your profiles
+++++++++++++++++++++++++++++++
+
+Set ``SELECT_AI_USER``, ``SELECT_AI_PASSWORD``, and
+``SELECT_AI_DB_CONNECT_STRING`` before running this complete script. It prints
+one qualified name per profile and closes the connection afterward:
+
+.. literalinclude:: ../../../samples/profiles_list.py
+   :language: python
+   :start-at: import
+
+For a schema named ``APP_OWNER`` containing two profiles, the output could be:
+
+.. code-block:: text
+
+   APP_OWNER.OCI_AI_PROFILE
+   APP_OWNER.OCI_VECTOR_AI_PROFILE
+
+Your results depend on the profiles visible in your schema; result order is
+not guaranteed. An empty result means no profiles match the requested scope.
+
+Filter by name
+++++++++++++++
+
+With a connection open, use ``profile_name_pattern`` to match names with a
+regular expression. This example lists names starting with ``OCI_``:
 
 .. code-block:: python
 
-   profile = select_ai.Profile.fetch(
-       "OCI_AI_PROFILE",
-       owner="APP_OWNER",
-   )
-   print(profile.qualified_name)
+   for profile in select_ai.Profile.list(profile_name_pattern="^OCI_"):
+       print(profile.qualified_name)
+
+.. raw:: latex
+
+   \Needspace{27\baselineskip}
+
+Find and reuse a shared profile
++++++++++++++++++++++++++++++++
+
+Pass ``owner`` to list profiles in another schema. The connected user must
+have access to those profiles; specifying an owner does not grant access.
+While connected as the recipient, list the profiles shared by ``APP_OWNER``:
+
+.. code-block:: python
 
    for profile in select_ai.Profile.list(owner="APP_OWNER"):
        print(profile.qualified_name)
 
-.. literalinclude:: ../../../samples/profiles_list.py
-   :language: python
-   :lines: 14-
+Once you know the profile name, fetch that profile with the same owner and
+use the returned object directly:
 
+.. code-block:: python
 
-output::
+   profile = select_ai.Profile.fetch(
+       "OCI_AI_PROFILE", owner="APP_OWNER"
+   )
+   print(profile.qualified_name)  # APP_OWNER.OCI_AI_PROFILE
+   response = profile.chat(prompt="What is retrieval augmented generation?")
+   print(response)
 
-    ASYNC_OCI_AI_PROFILE
-    OCI_VECTOR_AI_PROFILE
-    ASYNC_OCI_VECTOR_AI_PROFILE
-    OCI_AI_PROFILE
+See :ref:`Sharing and ownership <sharing>` for the owner's grant and revoke
+steps.

@@ -593,14 +593,16 @@ def test_worker_client_uses_consul_https_endpoint_with_mtls(monkeypatch):
     }
 
 
-def test_mtls_requires_all_three_gateway_files():
-    with pytest.raises(ValueError, match="worker mTLS requires"):
+def test_worker_client_certificate_requires_a_key():
+    with pytest.raises(
+        ValueError, match="certificate and key must be supplied"
+    ):
         GatewaySettings(
             public_url="https://gateway.example.com",
             consul_url="http://consul:8500",
             worker_service="select-ai-a2a-worker",
             session_ttl_seconds=60,
-            worker_tls_ca_file="/tls/ca.pem",
+            worker_tls_cert_file="/tls/gateway.pem",
         )
 
 

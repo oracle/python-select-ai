@@ -5,20 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>3. Connecting to Oracle Database &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3. Connecting to Oracle Database &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
 
-    <script src="../_static/documentation_options.js?v=9172181d"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Supported Actions" href="actions.html" />
+    <link rel="next" title="4. Run your first SQL query" href="quickstart.html" />
     <link rel="prev" title="2. Installing select_ai" href="installation.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
@@ -81,8 +81,8 @@
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="actions.html"
-                          title="next chapter"><span class="section-number">1. </span>Supported Actions</a></p>
+    <p class="topless"><a href="quickstart.html"
+                          title="next chapter"><span class="section-number">4. </span>Run your first SQL query</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -112,12 +112,15 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="actions.html" title="1. Supported Actions"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="4. Run your first SQL query"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="2. Installing select_ai"
              accesskey="P">previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -125,7 +128,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Connecting to Oracle Database</a></li>
@@ -164,7 +167,10 @@
 to connect to the database and execute PL/SQL subprograms.</p>
 <p>The library keeps the active connection or connection pool for the current
 process so profile, credential, provider, vector index, and agent APIs can use
-it without passing a connection object to each call. Use a standalone
+it without passing a connection object to each call. Standalone connections
+are local to the creating thread; pools are shared within a process. Do not
+configure both a standalone connection and a pool for the same API style in
+one thread: disconnect before switching. Use a standalone
 connection for scripts and notebooks. Use a connection pool for applications
 that handle concurrent work, such as web services or worker processes.</p>
 <p>Most samples read connection values from environment variables:</p>
@@ -177,9 +183,9 @@ that handle concurrent work, such as web services or worker processes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 </pre></div>
@@ -190,9 +196,9 @@ that handle concurrent work, such as web services or worker processes.</p>
 <code class="docutils literal notranslate"><span class="pre">select_ai.connect()</span></code> as shown below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_user&gt;&quot;</span>
-<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_password&gt;&quot;</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_dsn&gt;&quot;</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s2">"&lt;your_db_user&gt;"</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">"&lt;your_db_password&gt;"</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="s2">"&lt;your_db_dsn&gt;"</span>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -207,9 +213,9 @@ that handle concurrent work, such as web services or worker processes.</p>
 with <code class="docutils literal notranslate"><span class="pre">await</span></code> keyword:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_user&gt;&quot;</span>
-<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_password&gt;&quot;</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_dsn&gt;&quot;</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s2">"&lt;your_db_user&gt;"</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">"&lt;your_db_password&gt;"</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="s2">"&lt;your_db_dsn&gt;"</span>
 <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -227,9 +233,9 @@ methods configure Select AI operations to acquire and release connections from
 the pool for each operation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_user&gt;&quot;</span>
-<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_password&gt;&quot;</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="s2">&quot;&lt;your_db_dsn&gt;&quot;</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s2">"&lt;your_db_user&gt;"</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">"&lt;your_db_password&gt;"</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="s2">"&lt;your_db_dsn&gt;"</span>
 
 <span class="c1"># for sync pool</span>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span>
@@ -301,9 +307,9 @@ and <code class="docutils literal notranslate"><span class="pre">https_proxy_por
     <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
     <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
     <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">,</span>
-    <span class="n">wallet_location</span><span class="o">=</span><span class="s2">&quot;/path/to/wallet&quot;</span><span class="p">,</span>
-    <span class="n">config_dir</span><span class="o">=</span><span class="s2">&quot;/path/to/wallet&quot;</span><span class="p">,</span>
-    <span class="n">wallet_password</span><span class="o">=</span><span class="s2">&quot;&lt;wallet_password&gt;&quot;</span><span class="p">,</span>
+    <span class="n">wallet_location</span><span class="o">=</span><span class="s2">"/path/to/wallet"</span><span class="p">,</span>
+    <span class="n">config_dir</span><span class="o">=</span><span class="s2">"/path/to/wallet"</span><span class="p">,</span>
+    <span class="n">wallet_password</span><span class="o">=</span><span class="s2">"&lt;wallet_password&gt;"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -340,8 +346,8 @@ creation APIs.</p>
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="actions.html"
-                          title="next chapter"><span class="section-number">1. </span>Supported Actions</a></p>
+    <p class="topless"><a href="quickstart.html"
+                          title="next chapter"><span class="section-number">4. </span>Run your first SQL query</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -371,12 +377,15 @@ creation APIs.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="actions.html" title="1. Supported Actions"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="4. Run your first SQL query"
              >next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="2. Installing select_ai"
              >previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -384,7 +393,7 @@ creation APIs.</p>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Connecting to Oracle Database</a></li>
@@ -429,7 +438,7 @@ creation APIs.</p>
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

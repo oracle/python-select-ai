@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # concurrent_prompt_processing/async_pipeline.py
 #
-# Send multiple prompts in one database round trip using run_pipeline().
+# Batch multiple prompts using run_pipeline(); see the pipeline user guide.
 # -----------------------------------------------------------------------------
 
 import asyncio

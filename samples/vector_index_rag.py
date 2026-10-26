@@ -15,11 +15,16 @@ import os
 
 import select_ai
 
-user = os.getenv("SELECT_AI_USER")
-password = os.getenv("SELECT_AI_PASSWORD")
-dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+user = os.environ["SELECT_AI_USER"]
+password = os.environ["SELECT_AI_PASSWORD"]
+dsn = os.environ["SELECT_AI_DB_CONNECT_STRING"]
 
 select_ai.connect(user=user, password=password, dsn=dsn)
-profile = select_ai.Profile(profile_name="oci_vector_ai_profile")
-r = profile.narrate("list the conda environments in my object store")
-print(r)
+try:
+    profile = select_ai.Profile(profile_name="oci_vector_ai_profile")
+    response = profile.narrate(
+        "How many days do customers have to request a refund?"
+    )
+    print(response)
+finally:
+    select_ai.disconnect()

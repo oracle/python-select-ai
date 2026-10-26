@@ -16,43 +16,49 @@ import os
 
 import select_ai
 
-user = os.getenv("SELECT_AI_USER")
-password = os.getenv("SELECT_AI_PASSWORD")
-dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+user = os.environ["SELECT_AI_USER"]
+password = os.environ["SELECT_AI_PASSWORD"]
+dsn = os.environ["SELECT_AI_DB_CONNECT_STRING"]
+# Upload samples/data/refund-policy.txt to your bucket, then set its URI.
+source_uri = os.environ["SELECT_AI_DOCUMENT_URI"]
+provider_credential = os.getenv(
+    "SELECT_AI_PROVIDER_CREDENTIAL", "my_oci_ai_profile_key"
+)
+storage_credential = os.environ["SELECT_AI_OBJECT_STORAGE_CREDENTIAL"]
 
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-
-    provider = select_ai.OCIGenAIProvider(
-        region="us-chicago-1",
-        oci_apiformat="GENERIC",
-        embedding_model="cohere.embed-v4.0",
-    )
-    profile_attributes = select_ai.ProfileAttributes(
-        credential_name="my_oci_ai_profile_key",
-        provider=provider,
-    )
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_vector_ai_profile",
-        attributes=profile_attributes,
-        description="MY OCI AI Profile",
-        replace=True,
-    )
-
-    vector_index_attributes = select_ai.OracleVectorIndexAttributes(
-        location="https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph",
-        object_storage_credential_name="my_oci_ai_profile_key",
-    )
-
-    async_vector_index = select_ai.AsyncVectorIndex(
-        index_name="test_vector_index",
-        attributes=vector_index_attributes,
-        description="Vector index for conda environments",
-        profile=async_profile,
-    )
-    await async_vector_index.create(replace=True, wait_for_completion=True)
-    print("Created vector index: test_vector_index")
+    try:
+        provider = select_ai.OCIGenAIProvider(
+            region=os.getenv("SELECT_AI_OCI_REGION", "us-chicago-1"),
+            oci_apiformat="GENERIC",
+            embedding_model=os.getenv(
+                "SELECT_AI_EMBEDDING_MODEL", "cohere.embed-v4.0"
+            ),
+        )
+        profile = await select_ai.AsyncProfile(
+            profile_name="async_oci_vector_ai_profile",
+            attributes=select_ai.ProfileAttributes(
+                credential_name=provider_credential,
+                provider=provider,
+            ),
+            description="Profile for the sample refund policy",
+            replace=True,
+        )
+        vector_index = select_ai.AsyncVectorIndex(
+            index_name="test_vector_index",
+            attributes=select_ai.OracleVectorIndexAttributes(
+                location=source_uri,
+                object_storage_credential_name=storage_credential,
+            ),
+            description="Sample refund policy",
+            profile=profile,
+        )
+        await vector_index.create(replace=True, wait_for_completion=True)
+        print("Created vector index: test_vector_index")
+    finally:
+        await select_ai.async_disconnect()
 
 
 asyncio.run(main())

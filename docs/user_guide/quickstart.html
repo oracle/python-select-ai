@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Run your first SQL query &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
+
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Compatibility and requirements" href="compatibility.html" />
+    <link rel="prev" title="3. Connecting to Oracle Database" href="connection.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
+            <script type="text/javascript" src="../_static/copybutton.js"></script>
+            <script type="text/javascript" src="../_static/menu.js"></script>
+            <script type="text/javascript" src="../_static/search-focus.js"></script>
+            <script type="text/javascript" src="../_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="../_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="../search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">4. Run your first SQL query</a><ul>
+<li><a class="reference internal" href="#install-and-configure-python">4.1. Install and configure Python</a></li>
+<li><a class="reference internal" href="#prepare-the-database-account">4.2. Prepare the database account</a></li>
+<li><a class="reference internal" href="#run-the-example">4.3. Run the example</a></li>
+<li><a class="reference internal" href="#waiting-and-timeouts">4.4. Waiting and timeouts</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="connection.html"
+                          title="previous chapter"><span class="section-number">3. </span>Connecting to Oracle Database</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="compatibility.html"
+                          title="next chapter"><span class="section-number">5. </span>Compatibility and requirements</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/quickstart.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="compatibility.html" title="5. Compatibility and requirements"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="connection.html" title="3. Connecting to Oracle Database"
+             accesskey="P">previous</a> |</li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>Run your first SQL query</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="run-your-first-sql-query">
+<span id="first-query"></span><h1><span class="section-number">4. </span>Run your first SQL query<a class="headerlink" href="#run-your-first-sql-query" title="Link to this heading">¶</a></h1>
+<p>This walkthrough creates a temporary table with three rows, stores an OpenAI
+API key in a temporary database credential, creates a Select AI profile, and
+queries the table using natural language. It removes its table, credential,
+and profile when finished. Use a development database account.</p>
+<p>Requests use the API key in <code class="docutils literal notranslate"><span class="pre">OPENAI_API_KEY</span></code> on each run. Existing database
+credentials are not used or replaced. OpenAI API usage is billed separately
+from ChatGPT and Codex subscriptions.</p>
+<section id="install-and-configure-python">
+<h2><span class="section-number">4.1. </span>Install and configure Python<a class="headerlink" href="#install-and-configure-python" title="Link to this heading">¶</a></h2>
+<p>Use Python 3.11 through 3.14 and an Oracle Database environment with
+<code class="docutils literal notranslate"><span class="pre">DBMS_CLOUD_AI</span></code> available. See <a class="reference internal" href="compatibility.html#compatibility"><span class="std std-ref">Compatibility</span></a> for
+feature-specific requirements.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'select_ai==1.5.0'</span>
+</pre></div>
+</div>
+<p>On Windows, use the virtual-environment activation command in
+<a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>.</p>
+<p>Set the following values in your shell. Choose an OpenAI model supported by
+your database integration and available to your API project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_USER</span><span class="o">=</span><span class="s1">'your_database_user'</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_PASSWORD</span><span class="o">=</span><span class="s1">'your_database_password'</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_DB_CONNECT_STRING</span><span class="o">=</span><span class="s1">'your_database_connect_string'</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span><span class="s1">'your_api_key'</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_MODEL</span><span class="o">=</span><span class="s1">'gpt-4.1'</span>
+</pre></div>
+</div>
+<p>To try a different key, replace <code class="docutils literal notranslate"><span class="pre">OPENAI_API_KEY</span></code> and rerun the script. Keep
+keys out of source files and version control. OCI-specific environment
+variables are not read by this sample.</p>
+<p>For wallet connections, add the parameters described in
+<a class="reference internal" href="connection.html#wallet-connections"><span class="std std-ref">Wallet connections</span></a> to the
+sample’s <code class="docutils literal notranslate"><span class="pre">connect()</span></code> call. Do not commit secrets to the repository.</p>
+</section>
+<section id="prepare-the-database-account">
+<h2><span class="section-number">4.2. </span>Prepare the database account<a class="headerlink" href="#prepare-the-database-account" title="Link to this heading">¶</a></h2>
+<p>A database administrator must grant the application user Select AI package
+privileges and outbound HTTP access to <code class="docutils literal notranslate"><span class="pre">api.openai.com</span></code>. Pass <code class="docutils literal notranslate"><span class="pre">--setup</span></code> to
+perform both steps before running the example. Set the administrator variables
+in addition to the application and OpenAI variables above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_ADMIN_USER</span><span class="o">=</span><span class="s1">'your_database_admin_user'</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SELECT_AI_ADMIN_PASSWORD</span><span class="o">=</span><span class="s1">'your_database_admin_password'</span>
+python<span class="w"> </span>samples/quickstart.py<span class="w"> </span>--setup
+</pre></div>
+</div>
+<p>The script connects as the administrator, calls <code class="docutils literal notranslate"><span class="pre">grant_privileges()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">grant_network_access(users=...,</span> <span class="pre">host=&quot;api.openai.com&quot;,</span> <span class="pre">privileges=&quot;http&quot;)</span></code>,
+commits the setup, and disconnects. It then connects as the application user
+and runs the example. The administrator must be allowed to grant package
+privileges and manage network ACLs. Administrator and application connections
+use the same DSN; add required wallet arguments to both connection calls.</p>
+<p>Run setup once for each application user/database. For later runs, omit the
+flag; administrator credentials are then unnecessary:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>samples/quickstart.py
+</pre></div>
+</div>
+<p>The grants remain after the temporary sample objects are removed. See
+<a class="reference internal" href="privileges.html#privileges"><span class="std std-ref">Privileges</span></a> to revoke package or network privileges later.</p>
+<p>The application account must also have <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">SESSION</span></code>, <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code>,
+and sufficient tablespace quota to create the temporary table. Have the
+administrator assign an appropriate quota in the account’s default tablespace.
+The helper does not grant these privileges or quota. The sample does not
+create a public credential synonym and does not require <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">PUBLIC</span>
+<span class="pre">SYNONYM</span></code>.</p>
+</section>
+<section id="run-the-example">
+<h2><span class="section-number">4.3. </span>Run the example<a class="headerlink" href="#run-the-example" title="Link to this heading">¶</a></h2>
+<p>Save the following as <code class="docutils literal notranslate"><span class="pre">quickstart.py</span></code>, or run
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">samples/quickstart.py</span></code> from a repository checkout:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="s2">"--setup"</span><span class="p">,</span>
+    <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">"Grant package privileges and OpenAI HTTP access as administrator"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SELECT_AI_USER"</span><span class="p">]</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">]</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">]</span>
+<span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OPENAI_API_KEY"</span><span class="p">]</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SELECT_AI_MODEL"</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">setup</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Connecting as administrator..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SELECT_AI_ADMIN_USER"</span><span class="p">],</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SELECT_AI_ADMIN_PASSWORD"</span><span class="p">],</span>
+        <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">,</span>
+        <span class="n">tcp_connect_timeout</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">call_timeout</span> <span class="o">=</span> <span class="mi">120_000</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Granting Select AI package privileges to </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">select_ai</span><span class="o">.</span><span class="n">grant_privileges</span><span class="p">(</span><span class="n">users</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Granting </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> HTTP access to api.openai.com..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">select_ai</span><span class="o">.</span><span class="n">grant_network_access</span><span class="p">(</span>
+                <span class="n">users</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">"api.openai.com"</span><span class="p">,</span> <span class="n">privileges</span><span class="o">=</span><span class="s2">"http"</span>
+            <span class="p">)</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">select_ai</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+<span class="n">suffix</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">12</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+<span class="n">table_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SDK_DEMO_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">"</span>
+<span class="n">credential_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SDK_CRED_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">"</span>
+<span class="n">profile_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SDK_PROFILE_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Connecting as application user </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">,</span> <span class="n">tcp_connect_timeout</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+<span class="n">table_created</span> <span class="o">=</span> <span class="n">credential_created</span> <span class="o">=</span> <span class="n">profile_created</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># This identifier is generated locally, rather than supplied by a caller.</span>
+    <span class="k">with</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">call_timeout</span> <span class="o">=</span> <span class="mi">120_000</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">"SELECT SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') FROM DUAL"</span><span class="p">)</span>
+        <span class="n">owner</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Creating the sample table..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"CREATE TABLE </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> (id NUMBER PRIMARY KEY, name VARCHAR2(40))"</span>
+        <span class="p">)</span>
+        <span class="n">table_created</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"INSERT INTO </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> (id, name) VALUES (:1, :2)"</span><span class="p">,</span>
+            <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"Notebook"</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">"Keyboard"</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"Monitor"</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Creating the OpenAI credential and profile..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">select_ai</span><span class="o">.</span><span class="n">create_credential</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">"credential_name"</span><span class="p">:</span> <span class="n">credential_name</span><span class="p">,</span>
+            <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"openai"</span><span class="p">,</span>
+            <span class="s2">"password"</span><span class="p">:</span> <span class="n">api_key</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">credential_created</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="n">profile_name</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+            <span class="n">provider</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">OpenAIProvider</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">),</span>
+            <span class="n">credential_name</span><span class="o">=</span><span class="n">credential_name</span><span class="p">,</span>
+            <span class="n">object_list</span><span class="o">=</span><span class="p">[{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="n">owner</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="n">table_name</span><span class="p">}],</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">profile_created</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"How many rows are in </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">? Return the count as ITEM_COUNT."</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Generating SQL with OpenAI..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Generated SQL:"</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">show_sql</span><span class="p">(</span><span class="n">prompt</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># run_sql generates and executes a fresh response to the prompt.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Generating and executing the query with OpenAI..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">run_sql</span><span class="p">(</span><span class="n">prompt</span><span class="p">))</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Removing temporary objects and closing the connection..."</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Attempt each cleanup even if an earlier cleanup fails.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">profile_created</span><span class="p">:</span>
+            <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="o">.</span><span class="n">delete_profile</span><span class="p">(</span><span class="n">profile_name</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">credential_created</span><span class="p">:</span>
+                <span class="n">select_ai</span><span class="o">.</span><span class="n">delete_credential</span><span class="p">(</span><span class="n">credential_name</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">table_created</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DROP TABLE </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> PURGE"</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">select_ai</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The script prints generated SQL and a DataFrame containing a count of three.
+Table names include a generated suffix. SQL formatting and the model’s chosen
+column label may vary; representative result output is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>   ITEM_COUNT
+0           3
+</pre></div>
+</div>
+<p>The profile’s <code class="docutils literal notranslate"><span class="pre">object_list</span></code> includes the sample table using the schema name
+resolved from the database connection. Other profile attributes use their
+defaults, including object-list enforcement. The object list supplies metadata
+for SQL generation; database privileges determine which objects the user can
+access. See <a class="reference internal" href="profile_attributes.html#profile-attributes"><span class="std std-ref">Profile attributes</span></a> for explicit
+enforcement settings.</p>
+<p><code class="docutils literal notranslate"><span class="pre">show_sql()</span></code> generates SQL without executing it. <code class="docutils literal notranslate"><span class="pre">run_sql()</span></code> makes a
+separate generation request and executes that response; it does not execute
+the SQL string returned by the earlier call. In applications that require
+approval of an exact statement, review the generated statement and execute
+that approved statement through your database API.</p>
+<p>If connection fails, check the DSN, password, and wallet settings. For package
+or network authorization failures, return to the administrator setup. For
+model or provider errors, check the API key, model access, API billing, and
+project limits. See <a class="reference internal" href="api_reference.html#error-handling"><span class="std std-ref">Error handling</span></a> for Python exception
+handling. The sample’s cleanup removes only objects it successfully created;
+administrator grants remain in place for subsequent workflows.</p>
+</section>
+<section id="waiting-and-timeouts">
+<h2><span class="section-number">4.4. </span>Waiting and timeouts<a class="headerlink" href="#waiting-and-timeouts" title="Link to this heading">¶</a></h2>
+<p>The script prints progress before connecting, creating objects, and requesting
+SQL from OpenAI. If it waits at <code class="docutils literal notranslate"><span class="pre">Generating</span> <span class="pre">SQL</span> <span class="pre">with</span> <span class="pre">OpenAI...</span></code>, the
+database is processing the model request. Missing network ACL privileges usually raise
+an authorization error; waiting alone does not prove that the ACL is missing.
+Check database egress, provider availability, API billing, and project limits.
+HTTP 429 can indicate quota or rate limits; retries may extend the wait.</p>
+<p>The sample sets <code class="docutils literal notranslate"><span class="pre">tcp_connect_timeout=15</span></code> for connection establishment and
+<code class="docutils literal notranslate"><span class="pre">connection.call_timeout=120_000</span></code> for database calls. The latter is in
+milliseconds and limits each database round trip, rather than total script
+runtime. Increase it deliberately for slower requests. See the
+<a class="reference external" href="https://python-oracledb.readthedocs.io/en/stable/api_manual/connection.html#oracledb.Connection.call_timeout">driver timeout documentation</a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">4. Run your first SQL query</a><ul>
+<li><a class="reference internal" href="#install-and-configure-python">4.1. Install and configure Python</a></li>
+<li><a class="reference internal" href="#prepare-the-database-account">4.2. Prepare the database account</a></li>
+<li><a class="reference internal" href="#run-the-example">4.3. Run the example</a></li>
+<li><a class="reference internal" href="#waiting-and-timeouts">4.4. Waiting and timeouts</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="connection.html"
+                          title="previous chapter"><span class="section-number">3. </span>Connecting to Oracle Database</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="compatibility.html"
+                          title="next chapter"><span class="section-number">5. </span>Compatibility and requirements</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/quickstart.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="compatibility.html" title="5. Compatibility and requirements"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="connection.html" title="3. Connecting to Oracle Database"
+             >previous</a> |</li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>Run your first SQL query</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2026, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+
+  </body>
+</html>

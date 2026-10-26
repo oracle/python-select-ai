@@ -130,6 +130,9 @@ Oracle Database.
 
       Connected to the Database
 
+Once the connection smoke test succeeds, follow :ref:`Run your first SQL
+query <first-query>` to create a credential and profile and query sample data.
+
 Install documentation dependencies
 ==================================
 

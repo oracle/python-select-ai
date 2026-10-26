@@ -297,8 +297,14 @@ missing.
 Clustered gateway and worker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clustered topology requires Consul and at least one worker. The gateway can
-run without database credentials; by default, the A2A client supplies them
+Clustered topology requires Consul and at least one worker. Consul is the
+worker directory and session-routing service: it helps the gateway find a
+healthy worker for a new session and send later requests back to that worker.
+See :ref:`Why clustered deployments use Consul <a2a-why-consul>` for a worked
+example. Point the gateway and all workers at the same Consul service with
+``--consul-url``.
+
+The gateway can run without database credentials; by default, the A2A client supplies them
 through the connection form. For local development, start Consul and then run
 the worker and gateway in separate terminals:
 
@@ -340,45 +346,119 @@ seconds. On the clustered gateway, this value sets the request deadline basis;
 the worker applies it to Oracle calls and derives its child-process deadline.
 
 By default, ``a2a serve`` does not require an application OAuth token. A2A
-task and context records use the shared anonymous owner, and each A2A context
-maps to its own Select AI conversation. Add ``--require-oauth`` to require
-``Authorization: Bearer ...`` and scope those records by authenticated owner
-as well as context. The Agent Card advertises bearer security only in that
-mode.
+task and context records use a shared owner scope, and each A2A context maps
+to its own Select AI conversation. Add ``--require-oauth`` to require
+``Authorization: Bearer ...`` and derive an owner scope as well as context.
+The SDK does not validate token signatures or claims. A trusted upstream
+service must validate the end-user token and prevent direct access that
+bypasses validation. See :ref:`the A2A authentication contract
+<user_guide/a2a:End-user OAuth and session ownership>`.
+The Agent Card advertises bearer security only in that mode.
 
 Clustered option reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The worker options are ``--host``, ``--port``, ``--worker-id``,
-``--consul-url``, ``--worker-endpoint``, ``--session-ttl-seconds``,
-``--conversation-retention-days``, ``--session-start-timeout-seconds``, and
-``--database-call-timeout-seconds``.
-``WORKER_ID``, ``CONSUL_HTTP_URL``, ``WORKER_ENDPOINT``, and
-``CONVERSATION_RETENTION_DAYS`` are environment fallbacks; explicit
-command-line values take precedence. Conversation retention defaults to 7 days;
-use 0 to keep conversations until manually deleted. ``--port`` is also the
-port registered with Consul. Cluster manifests can set ``WORKER_ADDRESS`` to
-the pod IP when no endpoint is supplied. The worker's ``--tls-cert-file``,
-``--tls-key-file``, and
-``--tls-ca-file`` options enable gateway-to-worker mTLS; provide all three
-together.
+Configure discovery first, then connection values and session limits. Explicit
+CLI values take precedence over environment fallbacks. For a fixed clustered
+connection, see the :ref:`complete gateway command <a2a-clustered-fixed>`.
 
-The clustered serve options are ``--public-url`` (or ``PUBLIC_URL``),
-``--consul-url`` (or ``CONSUL_HTTP_URL``), ``--worker-service`` (or
-``WORKER_SERVICE``), and ``--session-ttl-seconds`` (or
-``SESSION_TTL_SECONDS``). ``--dsn``, ``--user``, ``--password``, and ``--team``
-fix any supplied connection values; the generated A2UI form contains only the
-missing values. ``--a2ui-form`` loads a custom A2UI JSON form that must submit
-exactly those missing values. ``--require-oauth`` has the same ownership
-behavior in standalone and clustered deployments. The optional
-``--worker-tls-ca-file``, ``--worker-tls-cert-file``, and
-``--worker-tls-key-file`` options configure the gateway's client side of
-gateway-to-worker mTLS. These TLS settings protect the internal HTTP hop and
-are separate from the database CA configured with
-``--database-tls-ca-file`` and from Oracle wallet authentication.
-The gateway and worker must use the same ``--database-call-timeout-seconds``
-value. It defaults to 120 seconds; the worker and gateway derive their request
-deadlines from this database call timeout.
+Gateway discovery
++++++++++++++++++
+
+``--public-url`` (``PUBLIC_URL``)
+    Client-visible base URL advertised in the Agent Card.
+
+``--consul-url`` (``CONSUL_HTTP_URL``)
+    Consul HTTP API URL. Use the same Consul service as the workers.
+
+``--worker-service`` (``WORKER_SERVICE``)
+    Consul service to discover. Default: ``select-ai-a2a-worker``.
+
+Worker registration
++++++++++++++++++++
+
+``--host`` and ``--port``
+    Worker listen address and port. The port is also registered with Consul.
+
+``--worker-id`` (``WORKER_ID``)
+    Unique worker identifier. Defaults to the host name.
+
+``--consul-url`` (``CONSUL_HTTP_URL``)
+    Consul HTTP API URL used to register the worker and send heartbeats.
+
+``--worker-endpoint`` (``WORKER_ENDPOINT``)
+    Worker URL reachable by the gateway. In cluster manifests,
+    ``WORKER_ADDRESS`` can supply the pod IP when no endpoint is given.
+
+Connection values and forms
++++++++++++++++++++++++++++
+
+``--dsn``, ``--user``, ``--password``, and ``--team`` (gateway)
+    Fix the supplied values at startup. Set all four for a fixed connection;
+    otherwise the A2UI form asks only for the missing values. The environment
+    fallbacks are ``SELECT_AI_DB_CONNECT_STRING``, ``SELECT_AI_USER``,
+    ``SELECT_AI_PASSWORD``, and ``SELECT_AI_A2A_TEAM``.
+
+``--a2ui-form`` (gateway)
+    Path to a custom A2UI JSON form. It must submit exactly the missing
+    connection values. See :ref:`A2A Integration <a2a>` for the form contract.
+
+Session lifetime and timeouts
++++++++++++++++++++++++++++++
+
+``--session-ttl-seconds`` (gateway and worker)
+    Lifetime of a temporary database session; default 900 seconds.
+    The gateway also reads ``SESSION_TTL_SECONDS``. Configure the same lifetime
+    on both processes.
+
+``--conversation-retention-days`` (worker)
+    Days to retain Oracle conversations; default 7. Environment fallback:
+    ``CONVERSATION_RETENTION_DAYS``. Use 0 to retain until manually deleted.
+
+``--session-start-timeout-seconds`` (worker)
+    Maximum wait for a child process to initialize its database session.
+
+``--database-call-timeout-seconds`` (gateway and worker)
+    Database call timeout; default 120 seconds. Set the same value on both
+    processes. The worker applies it to Oracle calls; both processes derive
+    their request deadlines from it.
+
+Authentication and TLS
+++++++++++++++++++++++
+
+``--require-oauth`` (gateway)
+    Require a bearer token and derive an owner scope for task and context
+    records. Token validation must occur upstream. Uses the same ownership
+    behavior as standalone mode.
+
+``--tls-cert-file`` and ``--tls-key-file`` (gateway)
+    Enable HTTPS on the public A2A listener. Supply both together; without
+    them, the listener uses HTTP.
+
+``--tls-ca-file`` (gateway)
+    Optional CA that makes the public listener require and verify client
+    certificates (mTLS). Requires ``--tls-cert-file`` and ``--tls-key-file``.
+
+``--worker-tls-ca-file``, ``--worker-tls-cert-file``, ``--worker-tls-key-file``
+    Gateway TLS options for worker connections. The CA verifies the worker's
+    server certificate; it can be supplied alone for HTTPS without mTLS. If
+    omitted, Requests uses its default CA bundle. The client certificate and
+    key are optional, but must be supplied together; the worker must require
+    and trust them for mTLS. When any ``--worker-tls-*`` option is used, set
+    ``--worker-endpoint`` to an HTTPS URL.
+    Environment fallbacks are ``WORKER_TLS_CA_FILE``,
+    ``WORKER_TLS_CERT_FILE``, and ``WORKER_TLS_KEY_FILE``.
+
+``--tls-ca-file``, ``--tls-cert-file``, ``--tls-key-file`` (worker)
+    The certificate and key enable HTTPS on the worker and must be supplied
+    together. ``--tls-ca-file`` is optional; when supplied, the worker
+    requires and verifies client certificates for mTLS. Set
+    ``--worker-endpoint`` to an HTTPS URL so the gateway connects over TLS.
+
+``--database-tls-ca-file`` (gateway)
+    CA for verifying the Oracle database certificate. The gateway passes the
+    PEM contents to the worker session. This is separate from the certificates
+    for the gateway-to-worker HTTP connection and from Oracle wallet mTLS.
 
 Agent Card generation
 ---------------------
