@@ -346,11 +346,14 @@ seconds. On the clustered gateway, this value sets the request deadline basis;
 the worker applies it to Oracle calls and derives its child-process deadline.
 
 By default, ``a2a serve`` does not require an application OAuth token. A2A
-task and context records use the shared anonymous owner, and each A2A context
-maps to its own Select AI conversation. Add ``--require-oauth`` to require
-``Authorization: Bearer ...`` and scope those records by authenticated owner
-as well as context. The Agent Card advertises bearer security only in that
-mode.
+task and context records use a shared owner scope, and each A2A context maps
+to its own Select AI conversation. Add ``--require-oauth`` to require
+``Authorization: Bearer ...`` and derive an owner scope as well as context.
+The SDK does not validate token signatures or claims. A trusted upstream
+service must validate the end-user token and prevent direct access that
+bypasses validation. See :ref:`the A2A authentication contract
+<user_guide/a2a:End-user OAuth and session ownership>`.
+The Agent Card advertises bearer security only in that mode.
 
 Clustered option reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -424,8 +427,9 @@ Authentication and TLS
 ++++++++++++++++++++++
 
 ``--require-oauth`` (gateway)
-    Require a bearer token and scope task and context records by authenticated
-    owner. Uses the same ownership behavior as standalone mode.
+    Require a bearer token and derive an owner scope for task and context
+    records. Token validation must occur upstream. Uses the same ownership
+    behavior as standalone mode.
 
 ``--tls-cert-file`` and ``--tls-key-file`` (gateway)
     Enable HTTPS on the public A2A listener. Supply both together; without

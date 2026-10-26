@@ -366,6 +366,9 @@ read the generated value from ``fetched.attributes.supervisor_task``.
 
 .. code-block:: python
 
+   from select_ai.agent import Agent, AgentAttributes, Team, TeamAttributes
+
+   # MOVIE_ANALYST and ANALYZE_MOVIE_TASK must already exist.
    supervisor = Agent(
        agent_name="MOVIE_SUPERVISOR",
        attributes=AgentAttributes(
@@ -374,6 +377,8 @@ read the generated value from ``fetched.attributes.supervisor_task``.
            supervisor=True,
        ),
    )
+
+   supervisor.create()
 
    team = Team(
        team_name="MOVIE_AGENT_TEAM",
@@ -385,6 +390,12 @@ read the generated value from ``fetched.attributes.supervisor_task``.
            supervisor_agent=supervisor.agent_name,
        ),
    )
+   team.create()
+
+Agent and team constructors build Python objects; ``create()`` persists them
+in Oracle Database. The example uses new names and raises an error if those
+objects already exist. Use ``replace=True`` on ``create()`` only when you
+intend to replace existing definitions.
 
 The complete example creates a supervised team, runs a prompt through the
 supervisor workflow, and inspects the generated supervisor task and team

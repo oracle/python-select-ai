@@ -16,20 +16,23 @@ import os
 
 import select_ai
 
-user = os.getenv("SELECT_AI_USER")
-password = os.getenv("SELECT_AI_PASSWORD")
-dsn = os.getenv("SELECT_AI_DB_CONNECT_STRING")
+user = os.environ["SELECT_AI_USER"]
+password = os.environ["SELECT_AI_PASSWORD"]
+dsn = os.environ["SELECT_AI_DB_CONNECT_STRING"]
 
 
 async def main():
     await select_ai.async_connect(user=user, password=password, dsn=dsn)
-    async_profile = await select_ai.AsyncProfile(
-        profile_name="async_oci_vector_ai_profile"
-    )
-    r = await async_profile.narrate(
-        "list the conda environments in my object store"
-    )
-    print(r)
+    try:
+        profile = await select_ai.AsyncProfile(
+            profile_name="async_oci_vector_ai_profile"
+        )
+        response = await profile.narrate(
+            "How many days do customers have to request a refund?"
+        )
+        print(response)
+    finally:
+        await select_ai.async_disconnect()
 
 
 asyncio.run(main())

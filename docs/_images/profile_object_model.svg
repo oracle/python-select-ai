@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Select AI Profile object model</title>
+  <desc id="desc">Profile and AsyncProfile use ProfileAttributes, which contain a provider and profile configuration.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L11,5 L0,10 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 34px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 18px; fill: #475569; }
+      .card-title { font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; }
+      .section { font-family: Arial, sans-serif; font-size: 17px; font-weight: 700; fill: #334155; }
+      .body { font-family: Arial, sans-serif; font-size: 17px; fill: #334155; }
+      .small { font-family: Arial, sans-serif; font-size: 15px; fill: #475569; }
+      .label { font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #0f172a; }
+      .card { stroke-width: 2.5; rx: 18; }
+      .profile { fill: #eef2ff; stroke: #6366f1; }
+      .attributes { fill: #ecfeff; stroke: #0891b2; }
+      .provider { fill: #f0fdf4; stroke: #16a34a; }
+      .support { fill: #fff7ed; stroke: #ea580c; }
+      .database { fill: #f8fafc; stroke: #64748b; }
+      .pill { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; rx: 14; }
+      .line { stroke: #64748b; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 8 7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" fill="#ffffff"/>
+  <text x="800" y="52" text-anchor="middle" class="title">Profile object model</text>
+  <text x="800" y="82" text-anchor="middle" class="subtitle">A Profile or AsyncProfile is a database-backed interface to a configured AI provider.</text>
+
+  <rect x="50" y="125" width="440" height="390" class="card profile" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="75" y="165" class="card-title">Profile / AsyncProfile</text>
+  <text x="75" y="195" class="small">Synchronous and asynchronous APIs</text>
+  <line x1="75" y1="215" x2="465" y2="215" class="divider"/>
+  <text x="75" y="247" class="section">Identity</text>
+  <text x="75" y="274" class="body">&#8226; profile_name, description, owner</text>
+  <text x="75" y="300" class="body">&#8226; qualified_name for shared profiles</text>
+  <text x="75" y="336" class="section">Lifecycle</text>
+  <text x="75" y="363" class="body">create, fetch, list, enable, disable</text>
+  <text x="75" y="399" class="section">AI actions</text>
+  <text x="75" y="426" class="body">generate, chat, show_sql, run_sql</text>
+  <text x="75" y="452" class="body">narrate, summarize, translate</text>
+
+  <rect x="580" y="125" width="440" height="390" class="card attributes" fill="#ecfeff" stroke="#0891b2"/>
+  <text x="605" y="165" class="card-title">ProfileAttributes</text>
+  <text x="605" y="195" class="small">Configuration persisted with the profile</text>
+  <line x1="605" y1="215" x2="995" y2="215" class="divider"/>
+  <text x="605" y="247" class="section">Provider and access</text>
+  <text x="605" y="274" class="body">&#8226; provider, credential_name</text>
+  <text x="605" y="300" class="body">&#8226; object_list, object_list_mode</text>
+  <text x="605" y="336" class="section">Generation</text>
+  <text x="605" y="363" class="body">&#8226; max_tokens, temperature, seed</text>
+  <text x="605" y="389" class="body">&#8226; streaming, stop_tokens, conversation</text>
+  <text x="605" y="425" class="section">RAG and translation</text>
+  <text x="605" y="452" class="body">&#8226; vector_index_name, source_language</text>
+  <text x="605" y="478" class="body">&#8226; target_language, additional_instructions</text>
+
+  <rect x="1110" y="125" width="440" height="390" class="card provider" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="1135" y="165" class="card-title">Provider</text>
+  <text x="1135" y="195" class="small">Provider-specific connection and model settings</text>
+  <line x1="1135" y1="215" x2="1525" y2="215" class="divider"/>
+  <text x="1135" y="247" class="section">Common provider fields</text>
+  <text x="1135" y="274" class="body">&#8226; provider_name, model</text>
+  <text x="1135" y="300" class="body">&#8226; embedding_model, provider_endpoint</text>
+  <text x="1135" y="326" class="body">&#8226; region</text>
+  <text x="1135" y="362" class="section">Concrete providers</text>
+  <rect x="1135" y="382" width="175" height="38" class="pill"/>
+  <text x="1222" y="407" text-anchor="middle" class="label">OCI Gen AI</text>
+  <rect x="1325" y="382" width="175" height="38" class="pill"/>
+  <text x="1412" y="407" text-anchor="middle" class="label">OpenAI / Azure</text>
+  <rect x="1135" y="430" width="175" height="38" class="pill"/>
+  <text x="1222" y="455" text-anchor="middle" class="label">AWS / Google</text>
+  <rect x="1325" y="430" width="175" height="38" class="pill"/>
+  <text x="1412" y="455" text-anchor="middle" class="label">Cohere / others</text>
+
+  <path d="M490 300 L580 300" class="line"/>
+  <text x="535" y="285" text-anchor="middle" class="small">has</text>
+  <path d="M1020 300 L1110 300" class="line"/>
+  <text x="1065" y="285" text-anchor="middle" class="small">uses</text>
+
+  <text x="800" y="550" text-anchor="middle" class="section">Related concepts</text>
+
+  <rect x="50" y="570" width="440" height="190" class="card database" fill="#f8fafc" stroke="#64748b"/>
+  <text x="75" y="610" class="card-title">Database profile</text>
+  <text x="75" y="645" class="body">DBMS_CLOUD_AI profile object</text>
+  <text x="75" y="673" class="body">Profile metadata and attributes are</text>
+  <text x="75" y="699" class="body">created, fetched, and updated here.</text>
+  <text x="75" y="735" class="small">The Python objects are lightweight proxies.</text>
+
+  <rect x="580" y="570" width="440" height="190" class="card support" fill="#fff7ed" stroke="#ea580c"/>
+  <text x="605" y="610" class="card-title">Request-level overrides</text>
+  <text x="605" y="645" class="body">generate, chat, narrate, SQL helpers</text>
+  <text x="605" y="673" class="body">streaming, sessions, and pipelines</text>
+  <text x="605" y="709" class="body">Temporary fields include:</text>
+  <text x="605" y="735" class="body">&#8226; seed, language, additional_instructions</text>
+
+  <rect x="1110" y="570" width="440" height="190" class="card database" fill="#f8fafc" stroke="#64748b"/>
+  <text x="1135" y="610" class="card-title">Typical flow</text>
+  <text x="1135" y="645" class="body">Profile → ProfileAttributes → Provider</text>
+  <text x="1135" y="681" class="body">→ Select AI action → database / model</text>
+  <text x="1135" y="717" class="body">Use AsyncProfile with async_connect()</text>
+  <text x="1135" y="743" class="body">for asynchronous workflows.</text>
+
+  <text x="800" y="865" text-anchor="middle" class="small">Use the object model as a map: profiles hold configuration, providers hold model settings, and actions use both.</text>
+</svg>

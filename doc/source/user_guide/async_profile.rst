@@ -377,6 +377,22 @@ Streaming is supported by ``generate()``, ``chat()``, ``narrate()``,
 ``explain_sql()``, ``show_sql()``, and ``show_prompt()``. It is not supported
 for ``run_sql()``, which returns a ``pandas.DataFrame``.
 
+The SDK awaits the database function before reading its returned CLOB in
+chunks. The first chunk is available after that function returns; this does
+not guarantee token delivery while the model is generating. A partially
+consumed iterator retains its cursor and connection. Use ``aclosing()`` when
+iteration can stop early, and consume session streams before leaving the
+``chat_session()`` context:
+
+.. code-block:: python
+
+   from contextlib import aclosing
+
+   chunks = await async_profile.chat("Explain connection pooling.", stream=True)
+   async with aclosing(chunks):
+       async for chunk in chunks:
+           print(chunk, end="")
+
 .. _async-request-profile-attributes:
 
 ***********************************************
@@ -550,6 +566,43 @@ output::
 *********************
 Async pipeline
 *********************
+
+.. _pipeline-compatibility:
+
+Pipeline compatibility and results
+++++++++++++++++++++++++++++++++++
+
+``run_pipeline()`` requires ``python-oracledb>=2.4.0``, which provides
+``create_pipeline()`` and ``AsyncConnection.run_pipeline()``. If an older
+driver lacks these APIs, upgrade it with ``python -m pip install --upgrade
+oracledb``. Async operations use Thin mode.
+
+The driver documents true pipelining for Oracle AI Database 26ai and later.
+On older databases it executes operations individually, without reducing
+round trips. Pipeline operations execute sequentially, even when true
+pipelining is available. Select AI returns CLOBs, and reading these adds
+database calls; do not assume the complete SDK operation uses one round trip.
+See `python-oracledb pipelining
+<https://python-oracledb.readthedocs.io/en/stable/user_guide/asyncio.html#pipelining-database-operations>`__.
+
+Results preserve input order. Successful results are strings read from CLOBs.
+For ``Action.RUNSQL``, this is the database's JSON response, rather than the
+``pandas.DataFrame`` returned by ``AsyncProfile.run_sql()``. With
+``continue_on_error=False`` (the default), an operation error raises an
+exception. With ``continue_on_error=True``, failed entries contain driver
+error objects; check their type before using them as text:
+
+.. code-block:: python
+
+   results = await async_profile.run_pipeline(
+       [("How many promotions?", select_ai.Action.SHOWSQL)],
+       continue_on_error=True,
+   )
+   for result in results:
+       if isinstance(result, str):
+           print(result)
+       else:
+           print(f"Pipeline operation failed: {result}")
 
 ``AsyncProfile.run_pipeline()`` also accepts ``attributes=...``. The mapping
 is applied to every prompt/action request in the pipeline, while the saved

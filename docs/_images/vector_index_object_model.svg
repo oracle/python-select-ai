@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Select AI Vector Index object model</title>
+  <desc id="desc">VectorIndex uses VectorIndexAttributes, a Select AI profile, an object storage source, and a vector store.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L11,5 L0,10 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 34px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 18px; fill: #475569; }
+      .card-title { font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; }
+      .section { font-family: Arial, sans-serif; font-size: 17px; font-weight: 700; fill: #334155; }
+      .body { font-family: Arial, sans-serif; font-size: 17px; fill: #334155; }
+      .small { font-family: Arial, sans-serif; font-size: 15px; fill: #475569; }
+      .label { font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #0f172a; }
+      .card { stroke-width: 2.5; rx: 18; }
+      .index { fill: #eef2ff; stroke: #6366f1; }
+      .attributes { fill: #ecfeff; stroke: #0891b2; }
+      .profile { fill: #f0fdf4; stroke: #16a34a; }
+      .source { fill: #fff7ed; stroke: #ea580c; }
+      .store { fill: #fdf2f8; stroke: #db2777; }
+      .database { fill: #f8fafc; stroke: #64748b; }
+      .pill { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; rx: 14; }
+      .line { stroke: #64748b; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 8 7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" fill="#ffffff"/>
+  <text x="800" y="52" text-anchor="middle" class="title">Vector Index object model</text>
+  <text x="800" y="82" text-anchor="middle" class="subtitle">A vector index turns source documents into searchable embeddings for grounded Select AI responses.</text>
+
+  <rect x="50" y="130" width="430" height="330" class="card index" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="75" y="170" class="card-title">VectorIndex / AsyncVectorIndex</text>
+  <text x="75" y="200" class="small">Synchronous and asynchronous lifecycle APIs</text>
+  <line x1="75" y1="220" x2="455" y2="220" class="divider"/>
+  <text x="75" y="252" class="section">Identity</text>
+  <text x="75" y="279" class="body">&#8226; index_name, description, owner</text>
+  <text x="75" y="305" class="body">&#8226; qualified_name for shared indexes</text>
+  <text x="75" y="341" class="section">Lifecycle</text>
+  <text x="75" y="368" class="body">create, fetch, list, update</text>
+  <text x="75" y="394" class="body">enable, disable, delete</text>
+  <text x="75" y="430" class="section">Relationships</text>
+  <text x="75" y="452" class="body">attributes and optional profile</text>
+
+  <rect x="575" y="130" width="450" height="330" class="card attributes" fill="#ecfeff" stroke="#0891b2"/>
+  <text x="600" y="170" class="card-title">VectorIndexAttributes</text>
+  <text x="600" y="200" class="small">How content is loaded, embedded, and searched</text>
+  <line x1="600" y1="220" x2="1000" y2="220" class="divider"/>
+  <text x="600" y="252" class="section">Source</text>
+  <text x="600" y="279" class="body">&#8226; location, object_storage_credential_name</text>
+  <text x="600" y="315" class="section">Embedding and search</text>
+  <text x="600" y="342" class="body">&#8226; profile_name, vector_dimension</text>
+  <text x="600" y="368" class="body">&#8226; match_limit, similarity_threshold</text>
+  <text x="600" y="404" class="section">Storage and refresh</text>
+  <text x="600" y="431" class="body">&#8226; vector_table_name, refresh_rate</text>
+  <text x="600" y="457" class="body">&#8226; chunk_size, chunk_overlap, metric</text>
+
+  <rect x="1120" y="160" width="430" height="240" class="card database" fill="#f8fafc" stroke="#64748b"/>
+  <text x="1145" y="200" class="card-title">OracleVectorIndexAttributes</text>
+  <text x="1145" y="230" class="small">Oracle implementation of the attribute set</text>
+  <line x1="1145" y1="250" x2="1525" y2="250" class="divider"/>
+  <text x="1145" y="284" class="section">Specialization</text>
+  <text x="1145" y="314" class="body">&#8226; vector_db_provider = ORACLE</text>
+  <text x="1145" y="350" class="body">Adds Oracle vector table and</text>
+  <text x="1145" y="377" class="body">database storage behavior.</text>
+
+  <path d="M480 295 L575 295" class="line"/>
+  <text x="527" y="280" text-anchor="middle" class="small">has</text>
+  <path d="M1025 290 L1120 290" class="line"/>
+  <text x="1072" y="275" text-anchor="middle" class="small">specializes</text>
+
+  <rect x="50" y="585" width="430" height="180" class="card profile" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="75" y="625" class="card-title">Profile / AsyncProfile</text>
+  <text x="75" y="660" class="body">Provides the embedding model and</text>
+  <text x="75" y="687" class="body">the generation profile used by RAG.</text>
+  <text x="75" y="728" class="small">&#8226; VectorIndex.profile or profile_name</text>
+
+  <rect x="575" y="585" width="430" height="180" class="card source" fill="#fff7ed" stroke="#ea580c"/>
+  <text x="600" y="625" class="card-title">Source documents</text>
+  <text x="600" y="660" class="body">Object Storage or another configured</text>
+  <text x="600" y="687" class="body">source location supplies the content.</text>
+  <text x="600" y="728" class="small">Chunking and refresh are configurable.</text>
+
+  <rect x="1120" y="585" width="430" height="180" class="card store" fill="#fdf2f8" stroke="#db2777"/>
+  <text x="1145" y="625" class="card-title">Oracle vector store</text>
+  <text x="1145" y="660" class="body">Embeddings and chunks are stored in</text>
+  <text x="1145" y="687" class="body">the configured vector table.</text>
+  <text x="1145" y="728" class="small">RAG retrieves matching chunks as context.</text>
+
+  <path d="M265 460 L265 585" class="line dashed"/>
+  <text x="286" y="530" class="small">uses</text>
+  <path d="M800 460 L800 585" class="line"/>
+  <text x="822" y="530" class="small">reads</text>
+  <path d="M1025 675 L1120 675" class="line"/>
+  <text x="1072" y="660" text-anchor="middle" class="small">embeds and stores</text>
+
+  <rect x="50" y="835" width="1500" height="72" class="card database" fill="#f8fafc" stroke="#64748b"/>
+  <text x="800" y="878" text-anchor="middle" class="body">Lifecycle: create → load/refresh → search for RAG → update or disable → delete</text>
+</svg>

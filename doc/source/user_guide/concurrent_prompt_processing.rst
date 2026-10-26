@@ -46,7 +46,7 @@ Recipe summary
    * - Async pipeline
      - :ref:`async_pipeline_recipe`
      - Use ``run_pipeline()`` when all prompt/action pairs are known up front
-       and should be sent in a single database round trip.
+       and should be submitted as a database pipeline.
    * - Async queue
      - :ref:`async_queue_workers_recipe`
      - Use async queue workers for long-running async services or background
@@ -216,11 +216,17 @@ closes the pool in a ``finally`` block:
 ``async_pipeline.py``
 =====================
 
-This recipe uses ``AsyncProfile.run_pipeline()`` to send multiple
-prompt/action pairs in one database round trip. This is different from Python
-task concurrency: the application submits a batch and receives the batch
+This recipe uses ``AsyncProfile.run_pipeline()`` to submit multiple
+prompt/action pairs as a batch. Pipeline operations execute sequentially in
+the database; they do not run in parallel. The application receives the batch
 results when the pipeline completes. Pass ``attributes=...`` to apply the
 same request-level profile overrides to every item in the pipeline.
+
+True pipelining requires a supporting database version. On older databases,
+the driver executes operations individually, without reducing round trips.
+Reading returned CLOBs also requires additional database calls. See
+:ref:`Pipeline compatibility <pipeline-compatibility>` for requirements and
+result handling.
 
 Set up the imports, connection values, prompts, and any helper functions:
 

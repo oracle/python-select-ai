@@ -164,9 +164,12 @@ Stop the server by pressing ``Ctrl+C`` in the terminal where ``uvicorn`` is
 running. FastAPI runs the lifespan shutdown hook and ``select_ai.disconnect()``
 closes the pool.
 
-This example creates the ``Profile`` proxy inside each handler. The proxy is
-lightweight; the database connection is acquired from the pool only when the
-profile method calls the database.
+This example constructs ``Profile`` inside each handler. Construction reads
+the saved profile description and attributes from the database, acquiring
+connections from the pool before the action itself runs. This keeps metadata
+current but adds database calls to each request. Reusing an initialized profile
+avoids those reads; refresh it when saved profile settings change, and avoid
+mutating a shared profile object while requests are using it.
 
 .. latex:clearpage::
 
@@ -353,6 +356,8 @@ control what happens when all pooled connections are busy.
 
 .. code-block:: python
 
+   import oracledb
+
    select_ai.create_pool(
        user=user,
        password=password,
@@ -360,8 +365,16 @@ control what happens when all pooled connections are busy.
        min_size=2,
        max_size=8,
        increment=2,
-       wait_timeout=10,
+       getmode=oracledb.POOL_GETMODE_TIMEDWAIT,
+       wait_timeout=10_000,
    )
+
+``wait_timeout`` is in milliseconds and takes effect only with
+``getmode=oracledb.POOL_GETMODE_TIMEDWAIT``. The example waits up to ten seconds
+for a connection. The default ``POOL_GETMODE_WAIT`` waits without this limit.
+Pool acquisition timeouts do not limit SQL execution or model generation time.
+See the `python-oracledb pool parameters
+<https://python-oracledb.readthedocs.io/en/stable/api_manual/pool_params.html>`__.
 
 Choose a timeout that matches your API latency budget. For public HTTP APIs,
 it is usually better to fail fast and return an application error than to let

@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>select_ai documentation &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>select_ai documentation &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="_static/pydoctheme.css?v=48df1187" />
 
-    <script src="_static/documentation_options.js?v=9172181d"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/documentation_options.js?v=e0a75244"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -68,6 +68,7 @@
 <li><a class="reference internal" href="#privileges">Privileges</a></li>
 <li><a class="reference internal" href="#provider">Provider</a></li>
 <li><a class="reference internal" href="#credential">Credential</a></li>
+<li><a class="reference internal" href="#sharing-and-ownership">Sharing and ownership</a></li>
 <li><a class="reference internal" href="#profile-attributes">Profile Attributes</a></li>
 <li><a class="reference internal" href="#profile">Profile</a></li>
 <li><a class="reference internal" href="#async-profile">Async Profile</a></li>
@@ -77,9 +78,11 @@
 <li><a class="reference internal" href="#summary">Summary</a></li>
 <li><a class="reference internal" href="#ai-agent">AI Agent</a></li>
 <li><a class="reference internal" href="#async-ai-agent">Async AI Agent</a></li>
+<li><a class="reference internal" href="#a2a-integration">A2A Integration</a></li>
 <li><a class="reference internal" href="#command-line-interface">Command Line Interface</a></li>
 <li><a class="reference internal" href="#web-frameworks">Web Frameworks</a></li>
 <li><a class="reference internal" href="#concurrent-prompt-processing">Concurrent Prompt Processing</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
 </ul>
 
   </div>
@@ -116,9 +119,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="user_guide/introduction.html" title="1. Introduction to Select AI for Python"
              accesskey="N">next</a> |</li>
-          <li><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -126,7 +132,7 @@
           </li>
           <li>
 
-              <a href="#">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="#">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href="">select_ai documentation</a></li>
@@ -189,6 +195,19 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#connection-pool">3.3. Connection Pool</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#connection-health">3.4. Connection health</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/connection.html#wallet-connections">3.5. Wallet connections</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/quickstart.html">4. Run your first SQL query</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/quickstart.html#install-and-configure-python">4.1. Install and configure Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/quickstart.html#prepare-the-database-account">4.2. Prepare the database account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/quickstart.html#run-the-example">4.3. Run the example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/quickstart.html#waiting-and-timeouts">4.4. Waiting and timeouts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/compatibility.html">5. Compatibility and requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">6. What’s new in 1.5.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#new-and-expanded-apis">6.1. New and expanded APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#upgrade-considerations">6.2. Upgrade considerations</a></li>
 </ul>
 </li>
 </ul>
@@ -266,9 +285,15 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#enable-using-async-api">1.11.2. Enable using Async API</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#disable-ai-service-provider">1.12. Disable AI service provider</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#disable-using-sync-api">1.12.1. Disable using Sync API</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#disable-using-async-api">1.12.2. Disable using Async API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#cloud-provider-profile-samples">1.12. Cloud provider profile samples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#aws-bedrock">1.12.1. AWS Bedrock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#azure-openai">1.12.2. Azure OpenAI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#google-gemini-gcp">1.12.3. Google Gemini (GCP)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/provider.html#disable-ai-service-provider">1.13. Disable AI service provider</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#disable-using-sync-api">1.13.1. Disable using Sync API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/provider.html#disable-using-async-api">1.13.2. Disable using Async API</a></li>
 </ul>
 </li>
 </ul>
@@ -281,13 +306,30 @@ and Python’s rich ecosystem.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/credential.html">1. Create credential</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#sync-api">1.1. Sync API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#async-api">1.2. Async API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#create-sync-api">1.1. Create Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#create-async-api">1.2. Create Async API</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/credential.html#delete-credential">2. Delete credential</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#id1">2.1. Sync API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#id2">2.2. Async API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#delete-sync-api">2.1. Delete Sync API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/credential.html#delete-async-api">2.2. Delete Async API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/credential.html#credential-access">3. Credential access</a></li>
+</ul>
+</div>
+</section>
+<section id="sharing-and-ownership">
+<h1>Sharing and ownership<a class="headerlink" href="#sharing-and-ownership" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/sharing.html">1. Sharing and ownership</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/sharing.html#connect-before-running-an-example">1.1. Connect before running an example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/sharing.html#profiles">1.2. Profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/sharing.html#vector-indexes">1.3. Vector indexes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/sharing.html#agent-teams">1.4. Agent teams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/sharing.html#credentials">1.5. Credentials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/sharing.html#runnable-sharing-scripts">1.6. Runnable sharing scripts</a></li>
 </ul>
 </li>
 </ul>
@@ -301,7 +343,8 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/profile_attributes.html#common-required-attributes">1.1. Common required attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/profile_attributes.html#attribute-groups">1.2. Attribute groups</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/profile_attributes.html#object-list-examples">1.3. Object list examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile_attributes.html#generation-controls">1.4. Generation controls</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile_attributes.html#generation-controls">1.4. Generation controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile_attributes.html#additional-instructions">1.5. Additional instructions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/profile_attributes.html#select_ai.ProfileAttributes"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></li>
 </ul>
 </li>
@@ -327,18 +370,27 @@ and Python’s rich ecosystem.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#create-profile">2.4. Create Profile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#reuse-profile">2.5. Reuse Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#update-profile">2.6. Update Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#delete-profile">2.7. Delete Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#narrate">2.8. Narrate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#show-sql">2.9. Show SQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#explain-sql">2.10. Explain SQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#show-prompt">2.11. Show Prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#run-sql">2.12. Run SQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#chat">2.13. Chat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#streaming-chat">2.14. Streaming chat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#summarize">2.15. Summarize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#translate">2.16. Translate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#list-profiles">2.17. List profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#enable-and-disable-profile">2.6. Enable and disable Profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#update-profile">2.7. Update Profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#delete-profile">2.8. Delete Profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#narrate">2.9. Narrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#show-sql">2.10. Show SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#explain-sql">2.11. Explain SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#show-prompt">2.12. Show Prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#run-sql">2.13. Run SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#chat">2.14. Chat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#streaming-chat">2.15. Streaming chat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#request-level-profile-attribute-overrides">2.16. Request-level profile attribute overrides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#summarize">2.17. Summarize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#translate">2.18. Translate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#share-a-profile">2.19. Share a profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#give-feedback-on-generated-sql">2.20. Give feedback on generated SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/profile.html#list-profiles">2.21. List profiles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#connect-and-list-your-profiles">2.21.1. Connect and list your profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#filter-by-name">2.21.2. Filter by name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/profile.html#find-and-reuse-a-shared-profile">2.21.3. Find and reuse a shared profile</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -356,19 +408,31 @@ and Python’s rich ecosystem.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-profile-creation">2.2. Async Profile creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#reuse-async-profile">2.3. Reuse Async Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#update-async-profile">2.4. Update Async Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#delete-async-profile">2.5. Delete Async Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-explain-sql">2.6. Async explain SQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-run-sql">2.7. Async run SQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-show-sql">2.8. Async show SQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-show-prompt">2.9. Async show prompt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-concurrent-sql">2.10. Async concurrent SQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-chat">2.11. Async chat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-streaming-chat">2.12. Async streaming chat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#summarize">2.13. Summarize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#translate">2.14. Translate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-pipeline">2.15. Async pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#list-profiles-asynchronously">2.16. List profiles asynchronously</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#enable-and-disable-asyncprofile">2.4. Enable and disable AsyncProfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#update-async-profile">2.5. Update Async Profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#delete-async-profile">2.6. Delete Async Profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-explain-sql">2.7. Async explain SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-run-sql">2.8. Async run SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-show-sql">2.9. Async show SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-show-prompt">2.10. Async show prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-concurrent-sql">2.11. Async concurrent SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-chat">2.12. Async chat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-streaming-chat">2.13. Async streaming chat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-request-level-profile-attribute-overrides">2.14. Async request-level profile attribute overrides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#summarize">2.15. Summarize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#translate">2.16. Translate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#async-pipeline">2.17. Async pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_profile.html#pipeline-compatibility-and-results">2.17.1. Pipeline compatibility and results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#share-a-profile-asynchronously">2.18. Share a profile asynchronously</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#give-async-feedback-on-generated-sql">2.19. Give async feedback on generated SQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_profile.html#list-profiles-asynchronously">2.20. List profiles asynchronously</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_profile.html#connect-and-list-your-profiles">2.20.1. Connect and list your profiles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_profile.html#filter-by-name">2.20.2. Filter by name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_profile.html#find-and-reuse-a-shared-profile">2.20.3. Find and reuse a shared profile</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -380,37 +444,65 @@ and Python’s rich ecosystem.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html">1. <code class="docutils literal notranslate"><span class="pre">Conversation</span> <span class="pre">Object</span> <span class="pre">model</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html#conversationattributes">2. <code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes.conversation_length"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes.conversation_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes.description"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes.dict"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes.json"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes.keys"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes.keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes.retention_days"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes.retention_days</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationAttributes.title"><code class="docutils literal notranslate"><span class="pre">ConversationAttributes.title</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html#conversation-api">3. <code class="docutils literal notranslate"><span class="pre">Conversation</span></code> API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation"><code class="docutils literal notranslate"><span class="pre">Conversation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.add_tag"><code class="docutils literal notranslate"><span class="pre">Conversation.add_tag()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.create"><code class="docutils literal notranslate"><span class="pre">Conversation.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.delete"><code class="docutils literal notranslate"><span class="pre">Conversation.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.delete_prompt"><code class="docutils literal notranslate"><span class="pre">Conversation.delete_prompt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.fetch"><code class="docutils literal notranslate"><span class="pre">Conversation.fetch()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.get_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.list"><code class="docutils literal notranslate"><span class="pre">Conversation.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.list_prompts"><code class="docutils literal notranslate"><span class="pre">Conversation.list_prompts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.remove_tag"><code class="docutils literal notranslate"><span class="pre">Conversation.remove_tag()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.Conversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">Conversation.set_attributes()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#create-conversation">3.1. Create conversation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#chat-session">3.2. Chat session</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#list-conversations">3.3. List conversations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#delete-conversation">3.4. Delete conversation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#prompt-history-and-tags">3.3. Prompt history and tags</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.ConversationPrompt"><code class="docutils literal notranslate"><span class="pre">ConversationPrompt</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#list-conversations">3.4. List conversations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#delete-conversation">3.5. Delete conversation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/conversation.html#asyncconversation-api">4. <code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code> API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation"><code class="docutils literal notranslate"><span class="pre">AsyncConversation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.add_tag"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.add_tag()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.create"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.delete"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.delete_prompt"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.delete_prompt()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.fetch()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.get_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.list"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.list_prompts"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.list_prompts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.remove_tag"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.remove_tag()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#select_ai.AsyncConversation.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncConversation.set_attributes()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#async-chat-session">4.1. Async chat session</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#async-list-conversations">4.2. Async list conversations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#async-prompt-history-and-tags">4.2. Async prompt history and tags</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#create-a-conversation-and-save-a-prompt">4.2.1. Create a conversation and save a prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#tag-and-inspect-the-conversation">4.2.2. Tag and inspect the conversation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#remove-a-stored-prompt-and-its-tag">4.2.3. Remove a stored prompt and its tag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/conversation.html#run-the-complete-example">4.2.4. Run the complete example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/conversation.html#async-list-conversations">4.3. Async list conversations</a></li>
 </ul>
 </li>
 </ul>
@@ -423,7 +515,29 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/vector_index.html">1. Vector Index</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/vector_index.html#vectorindex-object-model">2. <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> Object Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/vector_index.html#vectorindexattributes">3. <code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.chunk_overlap"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.chunk_overlap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.chunk_size"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.chunk_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.create"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.dict"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.enable_sources"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.enable_sources</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.json"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.keys"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.location"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.location</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.match_limit"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.match_limit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.object_storage_credential_name"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.object_storage_credential_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.pipeline_name"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.pipeline_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.profile_name"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.profile_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.refresh_rate"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.refresh_rate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.similarity_threshold"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.similarity_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.vector_db_credential_name"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.vector_db_credential_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.vector_db_endpoint"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.vector_db_endpoint</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.vector_db_provider"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.vector_db_provider</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.vector_dimension"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.vector_dimension</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.vector_distance_metric"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.vector_distance_metric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndexAttributes.vector_table_name"><code class="docutils literal notranslate"><span class="pre">VectorIndexAttributes.vector_table_name</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#oraclevectorindexattributes">3.1. <code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.OracleVectorIndexAttributes"><code class="docutils literal notranslate"><span class="pre">OracleVectorIndexAttributes</span></code></a></li>
 </ul>
@@ -441,7 +555,10 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_next_refresh_timestamp"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_next_refresh_timestamp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">VectorIndex.get_profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.grant_access"><code class="docutils literal notranslate"><span class="pre">VectorIndex.grant_access()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.list"><code class="docutils literal notranslate"><span class="pre">VectorIndex.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.qualified_name"><code class="docutils literal notranslate"><span class="pre">VectorIndex.qualified_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.revoke_access"><code class="docutils literal notranslate"><span class="pre">VectorIndex.revoke_access()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attribute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.VectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">VectorIndex.set_attributes()</span></code></a></li>
 </ul>
@@ -465,7 +582,10 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_next_refresh_timestamp"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_next_refresh_timestamp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.get_profile"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.get_profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.grant_access"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.grant_access()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.list"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.qualified_name"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.qualified_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.revoke_access"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.revoke_access()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attribute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#select_ai.AsyncVectorIndex.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncVectorIndex.set_attributes()</span></code></a></li>
 </ul>
@@ -474,7 +594,10 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-list-vector-index">5.2. Async list vector index</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-fetch-vector-index">5.3. Async fetch vector index</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-update-vector-index-attributes">5.4. Async update vector index attributes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-rag-using-vector-index">5.5. Async RAG using vector index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/vector_index.html#async-rag-using-vector-index">5.5. Async RAG using vector index</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/vector_index.html#share-a-vector-index">5.5.1. Share a vector index</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -555,10 +678,20 @@ and Python’s rich ecosystem.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#create-tool">1.3. Create Tool</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#list-tools">1.4. List Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#inspect-and-run-a-tool">1.5. Inspect and run a tool</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#task">2. <code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes"><code class="docutils literal notranslate"><span class="pre">TaskAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes"><code class="docutils literal notranslate"><span class="pre">TaskAttributes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes.dict"><code class="docutils literal notranslate"><span class="pre">TaskAttributes.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes.enable_human_tool"><code class="docutils literal notranslate"><span class="pre">TaskAttributes.enable_human_tool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes.input"><code class="docutils literal notranslate"><span class="pre">TaskAttributes.input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes.instruction"><code class="docutils literal notranslate"><span class="pre">TaskAttributes.instruction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes.json"><code class="docutils literal notranslate"><span class="pre">TaskAttributes.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes.keys"><code class="docutils literal notranslate"><span class="pre">TaskAttributes.keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskAttributes.tools"><code class="docutils literal notranslate"><span class="pre">TaskAttributes.tools</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task"><code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.create"><code class="docutils literal notranslate"><span class="pre">Task.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Task.delete"><code class="docutils literal notranslate"><span class="pre">Task.delete()</span></code></a></li>
@@ -576,7 +709,16 @@ and Python’s rich ecosystem.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#id1">3. <code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes"><code class="docutils literal notranslate"><span class="pre">AgentAttributes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes"><code class="docutils literal notranslate"><span class="pre">AgentAttributes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes.dict"><code class="docutils literal notranslate"><span class="pre">AgentAttributes.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes.enable_human_tool"><code class="docutils literal notranslate"><span class="pre">AgentAttributes.enable_human_tool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes.json"><code class="docutils literal notranslate"><span class="pre">AgentAttributes.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes.keys"><code class="docutils literal notranslate"><span class="pre">AgentAttributes.keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes.profile_name"><code class="docutils literal notranslate"><span class="pre">AgentAttributes.profile_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes.role"><code class="docutils literal notranslate"><span class="pre">AgentAttributes.role</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.AgentAttributes.supervisor"><code class="docutils literal notranslate"><span class="pre">AgentAttributes.supervisor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent"><code class="docutils literal notranslate"><span class="pre">Agent</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.create"><code class="docutils literal notranslate"><span class="pre">Agent.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Agent.delete"><code class="docutils literal notranslate"><span class="pre">Agent.delete()</span></code></a></li>
@@ -593,30 +735,47 @@ and Python’s rich ecosystem.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#team">4. Team</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes"><code class="docutils literal notranslate"><span class="pre">TeamAttributes</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team"><code class="docutils literal notranslate"><span class="pre">Team</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.create"><code class="docutils literal notranslate"><span class="pre">Team.create()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.delete"><code class="docutils literal notranslate"><span class="pre">Team.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.delete_team"><code class="docutils literal notranslate"><span class="pre">Team.delete_team()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.disable"><code class="docutils literal notranslate"><span class="pre">Team.disable()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.enable"><code class="docutils literal notranslate"><span class="pre">Team.enable()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.export"><code class="docutils literal notranslate"><span class="pre">Team.export()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.export_team"><code class="docutils literal notranslate"><span class="pre">Team.export_team()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.fetch"><code class="docutils literal notranslate"><span class="pre">Team.fetch()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.import_team"><code class="docutils literal notranslate"><span class="pre">Team.import_team()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.list"><code class="docutils literal notranslate"><span class="pre">Team.list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.run"><code class="docutils literal notranslate"><span class="pre">Team.run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.set_attribute"><code class="docutils literal notranslate"><span class="pre">Team.set_attribute()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team.set_attributes"><code class="docutils literal notranslate"><span class="pre">Team.set_attributes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes"><code class="docutils literal notranslate"><span class="pre">TeamAttributes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes.agents"><code class="docutils literal notranslate"><span class="pre">TeamAttributes.agents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes.dict"><code class="docutils literal notranslate"><span class="pre">TeamAttributes.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes.json"><code class="docutils literal notranslate"><span class="pre">TeamAttributes.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes.keys"><code class="docutils literal notranslate"><span class="pre">TeamAttributes.keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes.process"><code class="docutils literal notranslate"><span class="pre">TeamAttributes.process</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes.supervisor_agent"><code class="docutils literal notranslate"><span class="pre">TeamAttributes.supervisor_agent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamAttributes.supervisor_task"><code class="docutils literal notranslate"><span class="pre">TeamAttributes.supervisor_task</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#run-team">4.1. Run Team</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#export-and-import-team">4.2. Export and Import Team</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#lifecycle-helpers">4.3. Lifecycle helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#supervised-teams">4.1. Supervised teams</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.Team"><code class="docutils literal notranslate"><span class="pre">Team</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#ai-agent-examples">5. AI agent examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#share-a-team">4.2. Share a team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#run-team">4.3. Run Team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#export-and-import-team">4.4. Export and Import Team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#inspect-a-team">4.5. Inspect a team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#lifecycle-helpers">4.6. Lifecycle helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#object-definitions">4.6.1. Object definitions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#agent-history">5. Agent history</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamHistory"><code class="docutils literal notranslate"><span class="pre">TeamHistory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TeamHistory.list"><code class="docutils literal notranslate"><span class="pre">TeamHistory.list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskHistory"><code class="docutils literal notranslate"><span class="pre">TaskHistory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.TaskHistory.list"><code class="docutils literal notranslate"><span class="pre">TaskHistory.list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.ToolHistory"><code class="docutils literal notranslate"><span class="pre">ToolHistory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/agent.html#select_ai.agent.ToolHistory.list"><code class="docutils literal notranslate"><span class="pre">ToolHistory.list()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/agent.html#ai-agent-examples">6. AI agent examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/agent.html#web-search-agent-using-openai-s-gpt-model">6.1. Web Search Agent using OpenAI’s GPT model</a></li>
 </ul>
 </li>
 </ul>
@@ -638,16 +797,19 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.create_websearch_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.create_websearch_tool()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTool.delete()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.delete_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.delete_tool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.describe_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.describe_tool()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.disable"><code class="docutils literal notranslate"><span class="pre">AsyncTool.disable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.enable"><code class="docutils literal notranslate"><span class="pre">AsyncTool.enable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncTool.fetch()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.list"><code class="docutils literal notranslate"><span class="pre">AsyncTool.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.run_tool"><code class="docutils literal notranslate"><span class="pre">AsyncTool.run_tool()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncTool.set_attribute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTool.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTool.set_attributes()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#create-tool">1.1. Create Tool</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#list-tools">1.2. List Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#inspect-and-run-a-tool">1.3. Inspect and run a tool</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/async_agent.html#asynctask">2. <code class="docutils literal notranslate"><span class="pre">AsyncTask</span></code></a><ul>
@@ -689,26 +851,93 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.create"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.create()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.delete"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.delete()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.delete_team"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.delete_team()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.describe_team"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.describe_team()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.disable"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.disable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.enable"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.enable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.export"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.export()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.export_team"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.export_team()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.fetch"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.grant_access"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.grant_access()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.import_team"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.import_team()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.list"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.list_tools"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.list_tools()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.revoke_access"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.revoke_access()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.run"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.set_attribute"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.set_attribute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeam.set_attributes"><code class="docutils literal notranslate"><span class="pre">AsyncTeam.set_attributes()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#run-team">4.1. Run Team</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#export-and-import-team">4.2. Export and Import Team</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#lifecycle-helpers">4.3. Lifecycle helpers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#list-teams">4.4. List Teams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#share-an-async-team">4.1. Share an async team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#supervised-teams">4.2. Supervised teams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#run-team">4.3. Run Team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#export-and-import-team">4.4. Export and Import Team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#inspect-a-team">4.5. Inspect a team</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#lifecycle-helpers">4.6. Lifecycle helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#object-definitions">4.6.1. Object definitions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/async_agent.html#async-ai-agent-examples">5. Async AI agent examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#web-search-agent-using-openai-s-gpt-model">5.1. Web Search Agent using OpenAI’s GPT model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/async_agent.html#async-agent-history">5. Async agent history</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeamHistory"><code class="docutils literal notranslate"><span class="pre">AsyncTeamHistory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTeamHistory.list"><code class="docutils literal notranslate"><span class="pre">AsyncTeamHistory.list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTaskHistory"><code class="docutils literal notranslate"><span class="pre">AsyncTaskHistory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncTaskHistory.list"><code class="docutils literal notranslate"><span class="pre">AsyncTaskHistory.list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncToolHistory"><code class="docutils literal notranslate"><span class="pre">AsyncToolHistory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/async_agent.html#select_ai.agent.AsyncToolHistory.list"><code class="docutils literal notranslate"><span class="pre">AsyncToolHistory.list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#list-teams">5.1. List Teams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/async_agent.html#async-ai-agent-examples">6. Async AI agent examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/async_agent.html#web-search-agent-using-openai-s-gpt-model">6.1. Web Search Agent using OpenAI’s GPT model</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="a2a-integration">
+<h1>A2A Integration<a class="headerlink" href="#a2a-integration" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/a2a.html">1. Agent2Agent (A2A)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#choose-a-topology">1.1. Choose a topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#why-clustered-deployments-use-consul">1.2. Why clustered deployments use Consul</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#choose-how-connections-are-configured">1.3. Choose how connections are configured</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#cli-based-deployment-on-any-cloud">1.4. CLI-based deployment on any cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#installation-and-prerequisites">1.5. Installation and prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#protocol-compatibility">1.6. Protocol compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#standalone-a2a-server">1.7. Standalone A2A server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#fixed-database-connection">1.7.1. Fixed database connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#dynamic-standalone-sessions">1.7.2. Dynamic standalone sessions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#end-user-oauth-and-session-ownership">1.7.3. End-user OAuth and session ownership</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#agent-card-discovery">1.7.4. Agent Card discovery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#tasks-polling-streaming-and-cancellation">1.7.5. Tasks, polling, streaming, and cancellation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#persistent-oracle-backed-state">1.8. Persistent Oracle-backed state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#wallet-based-database-connections">1.9. Wallet-based database connections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#private-database-ca-certificates">1.10. Private database CA certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#database-call-timeout">1.11. Database call timeout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#clustered-a2a-gateway-and-worker">1.12. Clustered A2A gateway and worker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#clustered-deployment-with-a-fixed-connection">1.12.1. Clustered deployment with a fixed connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#a2ui-database-connection-form">1.12.2. A2UI database-connection form</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#session-isolation-routing-and-cleanup">1.12.3. Session isolation, routing, and cleanup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#public-gateway-https">1.12.4. Public gateway HTTPS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#gateway-to-worker-http-and-tls">1.12.5. Gateway-to-worker HTTP and TLS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#google-cloud-deployment">1.13. Google Cloud deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#standalone-google-cloud-deployment">1.13.1. Standalone Google Cloud deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/a2a.html#clustered-google-cloud-deployment">1.13.2. Clustered Google Cloud deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/a2a.html#troubleshooting-and-security-notes">1.14. Troubleshooting and security notes</a></li>
 </ul>
 </li>
 </ul>
@@ -723,7 +952,12 @@ and Python’s rich ecosystem.</p>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/cli.html#interactive-chat">1.2. Interactive chat</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/cli.html#sql-commands">1.3. SQL commands</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/cli.html#profile-commands">1.4. Profile commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/cli.html#command-summary">1.5. Command summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/cli.html#a2a-commands">1.5. A2A commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/cli.html#a2a-deployment-examples">1.5.1. A2A deployment examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/cli.html#agent-card-generation">1.5.2. Agent Card generation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/cli.html#command-summary">1.6. Command summary</a></li>
 </ul>
 </li>
 </ul>
@@ -768,6 +1002,54 @@ and Python’s rich ecosystem.</p>
 </ul>
 </div>
 </section>
+<section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/api_reference.html">Errors, sessions, and result objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/api_reference.html#id1">Error handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentAttributesEmptyError"><code class="docutils literal notranslate"><span class="pre">AgentAttributesEmptyError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentNotFoundError"><code class="docutils literal notranslate"><span class="pre">AgentNotFoundError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentTaskAttributesEmptyError"><code class="docutils literal notranslate"><span class="pre">AgentTaskAttributesEmptyError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentTaskNotFoundError"><code class="docutils literal notranslate"><span class="pre">AgentTaskNotFoundError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentTeamAttributesEmptyError"><code class="docutils literal notranslate"><span class="pre">AgentTeamAttributesEmptyError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentTeamNotFoundError"><code class="docutils literal notranslate"><span class="pre">AgentTeamNotFoundError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentToolAttributesEmptyError"><code class="docutils literal notranslate"><span class="pre">AgentToolAttributesEmptyError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.AgentToolNotFoundError"><code class="docutils literal notranslate"><span class="pre">AgentToolNotFoundError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.ConversationNotFoundError"><code class="docutils literal notranslate"><span class="pre">ConversationNotFoundError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.DatabaseNotConnectedError"><code class="docutils literal notranslate"><span class="pre">DatabaseNotConnectedError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.InvalidSQLError"><code class="docutils literal notranslate"><span class="pre">InvalidSQLError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.ProfileAttributesEmptyError"><code class="docutils literal notranslate"><span class="pre">ProfileAttributesEmptyError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.ProfileExistsError"><code class="docutils literal notranslate"><span class="pre">ProfileExistsError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.ProfileNotFoundError"><code class="docutils literal notranslate"><span class="pre">ProfileNotFoundError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.SelectAIError"><code class="docutils literal notranslate"><span class="pre">SelectAIError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.errors.VectorIndexNotFoundError"><code class="docutils literal notranslate"><span class="pre">VectorIndexNotFoundError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/api_reference.html#session-objects">Session objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.profile.Session"><code class="docutils literal notranslate"><span class="pre">Session</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.async_profile.AsyncSession"><code class="docutils literal notranslate"><span class="pre">AsyncSession</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/api_reference.html#agent-history-results">Agent history results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.agent.history.TeamHistoryEvent"><code class="docutils literal notranslate"><span class="pre">TeamHistoryEvent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.agent.history.TaskHistoryEvent"><code class="docutils literal notranslate"><span class="pre">TaskHistoryEvent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.agent.history.ToolHistoryEvent"><code class="docutils literal notranslate"><span class="pre">ToolHistoryEvent</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/api_reference.html#enumerations">Enumerations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.action.Action"><code class="docutils literal notranslate"><span class="pre">Action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.agent.tool.ToolType"><code class="docutils literal notranslate"><span class="pre">ToolType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.agent.tool.NotificationType"><code class="docutils literal notranslate"><span class="pre">NotificationType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.vector_index.VectorDistanceMetric"><code class="docutils literal notranslate"><span class="pre">VectorDistanceMetric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/api_reference.html#select_ai.vector_index.VectorDBProvider"><code class="docutils literal notranslate"><span class="pre">VectorDBProvider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -785,6 +1067,7 @@ and Python’s rich ecosystem.</p>
 <li><a class="reference internal" href="#privileges">Privileges</a></li>
 <li><a class="reference internal" href="#provider">Provider</a></li>
 <li><a class="reference internal" href="#credential">Credential</a></li>
+<li><a class="reference internal" href="#sharing-and-ownership">Sharing and ownership</a></li>
 <li><a class="reference internal" href="#profile-attributes">Profile Attributes</a></li>
 <li><a class="reference internal" href="#profile">Profile</a></li>
 <li><a class="reference internal" href="#async-profile">Async Profile</a></li>
@@ -794,9 +1077,11 @@ and Python’s rich ecosystem.</p>
 <li><a class="reference internal" href="#summary">Summary</a></li>
 <li><a class="reference internal" href="#ai-agent">AI Agent</a></li>
 <li><a class="reference internal" href="#async-ai-agent">Async AI Agent</a></li>
+<li><a class="reference internal" href="#a2a-integration">A2A Integration</a></li>
 <li><a class="reference internal" href="#command-line-interface">Command Line Interface</a></li>
 <li><a class="reference internal" href="#web-frameworks">Web Frameworks</a></li>
 <li><a class="reference internal" href="#concurrent-prompt-processing">Concurrent Prompt Processing</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
 </ul>
 
   </div>
@@ -833,9 +1118,12 @@ and Python’s rich ecosystem.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="user_guide/introduction.html" title="1. Introduction to Select AI for Python"
              >next</a> |</li>
-          <li><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -843,7 +1131,7 @@ and Python’s rich ecosystem.</p>
           </li>
           <li>
 
-              <a href="#">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="#">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href="">select_ai documentation</a></li>
@@ -888,7 +1176,7 @@ and Python’s rich ecosystem.</p>
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

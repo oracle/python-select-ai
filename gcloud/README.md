@@ -98,10 +98,17 @@ The connection-form client flow is documented in the
 
 By default, the private Cloud Run deployments rely on Cloud Run IAM and keep
 database sessions separate by A2A conversation. Add `--require-oauth` to
-either deployment script when verified human-user ownership is required. In
+either deployment script to require a bearer token and derive an owner scope. In
 that mode Gemini Enterprise must be configured with end-user OAuth and sends
 its user token in `Authorization`; missing tokens receive HTTP 401.
 
 `X-Serverless-Authorization` is separate and automatic: Gemini Enterprise uses
 it to invoke the private Cloud Run service, and Cloud Run consumes it before
 the request reaches `a2a serve`.
+
+The SDK does not validate bearer-token signatures, expiration, issuer, or
+audience. A trusted upstream service must validate the end-user token and
+prevent callers from bypassing validation to reach the A2A listener directly.
+`--require-oauth` alone does not verify identity. Cloud Run IAM validation of
+the calling service is separate from validation of the end-user token. See the
+[A2A authentication contract](../doc/source/user_guide/a2a.rst) for details.

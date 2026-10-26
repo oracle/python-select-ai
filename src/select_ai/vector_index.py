@@ -64,9 +64,11 @@ class VectorIndexAttributes(SelectAIDataClass):
      The unit is minutes.
     :param float similarity_threshold: Defines the minimum level of similarity
      required for two items to be considered a match
-    :param VectorDistanceMetric vector_distance_metric: Specifies the type of
+    :param select_ai.vector_index.VectorDistanceMetric vector_distance_metric:
+     Specifies the type of
      distance calculation used to compare vectors in a database
-    :param VectorDBProvider vector_db_provider: Name of the Vector database
+    :param select_ai.vector_index.VectorDBProvider vector_db_provider:
+     Name of the Vector database
      provider. Default value is "oracle"
     :param str  vector_db_endpoint: Endpoint to access the Vector database
     :param str vector_db_credential_name: Name of the credentials for accessing

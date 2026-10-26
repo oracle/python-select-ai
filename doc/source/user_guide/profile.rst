@@ -338,6 +338,22 @@ Streaming is supported by ``generate()``, ``chat()``, ``narrate()``,
 ``explain_sql()``, ``show_sql()``, and ``show_prompt()``. It is not supported
 for ``run_sql()``, which returns a ``pandas.DataFrame``.
 
+The SDK calls the database function before reading the returned CLOB in
+chunks. This is CLOB consumption, rather than a guarantee that model tokens
+arrive while generation is in progress. The first chunk is available only
+after the database function returns. A partially consumed iterator keeps its
+cursor and connection open. Close it if you stop early, and consume session
+streams before leaving ``chat_session()``:
+
+.. code-block:: python
+
+   from contextlib import closing
+
+   with closing(profile.chat("Explain connection pooling.", stream=True)) as chunks:
+       for chunk in chunks:
+           print(chunk, end="")
+           # Breaking here also closes the iterator on context exit.
+
 .. _request-profile-attributes:
 
 *****************************************

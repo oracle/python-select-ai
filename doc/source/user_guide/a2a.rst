@@ -193,6 +193,17 @@ All modes require:
 * a database user with the privileges required by Select AI and the team; and
 * network access from the process to Oracle Database.
 
+The database user also needs ``CREATE TABLE``, ``CREATE VIEW``, and sufficient
+quota in its default tablespace for A2A task and context storage. Ask a database
+administrator to grant these privileges to each database user that will open
+an A2A session. The SDK's ``grant_privileges()`` helper grants package execute
+privileges; it does not grant these storage privileges or tablespace quota.
+
+At initialization, the runtime creates missing internal tables and executes
+``CREATE OR REPLACE VIEW`` for its read-only views. ``CREATE VIEW`` is therefore
+required even when the tables already exist. See
+:ref:`Persistent Oracle-backed state <persistent-oracle-backed-state>`.
+
 The fixed standalone server needs all database values at startup. Dynamic
 standalone and clustered sessions can collect missing values through A2UI.
 Clustered deployment additionally requires Consul and at least one worker;
@@ -312,12 +323,14 @@ End-user OAuth and session ownership
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 By default, ``select-ai a2a serve`` does not require an application OAuth
-token. Each A2A context maps to its own Select AI conversation, while A2A task
-and context records use the shared anonymous owner. A hosting platform such as
+token. Each A2A context maps to its own Select AI conversation, while records
+use a shared owner scope (``anonymous`` in fixed standalone mode and
+``a2a-conversation`` in session-based modes). A hosting platform such as
 private Cloud Run can authenticate the calling service, but the A2A server
 does not verify which human user owns the conversation.
 
-Add ``--require-oauth`` when verified end-user ownership is required:
+Add ``--require-oauth`` to require a bearer token and derive the owner scope
+from it. Configure a trusted upstream service to validate the token first:
 
 .. raw:: latex
 
@@ -337,12 +350,23 @@ Add ``--require-oauth`` when verified end-user ownership is required:
        --port 8000 \
        --public-url https://a2a.example.com
 
-Every A2A request must then contain ``Authorization: Bearer ...``. The server
-uses the authenticated owner and A2A context to scope task and context records
-and the Select AI conversation. It accepts an OpenID Connect ID token or an
-opaque OAuth 2.0 access token. ID-token ownership remains stable across
-refreshes through the ``iss`` and ``sub`` claims; refreshing an opaque access
-token starts a new owner scope. Tokens are never stored or logged.
+Every request to the A2A JSON-RPC endpoint must then contain
+``Authorization: Bearer ...``. Agent Card discovery remains public. The SDK
+requires bearer syntax and derives an owner scope, but does not validate token
+signatures, expiration, issuer, or audience. It accepts arbitrary nonempty
+bearer values. This flag alone does not establish a verified end-user identity.
+
+The deployment must validate tokens in a trusted authenticating proxy or
+service before forwarding them, and prevent callers from reaching the A2A
+listener through a path that bypasses that validation. Cloud Run IAM validation
+of a calling service is separate from validation of the end-user token.
+
+The server uses the derived owner and A2A context to scope task and context
+records and the Select AI conversation. For an upstream-validated JWT with
+``iss`` and ``sub`` claims, ownership remains stable across token refreshes.
+For an opaque access token, ownership is derived from a hash of the token;
+refreshing it starts a new owner scope. Tokens are not persisted by this
+authentication backend.
 
 The Agent Card advertises bearer security only with ``--require-oauth``.
 
@@ -509,10 +533,12 @@ When a request starts a new context, Select AI creates an
 ``AsyncConversation`` and passes its ID to ``AsyncTeam.run``. Later messages in
 the same A2A context reuse that conversation, so the team can use the
 conversation history. In standalone modes, task and context ownership is
-resolved from the A2A request context; an absent owner is stored as
-``anonymous``. In gateway mode, the worker scopes the rows to the temporary
-session ID, which is the A2A context ID used to route requests back to that
-worker session.
+resolved from the A2A request context in fixed standalone mode; an absent owner
+is stored as ``anonymous``. Dynamic standalone and clustered runtimes pass the
+gateway's derived owner scope to the child runtime, using ``a2a-conversation``
+when OAuth is not required. Routing binds the owner and A2A context ID to an
+internal session ID. That internal ID identifies the child process; it is
+separate from the client-visible A2A context ID.
 
 The tables hold task and context metadata, while the conversation prompts and
 responses remain in the regular Select AI conversation storage. This means a
@@ -873,8 +899,9 @@ passes ``configuration.blocking: false`` and polls ``tasks/get``:
 Session isolation, routing, and cleanup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each successful connection action creates one worker session identified by the
-A2A context ID. The worker owns an operating-system child process for that
+Each successful connection action binds the owner and A2A context ID to one
+worker session with its own internal session ID. The worker owns an
+operating-system child process for that
 session. The child process owns its Select AI asynchronous connection, A2A
 handler, task store, context store, and database conversation access. Requests
 for different sessions therefore do not share database credentials or a
@@ -1067,8 +1094,9 @@ Important standalone options include:
 * ``--service``: Cloud Run service name; use a different service for each
   deployment profile.
 * ``--a2a-team``: fix the AI Agent in the deployment; required in fixed mode.
-* ``--require-oauth``: require a Gemini Enterprise end-user OAuth bearer token
-  and scope state by verified owner as well as A2A conversation.
+* ``--require-oauth``: require an upstream-validated end-user bearer token
+  and derive an owner scope as well as the A2A conversation scope. The SDK
+  does not validate the token itself; see `End-user OAuth and session ownership`_.
 * ``--pool-max-size``: maximum Oracle connections per Cloud Run instance.
 * ``--max-instances``: Cloud Run instance limit; dynamic standalone mode
   requires one.
@@ -1092,8 +1120,9 @@ Run URL and the client can invoke the private service.
 The Google Cloud scripts do not require end-user OAuth by default. Cloud Run
 IAM authenticates Gemini Enterprise, and ``a2a serve`` separates database
 sessions by A2A conversation without asserting a verified human owner. Add
-``--require-oauth`` to the deployment command when verified user ownership is
-required. Gemini Enterprise must then be configured with end-user OAuth rather
+``--require-oauth`` to the deployment command when user ownership is required,
+and ensure a trusted upstream service validates the end-user token. The flag
+alone does not verify identity. Gemini Enterprise must then be configured with end-user OAuth rather
 than **Skip & Finish**. It uses ``X-Serverless-Authorization`` for Cloud Run
 IAM and sends the user token separately in ``Authorization``.
 

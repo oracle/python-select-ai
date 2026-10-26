@@ -13,9 +13,14 @@ import sphinx_prompt
 sys.modules["sphinx-prompt"] = sphinx_prompt
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-sys.path.insert(0, os.path.join("..", "..", "src", "select_ai"))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "src")
+    ),
+)
 
-autodocs_default_options = {
+autodoc_default_options = {
     "members": True,
     "inherited-members": True,
     "undoc-members": True,
@@ -30,12 +35,19 @@ author = "Oracle"
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
     "sphinx_toolbox.latex",
     "sphinx_toolbox_latex_compat",
     "sphinx.ext.autosectionlabel",
 ]
 
 autosectionlabel_prefix_document = True
+
+# Resolve standard-library and DataFrame API types to their own references.
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "pandas": ("https://pandas.pydata.org/docs", None),
+}
 
 # The suffix of source filenames.
 source_suffix = ".rst"
@@ -49,7 +61,11 @@ exclude_patterns = []
 global_vars = {}
 local_vars = {}
 
-version_file_name = os.path.join("..", "..", "src", "select_ai", "version.py")
+version_file_name = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__), "..", "..", "src", "select_ai", "version.py"
+    )
+)
 with open(version_file_name) as f:
     exec(f.read(), global_vars, local_vars)
 version = ".".join(local_vars["__version__"].split(".")[:2])

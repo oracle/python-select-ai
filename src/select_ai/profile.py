@@ -195,7 +195,7 @@ class Profile(BaseProfile):
         """Updates AI profile attributes on the Python object and also
         saves it in the database
 
-        :param ProviderAttributes attributes: Object specifying AI profile
+        :param select_ai.ProfileAttributes attributes: Object specifying AI profile
          attributes
         :return: None
         """
@@ -391,8 +391,8 @@ class Profile(BaseProfile):
         """
         Give positive feedback to the LLM
 
-        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
-         second is the corresponding action
+        :param Tuple[str, select_ai.action.Action] prompt_spec:
+         First element is the prompt; second is the corresponding action
         :param str sql_id: SQL identifier from V$MAPPED_SQL view
         """
         self._save_feedback(
@@ -411,8 +411,8 @@ class Profile(BaseProfile):
         """
         Give negative feedback to the LLM
 
-        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
-         second is the corresponding action
+        :param Tuple[str, select_ai.action.Action] prompt_spec:
+         First element is the prompt; second is the corresponding action
         :param str sql_id: SQL identifier from V$MAPPED_SQL view
         :param str response: Expected SQL from LLM
         :param str feedback_content: Actual feedback in natural language
@@ -433,8 +433,8 @@ class Profile(BaseProfile):
         """
         Delete feedback from the database
 
-        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
-         second is the corresponding action
+        :param Tuple[str, select_ai.action.Action] prompt_spec:
+         First element is the prompt; second is the corresponding action
         :param str sql_id: SQL identifier from V$MAPPED_SQL view
 
         """
@@ -485,7 +485,7 @@ class Profile(BaseProfile):
         """Perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
-        :param select_ai.profile.Action action:
+        :param select_ai.action.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
         :param Mapping attributes: Profile attributes to override for this
@@ -595,7 +595,7 @@ class Profile(BaseProfile):
         """Perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
-        :param select_ai.profile.Action action:
+        :param select_ai.action.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
         :param Mapping attributes: Profile attributes to override for this

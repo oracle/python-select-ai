@@ -28,8 +28,18 @@ The usual lifecycle is:
 ``Conversation Object model``
 *****************************
 .. _conversationfig:
-.. figure:: /image/conversation.png
-   :alt: Select AI Conversation
+
+.. only:: html
+
+   .. figure:: /image/conversation_object_model.svg
+      :alt: Select AI Conversation object model
+      :width: 100%
+
+.. only:: latex
+
+   .. figure:: /image/conversation_object_model.png
+      :alt: Select AI Conversation object model
+      :width: 100%
 
 .. latex:clearpage::
 
@@ -103,6 +113,14 @@ The synchronous API is used with ``select_ai.connect()`` or
        length.
    * - ``list()``
      - Iterate over conversations visible to the current user.
+   * - ``list_prompts()``
+     - Iterate over prompts and responses stored in this conversation.
+   * - ``delete_prompt(conversation_prompt_id, force=False)``
+     - Delete one stored prompt. Use ``force=True`` to ignore a missing prompt.
+   * - ``add_tag(tag_key, tag_value)``
+     - Add a tag or update the value for an existing tag key.
+   * - ``remove_tag(tag_key, force=False)``
+     - Remove a tag. Use ``force=True`` to ignore a missing tag.
    * - ``delete(force=False)``
      - Drop the conversation. Use ``force=True`` to ignore missing-conversation
        errors.
@@ -130,7 +148,7 @@ output::
 .. latex:clearpage::
 
 Chat session
-+++++++++++++
+++++++++++++
 
 Use ``chat_session()`` to keep context across multiple chat prompts. The second
 prompt in this example can refer to the previous answer because both prompts use
@@ -154,6 +172,51 @@ output::
     The history of science is replete with examples of mistakes, errors, and misconceptions that have occurred over time. By studying these mistakes, scientists and researchers can gain valuable insights into the pitfalls and challenges that have shaped the development of scientific knowledge. Learning from past mistakes is essential for several reasons:
     ...
     ...
+
+.. latex:clearpage::
+
+Prompt history and tags
++++++++++++++++++++++++
+
+``Conversation.list_prompts()`` returns an iterator of
+``ConversationPrompt`` objects in creation order. Each object includes the
+prompt identifier, prompt text, response text, conversation metadata, and
+timestamps. Use the identifier with ``Conversation.delete_prompt()`` to remove
+a stored prompt from the conversation.
+
+Conversation tags are key-value pairs. ``Conversation.add_tag()`` creates a tag
+or updates the value for an existing key. ``Conversation.remove_tag()`` removes
+a tag; pass ``force=True`` when a missing tag should not raise an error.
+
+.. autoclass:: select_ai.ConversationPrompt
+   :members:
+
+.. code-block:: python
+
+   conversation.add_tag("PROJECT", "SELECT_AI")
+   prompts = list(conversation.list_prompts())
+   for prompt in prompts:
+       print(prompt.conversation_prompt_id, prompt.prompt)
+   if prompts:
+       conversation.delete_prompt(prompts[-1].conversation_prompt_id)
+   conversation.remove_tag("PROJECT")
+
+The complete sample creates a conversation, stores one prompt through a chat
+session, lists the resulting ``ConversationPrompt``, deletes it, and exercises
+tag creation, update, and removal:
+
+.. literalinclude:: ../../../samples/conversation_prompts_tags.py
+   :language: python
+   :start-at: import
+
+The conversation ID, prompt ID, and model response vary between runs.
+Example output (generated IDs and model responses vary):
+
+output::
+
+    conversation history works.
+    Prompt <generated prompt id>: Reply with exactly: conversation history works.
+    Prompts after deletion: []
 
 .. latex:clearpage::
 
@@ -223,6 +286,14 @@ The async API mirrors the synchronous API and is used with
      - ``async for conversation in AsyncConversation.list()``
    * - ``Conversation.delete(...)``
      - ``await AsyncConversation.delete(...)``
+   * - ``Conversation.list_prompts()``
+     - ``async for prompt in AsyncConversation.list_prompts()``
+   * - ``Conversation.delete_prompt(...)``
+     - ``await AsyncConversation.delete_prompt(...)``
+   * - ``Conversation.add_tag(...)``
+     - ``await AsyncConversation.add_tag(...)``
+   * - ``Conversation.remove_tag(...)``
+     - ``await AsyncConversation.remove_tag(...)``
    * - ``with profile.chat_session(...)``
      - ``async with async_profile.chat_session(...)``
 
@@ -252,6 +323,83 @@ output::
     The history of science is replete with examples of mistakes, errors, and misconceptions that have occurred over time. By studying these mistakes, scientists and researchers can gain valuable insights into the pitfalls and challenges that have shaped the development of scientific knowledge. Learning from past mistakes is essential for several reasons:
     ...
     ...
+
+.. latex:clearpage::
+
+Async prompt history and tags
++++++++++++++++++++++++++++++
+
+Use prompt history to inspect or remove stored prompts, and tags to attach
+application metadata to a conversation. This example first creates a
+conversation and records a chat prompt so there is history to inspect.
+
+Create a conversation and save a prompt
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With an async connection open, run the following inside an async function.
+The saved profile ``oci_ai_profile`` must already exist:
+
+.. code-block:: python
+
+   conversation = select_ai.AsyncConversation(
+       attributes=select_ai.ConversationAttributes(title="Prompt history demo")
+   )
+   await conversation.create()
+   profile = await select_ai.AsyncProfile(profile_name="oci_ai_profile")
+   async with profile.chat_session(conversation=conversation) as session:
+       response = await session.chat("Explain retrieval augmented generation.")
+       print(response)
+
+Tag and inspect the conversation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A second ``add_tag()`` call with the same key updates its value.
+``list_prompts()`` returns an async iterator of ``ConversationPrompt`` objects:
+
+.. code-block:: python
+
+   await conversation.add_tag("PROJECT", "SELECT_AI")
+   await conversation.add_tag("PROJECT", "SELECT_AI_SAMPLES")
+   prompts = [prompt async for prompt in conversation.list_prompts()]
+   for prompt in prompts:
+       print(prompt.conversation_prompt_id, prompt.prompt)
+
+Remove a stored prompt and its tag
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Delete by prompt ID, then remove the tag by key. Check for an empty history
+before choosing a prompt to delete:
+
+.. code-block:: python
+
+   if prompts:
+       await conversation.delete_prompt(prompts[-1].conversation_prompt_id)
+   await conversation.remove_tag("PROJECT")
+
+Use ``force=True`` on ``delete_prompt()`` or ``remove_tag()`` when a missing
+prompt or tag should be ignored. When finished with this temporary conversation,
+call ``await conversation.delete(force=True)``.
+
+Run the complete example
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `complete async prompt-history script <https://github.com/oracle/python-select-ai/blob/main/samples/async/conversation_prompts_tags.py>`__
+adds connection setup and a ``finally`` block that deletes the temporary
+conversation. Set the common database environment variables and optionally
+set ``SELECT_AI_PROFILE_NAME`` (default ``oci_ai_profile``), then run from the
+repository root:
+
+.. code-block:: bash
+
+   python samples/async/conversation_prompts_tags.py
+
+Example output (prompt IDs and model responses vary):
+
+.. code-block:: text
+
+   conversation history works.
+   Prompt <generated prompt id>: Reply with exactly: conversation history works.
+   Prompts after deletion: []
 
 .. latex:clearpage::
 

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. What’s new in 1.5.0 &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="_static/pygments_dark.css?v=0fc419ee" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=67a6116b" />
+    <link rel="stylesheet" type="text/css" href="_static/pydoctheme.css?v=48df1187" />
+
+    <script src="_static/documentation_options.js?v=e0a75244"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. Supported Actions" href="user_guide/actions.html" />
+    <link rel="prev" title="5. Compatibility and requirements" href="user_guide/compatibility.html" /><link rel="stylesheet" href="_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="shortcut icon" type="image/png" href="_static/py.svg">
+            <script type="text/javascript" src="_static/copybutton.js"></script>
+            <script type="text/javascript" src="_static/menu.js"></script>
+            <script type="text/javascript" src="_static/search-focus.js"></script>
+            <script type="text/javascript" src="_static/themetoggle.js"></script>
+  </head>
+<body>
+<div class="mobile-nav">
+    <input type="checkbox" id="menuToggler" class="toggler__input" aria-controls="navigation"
+           aria-pressed="false" aria-expanded="false" role="button" aria-label="Menu">
+    <nav class="nav-content" role="navigation">
+        <label for="menuToggler" class="toggler__label">
+            <span></span>
+        </label>
+        <span class="nav-items-wrapper">
+            <a href="https://www.python.org/" class="nav-logo">
+                <img src="_static/py.svg" alt="Python logo">
+            </a>
+            <span class="version_switcher_placeholder"></span>
+            <form role="search" class="search" action="search.html" method="get">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="search-icon">
+                    <path fill-rule="nonzero" fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input placeholder="Quick search" aria-label="Quick search" type="search" name="q">
+                <input type="submit" value="Go">
+            </form>
+        </span>
+    </nav>
+    <div class="menu-wrapper">
+        <nav class="menu" role="navigation" aria-label="main navigation">
+            <div class="language_switcher_placeholder"></div>
+
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">6. What’s new in 1.5.0</a><ul>
+<li><a class="reference internal" href="#new-and-expanded-apis">6.1. New and expanded APIs</a></li>
+<li><a class="reference internal" href="#upgrade-considerations">6.2. Upgrade considerations</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="user_guide/compatibility.html"
+                          title="previous chapter"><span class="section-number">5. </span>Compatibility and requirements</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="user_guide/actions.html"
+                          title="next chapter"><span class="section-number">1. </span>Supported Actions</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/release_notes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </nav>
+    </div>
+</div>
+
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user_guide/actions.html" title="1. Supported Actions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="user_guide/compatibility.html" title="5. Compatibility and requirements"
+             accesskey="P">previous</a> |</li>
+          <li class="root-icon"><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="index.html">Select AI for Python 1.5.0 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>What’s new in 1.5.0</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <section id="what-s-new-in-1-5-0">
+<span id="release-1-5-0"></span><h1><span class="section-number">6. </span>What’s new in 1.5.0<a class="headerlink" href="#what-s-new-in-1-5-0" title="Link to this heading">¶</a></h1>
+<p>Version 1.5.0 adds A2A integration, object sharing, request-level profile
+overrides, and typed agent history APIs. The changes below are relative to
+1.4.1.</p>
+<section id="new-and-expanded-apis">
+<h2><span class="section-number">6.1. </span>New and expanded APIs<a class="headerlink" href="#new-and-expanded-apis" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Expose an agent team with the optional <a class="reference internal" href="user_guide/a2a.html#a2a"><span class="std std-ref">A2A server</span></a>. Choose fixed
+or dynamic connections and standalone or clustered deployment. A2A includes
+Oracle-backed task/context storage, task polling, A2UI connection forms, and
+A2A 1.0/v0.3 JSON-RPC compatibility.</p></li>
+<li><p><a class="reference internal" href="user_guide/sharing.html#sharing"><span class="std std-ref">Share profiles, vector indexes, teams, and credentials</span></a>
+with database users or roles. Profile and vector-index fetch/list APIs
+accept <code class="docutils literal notranslate"><span class="pre">owner</span></code> and expose <code class="docutils literal notranslate"><span class="pre">qualified_name</span></code>.</p></li>
+<li><p>Pass an <code class="docutils literal notranslate"><span class="pre">attributes</span></code> mapping to profile and session actions for
+<a class="reference internal" href="user_guide/profile.html#request-profile-attributes"><span class="std std-ref">request-only overrides</span></a>. Async pipelines
+can apply the same override mapping to every operation.</p></li>
+<li><p>Inspect agent execution with <a class="reference internal" href="user_guide/agent.html#agent-history"><span class="std std-ref">TeamHistory, TaskHistory, and ToolHistory</span></a> and their async equivalents.</p></li>
+<li><p>Enable and disable profiles without deleting them. Configure
+<code class="docutils literal notranslate"><span class="pre">additional_instructions</span></code>, integer <code class="docutils literal notranslate"><span class="pre">seed</span></code>, and translation language
+defaults with <code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code>. Per-call translation languages are
+optional and can use the saved defaults.</p></li>
+<li><p>Configure supervised teams with <code class="docutils literal notranslate"><span class="pre">AgentAttributes.supervisor</span></code> and
+<code class="docutils literal notranslate"><span class="pre">TeamAttributes.supervisor_agent</span></code>; inspect the database-generated
+<code class="docutils literal notranslate"><span class="pre">supervisor_task</span></code> after creation.</p></li>
+</ul>
+</section>
+<section id="upgrade-considerations">
+<h2><span class="section-number">6.2. </span>Upgrade considerations<a class="headerlink" href="#upgrade-considerations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Python 3.11 is now the minimum.</strong> Python 3.9 and 3.10 are no longer
+supported. Supported versions are 3.11 through 3.14.</p></li>
+<li><p><strong>pandas is now pinned to 3.0.3</strong>, replacing 2.2.3. Check applications that
+consume DataFrames for pandas compatibility when upgrading.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.seed</span></code> is now typed as an integer. Supply an integer
+rather than a numeric string.</p></li>
+<li><p>Unspecified <code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code> values are omitted so the database can
+apply its defaults. Set values explicitly if your application relies on
+particular generation settings.</p></li>
+<li><p>Install <code class="docutils literal notranslate"><span class="pre">select_ai[a2a]</span></code> to use A2A commands; <code class="docutils literal notranslate"><span class="pre">select_ai[cli]</span></code> covers
+the other CLI commands. Prepare A2A database storage privileges as described
+in <a class="reference internal" href="user_guide/a2a.html#installation-and-prerequisites"><span class="std std-ref">A2A prerequisites</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--require-oauth</span></code> requires a bearer token and derives an owner scope.
+Token signatures and claims must be validated by a trusted upstream service;
+the SDK flag alone does not verify identity. See <a class="reference internal" href="user_guide/a2a.html#end-user-oauth-and-session-ownership"><span class="std std-ref">A2A authentication</span></a>.</p></li>
+</ul>
+<p>Upgrade in your application’s virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="s1">'select_ai==1.5.0'</span>
+<span class="c1"># If you use A2A:</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="s1">'select_ai[a2a]==1.5.0'</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="user_guide/compatibility.html#compatibility"><span class="std std-ref">Compatibility</span></a> for the feature requirements and
+<a class="reference internal" href="user_guide/quickstart.html#first-query"><span class="std std-ref">Run your first SQL query</span></a> for a complete example.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">6. What’s new in 1.5.0</a><ul>
+<li><a class="reference internal" href="#new-and-expanded-apis">6.1. New and expanded APIs</a></li>
+<li><a class="reference internal" href="#upgrade-considerations">6.2. Upgrade considerations</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="user_guide/compatibility.html"
+                          title="previous chapter"><span class="section-number">5. </span>Compatibility and requirements</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="user_guide/actions.html"
+                          title="next chapter"><span class="section-number">1. </span>Supported Actions</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/release_notes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user_guide/actions.html" title="1. Supported Actions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="user_guide/compatibility.html" title="5. Compatibility and requirements"
+             >previous</a> |</li>
+          <li class="root-icon"><img src="_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li><a href="https://www.python.org/">Python</a> &#187;</li>
+          <li class="switchers">
+            <div class="language_switcher_placeholder"></div>
+            <div class="version_switcher_placeholder"></div>
+          </li>
+          <li>
+
+              <a href="index.html">Select AI for Python 1.5.0 documentation</a> &#187;
+
+          </li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>What’s new in 1.5.0</a></li>
+                <li class="right">
+
+
+    <div class="inline-search" role="search">
+        <form class="inline-search" action="search.html" method="get">
+          <input placeholder="Quick search" aria-label="Quick search" type="search" name="q" id="search-box">
+          <input type="submit" value="Go">
+        </form>
+    </div>
+                     |
+                </li>
+            <li class="right">
+<label class="theme-selector-label">
+    Theme
+    <select class="theme-selector" oninput="activateTheme(this.value)">
+        <option value="auto" selected>Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+</label> |</li>
+
+      </ul>
+    </div>
+    <div class="footer">
+    &copy; Copyright 2026, Oracle and/or its affiliates. All rights reserved..
+    <br>
+    This page is licensed under the Python Software Foundation License Version 2.
+    <br>
+    Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.
+    <br>
+
+
+    <br>
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br>
+    <br>
+
+    <br>
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    </div>
+
+  </body>
+</html>

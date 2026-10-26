@@ -23,6 +23,10 @@ indexes, conversations, summarization, synthetic data, and AI agent workflows.
       Connect an A2A client to a Select AI agent team. Follow the
       :ref:`A2A guide <a2a>` to run the server.
 
+For a complete setup-to-query example, start with :ref:`Run your first SQL
+query <first-query>`. Existing users can review :ref:`What's new in 1.5.0
+<release-1-5-0>` and :ref:`Compatibility <compatibility>`.
+
 What you can build
 ==================
 

@@ -53,7 +53,8 @@ class in this library.
      - Uses OCI region and OCI Gen AI attributes.
    * - ``OpenAIProvider``
      - ``openai``
-     - Uses ``api.openai.com``.
+     - Keeps ``api.openai.com`` for network ACL setup; omits the default
+       endpoint from database profiles so Select AI selects its native URL.
 
 Examples
 --------
@@ -83,6 +84,13 @@ OpenAI provider:
    provider = select_ai.OpenAIProvider(
        model="gpt-4.1",
    )
+
+For the public OpenAI service, leave ``provider_endpoint`` at its default.
+The SDK sends ``provider="openai"`` and the model name, without an endpoint
+override. ``OpenAIProvider`` omits ``provider_endpoint`` from database profile
+payloads. Use the base ``Provider`` class for a custom OpenAI-compatible
+endpoint, as shown below. Do not append ``/v1/chat/completions``; the database
+constructs the request path.
 
 .. raw:: latex
 
