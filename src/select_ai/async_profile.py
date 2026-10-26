@@ -145,7 +145,7 @@ class AsyncProfile(BaseProfile):
         :param str profile_name: Name of the profile
         :param str owner: Owner of a shared profile. Defaults to current schema.
         :param bool raise_on_empty: Raise an error if attributes are empty
-        :return: select_ai.provider.ProviderAttributes
+        :return: select_ai.ProfileAttributes
         :raises: select_ai.errors.ProfileAttributesEmptyError
 
         """
@@ -168,7 +168,7 @@ class AsyncProfile(BaseProfile):
     async def get_attributes(self) -> ProfileAttributes:
         """Asynchronously gets AI profile attributes from the Database
 
-        :return: select_ai.provider.ProviderAttributes
+        :return: select_ai.ProfileAttributes
         :raises: ProfileNotFoundError
         """
         return await self._get_attributes(
@@ -405,8 +405,8 @@ class AsyncProfile(BaseProfile):
         """
         Give positive feedback to the LLM
 
-        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
-         second is the corresponding action
+        :param Tuple[str, select_ai.action.Action] prompt_spec:
+         First element is the prompt; second is the corresponding action
         :param str sql_id: SQL identifier from V$MAPPED_SQL view
         """
         await self._save_feedback(
@@ -425,8 +425,8 @@ class AsyncProfile(BaseProfile):
         """
         Give negative feedback to the LLM
 
-        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
-         second is the corresponding action
+        :param Tuple[str, select_ai.action.Action] prompt_spec:
+         First element is the prompt; second is the corresponding action
         :param str sql_id: SQL identifier from V$MAPPED_SQL view
         :param str response: Expected SQL from LLM
         :param str feedback_content: Actual feedback in natural language
@@ -447,8 +447,8 @@ class AsyncProfile(BaseProfile):
         """
         Delete feedback from the database
 
-        :param Tuple[str, Action] prompt_spec:  First element is the prompt and
-         second is the corresponding action
+        :param Tuple[str, select_ai.action.Action] prompt_spec:
+         First element is the prompt; second is the corresponding action
         :param str sql_id: SQL identifier from V$MAPPED_SQL view
 
         """
@@ -500,7 +500,7 @@ class AsyncProfile(BaseProfile):
         """Asynchronously perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
-        :param select_ai.profile.Action action:
+        :param select_ai.action.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
         :param Mapping attributes: Profile attributes to override for this
@@ -613,7 +613,7 @@ class AsyncProfile(BaseProfile):
         """Asynchronously perform AI translation using this profile
 
         :param str prompt: Natural language prompt to translate
-        :param select_ai.profile.Action action:
+        :param select_ai.action.Action action:
         :param params: Parameters to include in the LLM request. For e.g.
          conversation_id for context-aware chats
         :param Mapping attributes: Profile attributes to override for this
@@ -893,17 +893,23 @@ class AsyncProfile(BaseProfile):
         continue_on_error: bool = False,
         *,
         attributes: Mapping = None,
-    ) -> List[Union[str, pandas.DataFrame]]:
-        """Send Multiple prompts in a single roundtrip to the Database
+    ) -> List[object]:
+        """Submit prompt/action pairs as a database pipeline
 
-        :param List[Tuple[str, Action]] prompt_specifications: List of
-         2-element tuples. First element is the prompt and second is the
+        :param List[Tuple[str, select_ai.action.Action]] prompt_specifications:
+         List of 2-element tuples. First element is the prompt and second is the
          corresponding action
 
         :param bool continue_on_error: True to continue on error else False
         :param Mapping attributes: Profile attributes to override for every
          request in the pipeline
-        :return: List[Union[str, pandas.DataFrame]]
+        :return: Ordered list of strings for successful operations and driver
+         error objects for failures when continue_on_error=True. RUNSQL
+         results remain JSON strings; they are not converted to DataFrames.
+
+        Operations execute sequentially. Round-trip reduction requires a
+        supporting database version; reading returned CLOBs adds calls.
+        With continue_on_error=False, an operation failure raises an exception.
         """
         serialized_attributes = None
         if attributes is not None:

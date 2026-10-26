@@ -10,6 +10,7 @@
 """
 import logging
 import uuid
+
 import oracledb
 import pytest
 import select_ai
@@ -85,6 +86,7 @@ def profile(oci_credential, oci_compartment_id, test_env, cursor):
             credential_name=oci_credential["credential_name"],
             object_list=object_list,
             provider=select_ai.OCIGenAIProvider(
+                embedding_model="cohere.embed-v4.0",
                 oci_compartment_id=oci_compartment_id,
                 oci_apiformat="GENERIC",
             ),
@@ -94,6 +96,7 @@ def profile(oci_credential, oci_compartment_id, test_env, cursor):
 
     yield profile
     profile.delete(force=True)
+
 
 ############################################### NEGATIVE FEEDBACK TESTS
 def test_4001(profile, cursor):
@@ -123,6 +126,7 @@ def test_4001(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
 
+
 def test_4002(profile, cursor):
     """Add negative feedback using RUNSQL prompt_spec, response, and feedback_content."""
     prompt = PROMPT
@@ -149,6 +153,7 @@ def test_4002(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
+
 
 def test_4003(profile, cursor):
     """Add negative feedback using EXPLAINSQL prompt_spec, response, and feedback_content."""
@@ -177,6 +182,7 @@ def test_4003(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
 
+
 def test_4004(profile, cursor):
     """Add negative feedback using SHOWSQL sql_id, response, and feedback_content."""
     sql_id = SHOWSQL_SQL_ID
@@ -201,6 +207,7 @@ def test_4004(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
+
 
 def test_4005(profile, cursor):
     """Add negative feedback using RUNSQL sql_id, response, and feedback_content."""
@@ -227,6 +234,7 @@ def test_4005(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
 
+
 def test_4006(profile, cursor):
     """Add negative feedback using EXPLAINSQL sql_id, response, and feedback_content."""
     sql_id = EXPLAINSQL_SQL_ID
@@ -251,6 +259,7 @@ def test_4006(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
+
 
 def test_4007(profile, cursor):
     """Attempt negative feedback with both prompt_spec and sql_id."""
@@ -280,6 +289,7 @@ def test_4007(profile, cursor):
     _assert_db_error(exc_info, 6550)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
+
 def test_4008(profile, cursor):
     """Attempt negative feedback without a response."""
     prompt = PROMPT
@@ -299,6 +309,7 @@ def test_4008(profile, cursor):
         )
     assert isinstance(exc_info.value, AttributeError)
     logger.error("%s", str(exc_info.value).splitlines()[0])
+
 
 def test_4009(profile, cursor):
     """Add negative feedback with sql_id and response but without feedback_content."""
@@ -323,6 +334,7 @@ def test_4009(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
+
 
 def test_4010(profile, cursor):
     """Add negative feedback with prompt_spec=None and a valid sql_id."""
@@ -349,6 +361,7 @@ def test_4010(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
+
 
 def test_4011(profile, cursor):
     """Add negative feedback with sql_id=None and a valid prompt_spec."""
@@ -378,6 +391,7 @@ def test_4011(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
 
+
 def test_4012(profile, cursor):
     """Attempt negative feedback with response=None."""
     prompt = PROMPT
@@ -398,6 +412,7 @@ def test_4012(profile, cursor):
         )
     assert isinstance(exc_info.value, AttributeError)
     logger.error("%s", str(exc_info.value).splitlines()[0])
+
 
 def test_4013(profile, cursor):
     """Add negative feedback with feedback_content=None using sql_id."""
@@ -452,6 +467,7 @@ def test_4014(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
 
+
 ############################################################## POSITIVE FEEDBACK TESTS
 def test_4015(profile, cursor):
     """Add positive feedback using SHOWSQL prompt_spec only."""
@@ -470,6 +486,7 @@ def test_4015(profile, cursor):
     assert "sql_query" in show_prompt
     assert "user_prompt" in show_prompt
 
+
 def test_4016(profile, cursor):
     """Add positive feedback using RUNSQL prompt_spec only."""
     prompt = PROMPT
@@ -487,6 +504,7 @@ def test_4016(profile, cursor):
     assert "sql_query" in show_prompt
     assert "user_prompt" in show_prompt
 
+
 def test_4017(profile, cursor):
     """Add positive feedback using EXPLAINSQL prompt_spec only."""
     prompt = PROMPT
@@ -503,6 +521,7 @@ def test_4017(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert "sql_query" in show_prompt
     assert "user_prompt" in show_prompt
+
 
 def test_4018(profile, cursor):
     """Attempt positive feedback with both prompt_spec and sql_id."""
@@ -523,10 +542,13 @@ def test_4018(profile, cursor):
     _assert_db_error(exc_info, 6550)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
+
 def test_4019(profile, cursor):
     """Add positive feedback using SHOWSQL sql_id only."""
     sql_id = SHOWSQL_SQL_ID
-    logger.info("Adding positive feedback without prompt_spec using sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback without prompt_spec using sql_id=%s", sql_id
+    )
     profile.add_positive_feedback(sql_id=sql_id)
     _log_feedback_vecindex_rows(profile)
     logger.info("Checking if show_prompt contains feedback metadata")
@@ -539,7 +561,9 @@ def test_4019(profile, cursor):
 def test_4020(profile, cursor):
     """Add positive feedback using RUNSQL sql_id only."""
     sql_id = RUNSQL_SQL_ID
-    logger.info("Adding positive feedback without prompt_spec using sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback without prompt_spec using sql_id=%s", sql_id
+    )
     profile.add_positive_feedback(sql_id=sql_id)
     _log_feedback_vecindex_rows(profile)
     logger.info("Checking if show_prompt contains feedback metadata")
@@ -547,11 +571,14 @@ def test_4020(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert "sql_query" in show_prompt
     assert "user_prompt" in show_prompt
+
 
 def test_4021(profile, cursor):
     """Add positive feedback using EXPLAINSQL sql_id only."""
     sql_id = EXPLAINSQL_SQL_ID
-    logger.info("Adding positive feedback without prompt_spec using sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback without prompt_spec using sql_id=%s", sql_id
+    )
     profile.add_positive_feedback(sql_id=sql_id)
     _log_feedback_vecindex_rows(profile)
     logger.info("Checking if show_prompt contains feedback metadata")
@@ -560,10 +587,13 @@ def test_4021(profile, cursor):
     assert "sql_query" in show_prompt
     assert "user_prompt" in show_prompt
 
+
 def test_4022(profile, cursor):
     """Add positive feedback with prompt_spec=None and a valid sql_id."""
     sql_id = SHOWSQL_SQL_ID
-    logger.info("Adding positive feedback with prompt_spec=None sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback with prompt_spec=None sql_id=%s", sql_id
+    )
     profile.add_positive_feedback(
         prompt_spec=None,
         sql_id=sql_id,
@@ -574,6 +604,7 @@ def test_4022(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert "sql_query" in show_prompt
     assert "user_prompt" in show_prompt
+
 
 def test_4023(profile, cursor):
     """Add positive feedback with sql_id=None and a valid prompt_spec."""
@@ -610,6 +641,7 @@ def test_4024(profile, cursor):
     _assert_db_error(exc_info, 20000)
     logger.error("%s", str(exc_info.value).splitlines()[0])
 
+
 ############################################################## DELETE FEEDBACK TESTS
 def test_4025(profile, cursor):
     """Delete feedback by prompt_spec after adding positive SHOWSQL feedback."""
@@ -634,6 +666,7 @@ def test_4025(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert show_prompt.count(PROMPT) == 1
+
 
 def test_4026(profile, cursor):
     """Delete feedback by RUNSQL sql_id after adding negative feedback with sql_id."""
@@ -662,6 +695,7 @@ def test_4026(profile, cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert show_prompt.count(PROMPT) == 1
 
+
 def test_4027(profile, cursor):
     """Delete feedback by prompt_spec after adding positive EXPLAINSQL feedback."""
     prompt = PROMPT
@@ -684,6 +718,7 @@ def test_4027(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert show_prompt.count(PROMPT) == 1
+
 
 def test_4028(profile, cursor):
     """Delete SHOWSQL feedback by sql_id after adding negative prompt-based feedback."""
@@ -745,6 +780,7 @@ def test_4029(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert show_prompt.count(PROMPT) == 1
+
 
 def test_4030(profile, cursor):
     """Delete EXPLAINSQL feedback by sql_id after adding negative prompt-based feedback."""
@@ -820,7 +856,9 @@ def test_4032(profile, cursor):
         sql_id=sql_id,
     )
     _log_feedback_vecindex_rows(profile)
-    logger.info("Deleting feedback with prompt_spec=None using sql_id=%s", sql_id)
+    logger.info(
+        "Deleting feedback with prompt_spec=None using sql_id=%s", sql_id
+    )
     profile.delete_feedback(
         prompt_spec=None,
         sql_id=sql_id,
@@ -830,6 +868,7 @@ def test_4032(profile, cursor):
     show_prompt = profile.show_prompt(PROMPT)
     logger.info("show_prompt response: %s", show_prompt)
     assert show_prompt.count(PROMPT) == 1
+
 
 def test_4033(profile, cursor):
     """Attempt delete_feedback with both prompt_spec and sql_id."""

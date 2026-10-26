@@ -4,135 +4,145 @@
 Sharing and ownership
 **********************
 
-Select AI objects can be shared with a database user or role. Sharing must be
-performed by the object owner, and the grantee must have the package and
-database privileges required to use the object.
+Share a saved profile, vector index, agent team, or credential with a database
+user or role. Run grants and revokes while connected as the object owner. The
+recipient also needs the database and package :ref:`Privileges <privileges>`
+required to use that object.
 
-The sharing APIs are available in both synchronous and asynchronous forms:
+The examples below use owner ``APP_OWNER`` and recipient ``APP_USER``. Replace
+these names with your schemas. Each example assumes that its named object
+already exists. Sharing an object does not grant access to other database
+objects or services used by the workflow.
 
-.. list-table:: Sharing API summary
-   :header-rows: 1
-   :widths: 25 37 38
-   :align: left
+Connect before running an example
+=================================
 
-   * - Object
-     - Synchronous API
-     - Asynchronous API
-   * - Profile
-     - ``Profile.grant_access()`` and ``revoke_access()``
-     - ``AsyncProfile.grant_access()`` and ``revoke_access()``
-   * - Vector index
-     - ``VectorIndex.grant_access()`` and ``revoke_access()``
-     - ``AsyncVectorIndex.grant_access()`` and ``revoke_access()``
-   * - Agent team
-     - ``Team.grant_access()`` and ``revoke_access()``
-     - ``AsyncTeam.grant_access()`` and ``revoke_access()``
-   * - Credential
-     - ``grant_credential_access()`` and ``revoke_credential_access()``
-     - ``async_grant_credential_access()`` and
-       ``async_revoke_credential_access()``
+For synchronous examples, connect as the object owner:
 
-Each access method accepts a database user or role name. Access methods return
-``None`` after the database grant or revoke operation completes.
+.. code-block:: python
+
+   import os
+   import select_ai
+
+   select_ai.connect(
+       user=os.environ["SELECT_AI_USER"],       # APP_OWNER
+       password=os.environ["SELECT_AI_PASSWORD"],
+       dsn=os.environ["SELECT_AI_DB_CONNECT_STRING"],
+   )
+
+Call ``select_ai.disconnect()`` when finished. For asynchronous examples, use
+``await select_ai.async_connect(...)`` with the same arguments inside an async
+function, and call ``await select_ai.async_disconnect()`` when finished.
+The async snippets below belong inside that function.
+
+.. latex:clearpage::
 
 Profiles
 ========
 
-``Profile.fetch()`` and ``Profile.list()`` accept an optional ``owner``
-argument. If ``owner`` is omitted, the current schema is used. The fetched
-object records its owner in ``profile.owner`` and exposes an owner-qualified
-name through ``profile.qualified_name``.
+Grant access to an existing profile while connected as ``APP_OWNER``:
 
 .. code-block:: python
 
-   profile = select_ai.Profile.fetch(
-       "OCI_AI_PROFILE",
-       owner="APP_OWNER",
-   )
-   print(profile.owner)
-   print(profile.qualified_name)
-
-   profiles = select_ai.Profile.list(
-       profile_name_pattern="^OCI_AI_PROFILE$",
-       owner="APP_OWNER",
-   )
-   for profile in profiles:
-       print(profile.qualified_name)
-
-Grant and revoke access on the owner-side object:
-
-.. code-block:: python
-
+   profile = select_ai.Profile.fetch("OCI_AI_PROFILE")
    profile.grant_access("APP_USER")
+
+In a separate connection as ``APP_USER``, fetch the shared profile by its name
+and owner. The ``qualified_name`` property identifies both:
+
+.. code-block:: python
+
+   profile = select_ai.Profile.fetch("OCI_AI_PROFILE", owner="APP_OWNER")
+   print(profile.qualified_name)
+   print(profile.chat(prompt="What is retrieval augmented generation?"))
+
+The qualified name printed is ``APP_OWNER.OCI_AI_PROFILE``. The chat answer
+depends on the configured provider. To withdraw access, reconnect as
+``APP_OWNER`` and run:
+
+.. code-block:: python
+
+   profile = select_ai.Profile.fetch("OCI_AI_PROFILE")
    profile.revoke_access("APP_USER")
 
-The asynchronous APIs use the same ``owner`` argument and return an async
-iterator from ``AsyncProfile.list()``:
+The async sequence uses ``AsyncProfile``. Run each step in the indicated
+user's connection:
 
 .. code-block:: python
 
-   profile = await select_ai.AsyncProfile.fetch(
-       "OCI_AI_PROFILE",
-       owner="APP_OWNER",
-   )
-   profiles = [
-       item
-       async for item in select_ai.AsyncProfile.list(
-           "^OCI_AI_PROFILE$",
-           owner="APP_OWNER",
-       )
-   ]
-   print(profile.qualified_name)
-   print([item.qualified_name for item in profiles])
-
+   # As APP_OWNER: share the profile.
+   profile = await select_ai.AsyncProfile.fetch("OCI_AI_PROFILE")
    await profile.grant_access("APP_USER")
+
+   # In a separate connection as APP_USER: use the shared profile.
+   shared = await select_ai.AsyncProfile.fetch(
+       "OCI_AI_PROFILE", owner="APP_OWNER"
+   )
+   print(shared.qualified_name)
+   print(await shared.chat(prompt="What is retrieval augmented generation?"))
+
+   # Reconnect as APP_OWNER when access should end.
    await profile.revoke_access("APP_USER")
+
+``Profile.list()`` and ``AsyncProfile.list()`` also accept ``owner``. If it is
+omitted, they list the current schema. See
+:ref:`List profiles <user_guide/profile:List profiles>` and
+:ref:`List profiles asynchronously <user_guide/async_profile:List profiles asynchronously>`
+for connection setup, filtering, and reuse.
+
+.. latex:clearpage::
 
 Vector indexes
 ==============
 
-``VectorIndex.fetch()`` and ``VectorIndex.list()`` also accept an optional
-``owner`` argument. A vector index exposes ``owner`` and the owner-qualified
-``qualified_name`` property in the same way as a profile.
+Share an existing vector index while connected as ``APP_OWNER``:
 
 .. code-block:: python
 
-   index = select_ai.VectorIndex.fetch(
-       "PRODUCT_DOCS",
-       owner="APP_OWNER",
-   )
-   indexes = select_ai.VectorIndex.list(
-       index_name_pattern="^PRODUCT_DOCS$",
-       owner="APP_OWNER",
-   )
-   print(index.qualified_name)
-   print([item.qualified_name for item in indexes])
-
+   index = select_ai.VectorIndex.fetch("PRODUCT_DOCS")
    index.grant_access("APP_USER")
+
+In a separate connection as ``APP_USER``, address the index by its owner:
+
+.. code-block:: python
+
+   index = select_ai.VectorIndex.fetch("PRODUCT_DOCS", owner="APP_OWNER")
+   print(index.qualified_name)  # APP_OWNER.PRODUCT_DOCS
+
+Reconnect as ``APP_OWNER`` to withdraw access:
+
+.. code-block:: python
+
+   index = select_ai.VectorIndex.fetch("PRODUCT_DOCS")
    index.revoke_access("APP_USER")
 
-The async form mirrors the synchronous API:
+Use ``AsyncVectorIndex`` for the same sequence in an async application:
 
 .. code-block:: python
 
-   index = await select_ai.AsyncVectorIndex.fetch(
-       "PRODUCT_DOCS",
-       owner="APP_OWNER",
-   )
-   indexes = [
-       item
-       async for item in select_ai.AsyncVectorIndex.list(
-           "^PRODUCT_DOCS$",
-           owner="APP_OWNER",
-       )
-   ]
+   # As APP_OWNER.
+   index = await select_ai.AsyncVectorIndex.fetch("PRODUCT_DOCS")
    await index.grant_access("APP_USER")
+
+   # In a separate connection as APP_USER.
+   shared = await select_ai.AsyncVectorIndex.fetch(
+       "PRODUCT_DOCS", owner="APP_OWNER"
+   )
+   print(shared.qualified_name)
+
+   # Reconnect as APP_OWNER when access should end.
    await index.revoke_access("APP_USER")
+
+``VectorIndex.list(owner="APP_OWNER")`` lists visible indexes in that schema;
+``AsyncVectorIndex.list(owner="APP_OWNER")`` returns an async iterator.
+See :ref:`Vector Index <vector_index>` for creating and using an index for RAG.
+
+.. latex:clearpage::
 
 Agent teams
 ===========
 
-Agent teams support synchronous and asynchronous access grants and revokes:
+While connected as the team owner, grant access to an existing team:
 
 .. code-block:: python
 
@@ -140,7 +150,14 @@ Agent teams support synchronous and asynchronous access grants and revokes:
 
    team = Team.fetch("MOVIE_AGENT_TEAM")
    team.grant_access("APP_USER")
+
+When the recipient no longer needs access, run this as the team owner:
+
+.. code-block:: python
+
    team.revoke_access("APP_USER")
+
+For async applications, use ``AsyncTeam`` and await each operation:
 
 .. code-block:: python
 
@@ -148,111 +165,94 @@ Agent teams support synchronous and asynchronous access grants and revokes:
 
    team = await AsyncTeam.fetch("MOVIE_AGENT_TEAM")
    await team.grant_access("APP_USER")
+
+   # Revoke later, while connected as the team owner.
    await team.revoke_access("APP_USER")
 
-The current team APIs do not accept an ``owner`` argument. Team fetch and list
-operations use the connected user's agent-team views; owner-qualified names
-are currently provided for profiles and vector indexes.
+Team fetch and list operations use the connected user's agent-team views and
+do not accept an ``owner`` argument. See :ref:`AI Agent <agent>` for team
+creation and execution.
+
+.. latex:clearpage::
 
 Credentials
 ===========
 
-Credential access is exposed as module-level functions because credentials are
-owned in the current schema:
+Credentials use module-level access functions. While connected as the
+credential owner, share an existing provider credential:
 
 .. code-block:: python
 
-   select_ai.grant_credential_access(
-       "MY_PROVIDER_CREDENTIAL",
-       "APP_USER",
-   )
-   select_ai.revoke_credential_access(
-       "MY_PROVIDER_CREDENTIAL",
-       "APP_USER",
-   )
+   select_ai.grant_credential_access("MY_PROVIDER_CREDENTIAL", "APP_USER")
 
-Use the asynchronous equivalents with ``await``:
+Revoke access when the recipient no longer needs it:
+
+.. code-block:: python
+
+   select_ai.revoke_credential_access("MY_PROVIDER_CREDENTIAL", "APP_USER")
+
+The async functions take the same arguments:
 
 .. code-block:: python
 
    await select_ai.async_grant_credential_access(
-       "MY_PROVIDER_CREDENTIAL",
-       "APP_USER",
+       "MY_PROVIDER_CREDENTIAL", "APP_USER"
    )
+
+   # Revoke later, while connected as the credential owner.
    await select_ai.async_revoke_credential_access(
-       "MY_PROVIDER_CREDENTIAL",
-       "APP_USER",
+       "MY_PROVIDER_CREDENTIAL", "APP_USER"
    )
 
-Credential creation and deletion optionally manage a public synonym with the
-same name as the credential. Creating or dropping a public synonym requires the
-corresponding ``CREATE PUBLIC SYNONYM`` or ``DROP PUBLIC SYNONYM`` privilege:
+Access functions return ``None`` after the grant or revoke completes. They do
+not print a confirmation message.
 
-.. code-block:: python
+Credential creation and deletion can also manage a public synonym with the
+same name. Pass ``public_synonym=True`` to ``create_credential()`` or
+``delete_credential()`` (or their async equivalents). Creating or dropping the
+synonym requires ``CREATE PUBLIC SYNONYM`` or ``DROP PUBLIC SYNONYM``
+respectively. See :ref:`Credential <credential>` for credential setup.
 
-   select_ai.create_credential(
-       credential=credential,
-       replace=True,
-       public_synonym=True,
-   )
-   select_ai.delete_credential(
-       "MY_PROVIDER_CREDENTIAL",
-       force=True,
-       public_synonym=True,
-   )
+Runnable sharing scripts
+=========================
 
-The async functions ``async_create_credential()`` and
-``async_delete_credential()`` accept the same ``public_synonym`` option.
+The repository also provides a
+`synchronous sharing script <https://github.com/oracle/python-select-ai/blob/main/samples/sharing.py>`__
+and an
+`asynchronous sharing script <https://github.com/oracle/python-select-ai/blob/main/samples/async/sharing.py>`__
+that exercise all four object types. Use these when you want to check the APIs
+together after working through the individual examples above.
 
-Complete sharing sample
-========================
+Set the common database connection variables and ``SELECT_AI_SHARE_GRANTEE``.
+The connected user must own all four objects. The scripts use these defaults;
+override them if your objects have other names:
 
-The following samples fetch owner-qualified profiles and vector indexes and
-exercise grant/revoke operations for profiles, vector indexes, teams, and
-credentials. Set ``SELECT_AI_SHARE_GRANTEE`` to a database user or role. The
-objects named by the other optional environment variables must already exist,
-and the scripts should run as their owner.
+.. list-table:: Sharing script configuration
+   :header-rows: 1
+   :widths: 48 52
 
-.. literalinclude:: ../../../samples/sharing.py
-   :language: python
-   :lines: 14-
+   * - Environment variable
+     - Default
+   * - ``SELECT_AI_PROFILE_NAME``
+     - ``oci_ai_profile`` (sync); ``async_oci_ai_profile`` (async)
+   * - ``SELECT_AI_VECTOR_INDEX_NAME``
+     - ``test_vector_index``
+   * - ``SELECT_AI_TEAM_NAME``
+     - ``MOVIE_AGENT_TEAM``
+   * - ``SELECT_AI_CREDENTIAL_NAME``
+     - ``my_oci_ai_profile_key``
+   * - ``SELECT_AI_OWNER``
+     - Current schema; if set, use the connected owner's schema.
 
-Representative synchronous output is:
+Run either script from the repository root:
 
-output::
+.. code-block:: bash
 
-    Profile: APP_OWNER.OCI_AI_PROFILE
-    Profiles: ['APP_OWNER.OCI_AI_PROFILE']
-    Granted profile access to: APP_USER
-    Revoked profile access from: APP_USER
-    Vector index: APP_OWNER.PRODUCT_DOCS
-    Vector indexes: ['APP_OWNER.PRODUCT_DOCS']
-    Granted vector index access to: APP_USER
-    Revoked vector index access from: APP_USER
-    Granted team access to: APP_USER
-    Revoked team access from: APP_USER
-    Granted credential access to: APP_USER
-    Revoked credential access from: APP_USER
+   export SELECT_AI_SHARE_GRANTEE=APP_USER
+   python samples/sharing.py
+   # Or run the async version:
+   python samples/async/sharing.py
 
-The asynchronous sample uses the corresponding async methods:
-
-.. literalinclude:: ../../../samples/async/sharing.py
-   :language: python
-   :lines: 14-
-
-Representative asynchronous output has the same form:
-
-output::
-
-    Profile: APP_OWNER.ASYNC_OCI_AI_PROFILE
-    Profiles: ['APP_OWNER.ASYNC_OCI_AI_PROFILE']
-    Granted profile access to: APP_USER
-    Revoked profile access from: APP_USER
-    Vector index: APP_OWNER.PRODUCT_DOCS
-    Vector indexes: ['APP_OWNER.PRODUCT_DOCS']
-    Granted vector index access to: APP_USER
-    Revoked vector index access from: APP_USER
-    Granted team access to: APP_USER
-    Revoked team access from: APP_USER
-    Granted credential access to: APP_USER
-    Revoked credential access from: APP_USER
+Each script prints the owner-qualified profile and vector-index names, then
+confirms each grant and revoke. The scripts revoke every grant they make;
+use the individual examples above to leave an object shared for application use.

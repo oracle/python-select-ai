@@ -59,6 +59,7 @@ def log_test_case(request, configure_module_logging):
 @pytest.fixture(scope="module")
 def provider(oci_compartment_id):
     return select_ai.OCIGenAIProvider(
+        embedding_model="cohere.embed-v4.0",
         region="us-phoenix-1",
         oci_apiformat="GENERIC",
         oci_compartment_id=oci_compartment_id,

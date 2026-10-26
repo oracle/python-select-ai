@@ -118,7 +118,8 @@ IAM still allows only authorized callers such as Gemini Enterprise to invoke
 the private service. Each A2A conversation gets a separate database session,
 but the server does not know or verify which human user owns that conversation.
 
-To require verified end-user ownership, add `--require-oauth`:
+To require an end-user bearer token and derive an owner scope, add
+`--require-oauth` after configuring upstream token validation:
 
 ```bash
 gcloud/standalone/deploy.sh \
@@ -128,7 +129,7 @@ gcloud/standalone/deploy.sh \
 ```
 
 In this mode every A2A request must include `Authorization: Bearer ...` and
-the session is scoped by both the authenticated owner and the conversation.
+the session is scoped by both the derived owner and the conversation.
 When registering the agent, configure Gemini Enterprise end-user OAuth rather
 than selecting **Skip & Finish**. Gemini Enterprise automatically sends its
 Cloud Run invocation identity in `X-Serverless-Authorization`; end-user OAuth
@@ -296,3 +297,10 @@ directories against `.gcloudignore` before running `--build` again.
 After a successful deployment, the script prints the A2A Agent Card JSON.
 Paste that JSON into Gemini Enterprise to register the private service. The
 required Gemini Enterprise invocation permission has already been added.
+
+The SDK does not validate bearer-token signatures, expiration, issuer, or
+audience. A trusted upstream service must validate the end-user token and
+prevent callers from bypassing validation to reach the A2A listener directly.
+`--require-oauth` alone does not verify identity. Cloud Run IAM validation of
+the calling service is separate from validation of the end-user token. See the
+[A2A authentication contract](../../doc/source/user_guide/a2a.rst) for details.

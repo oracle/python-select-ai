@@ -34,6 +34,9 @@ Options:
   --subnet NAME               VPC subnet for Cloud Run direct VPC egress (default: default)
   --worker-replicas COUNT     GKE worker replica count (default: 2)
   --session-ttl-seconds N    Dynamic session lifetime (default: 900)
+  --conversation-retention-days N
+                             Oracle conversation retention (default: 7; 0 keeps
+                             conversations until manually deleted)
   --enable-worker-mtls        Use ephemeral mTLS certificates for server-to-worker calls
   --rotate-worker-mtls        Replace the existing worker mTLS CA and certificates
   --mtls-cert-validity-days DAYS
@@ -59,6 +62,7 @@ network="default"
 subnet="default"
 worker_replicas="2"
 session_ttl_seconds="900"
+conversation_retention_days="7"
 enable_worker_mtls="false"
 rotate_worker_mtls="false"
 mtls_cert_validity_days="365"
@@ -82,6 +86,10 @@ while [[ $# -gt 0 ]]; do
     --worker-replicas) worker_replicas="${2:?--worker-replicas requires a value}"; shift 2 ;;
     --session-ttl-seconds)
       session_ttl_seconds="${2:?--session-ttl-seconds requires a value}"
+      shift 2
+      ;;
+    --conversation-retention-days)
+      conversation_retention_days="${2:?--conversation-retention-days requires a value}"
       shift 2
       ;;
     --enable-worker-mtls) enable_worker_mtls="true"; shift ;;
@@ -111,6 +119,10 @@ if ! [[ "$worker_replicas" =~ ^[1-9][0-9]*$ ]]; then
 fi
 if ! [[ "$session_ttl_seconds" =~ ^[1-9][0-9]*$ ]]; then
   echo "--session-ttl-seconds must be a positive integer." >&2
+  exit 2
+fi
+if ! [[ "$conversation_retention_days" =~ ^[0-9]+$ ]]; then
+  echo "--conversation-retention-days must be a non-negative integer." >&2
   exit 2
 fi
 if [[ -z "$gke_dns_domain" || "$gke_dns_domain" == *.local ]]; then
@@ -300,6 +312,7 @@ build_substitutions=(
   "_SUBNET=$subnet"
   "_WORKER_REPLICAS=$worker_replicas"
   "_SESSION_TTL_SECONDS=$session_ttl_seconds"
+  "_CONVERSATION_RETENTION_DAYS=$conversation_retention_days"
   "_ENABLE_WORKER_MTLS=$enable_worker_mtls"
   "_ROTATE_WORKER_MTLS=$rotate_worker_mtls"
   "_GKE_DNS_DOMAIN=$gke_dns_domain"

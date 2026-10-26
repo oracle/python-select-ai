@@ -103,6 +103,8 @@ output::
 
 The async API is ``select_ai.async_grant_network_access(...)``.
 
+.. latex:clearpage::
+
 .. literalinclude:: ../../../samples/async/grant_network_access.py
    :language: python
    :lines: 14-
@@ -127,6 +129,8 @@ output::
     Revoked network access from: <select_ai_db_user>
 
 The async API is ``select_ai.async_revoke_network_access(...)``.
+
+.. latex:clearpage::
 
 .. literalinclude:: ../../../samples/async/revoke_network_access.py
    :language: python

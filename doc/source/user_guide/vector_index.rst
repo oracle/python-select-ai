@@ -196,6 +196,35 @@ objects used to create embeddings reside in OCI Object Storage. The profile
 uses an OCI Generative AI provider with an embedding model, and the vector
 index is linked to that profile during ``create()``.
 
+Upload ``samples/data/refund-policy.txt`` from the repository to a bucket you
+can read. The document says customers have 30 calendar days to request a
+refund. Configure the sample with the URI of that uploaded file and the name
+of an existing database credential authorized to read it:
+
+.. code-block:: bash
+
+   export SELECT_AI_DOCUMENT_URI='https://objectstorage.REGION.oraclecloud.com/n/NAMESPACE/b/BUCKET/o/refund-policy.txt'
+   export SELECT_AI_OBJECT_STORAGE_CREDENTIAL='OBJECT_STORE_CRED'
+   export SELECT_AI_PROVIDER_CREDENTIAL='my_oci_ai_profile_key'
+
+Replace ``REGION``, ``NAMESPACE``, and ``BUCKET`` with your storage values.
+Use the common database connection variables from :ref:`Connection <conn>`.
+The provider credential and storage credential can be the same credential
+when it has both permissions. Optionally set ``SELECT_AI_OCI_REGION`` and
+``SELECT_AI_EMBEDDING_MODEL`` for your OCI configuration. The default region
+is ``us-chicago-1`` and embedding model is ``cohere.embed-v4.0``; choose a model
+available in your account and region.
+
+The creation samples replace ``test_vector_index`` and their named RAG
+profile. Use a development schema, or edit these names before running if you
+need to preserve existing definitions. The samples close their database
+connections but leave the profile and index available for the next step.
+
+From the repository root, run ``python samples/vector_index_create.py``.
+For async, use ``python samples/async/vector_index_create.py``. Both examples
+wait for the initial load to complete. Run either workflow in its own schema,
+or delete the existing sample index before switching between them.
+
 .. literalinclude:: ../../../samples/vector_index_create.py
    :language: python
    :lines: 14-
@@ -213,10 +242,8 @@ List vector index
    :language: python
    :lines: 15-
 
-output::
-
-    Vector index TEST_VECTOR_INDEX
-    Vector index profile Profile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=None)
+The script prints each matching index name and its linked profile. Results
+depend on the indexes visible to the connected user.
 
 .. latex:clearpage::
 
@@ -243,13 +270,12 @@ or update it without recreating the original Python object.
    :language: python
    :lines: 14-
 
-output::
-
-    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
-
-    Profile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_custom_source_uri=None, enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model='cohere.embed-english-v3.0', model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=MY OCI AI Profile)
+The script prints the saved index attributes, its linked profile, and the next
+refresh timestamp. The URI and credentials reflect your configuration; the
+next refresh can be ``None`` when no refresh execution has been recorded.
 
 .. latex:clearpage::
+
 
 Update vector index attributes
 ++++++++++++++++++++++++++++++
@@ -262,11 +288,11 @@ and ``set_attributes()`` when updating several values together.
    :language: python
    :lines: 14-
 
-output::
-
-    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
+The script sets ``refresh_rate`` to 1450 minutes and ``similarity_threshold``
+to 0.5, then prints the attributes held by the Python object.
 
 .. latex:clearpage::
+
 
 RAG using vector index
 ++++++++++++++++++++++
@@ -280,23 +306,22 @@ answer in the indexed content.
    :language: python
    :lines: 14-
 
+The answer should identify the **30 calendar day** refund window. Exact
+wording and source formatting depend on the provider and profile settings.
+For example:
+
 output::
 
-   The conda environments in your object store are:
-    1. fccenv
-    2. myrenv
-    3. fully-loaded-mlenv
-    4. graphenv
+    Customers can request a refund within 30 calendar days of purchase.
 
-    These environments are listed in the provided data as separate JSON documents, each containing information about a specific conda environment.
-
-    Sources:
-      - fccenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/fccenv-manifest.json)
-      - myrenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/myrenv-manifest.json)
-      - fully-loaded-mlenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/fully-loaded-mlenv-manifest.json)
-      - graphenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/graphenv-manifest.json)
+If no answer is grounded in the policy, verify that the uploaded URI and
+storage credential are correct, that the initial load completed, and that
+this profile is linked to ``test_vector_index``. Run the corresponding RAG
+script after creating the index. See `Delete vector index`_ to remove the
+sample index and its data; delete the sample profile separately when finished.
 
 .. latex:clearpage::
+
 
 Delete vector index
 +++++++++++++++++++
@@ -359,7 +384,7 @@ Async create vector index
 
 output::
 
-    created vector index: test_vector_index
+    Created vector index: test_vector_index
 
 
 .. latex:clearpage::
@@ -371,11 +396,8 @@ Async list vector index
    :language: python
    :lines: 15-
 
-output::
-
-    Vector index TEST_VECTOR_INDEX
-    Vector index profile AsyncProfile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model=None, model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=None)
-
+The script prints matching index names and their linked profiles. Results
+depend on your schema and configuration.
 
 .. latex:clearpage::
 
@@ -390,13 +412,11 @@ the class method ``AsyncVectorIndex.fetch(index_name)``
    :language: python
    :lines: 14-
 
-output::
-
-    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
-
-    AsyncProfile(profile_name=oci_vector_ai_profile, attributes=ProfileAttributes(annotations=None, case_sensitive_values=None, comments=None, constraints=None, conversation=None, credential_name='my_oci_ai_profile_key', enable_custom_source_uri=None, enable_sources=None, enable_source_offsets=None, enforce_object_list=None, max_tokens=1024, object_list=None, object_list_mode=None, provider=OCIGenAIProvider(embedding_model='cohere.embed-english-v3.0', model=None, provider_name='oci', provider_endpoint=None, region='us-chicago-1', oci_apiformat='GENERIC', oci_compartment_id=None, oci_endpoint_id=None, oci_runtimetype=None), seed=None, stop_tokens=None, streaming=None, temperature=None, vector_index_name='test_vector_index'), description=MY OCI AI Profile)
+The script prints the saved attributes and linked profile. Source URIs,
+credentials, and other values depend on the index you created.
 
 .. latex:clearpage::
+
 
 Async update vector index attributes
 ++++++++++++++++++++++++++++++++++++
@@ -408,11 +428,11 @@ To update attributes, use either ``async_vector_index.set_attribute()`` or
    :language: python
    :lines: 14-
 
-output::
-
-    OracleVectorIndexAttributes(chunk_size=1024, chunk_overlap=128, location='https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph', match_limit=5, object_storage_credential_name='my_oci_ai_profile_key', profile_name='oci_vector_ai_profile', refresh_rate=1450, similarity_threshold=0.5, vector_distance_metric='COSINE', vector_db_endpoint=None, vector_db_credential_name=None, vector_db_provider=<VectorDBProvider.ORACLE: 'oracle'>, vector_dimension=None, vector_table_name=None, pipeline_name='TEST_VECTOR_INDEX$VECPIPELINE')
+The script updates the refresh rate and similarity threshold, then prints
+the attributes held by the Python object.
 
 .. latex:clearpage::
+
 
 Async RAG using vector index
 ++++++++++++++++++++++++++++
@@ -421,18 +441,48 @@ Async RAG using vector index
    :language: python
    :lines: 15-
 
+The answer should identify the **30 calendar day** refund window. Exact
+wording and source formatting depend on the provider and profile settings.
+For example:
+
 output::
 
-    The conda environments in your object store are:
-    1. fccenv
-    2. myrenv
-    3. fully-loaded-mlenv
-    4. graphenv
+    Customers can request a refund within 30 calendar days of purchase.
 
-    These environments are listed in the provided data as separate JSON documents, each containing information about a specific conda environment.
+If no answer is grounded in the policy, verify that the uploaded URI and
+storage credential are correct, that the initial load completed, and that
+this profile is linked to ``test_vector_index``. Run the corresponding RAG
+script after creating the index. See `Delete vector index`_ to remove the
+sample index and its data; delete the sample profile separately when finished.
 
-    Sources:
-      - fccenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/fccenv-manifest.json)
-      - myrenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/myrenv-manifest.json)
-      - fully-loaded-mlenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/fully-loaded-mlenv-manifest.json)
-      - graphenv-manifest.json (https://objectstorage.us-ashburn-1.oraclecloud.com/n/dwcsdev/b/conda-environment/o/tenant1-pdb3/graph/graphenv-manifest.json)
+.. latex:clearpage::
+
+
+Share a vector index
+====================
+
+While connected as the index owner, grant access to an existing index:
+
+.. code-block:: python
+
+   index = select_ai.VectorIndex.fetch("PRODUCT_DOCS")
+   index.grant_access("APP_USER")
+
+In a separate connection as the recipient, use
+``VectorIndex.fetch("PRODUCT_DOCS", owner="APP_OWNER")``. It returns an object
+whose ``qualified_name`` is ``APP_OWNER.PRODUCT_DOCS``. When access should end,
+run ``index.revoke_access("APP_USER")`` as the owner.
+
+For an async application, use ``AsyncVectorIndex`` and await each operation:
+
+.. code-block:: python
+
+   # Run as the index owner.
+   index = await select_ai.AsyncVectorIndex.fetch("PRODUCT_DOCS")
+   await index.grant_access("APP_USER")
+
+   # Run later as the index owner, when access should end.
+   await index.revoke_access("APP_USER")
+
+See :ref:`Sharing and ownership <sharing>` for the recipient's async fetch
+example and connection setup.

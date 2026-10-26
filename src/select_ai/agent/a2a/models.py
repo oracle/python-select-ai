@@ -19,6 +19,7 @@ CONNECTION_FORM_FIELDS = (
 FORM_FIELD_TO_CONNECTION_FIELD = dict(
     zip(CONNECTION_FORM_FIELDS, CONNECTION_FIELDS)
 )
+DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS = 120
 
 
 @dataclass(frozen=True)
@@ -29,12 +30,20 @@ class ConnectionConfig:
     username: str | None = None
     password: str | None = None
     team_name: str | None = None
+    tls_ca_certificate_pem: str | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
         for name in CONNECTION_FIELDS:
             value = getattr(self, name)
             if value is not None and (not isinstance(value, str) or not value):
                 raise ValueError(f"{name} must be a non-empty string")
+        if self.tls_ca_certificate_pem is not None and (
+            not isinstance(self.tls_ca_certificate_pem, str)
+            or not self.tls_ca_certificate_pem.strip()
+        ):
+            raise ValueError(
+                "tls_ca_certificate_pem must be a non-empty string"
+            )
 
     @property
     def missing_fields(self) -> tuple[str, ...]:
@@ -66,7 +75,10 @@ class ConnectionConfig:
             or submitted.get(form_name)
             for form_name, connection_name in FORM_FIELD_TO_CONNECTION_FIELD.items()
         }
-        return SessionInfo.from_values(values)
+        return SessionInfo.from_values(
+            values,
+            tls_ca_certificate_pem=self.tls_ca_certificate_pem,
+        )
 
 
 @dataclass(frozen=True)
@@ -80,6 +92,8 @@ class WorkerSettings:
     session_ttl_seconds: int
     session_start_timeout_seconds: int
     worker_endpoint: str | None = None
+    conversation_retention_days: int = 7
+    database_call_timeout_seconds: int = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
 
     def __post_init__(self) -> None:
         if self.worker_port < 1 or self.worker_port > 65_535:
@@ -89,6 +103,14 @@ class WorkerSettings:
         if self.session_start_timeout_seconds < 1:
             raise ValueError(
                 "session_start_timeout_seconds must be at least 1"
+            )
+        if self.conversation_retention_days < 0:
+            raise ValueError(
+                "conversation_retention_days must be non-negative"
+            )
+        if self.database_call_timeout_seconds < 1:
+            raise ValueError(
+                "database_call_timeout_seconds must be at least 1"
             )
         object.__setattr__(self, "consul_url", self.consul_url.rstrip("/"))
         if self.worker_endpoint:
@@ -114,27 +136,38 @@ class GatewaySettings:
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
     require_oauth: bool = False
+    database_call_timeout_seconds: int = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:
             raise ValueError("session_ttl_seconds must be at least 1")
-        tls_files = (
-            self.worker_tls_ca_file,
-            self.worker_tls_cert_file,
-            self.worker_tls_key_file,
-        )
-        if any(tls_files) and not all(tls_files):
+        if self.database_call_timeout_seconds < 1:
             raise ValueError(
-                "worker mTLS requires a CA file, client certificate, and "
-                "client key."
+                "database_call_timeout_seconds must be at least 1"
+            )
+        if self.worker_tls_cert_file:
+            if self.worker_tls_key_file is None:
+                raise ValueError(
+                    "worker client certificate and key must be supplied "
+                    "together."
+                )
+        elif self.worker_tls_key_file:
+            raise ValueError(
+                "worker client certificate and key must be supplied together."
             )
         object.__setattr__(self, "public_url", self.public_url.rstrip("/"))
         object.__setattr__(self, "consul_url", self.consul_url.rstrip("/"))
 
     @property
-    def worker_mtls_enabled(self) -> bool:
-        """Whether gateway-to-worker calls require mutual TLS."""
-        return self.worker_tls_ca_file is not None
+    def worker_connection_tls_configured(self) -> bool:
+        """Whether gateway-to-worker calls have explicit TLS settings."""
+        return any(
+            (
+                self.worker_tls_ca_file,
+                self.worker_tls_cert_file,
+                self.worker_tls_key_file,
+            )
+        )
 
 
 @dataclass(frozen=True)
@@ -148,6 +181,7 @@ class StandaloneSessionSettings:
     connection: ConnectionConfig = field(default_factory=ConnectionConfig)
     connection_form_template: tuple[dict, ...] | None = None
     require_oauth: bool = False
+    database_call_timeout_seconds: int = DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS
 
     def __post_init__(self) -> None:
         if self.session_ttl_seconds < 1:
@@ -155,6 +189,10 @@ class StandaloneSessionSettings:
         if self.session_start_timeout_seconds < 1:
             raise ValueError(
                 "session_start_timeout_seconds must be at least 1"
+            )
+        if self.database_call_timeout_seconds < 1:
+            raise ValueError(
+                "database_call_timeout_seconds must be at least 1"
             )
         object.__setattr__(self, "public_url", self.public_url.rstrip("/"))
 
@@ -167,16 +205,34 @@ class SessionInfo:
     username: str
     password: str
     team_name: str
+    tls_ca_certificate_pem: str | None = field(default=None, repr=False)
+
+    def __post_init__(self) -> None:
+        if self.tls_ca_certificate_pem is not None and (
+            not isinstance(self.tls_ca_certificate_pem, str)
+            or not self.tls_ca_certificate_pem.strip()
+        ):
+            raise ValueError(
+                "tls_ca_certificate_pem must be a non-empty string"
+            )
 
     @classmethod
-    def from_values(cls, values: dict) -> "SessionInfo":
+    def from_values(
+        cls,
+        values: dict,
+        *,
+        tls_ca_certificate_pem: str | None = None,
+    ) -> "SessionInfo":
         """Build a complete connection after resolution."""
         if not all(
             isinstance(values.get(key), str) and values[key]
             for key in CONNECTION_FIELDS
         ):
             raise ValueError("All database connection fields are required.")
-        return cls(**{key: values[key] for key in CONNECTION_FIELDS})
+        return cls(
+            **{key: values[key] for key in CONNECTION_FIELDS},
+            tls_ca_certificate_pem=tls_ca_certificate_pem,
+        )
 
 
 @dataclass(frozen=True)

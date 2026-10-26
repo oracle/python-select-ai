@@ -10,6 +10,7 @@
 """
 import logging
 import uuid
+
 import oracledb
 import pytest
 import select_ai
@@ -79,6 +80,7 @@ async def profile(oci_credential, oci_compartment_id, test_env, async_cursor):
             credential_name=oci_credential["credential_name"],
             object_list=object_list,
             provider=select_ai.OCIGenAIProvider(
+                embedding_model="cohere.embed-v4.0",
                 oci_compartment_id=oci_compartment_id,
                 oci_apiformat="GENERIC",
             ),
@@ -96,6 +98,7 @@ async def active_async_cursor(async_cursor):
     _ACTIVE_ASYNC_CURSOR = async_cursor
     yield
     _ACTIVE_ASYNC_CURSOR = None
+
 
 ############################################### NEGATIVE FEEDBACK TESTS
 async def test_4101(profile, async_cursor):
@@ -433,6 +436,7 @@ async def test_4113(profile, async_cursor):
     logger.info("show_prompt response: %s", show_prompt)
     assert response in show_prompt
 
+
 async def test_4114(profile, async_cursor):
     """Add negative feedback for a non-existent SHOWSQL prompt."""
     prompt = "Adding negative feedback with non existent prompt"
@@ -539,7 +543,9 @@ async def test_4118(profile, async_cursor):
 async def test_4119(profile, async_cursor):
     """Add positive feedback using SHOWSQL sql_id only."""
     sql_id = SHOWSQL_SQL_ID
-    logger.info("Adding positive feedback without prompt_spec using sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback without prompt_spec using sql_id=%s", sql_id
+    )
     await profile.add_positive_feedback(sql_id=sql_id)
     await _log_feedback_vecindex_rows(profile)
     logger.info("Checking if show_prompt contains feedback metadata")
@@ -552,7 +558,9 @@ async def test_4119(profile, async_cursor):
 async def test_4120(profile, async_cursor):
     """Add positive feedback using RUNSQL sql_id only."""
     sql_id = RUNSQL_SQL_ID
-    logger.info("Adding positive feedback without prompt_spec using sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback without prompt_spec using sql_id=%s", sql_id
+    )
     await profile.add_positive_feedback(sql_id=sql_id)
     await _log_feedback_vecindex_rows(profile)
     logger.info("Checking if show_prompt contains feedback metadata")
@@ -565,7 +573,9 @@ async def test_4120(profile, async_cursor):
 async def test_4121(profile, async_cursor):
     """Add positive feedback using EXPLAINSQL sql_id only."""
     sql_id = EXPLAINSQL_SQL_ID
-    logger.info("Adding positive feedback without prompt_spec using sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback without prompt_spec using sql_id=%s", sql_id
+    )
     await profile.add_positive_feedback(sql_id=sql_id)
     await _log_feedback_vecindex_rows(profile)
     logger.info("Checking if show_prompt contains feedback metadata")
@@ -578,7 +588,9 @@ async def test_4121(profile, async_cursor):
 async def test_4122(profile, async_cursor):
     """Add positive feedback with prompt_spec=None and a valid sql_id."""
     sql_id = SHOWSQL_SQL_ID
-    logger.info("Adding positive feedback with prompt_spec=None sql_id=%s", sql_id)
+    logger.info(
+        "Adding positive feedback with prompt_spec=None sql_id=%s", sql_id
+    )
     await profile.add_positive_feedback(
         prompt_spec=None,
         sql_id=sql_id,
@@ -611,6 +623,7 @@ async def test_4123(profile, async_cursor):
     assert "sql_query" in show_prompt
     assert "user_prompt" in show_prompt
 
+
 async def test_4124(profile, async_cursor):
     """Attempt positive feedback for a non-existent SHOWSQL prompt."""
     prompt = "Adding positive feedback with non existent prompt"
@@ -624,6 +637,7 @@ async def test_4124(profile, async_cursor):
         await profile.add_positive_feedback(prompt_spec=(prompt, action))
     _assert_db_error(exc_info, 20000)
     logger.error("%s", str(exc_info.value).splitlines()[0])
+
 
 ############################################################## DELETE FEEDBACK TESTS
 async def test_4125(profile, async_cursor):
@@ -836,7 +850,9 @@ async def test_4132(profile, async_cursor):
         sql_id=sql_id,
     )
     await _log_feedback_vecindex_rows(profile)
-    logger.info("Deleting feedback with prompt_spec=None using sql_id=%s", sql_id)
+    logger.info(
+        "Deleting feedback with prompt_spec=None using sql_id=%s", sql_id
+    )
     await profile.delete_feedback(
         prompt_spec=None,
         sql_id=sql_id,

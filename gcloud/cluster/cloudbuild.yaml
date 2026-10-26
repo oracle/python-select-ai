@@ -131,6 +131,7 @@ steps:
         sed -e "s|WORKER_IMAGE|$image|" \
           -e "s|WORKER_REPLICAS|${_WORKER_REPLICAS}|" \
           -e "s|SESSION_TTL_SECONDS|${_SESSION_TTL_SECONDS}|" \
+          -e "s|CONVERSATION_RETENTION_DAYS|${_CONVERSATION_RETENTION_DAYS}|" \
           -e "s|GKE_DNS_DOMAIN|${_GKE_DNS_DOMAIN}|" \
           "$worker_manifest" > /workspace/worker.yaml
 
@@ -222,6 +223,7 @@ substitutions:
   _SUBNET: default
   _WORKER_REPLICAS: "2"
   _SESSION_TTL_SECONDS: "900"
+  _CONVERSATION_RETENTION_DAYS: "7"
   _ENABLE_WORKER_MTLS: "false"
   _ROTATE_WORKER_MTLS: "false"
   _GKE_DNS_DOMAIN: select-ai-a2a-cluster.internal

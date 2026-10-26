@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Generation modes &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Generation modes &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
 
-    <script src="../_static/documentation_options.js?v=9172181d"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -132,7 +132,7 @@
         <li class="right" >
           <a href="vector_index.html" title="1. Vector Index"
              accesskey="P">previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -140,7 +140,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Generation modes</a></li>
@@ -188,9 +188,9 @@ to the target tables; use dedicated test tables or schemas when experimenting.</
 <h1><span class="section-number">1. </span>Generation modes<a class="headerlink" href="#generation-modes" title="Link to this heading">¶</a></h1>
 <p>Use <code class="docutils literal notranslate"><span class="pre">object_name</span></code> for a single target table:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
-    <span class="n">object_name</span><span class="o">=</span><span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
+    <span class="n">object_name</span><span class="o">=</span><span class="s2">"MOVIE"</span><span class="p">,</span>
     <span class="n">record_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">&quot;the release date for the movies should be in 2019&quot;</span><span class="p">,</span>
+    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">"the release date for the movies should be in 2019"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -198,15 +198,15 @@ to the target tables; use dedicated test tables or schemas when experimenting.</
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
     <span class="n">object_list</span><span class="o">=</span><span class="p">[</span>
         <span class="p">{</span>
-            <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-            <span class="s2">&quot;user_prompt&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;the release date for the movies should be in 2019&quot;</span>
+            <span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MOVIE"</span><span class="p">,</span>
+            <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">"user_prompt"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"the release date for the movies should be in 2019"</span>
             <span class="p">),</span>
         <span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ACTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DIRECTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"ACTOR"</span><span class="p">,</span> <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"DIRECTOR"</span><span class="p">,</span> <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
     <span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
@@ -219,14 +219,14 @@ to the target tables; use dedicated test tables or schemas when experimenting.</
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataParams</span><span class="p">(</span>
     <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">priority</span><span class="o">=</span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span>
+    <span class="n">priority</span><span class="o">=</span><span class="s2">"HIGH"</span><span class="p">,</span>
     <span class="n">comments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
-    <span class="n">object_name</span><span class="o">=</span><span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
+    <span class="n">object_name</span><span class="o">=</span><span class="s2">"MOVIE"</span><span class="p">,</span>
     <span class="n">record_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">&quot;Generate movie data for releases in 2019.&quot;</span><span class="p">,</span>
+    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">"Generate movie data for releases in 2019."</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -234,21 +234,23 @@ to the target tables; use dedicated test tables or schemas when experimenting.</
 <p><code class="docutils literal notranslate"><span class="pre">sample_rows</span></code> controls how many existing rows are used as examples for the
 model. <code class="docutils literal notranslate"><span class="pre">table_statistics</span></code> and <code class="docutils literal notranslate"><span class="pre">comments</span></code> include additional table metadata.
 <code class="docutils literal notranslate"><span class="pre">priority</span></code> controls resource priority for generation work; supported values
-are <code class="docutils literal notranslate"><span class="pre">HIGH</span></code>, <code class="docutils literal notranslate"><span class="pre">MEDIUM</span></code>, and <code class="docutils literal notranslate"><span class="pre">LOW</span></code>.</p>
+are <code class="docutils literal notranslate"><span class="pre">HIGH</span></code>, <code class="docutils literal notranslate"><span class="pre">MEDIUM</span></code>, and <code class="docutils literal notranslate"><span class="pre">LOW</span></code>. All parameters are optional. Parameters
+that are not supplied are omitted from the request, allowing the database to
+apply its defaults.</p>
 </section>
 <section id="sync-and-async-apis">
 <h1><span class="section-number">3. </span>Sync and async APIs<a class="headerlink" href="#sync-and-async-apis" title="Link to this heading">¶</a></h1>
 <p>Use <code class="docutils literal notranslate"><span class="pre">Profile.generate_synthetic_data(...)</span></code> for synchronous applications and
 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">AsyncProfile.generate_synthetic_data(...)</span></code> for asynchronous
 applications:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
 <span class="n">profile</span><span class="o">.</span><span class="n">generate_synthetic_data</span><span class="p">(</span>
     <span class="n">synthetic_data_attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
-    <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+    <span class="n">profile_name</span><span class="o">=</span><span class="s2">"async_oci_ai_profile"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">await</span> <span class="n">async_profile</span><span class="o">.</span><span class="n">generate_synthetic_data</span><span class="p">(</span>
     <span class="n">synthetic_data_attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
@@ -261,7 +263,7 @@ applications:</p>
 <h2><span class="section-number">3.1. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataAttributes</span></code><a class="headerlink" href="#syntheticdataattributes" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.SyntheticDataAttributes">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">SyntheticDataAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.SyntheticDataParams" title="select_ai.synthetic_data.SyntheticDataParams"><span class="pre">SyntheticDataParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.SyntheticDataAttributes" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">SyntheticDataAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#select_ai.SyntheticDataParams" title="select_ai.synthetic_data.SyntheticDataParams"><span class="pre">SyntheticDataParams</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.SyntheticDataAttributes" title="Link to this definition">¶</a></dt>
 <dd><p>Attributes to control generation of synthetic data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -284,7 +286,7 @@ For e.g. “the release date for the movies should be in 2019”</p></li>
 <h2><span class="section-number">3.2. </span><code class="docutils literal notranslate"><span class="pre">SyntheticDataParams</span></code><a class="headerlink" href="#syntheticdataparams" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.SyntheticDataParams">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">SyntheticDataParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_statistics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HIGH'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.SyntheticDataParams" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">SyntheticDataParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_statistics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.SyntheticDataParams" title="Link to this definition">¶</a></dt>
 <dd><p>Optional parameters to control generation of synthetic data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -292,13 +294,14 @@ For e.g. “the release date for the movies should be in 2019”</p></li>
 <li><p><strong>sample_rows</strong> (<em>int</em>) – number of rows from the table to use as a sample
 to guide the LLM in data generation</p></li>
 <li><p><strong>table_statistics</strong> (<em>bool</em>) – Enable or disable the use of table
-statistics information. Default value is False</p></li>
+statistics information. When omitted, the database default is used.</p></li>
 <li><p><strong>priority</strong> (<em>str</em>) – Assign a priority value that defines the number of
 parallel requests sent to the LLM for generating synthetic data.
 Tasks with a higher priority will consume more database resources and
-complete faster. Possible values are: HIGH, MEDIUM, LOW</p></li>
+complete faster. Possible values are: HIGH, MEDIUM, LOW. When omitted,
+the database default is used.</p></li>
 <li><p><strong>comments</strong> (<em>bool</em>) – Enable or disable sending comments to the LLM to
-guide data generation. Default value is False</p></li>
+guide data generation. When omitted, the database default is used.</p></li>
 </ul>
 </dd>
 </dl>
@@ -314,18 +317,18 @@ guide data generation. Default value is False</p></li>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
-<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
 <span class="n">synthetic_data_params</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataParams</span><span class="p">(</span>
-    <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">&quot;HIGH&quot;</span>
+    <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">"HIGH"</span>
 <span class="p">)</span>
 <span class="n">synthetic_data_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
-    <span class="n">object_name</span><span class="o">=</span><span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
-    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">&quot;the release date for the movies should be in 2019&quot;</span><span class="p">,</span>
+    <span class="n">object_name</span><span class="o">=</span><span class="s2">"MOVIE"</span><span class="p">,</span>
+    <span class="n">user_prompt</span><span class="o">=</span><span class="s2">"the release date for the movies should be in 2019"</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="n">synthetic_data_params</span><span class="p">,</span>
     <span class="n">record_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
 <span class="p">)</span>
@@ -350,22 +353,22 @@ guide data generation. Default value is False</p></li>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
     <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
-        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">"async_oci_ai_profile"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">synthetic_data_params</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataParams</span><span class="p">(</span>
-        <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">&quot;HIGH&quot;</span>
+        <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">"HIGH"</span>
     <span class="p">)</span>
     <span class="n">synthetic_data_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
-        <span class="n">object_name</span><span class="o">=</span><span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
-        <span class="n">user_prompt</span><span class="o">=</span><span class="s2">&quot;the release date for the movies should be in 2019&quot;</span><span class="p">,</span>
+        <span class="n">object_name</span><span class="o">=</span><span class="s2">"MOVIE"</span><span class="p">,</span>
+        <span class="n">user_prompt</span><span class="o">=</span><span class="s2">"the release date for the movies should be in 2019"</span><span class="p">,</span>
         <span class="n">params</span><span class="o">=</span><span class="n">synthetic_data_params</span><span class="p">,</span>
         <span class="n">record_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="p">)</span>
@@ -396,24 +399,24 @@ guide data generation. Default value is False</p></li>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
-<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;oci_ai_profile&quot;</span><span class="p">)</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="n">profile_name</span><span class="o">=</span><span class="s2">"oci_ai_profile"</span><span class="p">)</span>
 <span class="n">synthetic_data_params</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataParams</span><span class="p">(</span>
-    <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">&quot;HIGH&quot;</span>
+    <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">"HIGH"</span>
 <span class="p">)</span>
 <span class="n">object_list</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
-        <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="s2">&quot;user_prompt&quot;</span><span class="p">:</span> <span class="s2">&quot;the release date for the movies should be in 2019&quot;</span><span class="p">,</span>
+        <span class="s2">"owner"</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MOVIE"</span><span class="p">,</span>
+        <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">"user_prompt"</span><span class="p">:</span> <span class="s2">"the release date for the movies should be in 2019"</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ACTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DIRECTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"ACTOR"</span><span class="p">,</span> <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"DIRECTOR"</span><span class="p">,</span> <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
 <span class="p">]</span>
 <span class="n">synthetic_data_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
     <span class="n">object_list</span><span class="o">=</span><span class="n">object_list</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">synthetic_data_params</span>
@@ -451,28 +454,28 @@ guide data generation. Default value is False</p></li>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
     <span class="n">async_profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">AsyncProfile</span><span class="p">(</span>
-        <span class="n">profile_name</span><span class="o">=</span><span class="s2">&quot;async_oci_ai_profile&quot;</span><span class="p">,</span>
+        <span class="n">profile_name</span><span class="o">=</span><span class="s2">"async_oci_ai_profile"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">synthetic_data_params</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataParams</span><span class="p">(</span>
-        <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">&quot;HIGH&quot;</span>
+        <span class="n">sample_rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">table_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="s2">"HIGH"</span>
     <span class="p">)</span>
     <span class="n">object_list</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">{</span>
-            <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MOVIE&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-            <span class="s2">&quot;user_prompt&quot;</span><span class="p">:</span> <span class="s2">&quot;the release date for the movies should be in 2019&quot;</span><span class="p">,</span>
+            <span class="s2">"owner"</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MOVIE"</span><span class="p">,</span>
+            <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">"user_prompt"</span><span class="p">:</span> <span class="s2">"the release date for the movies should be in 2019"</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ACTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DIRECTOR&quot;</span><span class="p">,</span> <span class="s2">&quot;record_count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"ACTOR"</span><span class="p">,</span> <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="n">user</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"DIRECTOR"</span><span class="p">,</span> <span class="s2">"record_count"</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
     <span class="p">]</span>
     <span class="n">synthetic_data_attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">SyntheticDataAttributes</span><span class="p">(</span>
         <span class="n">object_list</span><span class="o">=</span><span class="n">object_list</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">synthetic_data_params</span>
@@ -588,7 +591,7 @@ guide data generation. Default value is False</p></li>
         <li class="right" >
           <a href="vector_index.html" title="1. Vector Index"
              >previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -596,7 +599,7 @@ guide data generation. Default value is False</p></li>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Generation modes</a></li>
@@ -641,7 +644,7 @@ guide data generation. Default value is False</p></li>
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

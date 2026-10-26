@@ -359,7 +359,7 @@ class Tool(_BaseTool):
         :param str tool_name: The name of the tool
         :param select_ai.agent.ToolParams tool_params:
          Parameters required by built-in tool
-        :param select_ai.agent.ToolType tool_type: The built-in tool type
+        :param select_ai.agent.tool.ToolType tool_type: The built-in tool type
         :param str description: Description of the tool
         :param bool replace: Whether to replace the existing tool.
          Default value is False
@@ -854,7 +854,7 @@ class AsyncTool(_BaseTool):
         :param str tool_name: The name of the tool
         :param select_ai.agent.ToolParams tool_params:
          Parameters required by built-in tool
-        :param select_ai.agent.ToolType tool_type: The built-in tool type
+        :param select_ai.agent.tool.ToolType tool_type: The built-in tool type
         :param str description: Description of the tool
         :param bool replace: Whether to replace the existing tool.
          Default value is False

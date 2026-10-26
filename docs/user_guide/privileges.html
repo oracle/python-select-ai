@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. Grant privilege &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Grant privilege &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
 
-    <script src="../_static/documentation_options.js?v=9172181d"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -113,7 +113,7 @@
         <li class="right" >
           <a href="actions.html" title="1. Supported Actions"
              accesskey="P">previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -121,7 +121,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Grant privilege</a></li>
@@ -196,15 +196,15 @@ execute privileges required by Select AI. This grants execute access on
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
-<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
+<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
 
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">admin_user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">grant_privileges</span><span class="p">(</span><span class="n">users</span><span class="o">=</span><span class="n">select_ai_user</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Granted privileges to: &quot;</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Granted privileges to: "</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
@@ -220,15 +220,15 @@ execute privileges required by Select AI. This grants execute access on
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
-<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
+<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
 
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">admin_user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">revoke_privileges</span><span class="p">(</span><span class="n">users</span><span class="o">=</span><span class="n">select_ai_user</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Revoked privileges from: &quot;</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Revoked privileges from: "</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
@@ -254,20 +254,20 @@ were used for the grant.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
-<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
+<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">admin_user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">grant_network_access</span><span class="p">(</span>
     <span class="n">users</span><span class="o">=</span><span class="n">select_ai_user</span><span class="p">,</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
-    <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="s2">&quot;smtp&quot;</span><span class="p">],</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">"smtp.example.com"</span><span class="p">,</span>
+    <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">"connect"</span><span class="p">,</span> <span class="s2">"smtp"</span><span class="p">],</span>
     <span class="n">lower_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
     <span class="n">upper_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Granted network access to: &quot;</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Granted network access to: "</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
@@ -280,22 +280,22 @@ were used for the grant.</p>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
-<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
+<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">admin_user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_grant_network_access</span><span class="p">(</span>
         <span class="n">users</span><span class="o">=</span><span class="n">select_ai_user</span><span class="p">,</span>
-        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
-        <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="s2">&quot;smtp&quot;</span><span class="p">],</span>
+        <span class="n">host</span><span class="o">=</span><span class="s2">"smtp.example.com"</span><span class="p">,</span>
+        <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">"connect"</span><span class="p">,</span> <span class="s2">"smtp"</span><span class="p">],</span>
         <span class="n">lower_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
         <span class="n">upper_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Granted network access to: &quot;</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Granted network access to: "</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
 
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
@@ -312,20 +312,20 @@ use the same host, privileges, and port range that were used to grant access.</p
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
-<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
+<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
 
 <span class="n">select_ai</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">admin_user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
 <span class="n">select_ai</span><span class="o">.</span><span class="n">revoke_network_access</span><span class="p">(</span>
     <span class="n">users</span><span class="o">=</span><span class="n">select_ai_user</span><span class="p">,</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
-    <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="s2">&quot;smtp&quot;</span><span class="p">],</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">"smtp.example.com"</span><span class="p">,</span>
+    <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">"connect"</span><span class="p">,</span> <span class="s2">"smtp"</span><span class="p">],</span>
     <span class="n">lower_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
     <span class="n">upper_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Revoked network access from: &quot;</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Revoked network access from: "</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>output:</p>
@@ -338,22 +338,22 @@ use the same host, privileges, and port range that were used to grant access.</p
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">select_ai</span>
 
-<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_USER&quot;</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_ADMIN_PASSWORD&quot;</span><span class="p">)</span>
-<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_DB_CONNECT_STRING&quot;</span><span class="p">)</span>
-<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELECT_AI_USER&quot;</span><span class="p">)</span>
+<span class="n">admin_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_USER"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_ADMIN_PASSWORD"</span><span class="p">)</span>
+<span class="n">dsn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_DB_CONNECT_STRING"</span><span class="p">)</span>
+<span class="n">select_ai_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"SELECT_AI_USER"</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">admin_user</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">dsn</span><span class="o">=</span><span class="n">dsn</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">async_revoke_network_access</span><span class="p">(</span>
         <span class="n">users</span><span class="o">=</span><span class="n">select_ai_user</span><span class="p">,</span>
-        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
-        <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="s2">&quot;smtp&quot;</span><span class="p">],</span>
+        <span class="n">host</span><span class="o">=</span><span class="s2">"smtp.example.com"</span><span class="p">,</span>
+        <span class="n">privileges</span><span class="o">=</span><span class="p">[</span><span class="s2">"connect"</span><span class="p">,</span> <span class="s2">"smtp"</span><span class="p">],</span>
         <span class="n">lower_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
         <span class="n">upper_port</span><span class="o">=</span><span class="mi">587</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Revoked network access from: &quot;</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Revoked network access from: "</span><span class="p">,</span> <span class="n">select_ai_user</span><span class="p">)</span>
 
 
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
@@ -421,7 +421,7 @@ use the same host, privileges, and port range that were used to grant access.</p
         <li class="right" >
           <a href="actions.html" title="1. Supported Actions"
              >previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -429,7 +429,7 @@ use the same host, privileges, and port range that were used to grant access.</p
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Grant privilege</a></li>
@@ -474,7 +474,7 @@ use the same host, privileges, and port range that were used to grant access.</p
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

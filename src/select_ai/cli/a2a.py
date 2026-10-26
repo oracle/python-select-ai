@@ -6,27 +6,68 @@
 # -----------------------------------------------------------------------------
 
 import json
+import logging
 import os
 import socket
 import ssl
 
 import click
 
+from select_ai.agent.a2a.models import (
+    DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+)
 from select_ai.cli.common import connection_options
 from select_ai.version import __version__
 
-try:
-    import uvicorn
 
-    from select_ai.agent.a2a.server import create_app
-except ImportError:
-    create_app = None
-    uvicorn = None
+def _require_a2a_support():
+    """Load optional A2A server dependencies when an A2A runtime is used."""
+    try:
+        import uvicorn
+
+        from select_ai.agent.a2a.server import create_app
+    except ImportError as error:
+        raise click.ClickException(
+            "A2A dependencies are missing. Install them with: "
+            "pip install 'select_ai[a2a]'"
+        ) from error
+    return uvicorn, create_app
 
 
-@click.group()
-def a2a():
+def _uvicorn_tls_options(cert_file, key_file, ca_file):
+    """Build Uvicorn TLS settings; a CA enables client certificate checks."""
+    if cert_file and key_file:
+        options = {
+            "ssl_certfile": cert_file,
+            "ssl_keyfile": key_file,
+        }
+        if ca_file:
+            options.update(
+                {
+                    "ssl_ca_certs": ca_file,
+                    "ssl_cert_reqs": ssl.CERT_REQUIRED,
+                }
+            )
+        return options
+
+    if cert_file or key_file:
+        raise click.ClickException(
+            "--tls-cert-file and --tls-key-file must be supplied together."
+        )
+    if ca_file:
+        raise click.ClickException(
+            "--tls-ca-file requires --tls-cert-file and --tls-key-file."
+        )
+    return {}
+
+
+@click.group(invoke_without_command=True)
+@click.pass_context
+def a2a(context):
     """Serve Select AI database agent teams through A2A."""
+    if context.invoked_subcommand is None:
+        _require_a2a_support()
+        click.echo(context.get_help())
 
 
 @a2a.command()
@@ -50,6 +91,21 @@ def a2a():
     show_default=True,
     envvar="PORT",
     type=click.IntRange(min=1, max=65_535),
+)
+@click.option(
+    "--tls-cert-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="A2A server TLS certificate. Requires --tls-key-file.",
+)
+@click.option(
+    "--tls-key-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="A2A server TLS private key. Requires --tls-cert-file.",
+)
+@click.option(
+    "--tls-ca-file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="CA used to require and validate client certificates (mTLS).",
 )
 @click.option(
     "--public-url",
@@ -86,10 +142,19 @@ def a2a():
     envvar="SESSION_TTL_SECONDS",
 )
 @click.option(
+    "--database-call-timeout-seconds",
+    default=DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+    show_default=True,
+    type=click.IntRange(min=1),
+    help=(
+        "Oracle call timeout; clustered gateway deadline uses the same value."
+    ),
+)
+@click.option(
     "--worker-tls-ca-file",
     envvar="WORKER_TLS_CA_FILE",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="CA bundle used to validate clustered workers.",
+    help="CA bundle for worker certificates; omit to use system trust.",
 )
 @click.option(
     "--worker-tls-cert-file",
@@ -102,6 +167,12 @@ def a2a():
     envvar="WORKER_TLS_KEY_FILE",
     type=click.Path(exists=True, dir_okay=False, readable=True),
     help="Client private key presented to clustered workers.",
+)
+@click.option(
+    "--database-tls-ca-file",
+    envvar="SELECT_AI_DATABASE_TLS_CA_FILE",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="PEM CA certificate file used to validate the Oracle Database server.",
 )
 @click.option(
     "--a2ui-form",
@@ -123,15 +194,20 @@ def serve(
     team_name,
     host,
     port,
+    tls_cert_file,
+    tls_key_file,
+    tls_ca_file,
     public_url,
     description,
     pool_max_size,
     consul_url,
     worker_service,
     session_ttl_seconds,
+    database_call_timeout_seconds,
     worker_tls_ca_file,
     worker_tls_cert_file,
     worker_tls_key_file,
+    database_tls_ca_file,
     a2ui_form,
     require_oauth,
     user,
@@ -141,14 +217,16 @@ def serve(
     wallet_password,
 ):
     """Start the public A2A server in standalone or clustered mode."""
-    if uvicorn is None:
-        raise click.ClickException(
-            "A2A server support requires the optional 'cli' extra. "
-            "Install it with: pip install 'select_ai[cli]'"
-        )
+    uvicorn, create_app = _require_a2a_support()
+    uvicorn_options = _uvicorn_tls_options(
+        tls_cert_file,
+        tls_key_file,
+        tls_ca_file,
+    )
 
     if public_url is None:
-        public_url = f"http://{host}:{port}"
+        scheme = "https" if tls_cert_file else "http"
+        public_url = f"{scheme}://{host}:{port}"
 
     try:
         from select_ai.agent.a2a import (
@@ -165,11 +243,23 @@ def serve(
             "Install it with: pip install 'select_ai[a2a]'"
         ) from error
 
+    tls_ca_certificate_pem = None
+    if database_tls_ca_file:
+        try:
+            with open(database_tls_ca_file, encoding="utf-8") as ca_file:
+                tls_ca_certificate_pem = ca_file.read()
+        except (OSError, UnicodeError) as error:
+            raise click.ClickException(
+                "Could not read database CA certificate file: "
+                f"{database_tls_ca_file}"
+            ) from error
+
     connection = ConnectionConfig(
         dsn=dsn,
         username=user,
         password=password,
         team_name=team_name,
+        tls_ca_certificate_pem=tls_ca_certificate_pem,
     )
     form_template = None
     if a2ui_form:
@@ -198,6 +288,8 @@ def serve(
             description=description,
             pool_max_size=pool_max_size,
             require_oauth=require_oauth,
+            tls_ca_certificate_pem=tls_ca_certificate_pem,
+            database_call_timeout_seconds=database_call_timeout_seconds,
         )
     elif deployment == "standalone":
         if os.environ.get("WEB_CONCURRENCY", "1") != "1":
@@ -208,6 +300,7 @@ def serve(
             public_url=public_url,
             session_ttl_seconds=session_ttl_seconds,
             description=description,
+            database_call_timeout_seconds=database_call_timeout_seconds,
             connection=connection,
             connection_form_template=form_template,
             require_oauth=require_oauth,
@@ -219,6 +312,7 @@ def serve(
             consul_url=consul_url,
             worker_service=worker_service,
             session_ttl_seconds=session_ttl_seconds,
+            database_call_timeout_seconds=database_call_timeout_seconds,
             worker_tls_ca_file=worker_tls_ca_file,
             worker_tls_cert_file=worker_tls_cert_file,
             worker_tls_key_file=worker_tls_key_file,
@@ -232,7 +326,7 @@ def serve(
     click.echo(
         f"A2A Agent Card: {public_url.rstrip('/')}/.well-known/agent-card.json"
     )
-    uvicorn.run(app, host=host, port=port)
+    uvicorn.run(app, host=host, port=port, **uvicorn_options)
 
 
 @a2a.command("worker")
@@ -269,25 +363,53 @@ def serve(
     type=click.IntRange(min=1),
 )
 @click.option(
+    "--conversation-retention-days",
+    default=7,
+    show_default=True,
+    type=click.IntRange(min=0),
+    envvar="CONVERSATION_RETENTION_DAYS",
+    help=(
+        "Days to retain Oracle conversations. Use 0 to keep them until "
+        "manually deleted."
+    ),
+)
+@click.option(
     "--session-start-timeout-seconds",
     default=30,
     show_default=True,
     type=click.IntRange(min=1),
 )
 @click.option(
+    "--database-call-timeout-seconds",
+    default=DEFAULT_DATABASE_CALL_TIMEOUT_SECONDS,
+    show_default=True,
+    type=click.IntRange(min=1),
+    help="Maximum duration of an individual Oracle Database call.",
+)
+@click.option(
+    "--log-level",
+    type=click.Choice(
+        ("critical", "error", "warning", "info", "debug"),
+        case_sensitive=False,
+    ),
+    default="info",
+    show_default=True,
+    help="Logging level for Select AI worker and Uvicorn logs.",
+)
+@click.option(
     "--tls-cert-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="Worker TLS server certificate. Requires all --tls-* options.",
+    help="Worker TLS server certificate. Requires --tls-key-file.",
 )
 @click.option(
     "--tls-key-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="Worker TLS server private key. Requires all --tls-* options.",
+    help="Worker TLS server private key. Requires --tls-cert-file.",
 )
 @click.option(
     "--tls-ca-file",
     type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="CA used to validate the gateway client certificate.",
+    help="Optional CA used to require and validate client certificates (mTLS).",
 )
 def worker(
     host,
@@ -296,12 +418,16 @@ def worker(
     consul_url,
     worker_endpoint,
     session_ttl_seconds,
+    conversation_retention_days,
     session_start_timeout_seconds,
+    database_call_timeout_seconds,
+    log_level,
     tls_cert_file,
     tls_key_file,
     tls_ca_file,
 ):
     """Start the internal Select AI session worker."""
+    uvicorn, _ = _require_a2a_support()
     try:
         from select_ai.agent.a2a import WorkerSettings, create_worker_app
     except ImportError as error:
@@ -310,6 +436,12 @@ def worker(
             "Install it with: pip install 'select_ai[a2a]'"
         ) from error
 
+    uvicorn_options = _uvicorn_tls_options(
+        tls_cert_file,
+        tls_key_file,
+        tls_ca_file,
+    )
+
     settings = WorkerSettings(
         consul_url=consul_url,
         worker_id=worker_id,
@@ -317,24 +449,23 @@ def worker(
         worker_port=port,
         session_ttl_seconds=session_ttl_seconds,
         session_start_timeout_seconds=session_start_timeout_seconds,
+        database_call_timeout_seconds=database_call_timeout_seconds,
+        conversation_retention_days=conversation_retention_days,
         worker_endpoint=worker_endpoint,
     )
     app = create_worker_app(settings)
-    tls_files = (tls_cert_file, tls_key_file, tls_ca_file)
-    if any(tls_files) and not all(tls_files):
-        raise click.ClickException(
-            "Worker mTLS requires --tls-cert-file, --tls-key-file, and "
-            "--tls-ca-file."
-        )
-    uvicorn_options = {}
-    if tls_cert_file:
-        uvicorn_options = {
-            "ssl_certfile": tls_cert_file,
-            "ssl_keyfile": tls_key_file,
-            "ssl_ca_certs": tls_ca_file,
-            "ssl_cert_reqs": ssl.CERT_REQUIRED,
-        }
-    uvicorn.run(app, host=host, port=port, **uvicorn_options)
+    logging.basicConfig(level=logging.INFO, force=True)
+    logging.getLogger("select_ai").setLevel(log_level.upper())
+
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
+    uvicorn.run(
+        app,
+        host=host,
+        port=port,
+        log_level=log_level.lower(),
+        **uvicorn_options,
+    )
 
 
 @a2a.command("agent-card")

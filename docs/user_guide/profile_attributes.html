@@ -5,21 +5,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1. ProfileAttributes &#8212; Select AI for Python 1.4.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. ProfileAttributes &#8212; Select AI for Python 1.5.0 documentation</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=0fc419ee" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=67a6116b" />
-    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=4365c8fe" />
-    <link id="pygments_dark_css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css" href="../_static/pygments_dark.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pydoctheme.css?v=48df1187" />
 
-    <script src="../_static/documentation_options.js?v=9172181d"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=e0a75244"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Profile lifecycle" href="profile.html" />
-    <link rel="prev" title="1. Create credential" href="credential.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
+    <link rel="prev" title="1. Sharing and ownership" href="sharing.html" /><link rel="stylesheet" href="../_static/pydoctheme_dark.css" media="(prefers-color-scheme: dark)" id="pydoctheme_dark_css">
     <link rel="shortcut icon" type="image/png" href="../_static/py.svg">
             <script type="text/javascript" src="../_static/copybutton.js"></script>
             <script type="text/javascript" src="../_static/menu.js"></script>
@@ -67,8 +67,39 @@
 <li><a class="reference internal" href="#common-required-attributes">1.1. Common required attributes</a></li>
 <li><a class="reference internal" href="#attribute-groups">1.2. Attribute groups</a></li>
 <li><a class="reference internal" href="#object-list-examples">1.3. Object list examples</a></li>
-<li><a class="reference internal" href="#generation-controls">1.4. Generation controls</a><ul>
-<li><a class="reference internal" href="#select_ai.ProfileAttributes"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></li>
+<li><a class="reference internal" href="#generation-controls">1.4. Generation controls</a></li>
+<li><a class="reference internal" href="#additional-instructions">1.5. Additional instructions</a><ul>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.additional_instructions"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.additional_instructions</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.annotations"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.annotations</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.async_create"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.async_create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.case_sensitive_values"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.case_sensitive_values</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.comments"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.comments</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.constraints"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.constraints</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.conversation"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.conversation</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.create"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.credential_name"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.credential_name</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.dict"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.dict()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enable_custom_source_uri"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enable_custom_source_uri</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enable_source_offsets"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enable_source_offsets</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enable_sources"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enable_sources</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enforce_object_list"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enforce_object_list</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.json"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.json()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.keys"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.keys()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.max_tokens"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.max_tokens</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.object_list"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.object_list</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.object_list_mode"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.object_list_mode</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.provider"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.provider</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.seed"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.seed</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.set_attribute"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.source_language"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.source_language</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.stop_tokens"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.stop_tokens</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.streaming"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.streaming</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.target_language"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.target_language</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.temperature"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.temperature</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.vector_index_name"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.vector_index_name</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -78,8 +109,8 @@
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="credential.html"
-                          title="previous chapter"><span class="section-number">1. </span>Create credential</a></p>
+    <p class="topless"><a href="sharing.html"
+                          title="previous chapter"><span class="section-number">1. </span>Sharing and ownership</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -114,12 +145,15 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="profile.html" title="1. Profile lifecycle"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="credential.html" title="1. Create credential"
+          <a href="sharing.html" title="1. Sharing and ownership"
              accesskey="P">previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -127,7 +161,7 @@
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></li>
@@ -184,13 +218,13 @@ generating SQL from natural language prompts.</p></li>
 <p>For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
     <span class="n">provider</span><span class="o">=</span><span class="n">select_ai</span><span class="o">.</span><span class="n">OCIGenAIProvider</span><span class="p">(</span>
-        <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-chicago-1&quot;</span><span class="p">,</span>
-        <span class="n">oci_apiformat</span><span class="o">=</span><span class="s2">&quot;GENERIC&quot;</span><span class="p">,</span>
+        <span class="n">region</span><span class="o">=</span><span class="s2">"us-chicago-1"</span><span class="p">,</span>
+        <span class="n">oci_apiformat</span><span class="o">=</span><span class="s2">"GENERIC"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="s2">"my_oci_ai_profile_key"</span><span class="p">,</span>
     <span class="n">object_list</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;CUSTOMERS&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SALES&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"CUSTOMERS"</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"SALES"</span><span class="p">},</span>
     <span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
@@ -241,6 +275,17 @@ sent to the model.</p></td>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">conversation</span></code></p></td>
 <td><p>Enables conversation history for context-aware chat workflows.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">additional_instructions</span></code></p></td>
+<td><p>Provides persistent guidance, business rules, or response constraints
+for requests that use the profile.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">source_language</span></code>, <code class="docutils literal notranslate"><span class="pre">target_language</span></code></p></td>
+<td><p>Set default languages for <code class="docutils literal notranslate"><span class="pre">Profile.translate()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">AsyncProfile.translate()</span></code>. Per-call values override these defaults.
+If no source language is configured or supplied per call, the provider
+detects it. A target language must be supplied either per call or in the
+profile.</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vector_index_name</span></code>, <code class="docutils literal notranslate"><span class="pre">enable_sources</span></code>,
 <code class="docutils literal notranslate"><span class="pre">enable_source_offsets</span></code>, <code class="docutils literal notranslate"><span class="pre">enable_custom_source_uri</span></code></p></td>
 <td><p>Configures retrieval-augmented generation and source reporting for
@@ -251,25 +296,27 @@ vector index workflows.</p></td>
 </section>
 <section id="object-list-examples">
 <h2><span class="section-number">1.3. </span>Object list examples<a class="headerlink" href="#object-list-examples" title="Link to this heading">¶</a></h2>
-<p>Grant access to every supported object in a schema:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">object_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">}]</span>
+<p>Include supported objects from a schema in the profile’s metadata scope:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">object_list</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">}]</span>
 </pre></div>
 </div>
-<p>Grant access to selected tables:</p>
+<p>Include selected tables:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">object_list</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;CUSTOMERS&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SALES&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;PRODUCTS&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"CUSTOMERS"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"SALES"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"PRODUCTS"</span><span class="p">},</span>
 <span class="p">]</span>
 </pre></div>
 </div>
+<p>The object list does not grant database privileges. The connected user must
+already have the privileges needed to access the underlying objects.</p>
 <p>Restrict generated SQL to the selected objects:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
     <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
-    <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="s2">"my_oci_ai_profile_key"</span><span class="p">,</span>
     <span class="n">object_list</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;CUSTOMERS&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SALES&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"CUSTOMERS"</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"SALES"</span><span class="p">},</span>
     <span class="p">],</span>
     <span class="n">enforce_object_list</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
@@ -282,52 +329,216 @@ vector index workflows.</p></td>
 responses:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
     <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
-    <span class="n">credential_name</span><span class="o">=</span><span class="s2">&quot;my_oci_ai_profile_key&quot;</span><span class="p">,</span>
-    <span class="n">object_list</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;SH&quot;</span><span class="p">}],</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="s2">"my_oci_ai_profile_key"</span><span class="p">,</span>
+    <span class="n">object_list</span><span class="o">=</span><span class="p">[{</span><span class="s2">"owner"</span><span class="p">:</span> <span class="s2">"SH"</span><span class="p">}],</span>
     <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
     <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">stop_tokens</span><span class="o">=</span><span class="s1">&#39;[&quot;;&quot;]&#39;</span><span class="p">,</span>
+    <span class="n">stop_tokens</span><span class="o">=</span><span class="s1">'[";"]'</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="additional-instructions">
+<h2><span class="section-number">1.5. </span>Additional instructions<a class="headerlink" href="#additional-instructions" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">additional_instructions</span></code> for guidance that should apply to every
+request made with a profile:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">attributes</span> <span class="o">=</span> <span class="n">select_ai</span><span class="o">.</span><span class="n">ProfileAttributes</span><span class="p">(</span>
+    <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
+    <span class="n">credential_name</span><span class="o">=</span><span class="s2">"my_oci_ai_profile_key"</span><span class="p">,</span>
+    <span class="n">additional_instructions</span><span class="o">=</span><span class="s2">"Return concise, executable Python code."</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For guidance that applies to only one request, pass an <code class="docutils literal notranslate"><span class="pre">attributes</span></code> mapping
+to an action method instead of changing the saved profile.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="select_ai.ProfileAttributes">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">ProfileAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_sensitive_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conversation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_custom_source_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_sources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_source_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_list_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="provider.html#select_ai.Provider" title="select_ai.provider.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streaming</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_index_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">select_ai.</span></span><span class="sig-name descname"><span class="pre">ProfileAttributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">additional_instructions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_sensitive_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conversation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credential_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_custom_source_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_sources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_source_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.15)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_list_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="provider.html#select_ai.Provider" title="select_ai.provider.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streaming</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_index_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes" title="Link to this definition">¶</a></dt>
 <dd><p>Use this class to define attributes to manage and configure the behavior of
 an AI profile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>comments</strong> (<em>bool</em>) – True to include column comments in the metadata used
+<li><p><strong>comments</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>) – True to include column comments in the metadata used
 for generating SQL queries from natural language prompts.</p></li>
-<li><p><strong>constraints</strong> (<em>bool</em>) – True to include referential integrity constraints
+<li><p><strong>constraints</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>) – True to include referential integrity constraints
 such as primary and foreign keys in the metadata sent to the LLM.</p></li>
-<li><p><strong>conversation</strong> (<em>bool</em>) – Indicates if conversation history is enabled for
+<li><p><strong>conversation</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>) – Indicates if conversation history is enabled for
 a profile.</p></li>
-<li><p><strong>credential_name</strong> (<em>str</em>) – The name of the credential to access the AI
+<li><p><strong>credential_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – The name of the credential to access the AI
 provider APIs.</p></li>
-<li><p><strong>enforce_object_list</strong> (<em>bool</em>) – Specifies whether to restrict the LLM
+<li><p><strong>enforce_object_list</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>) – Specifies whether to restrict the LLM
 to generate SQL that uses only tables covered by the object list.</p></li>
-<li><p><strong>max_tokens</strong> (<em>int</em>) – Denotes the number of tokens to return per
+<li><p><strong>additional_instructions</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Persistent guidance that Select AI
+applies to requests that use the profile.</p></li>
+<li><p><strong>max_tokens</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – Denotes the number of tokens to return per
 generation. Default is 1024.</p></li>
 <li><p><strong>object_list</strong> (<em>List</em><em>[</em><em>Mapping</em><em>]</em>) – Array of JSON objects specifying
 the owner and object names that are eligible for natural language
 translation to SQL.</p></li>
-<li><p><strong>object_list_mode</strong> (<em>str</em>) – Specifies whether to send metadata for the
+<li><p><strong>object_list_mode</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Specifies whether to send metadata for the
 most relevant tables or all tables to the LLM. Supported values are -
 ‘automated’ and ‘all’</p></li>
 <li><p><strong>provider</strong> (<a class="reference internal" href="provider.html#select_ai.Provider" title="select_ai.Provider"><em>select_ai.Provider</em></a>) – AI Provider</p></li>
-<li><p><strong>stop_tokens</strong> (<em>str</em>) – The generated text will be terminated at the
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – Signed 64-bit integer used to make model output more
+reproducible when the provider supports it.</p></li>
+<li><p><strong>source_language</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Default language of text passed to the
+translate operation. If omitted, the translation provider can detect the
+source language.</p></li>
+<li><p><strong>stop_tokens</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – The generated text will be terminated at the
 beginning of the earliest stop sequence. Sequence will be incorporated
 into the text. The attribute value must be a valid array of string values
 in JSON format</p></li>
-<li><p><strong>temperature</strong> (<em>float</em>) – Temperature is a non-negative float number used
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – Temperature is a non-negative float number used
 to tune the degree of randomness. Lower temperatures mean less random
 generations.</p></li>
-<li><p><strong>vector_index_name</strong> (<em>str</em>) – Name of the vector index</p></li>
+<li><p><strong>target_language</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Default language into which text is translated.
+This is required by the database when no target language is supplied to
+the translate operation.</p></li>
+<li><p><strong>vector_index_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Name of the vector index</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.additional_instructions">
+<span class="sig-name descname"><span class="pre">additional_instructions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.additional_instructions" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.annotations">
+<span class="sig-name descname"><span class="pre">annotations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.annotations" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.async_create">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">async_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes.async_create" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.case_sensitive_values">
+<span class="sig-name descname"><span class="pre">case_sensitive_values</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.case_sensitive_values" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.comments">
+<span class="sig-name descname"><span class="pre">comments</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.comments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.constraints">
+<span class="sig-name descname"><span class="pre">constraints</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.constraints" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.conversation">
+<span class="sig-name descname"><span class="pre">conversation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.conversation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.create">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes.create" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.credential_name">
+<span class="sig-name descname"><span class="pre">credential_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.credential_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.dict">
+<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude_null</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes.dict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.enable_custom_source_uri">
+<span class="sig-name descname"><span class="pre">enable_custom_source_uri</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.enable_custom_source_uri" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.enable_source_offsets">
+<span class="sig-name descname"><span class="pre">enable_source_offsets</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.enable_source_offsets" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.enable_sources">
+<span class="sig-name descname"><span class="pre">enable_sources</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.enable_sources" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.enforce_object_list">
+<span class="sig-name descname"><span class="pre">enforce_object_list</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.enforce_object_list" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.json">
+<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude_null</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes.json" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.keys">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes.keys" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.max_tokens">
+<span class="sig-name descname"><span class="pre">max_tokens</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1024</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.max_tokens" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.object_list">
+<span class="sig-name descname"><span class="pre">object_list</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.15)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.object_list" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.object_list_mode">
+<span class="sig-name descname"><span class="pre">object_list_mode</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.object_list_mode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.provider">
+<span class="sig-name descname"><span class="pre">provider</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="provider.html#select_ai.Provider" title="select_ai.provider.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.provider" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.seed" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#select_ai.ProfileAttributes.set_attribute" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.source_language">
+<span class="sig-name descname"><span class="pre">source_language</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.source_language" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.stop_tokens">
+<span class="sig-name descname"><span class="pre">stop_tokens</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.stop_tokens" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.streaming">
+<span class="sig-name descname"><span class="pre">streaming</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.streaming" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.target_language">
+<span class="sig-name descname"><span class="pre">target_language</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.target_language" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.temperature" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="select_ai.ProfileAttributes.vector_index_name">
+<span class="sig-name descname"><span class="pre">vector_index_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#select_ai.ProfileAttributes.vector_index_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -347,8 +558,39 @@ generations.</p></li>
 <li><a class="reference internal" href="#common-required-attributes">1.1. Common required attributes</a></li>
 <li><a class="reference internal" href="#attribute-groups">1.2. Attribute groups</a></li>
 <li><a class="reference internal" href="#object-list-examples">1.3. Object list examples</a></li>
-<li><a class="reference internal" href="#generation-controls">1.4. Generation controls</a><ul>
-<li><a class="reference internal" href="#select_ai.ProfileAttributes"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></li>
+<li><a class="reference internal" href="#generation-controls">1.4. Generation controls</a></li>
+<li><a class="reference internal" href="#additional-instructions">1.5. Additional instructions</a><ul>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a><ul>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.additional_instructions"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.additional_instructions</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.annotations"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.annotations</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.async_create"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.async_create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.case_sensitive_values"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.case_sensitive_values</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.comments"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.comments</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.constraints"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.constraints</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.conversation"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.conversation</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.create"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.create()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.credential_name"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.credential_name</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.dict"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.dict()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enable_custom_source_uri"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enable_custom_source_uri</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enable_source_offsets"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enable_source_offsets</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enable_sources"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enable_sources</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.enforce_object_list"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.enforce_object_list</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.json"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.json()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.keys"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.keys()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.max_tokens"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.max_tokens</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.object_list"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.object_list</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.object_list_mode"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.object_list_mode</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.provider"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.provider</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.seed"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.seed</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.set_attribute"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.set_attribute()</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.source_language"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.source_language</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.stop_tokens"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.stop_tokens</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.streaming"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.streaming</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.target_language"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.target_language</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.temperature"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.temperature</span></code></a></li>
+<li><a class="reference internal" href="#select_ai.ProfileAttributes.vector_index_name"><code class="docutils literal notranslate"><span class="pre">ProfileAttributes.vector_index_name</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -358,8 +600,8 @@ generations.</p></li>
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="credential.html"
-                          title="previous chapter"><span class="section-number">1. </span>Create credential</a></p>
+    <p class="topless"><a href="sharing.html"
+                          title="previous chapter"><span class="section-number">1. </span>Sharing and ownership</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -394,12 +636,15 @@ generations.</p></li>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="profile.html" title="1. Profile lifecycle"
              >next</a> |</li>
         <li class="right" >
-          <a href="credential.html" title="1. Create credential"
+          <a href="sharing.html" title="1. Sharing and ownership"
              >previous</a> |</li>
-          <li><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+          <li class="root-icon"><img src="../_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
           <li><a href="https://www.python.org/">Python</a> &#187;</li>
           <li class="switchers">
             <div class="language_switcher_placeholder"></div>
@@ -407,7 +652,7 @@ generations.</p></li>
           </li>
           <li>
 
-              <a href="../index.html">Select AI for Python 1.4.0 documentation</a> &#187;
+              <a href="../index.html">Select AI for Python 1.5.0 documentation</a> &#187;
 
           </li>
         <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span><code class="docutils literal notranslate"><span class="pre">ProfileAttributes</span></code></a></li>
@@ -452,7 +697,7 @@ generations.</p></li>
 
     <br>
 
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     </div>
 
   </body>

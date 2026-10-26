@@ -9,7 +9,10 @@ to connect to the database and execute PL/SQL subprograms.
 
 The library keeps the active connection or connection pool for the current
 process so profile, credential, provider, vector index, and agent APIs can use
-it without passing a connection object to each call. Use a standalone
+it without passing a connection object to each call. Standalone connections
+are local to the creating thread; pools are shared within a process. Do not
+configure both a standalone connection and a pool for the same API style in
+one thread: disconnect before switching. Use a standalone
 connection for scripts and notebooks. Use a connection pool for applications
 that handle concurrent work, such as web services or worker processes.
 

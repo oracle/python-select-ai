@@ -36,11 +36,22 @@ Install the optional command line interface:
 python3 -m pip install 'select_ai[cli]'
 ```
 
-The CLI extra includes A2A server support.
+The `cli` extra installs the command line interface. Install the separate
+`a2a` extra to enable the A2A server and worker commands:
+
+```bash
+python3 -m pip install 'select_ai[a2a]'
+```
+
+Without the A2A dependencies, the other `select-ai` commands remain available;
+invoking `select-ai a2a` or an A2A server or worker command prints the A2A
+installation instructions.
 
 ## Documentation
 
-See [Select AI for Python documentation][documentation]
+See [Select AI for Python documentation][documentation], the
+[complete first-query walkthrough](doc/source/user_guide/quickstart.rst), and
+[1.5.0 release notes](doc/source/release_notes.rst).
 
 ## Getting Started
 
@@ -118,6 +129,10 @@ For Autonomous Database mTLS, also set `SELECT_AI_WALLET_LOCATION` to the
 directory containing the unzipped wallet and set `SELECT_AI_WALLET_PASSWORD`.
 The CLI passes both values to the Select AI SDK as `wallet_location` and
 `wallet_password`.
+
+For a database using a server certificate signed by a private CA, pass the PEM
+certificate file with `--database-tls-ca-file` or set
+`SELECT_AI_DATABASE_TLS_CA_FILE`. The CLI reads the certificate from the file.
 
 The server accepts both A2A 1.x and the A2A v0.3 JSON-RPC streaming protocol
 for compatibility with Gemini Enterprise.

@@ -8,6 +8,7 @@
 """Unit tests for the private multiprocessing session runtime."""
 
 import asyncio
+from contextlib import asynccontextmanager
 
 import pytest
 import requests
@@ -86,6 +87,7 @@ class FakeProcess:
         self.target = target
         self.args = args
         self.daemon = daemon
+        self.pid = 1234
         self.started = False
         self.alive = True
 
@@ -284,10 +286,13 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
     connection_arguments = {}
 
     class Runtime:
-        def __init__(self, session_id, owner, team_name):
+        def __init__(
+            self, session_id, owner, team_name, conversation_retention_days
+        ):
             assert session_id == "session-1"
             assert owner == "owner-1"
             assert team_name == "TEAM"
+            assert conversation_retention_days == 7
 
         async def initialize(self):
             return None
@@ -306,9 +311,20 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
     async def disconnect():
         return None
 
+    database_connection = type("DatabaseConnection", (), {})()
+
+    @asynccontextmanager
+    async def async_get_connection():
+        yield database_connection
+
     monkeypatch.setattr(select_ai, "async_connect", async_connect)
     monkeypatch.setattr(select_ai, "async_is_connected", connected)
     monkeypatch.setattr(select_ai, "async_disconnect", disconnect)
+    monkeypatch.setattr(
+        select_ai.db,
+        "async_get_connection",
+        async_get_connection,
+    )
     monkeypatch.setattr(session_process, "SessionRuntime", Runtime)
 
     asyncio.run(
@@ -330,6 +346,10 @@ def test_session_runtime_uses_one_async_connection_and_dispatches_a2a(
         "password": "password",
         "dsn": "database",
     }
+    assert (
+        database_connection.call_timeout
+        == session_process._DATABASE_CALL_TIMEOUT_MS
+    )
     assert connection.sent[0] == {"type": "ready"}
     assert connection.sent[1] == {
         "type": "result",
@@ -347,6 +367,9 @@ def test_session_runtime_builds_oracle_backed_default_handler(monkeypatch):
             initialized.append("team")
 
     class Store:
+        def __init__(self, retention_days=7):
+            self.retention_days = retention_days
+
         async def initialize(self):
             initialized.append(self)
 
@@ -393,6 +416,9 @@ def test_session_runtime_rejects_unknown_team_before_initializing_stores(
             raise RuntimeError("team does not exist")
 
     class Store:
+        def __init__(self, retention_days=7):
+            self.retention_days = retention_days
+
         async def initialize(self):
             initialized.append(self)
 
@@ -490,6 +516,13 @@ def test_worker_client_forwards_and_parses_a2a_message(monkeypatch):
         post,
     )
     client = WorkerClient.__new__(WorkerClient)
+    client.settings = GatewaySettings(
+        public_url="http://gateway",
+        consul_url="http://consul:8500",
+        worker_service="select-ai-a2a-worker",
+        session_ttl_seconds=60,
+        database_call_timeout_seconds=45,
+    )
     monkeypatch.setattr(
         client,
         "_route_for",
@@ -517,6 +550,7 @@ def test_worker_client_forwards_and_parses_a2a_message(monkeypatch):
         "x-select-ai-a2a-method": "SendMessage",
     }
     assert sent["data"] == request.SerializeToString()
+    assert sent["timeout"] == 65
 
 
 def test_worker_client_uses_consul_https_endpoint_with_mtls(monkeypatch):
@@ -559,14 +593,16 @@ def test_worker_client_uses_consul_https_endpoint_with_mtls(monkeypatch):
     }
 
 
-def test_mtls_requires_all_three_gateway_files():
-    with pytest.raises(ValueError, match="worker mTLS requires"):
+def test_worker_client_certificate_requires_a_key():
+    with pytest.raises(
+        ValueError, match="certificate and key must be supplied"
+    ):
         GatewaySettings(
             public_url="https://gateway.example.com",
             consul_url="http://consul:8500",
             worker_service="select-ai-a2a-worker",
             session_ttl_seconds=60,
-            worker_tls_ca_file="/tls/ca.pem",
+            worker_tls_cert_file="/tls/gateway.pem",
         )
 
 

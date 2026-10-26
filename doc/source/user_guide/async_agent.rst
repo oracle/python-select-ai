@@ -311,6 +311,12 @@ after creation to read the generated value from
 
 .. code-block:: python
 
+   from select_ai.agent import (
+       AgentAttributes, AsyncAgent, AsyncTeam, TeamAttributes,
+   )
+
+   # Inside an async function, with an open async connection.
+   # MOVIE_ANALYST and ANALYZE_MOVIE_TASK must already exist.
    supervisor = AsyncAgent(
        agent_name="MOVIE_SUPERVISOR",
        attributes=AgentAttributes(
@@ -319,6 +325,8 @@ after creation to read the generated value from
            supervisor=True,
        ),
    )
+
+   await supervisor.create()
 
    team = AsyncTeam(
        team_name="MOVIE_AGENT_TEAM",
@@ -330,18 +338,50 @@ after creation to read the generated value from
            supervisor_agent=supervisor.agent_name,
        ),
    )
+   await team.create()
+
+Constructors build Python objects. Await ``create()`` to persist each object
+in Oracle Database. The example expects new supervisor and team names; pass
+``replace=True`` to ``create()`` only when replacement is intended.
 
 The complete asynchronous example creates the team, runs a prompt through the
 supervisor workflow, and inspects its generated supervisor task and metadata.
 ``AsyncTeam.run()`` starts the team workflow; the configured supervisor agent
 coordinates the worker agent as part of that call.
 
+Set the common database connection variables and ``SELECT_AI_PROFILE_NAME``
+(default ``oci_ai_profile``) to an existing profile. Run
+``python samples/agent/async/team_supervisor_inspect.py`` from the repository
+root. The script removes its generated objects and conversation during cleanup.
+
+.. latex:clearpage::
+
+Configure the imports and connection values:
+
 .. literalinclude:: ../../../samples/agent/async/team_supervisor_inspect.py
    :language: python
-   :lines: 14-
+   :start-at: import asyncio
+   :end-before: async def main():
 
-The generated names and returned JSON metadata vary between runs. Representative
-output is:
+.. latex:clearpage::
+
+Append the async function and its task, agent, and team definitions:
+
+.. literalinclude:: ../../../samples/agent/async/team_supervisor_inspect.py
+   :language: python
+   :start-at: async def main():
+   :end-before:     created_objects = []
+
+.. latex:clearpage::
+
+Continue inside ``main()`` with creation, execution, inspection, and cleanup.
+Keep this block indented as part of the function, then add the entry point:
+
+.. literalinclude:: ../../../samples/agent/async/team_supervisor_inspect.py
+   :language: python
+   :start-at:     created_objects = []
+
+Example output (generated names, model responses, and JSON metadata vary):
 
 output::
 

@@ -148,7 +148,7 @@ output::
 .. latex:clearpage::
 
 Chat session
-+++++++++++++
+++++++++++++
 
 Use ``chat_session()`` to keep context across multiple chat prompts. The second
 prompt in this example can refer to the previous answer because both prompts use
@@ -197,7 +197,8 @@ a tag; pass ``force=True`` when a missing tag should not raise an error.
    prompts = list(conversation.list_prompts())
    for prompt in prompts:
        print(prompt.conversation_prompt_id, prompt.prompt)
-   conversation.delete_prompt(prompts[-1].conversation_prompt_id)
+   if prompts:
+       conversation.delete_prompt(prompts[-1].conversation_prompt_id)
    conversation.remove_tag("PROJECT")
 
 The complete sample creates a conversation, stores one prompt through a chat
@@ -206,10 +207,10 @@ tag creation, update, and removal:
 
 .. literalinclude:: ../../../samples/conversation_prompts_tags.py
    :language: python
-   :lines: 14-
+   :start-at: import
 
 The conversation ID, prompt ID, and model response vary between runs.
-Representative output is:
+Example output (generated IDs and model responses vary):
 
 output::
 
@@ -328,36 +329,77 @@ output::
 Async prompt history and tags
 +++++++++++++++++++++++++++++
 
-``AsyncConversation.list_prompts()`` is an async generator that yields the same
-``ConversationPrompt`` objects as the synchronous API. Await
-``delete_prompt()``, ``add_tag()``, and ``remove_tag()`` to manage stored
-prompts and conversation tags. As with the synchronous API, use ``force=True``
-when deleting a missing prompt or removing a missing tag should succeed.
+Use prompt history to inspect or remove stored prompts, and tags to attach
+application metadata to a conversation. This example first creates a
+conversation and records a chat prompt so there is history to inspect.
+
+Create a conversation and save a prompt
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With an async connection open, run the following inside an async function.
+The saved profile ``oci_ai_profile`` must already exist:
+
+.. code-block:: python
+
+   conversation = select_ai.AsyncConversation(
+       attributes=select_ai.ConversationAttributes(title="Prompt history demo")
+   )
+   await conversation.create()
+   profile = await select_ai.AsyncProfile(profile_name="oci_ai_profile")
+   async with profile.chat_session(conversation=conversation) as session:
+       response = await session.chat("Explain retrieval augmented generation.")
+       print(response)
+
+Tag and inspect the conversation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A second ``add_tag()`` call with the same key updates its value.
+``list_prompts()`` returns an async iterator of ``ConversationPrompt`` objects:
 
 .. code-block:: python
 
    await conversation.add_tag("PROJECT", "SELECT_AI")
+   await conversation.add_tag("PROJECT", "SELECT_AI_SAMPLES")
    prompts = [prompt async for prompt in conversation.list_prompts()]
    for prompt in prompts:
        print(prompt.conversation_prompt_id, prompt.prompt)
-   await conversation.delete_prompt(prompts[-1].conversation_prompt_id)
+
+Remove a stored prompt and its tag
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Delete by prompt ID, then remove the tag by key. Check for an empty history
+before choosing a prompt to delete:
+
+.. code-block:: python
+
+   if prompts:
+       await conversation.delete_prompt(prompts[-1].conversation_prompt_id)
    await conversation.remove_tag("PROJECT")
 
-The asynchronous sample performs the same prompt-history and tag-management
-flow using ``AsyncConversation``:
+Use ``force=True`` on ``delete_prompt()`` or ``remove_tag()`` when a missing
+prompt or tag should be ignored. When finished with this temporary conversation,
+call ``await conversation.delete(force=True)``.
 
-.. literalinclude:: ../../../samples/async/conversation_prompts_tags.py
-   :language: python
-   :lines: 13-
+Run the complete example
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-The conversation ID, prompt ID, and model response vary between runs.
-Representative output is:
+The `complete async prompt-history script <https://github.com/oracle/python-select-ai/blob/main/samples/async/conversation_prompts_tags.py>`__
+adds connection setup and a ``finally`` block that deletes the temporary
+conversation. Set the common database environment variables and optionally
+set ``SELECT_AI_PROFILE_NAME`` (default ``oci_ai_profile``), then run from the
+repository root:
 
-output::
+.. code-block:: bash
 
-    conversation history works.
-    Prompt <generated prompt id>: Reply with exactly: conversation history works.
-    Prompts after deletion: []
+   python samples/async/conversation_prompts_tags.py
+
+Example output (prompt IDs and model responses vary):
+
+.. code-block:: text
+
+   conversation history works.
+   Prompt <generated prompt id>: Reply with exactly: conversation history works.
+   Prompts after deletion: []
 
 .. latex:clearpage::
 

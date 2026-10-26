@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # async/profile_pipeline.py
 #
-# Demonstrates sending multiple prompts using a single Database round-trip
+# Demonstrates batching multiple prompts with a database pipeline
 # -----------------------------------------------------------------------------
 
 import asyncio
@@ -36,12 +36,8 @@ async def main():
         ("Explain the query: SELECT * FROM sh.products", "INVALID ACTION"),
     ]
 
-    # 1. Multiple prompts are sent in a single roundtrip to the Database
-    # 2. Results are returned as soon as Database has executed all prompts
-    # 3. Application doesn't have to wait on one response before sending
-    #    the next prompts
-    # 4. Fewer round trips and database is kept busy
-    # 5. Efficient network usage
+    # Operations execute sequentially; round-trip savings depend on the
+    # database version. Successful results are strings, including RUNSQL JSON.
     results = await async_profile.run_pipeline(
         prompt_specifications, continue_on_error=True
     )

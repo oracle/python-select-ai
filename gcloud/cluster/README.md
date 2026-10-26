@@ -6,6 +6,10 @@ password through the generated A2UI form. A session remains available for 15
 minutes by default. Set a
 different lifetime in seconds with `--session-ttl-seconds`; for example,
 `--session-ttl-seconds 1800` keeps sessions for 30 minutes.
+Oracle conversation history is retained for 7 days by default. Set
+`--conversation-retention-days` to change this, or use 0 to keep
+conversations until they are
+manually deleted.
 
 ## Protocol architecture
 
@@ -134,7 +138,7 @@ agent.
 By default, Cloud Run IAM authenticates Gemini Enterprise and database
 sessions are separated by A2A conversation; the server does not verify the
 human user who owns a conversation. Add `--require-oauth` when the deployment
-requires authenticated end-user ownership. Gemini Enterprise must then be
+requires an end-user bearer token and an owner scope. Gemini Enterprise must then be
 configured with end-user OAuth and every request must carry its separate
 `Authorization: Bearer ...` token. Requests without it receive HTTP 401.
 
@@ -269,3 +273,10 @@ The Cloud Run server certificate files are mounted from Google Secret Manager.
 
 The identity that submits Cloud Build needs permission to use GKE, Cloud Run,
 and Secret Manager. GKE maintains the managed worker DNS records.
+
+The SDK does not validate bearer-token signatures, expiration, issuer, or
+audience. A trusted upstream service must validate the end-user token and
+prevent callers from bypassing validation to reach the A2A listener directly.
+`--require-oauth` alone does not verify identity. Cloud Run IAM validation of
+the calling service is separate from validation of the end-user token. See the
+[A2A authentication contract](../../doc/source/user_guide/a2a.rst) for details.

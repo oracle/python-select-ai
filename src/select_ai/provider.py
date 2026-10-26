@@ -92,7 +92,7 @@ class Provider(SelectAIDataClass):
         The result contains only values held by this provider instance. In
         particular, native provider endpoints remain available for network
         access configuration but are omitted from database profile payloads.
-        OpenAI and endpoint-only custom providers retain provider_endpoint.
+        Endpoint-only custom providers retain provider_endpoint.
         """
         attributes = self.dict(exclude_null=exclude_null)
         if not self.should_include_provider_endpoint():
@@ -135,11 +135,18 @@ class AzureProvider(Provider):
 @dataclass
 class OpenAIProvider(Provider):
     """
-    OpenAI specific attributes
+    OpenAI specific attributes.
+
+    The default hostname is retained for network ACL configuration and omitted
+    from database profiles so DBMS_CLOUD_AI selects its native public endpoint.
+    Use Provider for a custom OpenAI-compatible endpoint.
     """
 
     provider_name: str = OPENAI
     provider_endpoint: Optional[str] = "api.openai.com"
+
+    def should_include_provider_endpoint(self) -> bool:
+        return False
 
 
 @dataclass

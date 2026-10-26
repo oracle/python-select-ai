@@ -91,13 +91,13 @@ Attribute groups
 Object list examples
 ====================
 
-Grant access to every supported object in a schema:
+Include supported objects from a schema in the profile's metadata scope:
 
 .. code-block:: python
 
    object_list = [{"owner": "SH"}]
 
-Grant access to selected tables:
+Include selected tables:
 
 .. code-block:: python
 
@@ -106,6 +106,9 @@ Grant access to selected tables:
        {"owner": "SH", "name": "SALES"},
        {"owner": "SH", "name": "PRODUCTS"},
    ]
+
+The object list does not grant database privileges. The connected user must
+already have the privileges needed to access the underlying objects.
 
 Restrict generated SQL to the selected objects:
 
